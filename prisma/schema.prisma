@@ -1,0 +1,357 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============ CORE ENTITIES ============
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  address   String?
+  city      String?
+  state     String?
+  zip       String?
+  logo      String?
+  timezone  String   @default("America/New_York")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+  drivers   Driver[]
+  vehicles  Vehicle[]
+  customers Customer[]
+  trips     Trip[]
+  invoices  Invoice[]
+  settings  CompanySettings?
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  phone     String?
+  role      UserRole @default(DISPATCHER)
+  avatarUrl String?
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+}
+
+enum UserRole {
+  OWNER
+  DISPATCHER
+  VIEWER
+}
+
+model Driver {
+  id              String       @id @default(cuid())
+  name            String
+  email           String?
+  phone           String
+  licenseNumber   String?
+  licenseExpiry   DateTime?
+  avatarUrl       String?
+  status          DriverStatus @default(ACTIVE)
+  notes           String?
+  companyId       String
+  company         Company      @relation(fields: [companyId], references: [id])
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  trips            Trip[]
+  defaultVehicleId String?
+  defaultVehicle   Vehicle?             @relation("DefaultDriver", fields: [defaultVehicleId], references: [id])
+  availability     DriverAvailability[]
+
+  @@index([companyId])
+}
+
+enum DriverStatus {
+  ACTIVE
+  INACTIVE
+  ON_LEAVE
+}
+
+model DriverAvailability {
+  id          String  @id @default(cuid())
+  driverId    String
+  driver      Driver  @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+  isAvailable Boolean @default(true)
+
+  @@unique([driverId, dayOfWeek])
+}
+
+model Vehicle {
+  id           String        @id @default(cuid())
+  name         String
+  type         VehicleType
+  capacity     Int
+  licensePlate String?
+  color        String?
+  year         Int?
+  make         String?
+  model        String?
+  photoUrl     String?
+  status       VehicleStatus @default(ACTIVE)
+  notes        String?
+  companyId    String
+  company      Company       @relation(fields: [companyId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  trips          Trip[]
+  defaultDrivers Driver[] @relation("DefaultDriver")
+
+  @@index([companyId])
+}
+
+enum VehicleType {
+  SEDAN
+  SUV
+  STRETCH_LIMO
+  SPRINTER
+  PARTY_BUS
+  COACH
+  OTHER
+}
+
+enum VehicleStatus {
+  ACTIVE
+  MAINTENANCE
+  OUT_OF_SERVICE
+}
+
+model Customer {
+  id                   String       @id @default(cuid())
+  name                 String
+  email                String?
+  phone                String
+  company              String?
+  notes                String?
+  preferredDriverId    String?
+  preferredVehicleType VehicleType?
+  specialRequests      String?
+  homeAddress          String?
+  workAddress          String?
+  companyId            String
+  companyRef           Company      @relation(fields: [companyId], references: [id])
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  trips    Trip[]
+  invoices Invoice[]
+
+  @@index([companyId])
+  @@index([phone])
+  @@index([email])
+}
+
+// ============ TRIPS ============
+
+model Trip {
+  id           String     @id @default(cuid())
+  tripNumber   String     @unique
+  status       TripStatus @default(QUOTE)
+  tripType     TripType   @default(ONE_WAY)
+  pickupDate   DateTime
+  pickupTime   String
+  pickupAddress  String
+  pickupLat      Float?
+  pickupLng      Float?
+  pickupNotes    String?
+  dropoffAddress String
+  dropoffLat     Float?
+  dropoffLng     Float?
+  dropoffNotes   String?
+
+  flightNumber  String?
+  flightArrival DateTime?
+  flightStatus  String?
+  airportCode   String?
+
+  passengerCount Int     @default(1)
+  passengerName  String?
+  passengerPhone String?
+
+  driverId  String?
+  driver    Driver?  @relation(fields: [driverId], references: [id])
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id])
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  price        Decimal? @db.Decimal(10, 2)
+  gratuity     Decimal? @db.Decimal(10, 2)
+  totalPrice   Decimal? @db.Decimal(10, 2)
+  pricingNotes String?
+
+  meetAndGreet     Boolean @default(false)
+  childSeat        Boolean @default(false)
+  wheelchairAccess Boolean @default(false)
+  vip              Boolean @default(false)
+  internalNotes    String?
+
+  driverEnRouteAt    DateTime?
+  driverArrivedAt    DateTime?
+  passengerOnBoardAt DateTime?
+  tripCompletedAt    DateTime?
+
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stops         TripStop[]
+  invoice       Invoice?
+  notifications TripNotification[]
+
+  @@index([companyId])
+  @@index([status])
+  @@index([pickupDate])
+  @@index([driverId])
+  @@index([customerId])
+}
+
+model TripStop {
+  id          String  @id @default(cuid())
+  tripId      String
+  trip        Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  order       Int
+  address     String
+  lat         Float?
+  lng         Float?
+  notes       String?
+  arrivalTime String?
+
+  @@index([tripId])
+}
+
+enum TripStatus {
+  QUOTE
+  CONFIRMED
+  DISPATCHED
+  DRIVER_EN_ROUTE
+  DRIVER_ARRIVED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum TripType {
+  ONE_WAY
+  ROUND_TRIP
+  HOURLY
+  AIRPORT_PICKUP
+  AIRPORT_DROPOFF
+  MULTI_STOP
+  SHUTTLE
+}
+
+model TripNotification {
+  id           String              @id @default(cuid())
+  tripId       String
+  trip         Trip                @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  type         NotificationType
+  channel      NotificationChannel
+  recipient    String
+  sentAt       DateTime?
+  deliveredAt  DateTime?
+  failedAt     DateTime?
+  errorMessage String?
+  content      String
+
+  @@index([tripId])
+}
+
+enum NotificationType {
+  CONFIRMATION
+  REMINDER_24H
+  REMINDER_1H
+  DRIVER_ASSIGNED
+  DRIVER_EN_ROUTE
+  DRIVER_ARRIVED
+  TRIP_COMPLETED
+  CANCELLED
+}
+
+enum NotificationChannel {
+  SMS
+  EMAIL
+}
+
+// ============ INVOICES ============
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  status        InvoiceStatus @default(DRAFT)
+  customerId    String
+  customer      Customer      @relation(fields: [customerId], references: [id])
+  tripId        String?       @unique
+  trip          Trip?         @relation(fields: [tripId], references: [id])
+  subtotal      Decimal       @db.Decimal(10, 2)
+  gratuity      Decimal?      @db.Decimal(10, 2)
+  tax           Decimal?      @db.Decimal(10, 2)
+  total         Decimal       @db.Decimal(10, 2)
+  notes         String?
+  dueDate       DateTime?
+  paidAt        DateTime?
+  paymentMethod String?
+  companyId     String
+  company       Company       @relation(fields: [companyId], references: [id])
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([companyId])
+  @@index([customerId])
+  @@index([status])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  VIEWED
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+// ============ SETTINGS ============
+
+model CompanySettings {
+  id        String  @id @default(cuid())
+  companyId String  @unique
+  company   Company @relation(fields: [companyId], references: [id])
+
+  sendConfirmationSms      Boolean @default(true)
+  sendConfirmationEmail    Boolean @default(true)
+  sendReminder24h          Boolean @default(true)
+  sendDriverEnRoute        Boolean @default(true)
+  sendDriverArrived        Boolean @default(true)
+
+  confirmationSmsTemplate   String?
+  confirmationEmailTemplate String?
+  driverEnRouteTemplate     String?
+  driverArrivedTemplate     String?
+
+  defaultGratuityPercent Int?    @default(20)
+  requirePaymentUpfront  Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
