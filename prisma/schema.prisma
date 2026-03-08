@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // ============ CORE ENTITIES ============
@@ -136,6 +135,7 @@ enum VehicleStatus {
 
 model Customer {
   id                   String       @id @default(cuid())
+  customerNumber       String?      @unique
   name                 String
   email                String?
   phone                String

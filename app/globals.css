@@ -126,6 +126,16 @@ body {
 .status-driver-en-route { color: #D97706; background: #FFFBEB; }
 .status-driver-arrived  { color: #059669; background: #ECFDF5; }
 
+/* Dock wobble animation */
+@keyframes dock-wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25%       { transform: rotate(-2deg); }
+  75%       { transform: rotate(2deg); }
+}
+.dock-wobble {
+  animation: dock-wobble 0.35s ease-in-out infinite;
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);

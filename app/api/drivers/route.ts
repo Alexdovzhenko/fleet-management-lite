@@ -1,0 +1,75 @@
+import { NextRequest, NextResponse } from "next/server"
+import { prisma } from "@/lib/db"
+import { z } from "zod"
+
+const createDriverSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email().optional().or(z.literal("")),
+  phone: z.string().min(1),
+  licenseNumber: z.string().optional(),
+  licenseExpiry: z.string().optional(),
+  notes: z.string().optional(),
+  defaultVehicleId: z.string().optional(),
+  companyId: z.string().min(1),
+})
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const companyId = searchParams.get("companyId") || "demo-company"
+    const search = searchParams.get("search") || ""
+    const status = searchParams.get("status")
+
+    const drivers = await prisma.driver.findMany({
+      where: {
+        companyId,
+        ...(status && { status: status as "ACTIVE" | "INACTIVE" | "ON_LEAVE" }),
+        ...(search && {
+          OR: [
+            { name: { contains: search, mode: "insensitive" } },
+            { phone: { contains: search } },
+            { email: { contains: search, mode: "insensitive" } },
+          ],
+        }),
+      },
+      orderBy: { name: "asc" },
+      include: {
+        defaultVehicle: { select: { id: true, name: true, type: true } },
+        _count: { select: { trips: true } },
+      },
+    })
+
+    return NextResponse.json(drivers)
+  } catch (error) {
+    console.error("GET /api/drivers error:", error)
+    return NextResponse.json({ error: "Failed to fetch drivers" }, { status: 500 })
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const data = createDriverSchema.parse(body)
+
+    const driver = await prisma.driver.create({
+      data: {
+        name: data.name,
+        email: data.email || null,
+        phone: data.phone,
+        licenseNumber: data.licenseNumber || null,
+        licenseExpiry: data.licenseExpiry ? new Date(data.licenseExpiry) : null,
+        notes: data.notes || null,
+        defaultVehicleId: data.defaultVehicleId || null,
+        companyId: data.companyId,
+      },
+    })
+
+    return NextResponse.json(driver, { status: 201 })
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ error: "Validation failed", details: error.issues }, { status: 400 })
+    }
+    console.error("POST /api/drivers error:", error)
+    return NextResponse.json({ error: "Failed to create driver" }, { status: 500 })
+  }
+}
