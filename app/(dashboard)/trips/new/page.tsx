@@ -369,6 +369,7 @@ function DriverPickerCard({
   drivers, value, onChange,
 }: { drivers: Driver[]; value: string; onChange: (id: string) => void }) {
   const [open, setOpen] = useState(false)
+  const [dropStyle, setDropStyle] = useState<React.CSSProperties>({})
   const ref = useRef<HTMLDivElement>(null)
   const selected = drivers.find((d) => d.id === value) ?? null
 
@@ -380,8 +381,16 @@ function DriverPickerCard({
     return () => document.removeEventListener("mousedown", handle)
   }, [])
 
+  function openDropdown() {
+    if (ref.current) {
+      const rect = ref.current.getBoundingClientRect()
+      setDropStyle({ position: "fixed", top: rect.bottom + 4, left: rect.left, width: rect.width, zIndex: 9999 })
+    }
+    setOpen(true)
+  }
+
   return (
-    <div ref={ref} className="relative space-y-1.5">
+    <div ref={ref} className="space-y-1.5">
       <Label className="text-xs font-medium text-gray-500">Driver</Label>
       {selected ? (
         <div className="flex items-center gap-2.5 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2.5">
@@ -405,7 +414,7 @@ function DriverPickerCard({
       ) : (
         <button
           type="button"
-          onClick={() => setOpen((o) => !o)}
+          onClick={openDropdown}
           className="w-full flex items-center gap-2.5 px-3 py-2.5 border border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-indigo-300 hover:text-indigo-500 hover:bg-indigo-50/50 transition-all"
         >
           <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
@@ -415,8 +424,8 @@ function DriverPickerCard({
           <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
         </button>
       )}
-      {open && !selected && (
-        <div className="absolute top-full left-0 right-0 mt-1 z-50 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+      {open && !selected && createPortal(
+        <div style={dropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
           <div className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
             Active Drivers
           </div>
@@ -443,7 +452,8 @@ function DriverPickerCard({
               ))
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
@@ -458,6 +468,7 @@ function VehiclePickerCard({
   vehicles, value, passengerCount, onChange,
 }: { vehicles: Vehicle[]; value: string; passengerCount: number; onChange: (id: string) => void }) {
   const [open, setOpen] = useState(false)
+  const [dropStyle, setDropStyle] = useState<React.CSSProperties>({})
   const ref = useRef<HTMLDivElement>(null)
   const selected = vehicles.find((v) => v.id === value) ?? null
 
@@ -469,8 +480,16 @@ function VehiclePickerCard({
     return () => document.removeEventListener("mousedown", handle)
   }, [])
 
+  function openDropdown() {
+    if (ref.current) {
+      const rect = ref.current.getBoundingClientRect()
+      setDropStyle({ position: "fixed", top: rect.bottom + 4, left: rect.left, width: rect.width, zIndex: 9999 })
+    }
+    setOpen(true)
+  }
+
   return (
-    <div ref={ref} className="relative space-y-1.5">
+    <div ref={ref} className="space-y-1.5">
       <Label className="text-xs font-medium text-gray-500">Vehicle</Label>
       {selected ? (
         <div className="flex items-center gap-2.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
@@ -493,7 +512,7 @@ function VehiclePickerCard({
       ) : (
         <button
           type="button"
-          onClick={() => setOpen((o) => !o)}
+          onClick={openDropdown}
           className="w-full flex items-center gap-2.5 px-3 py-2.5 border border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-slate-400 hover:text-slate-600 hover:bg-slate-50/50 transition-all"
         >
           <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
@@ -503,8 +522,8 @@ function VehiclePickerCard({
           <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
         </button>
       )}
-      {open && !selected && (
-        <div className="absolute top-full left-0 right-0 mt-1 z-50 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+      {open && !selected && createPortal(
+        <div style={dropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
           <div className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
             Available Vehicles
           </div>
@@ -536,7 +555,8 @@ function VehiclePickerCard({
               })
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
