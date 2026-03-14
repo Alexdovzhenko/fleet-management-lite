@@ -371,11 +371,15 @@ function DriverPickerCard({
   const [open, setOpen] = useState(false)
   const [dropStyle, setDropStyle] = useState<React.CSSProperties>({})
   const ref = useRef<HTMLDivElement>(null)
+  const dropRef = useRef<HTMLDivElement>(null)
   const selected = drivers.find((d) => d.id === value) ?? null
 
   useEffect(() => {
     function handle(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+      if (
+        ref.current && !ref.current.contains(e.target as Node) &&
+        dropRef.current && !dropRef.current.contains(e.target as Node)
+      ) setOpen(false)
     }
     document.addEventListener("mousedown", handle)
     return () => document.removeEventListener("mousedown", handle)
@@ -429,7 +433,7 @@ function DriverPickerCard({
         </button>
       )}
       {open && !selected && createPortal(
-        <div style={dropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+        <div ref={dropRef} style={dropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
           <div className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
             Active Drivers
           </div>
@@ -474,11 +478,15 @@ function VehiclePickerCard({
   const [open, setOpen] = useState(false)
   const [dropStyle, setDropStyle] = useState<React.CSSProperties>({})
   const ref = useRef<HTMLDivElement>(null)
+  const dropRef = useRef<HTMLDivElement>(null)
   const selected = vehicles.find((v) => v.id === value) ?? null
 
   useEffect(() => {
     function handle(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+      if (
+        ref.current && !ref.current.contains(e.target as Node) &&
+        dropRef.current && !dropRef.current.contains(e.target as Node)
+      ) setOpen(false)
     }
     document.addEventListener("mousedown", handle)
     return () => document.removeEventListener("mousedown", handle)
@@ -531,7 +539,7 @@ function VehiclePickerCard({
         </button>
       )}
       {open && !selected && createPortal(
-        <div style={dropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+        <div ref={dropRef} style={dropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
           <div className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
             Available Vehicles
           </div>
