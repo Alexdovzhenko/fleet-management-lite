@@ -1340,18 +1340,20 @@ export default function NewTripPage() {
   // ── Success overlay ──
   if (createdConfirmation) {
     return (
-      <div className="h-full flex flex-col items-center justify-center bg-[#f0f2f5] p-8">
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 max-w-md w-full p-8 text-center">
-          <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-5">
-            <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+      <div className="fixed inset-0 bg-white flex items-center justify-center p-8">
+        <div className="max-w-sm w-full text-center">
+          {/* Icon */}
+          <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 className="w-9 h-9 text-emerald-500" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-1">Reservation Created</h2>
-          <p className="text-sm text-gray-500 mb-8">Your reservation has been saved successfully.</p>
 
-          {/* Confirmation number — hero display */}
-          <div className="bg-blue-50 border border-blue-200 rounded-xl px-6 py-5 mb-6">
-            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-blue-400 mb-2">Confirmation Number</p>
-            <p className="text-3xl font-mono font-black text-blue-700 tracking-wide mb-3">{createdConfirmation}</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Reservation Created</h2>
+          <p className="text-sm text-gray-400 mb-8">Your reservation has been saved successfully.</p>
+
+          {/* Confirmation number */}
+          <div className="bg-blue-50 border border-blue-100 rounded-2xl px-8 py-6 mb-8">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-400 mb-3">Confirmation Number</p>
+            <p className="text-4xl font-mono font-black text-blue-700 tracking-wider mb-4">{createdConfirmation}</p>
             <button
               type="button"
               onClick={() => {
@@ -1359,7 +1361,7 @@ export default function NewTripPage() {
                 setConfirmCopied(true)
                 setTimeout(() => setConfirmCopied(false), 2000)
               }}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-500 hover:text-blue-700 transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-600 transition-colors"
             >
               {confirmCopied
                 ? <><Check className="w-3.5 h-3.5 text-emerald-500" /><span className="text-emerald-600">Copied!</span></>
@@ -1372,7 +1374,7 @@ export default function NewTripPage() {
             <Button
               type="button"
               variant="outline"
-              className="flex-1"
+              className="flex-1 h-11"
               onClick={() => {
                 setCreatedConfirmation(null)
                 router.push("/trips/new")
@@ -1382,7 +1384,7 @@ export default function NewTripPage() {
             </Button>
             <Button
               type="button"
-              className="flex-1 bg-[#2563EB] hover:bg-blue-700 text-white"
+              className="flex-1 h-11 bg-[#2563EB] hover:bg-blue-700 text-white font-semibold"
               onClick={() => router.push("/dispatch")}
             >
               Go to Dispatch
