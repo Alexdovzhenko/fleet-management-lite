@@ -2,8 +2,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { format } from "date-fns"
 import type { Trip } from "@/types"
 
-const COMPANY_ID = "demo-company"
-
 interface TripFilters {
   date?: Date
   status?: string
@@ -12,12 +10,11 @@ interface TripFilters {
 }
 
 async function fetchTrips(filters: TripFilters = {}): Promise<Trip[]> {
-  const params = new URLSearchParams({ companyId: COMPANY_ID })
+  const params = new URLSearchParams()
   if (filters.date) params.set("date", format(filters.date, "yyyy-MM-dd"))
   if (filters.status) params.set("status", filters.status)
   if (filters.driverId) params.set("driverId", filters.driverId)
   if (filters.search) params.set("search", filters.search)
-
   const res = await fetch(`/api/trips?${params}`)
   if (!res.ok) throw new Error("Failed to fetch trips")
   return res.json()
@@ -33,7 +30,7 @@ async function createTrip(data: Partial<Trip>): Promise<Trip> {
   const res = await fetch("/api/trips", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...data, companyId: COMPANY_ID }),
+    body: JSON.stringify(data),
   })
   if (!res.ok) throw new Error("Failed to create trip")
   return res.json()
@@ -54,7 +51,7 @@ export function useTrips(filters: TripFilters = {}) {
     queryKey: ["trips", filters],
     queryFn: () => fetchTrips(filters),
     staleTime: 15_000,
-    refetchInterval: 60_000, // auto-refresh every minute
+    refetchInterval: 60_000,
   })
 }
 

@@ -1,10 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import type { Customer } from "@/types"
 
-const COMPANY_ID = "demo-company"
-
 async function fetchCustomers(search = ""): Promise<Customer[]> {
-  const params = new URLSearchParams({ companyId: COMPANY_ID, search })
+  const params = new URLSearchParams()
+  if (search) params.set("search", search)
   const res = await fetch(`/api/customers?${params}`)
   if (!res.ok) throw new Error("Failed to fetch customers")
   return res.json()
@@ -20,9 +19,12 @@ async function createCustomer(data: Partial<Customer>): Promise<Customer> {
   const res = await fetch("/api/customers", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...data, companyId: COMPANY_ID }),
+    body: JSON.stringify(data),
   })
-  if (!res.ok) throw new Error("Failed to create customer")
+  if (!res.ok) {
+    const json = await res.json().catch(() => ({}))
+    throw new Error(json.error || "Failed to create customer")
+  }
   return res.json()
 }
 
@@ -51,7 +53,7 @@ export function useCustomers(search = "") {
 
 export function useCustomer(id: string) {
   return useQuery({
-    queryKey: ["customers", id],
+    queryKey: ["customer", id],
     queryFn: () => fetchCustomer(id),
     enabled: !!id,
   })
@@ -71,7 +73,7 @@ export function useUpdateCustomer() {
     mutationFn: updateCustomer,
     onSuccess: (customer) => {
       qc.invalidateQueries({ queryKey: ["customers"] })
-      qc.setQueryData(["customers", customer.id], customer)
+      qc.setQueryData(["customer", customer.id], customer)
     },
   })
 }
@@ -80,6 +82,9 @@ export function useDeleteCustomer() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: deleteCustomer,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["customers"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["customers"] })
+      qc.invalidateQueries({ queryKey: ["customer"] })
+    },
   })
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
+import { requireAuth } from "@/lib/auth-context"
 import { z } from "zod"
 
 const createDriverSchema = z.object({
@@ -10,13 +11,15 @@ const createDriverSchema = z.object({
   licenseExpiry: z.string().optional(),
   notes: z.string().optional(),
   defaultVehicleId: z.string().optional(),
-  companyId: z.string().min(1),
 })
 
 export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request)
+  if (!auth.ok) return auth.response
+  const { companyId } = auth.ctx
+
   try {
     const { searchParams } = new URL(request.url)
-    const companyId = searchParams.get("companyId") || "demo-company"
     const search = searchParams.get("search") || ""
     const status = searchParams.get("status")
 
@@ -47,6 +50,10 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAuth(request)
+  if (!auth.ok) return auth.response
+  const { companyId } = auth.ctx
+
   try {
     const body = await request.json()
     const data = createDriverSchema.parse(body)
@@ -60,7 +67,7 @@ export async function POST(request: NextRequest) {
         licenseExpiry: data.licenseExpiry ? new Date(data.licenseExpiry) : null,
         notes: data.notes || null,
         defaultVehicleId: data.defaultVehicleId || null,
-        companyId: data.companyId,
+        companyId,
       },
     })
 

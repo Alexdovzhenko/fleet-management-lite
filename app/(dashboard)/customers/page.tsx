@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Search, Plus, Phone, Mail, Building2, Users } from "lucide-react"
+import { Search, Plus, Phone, Mail, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -9,24 +9,43 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { useCustomers, useCreateCustomer } from "@/lib/hooks/use-customers"
 import { CustomerForm } from "@/components/customers/customer-form"
+import { CustomerDetailDialog } from "@/components/customers/customer-detail-dialog"
 import { EmptyState } from "@/components/shared/empty-state"
 import { TableSkeleton } from "@/components/shared/loading-skeleton"
 import { getInitials, formatPhone, formatDate } from "@/lib/utils"
-import Link from "next/link"
 import { useDebounce } from "@/lib/hooks/use-debounce"
 
 export default function CustomersPage() {
   const [search, setSearch] = useState("")
   const [showForm, setShowForm] = useState(false)
+  const [createError, setCreateError] = useState<string | null>(null)
+  const [nextNumber, setNextNumber] = useState<string | null>(null)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const debouncedSearch = useDebounce(search, 300)
 
-  const { data: customers, isLoading } = useCustomers(debouncedSearch)
+  const { data: customers, isLoading, refetch } = useCustomers(debouncedSearch)
   const createCustomer = useCreateCustomer()
 
-  function handleCreate(data: object) {
-    createCustomer.mutate(data as never, {
-      onSuccess: () => setShowForm(false),
-    })
+  async function openForm() {
+    setShowForm(true)
+    setNextNumber(null)
+    try {
+      const res = await fetch("/api/customers/next-number")
+      if (res.ok) {
+        const { nextNumber: n } = await res.json()
+        setNextNumber(n)
+      }
+    } catch {}
+  }
+
+  async function handleCreate(data: object) {
+    setCreateError(null)
+    try {
+      await createCustomer.mutateAsync(data as never)
+      setShowForm(false)
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : "Failed to create customer")
+    }
   }
 
   return (
@@ -43,7 +62,7 @@ export default function CustomersPage() {
           />
         </div>
         <Button
-          onClick={() => setShowForm(true)}
+          onClick={openForm}
           className="text-white gap-2"
           style={{ backgroundColor: "#2563EB" }}
         >
@@ -61,15 +80,15 @@ export default function CustomersPage() {
           title="No customers yet"
           description="Add your first customer to start booking trips."
           actionLabel="Add Customer"
-          onAction={() => setShowForm(true)}
+          onAction={openForm}
         />
       ) : (
         <div className="space-y-2">
           {customers.map((customer) => (
-            <Link
+            <button
               key={customer.id}
-              href={`/customers/${customer.id}`}
-              className="flex items-center gap-4 p-4 bg-white rounded-xl border hover:border-blue-300 hover:shadow-sm transition-all group"
+              onClick={() => setSelectedId(customer.id)}
+              className="w-full flex items-center gap-4 p-4 bg-white rounded-xl border hover:border-blue-300 hover:shadow-sm transition-all text-left"
             >
               <Avatar className="w-10 h-10 flex-shrink-0">
                 <AvatarFallback
@@ -85,9 +104,9 @@ export default function CustomersPage() {
                   <span className="text-sm font-semibold text-gray-900 truncate">
                     {customer.name}
                   </span>
-                  {(customer as never as { customerNumber?: string }).customerNumber && (
+                  {customer.customerNumber && (
                     <span className="text-xs font-mono text-gray-400 flex-shrink-0">
-                      #{(customer as never as { customerNumber: string }).customerNumber}
+                      #{customer.customerNumber}
                     </span>
                   )}
                   {customer.company && (
@@ -120,21 +139,30 @@ export default function CustomersPage() {
                   {(customer as never as { _count: { trips: number } })._count?.trips || 0} trips
                 </Badge>
               </div>
-            </Link>
+            </button>
           ))}
         </div>
       )}
 
+      {/* Customer Detail Dialog */}
+      <CustomerDetailDialog
+        customerId={selectedId}
+        onClose={() => setSelectedId(null)}
+        onDeleted={() => refetch()}
+      />
+
       {/* Create Dialog */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add New Customer</DialogTitle>
           </DialogHeader>
           <CustomerForm
             onSubmit={handleCreate}
-            onCancel={() => setShowForm(false)}
+            onCancel={() => { setShowForm(false); setCreateError(null) }}
             isLoading={createCustomer.isPending}
+            error={createError}
+            nextNumber={nextNumber ?? undefined}
           />
         </DialogContent>
       </Dialog>

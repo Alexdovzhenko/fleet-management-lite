@@ -42,7 +42,7 @@ export function Sidebar() {
           <Zap className="w-4 h-4 text-white" />
         </div>
         <div>
-          <div className="text-sm font-bold leading-none text-white">FleetLite</div>
+          <div className="text-sm font-bold leading-none text-white">Livery Connect</div>
           <div className="text-[10px] text-white/50 leading-none mt-0.5">Pro Dispatch</div>
         </div>
       </div>

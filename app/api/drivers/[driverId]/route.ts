@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
+import { requireAuth } from "@/lib/auth-context"
 import { z } from "zod"
 
 const updateDriverSchema = z.object({
@@ -14,20 +15,22 @@ const updateDriverSchema = z.object({
 })
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ driverId: string }> }
 ) {
+  const auth = await requireAuth(request)
+  if (!auth.ok) return auth.response
+  const { companyId } = auth.ctx
+
   try {
     const { driverId } = await params
-    const driver = await prisma.driver.findUnique({
-      where: { id: driverId },
+    const driver = await prisma.driver.findFirst({
+      where: { id: driverId, companyId },
       include: {
         defaultVehicle: true,
         availability: { orderBy: { dayOfWeek: "asc" } },
         trips: {
-          where: {
-            status: { notIn: ["COMPLETED", "CANCELLED", "NO_SHOW"] },
-          },
+          where: { status: { notIn: ["COMPLETED", "CANCELLED", "NO_SHOW"] } },
           orderBy: { pickupDate: "asc" },
           take: 10,
           include: {
@@ -38,10 +41,7 @@ export async function GET(
       },
     })
 
-    if (!driver) {
-      return NextResponse.json({ error: "Driver not found" }, { status: 404 })
-    }
-
+    if (!driver) return NextResponse.json({ error: "Driver not found" }, { status: 404 })
     return NextResponse.json(driver)
   } catch (error) {
     console.error("GET /api/drivers/[id] error:", error)
@@ -53,20 +53,21 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ driverId: string }> }
 ) {
+  const auth = await requireAuth(request)
+  if (!auth.ok) return auth.response
+  const { companyId } = auth.ctx
+
   try {
     const { driverId } = await params
+    const existing = await prisma.driver.findFirst({ where: { id: driverId, companyId } })
+    if (!existing) return NextResponse.json({ error: "Driver not found" }, { status: 404 })
+
     const body = await request.json()
     const data = updateDriverSchema.parse(body)
-
     const driver = await prisma.driver.update({
       where: { id: driverId },
-      data: {
-        ...data,
-        email: data.email || null,
-        licenseExpiry: data.licenseExpiry ? new Date(data.licenseExpiry) : undefined,
-      },
+      data: { ...data, email: data.email || null, licenseExpiry: data.licenseExpiry ? new Date(data.licenseExpiry) : undefined },
     })
-
     return NextResponse.json(driver)
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -78,11 +79,17 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ driverId: string }> }
 ) {
+  const auth = await requireAuth(request)
+  if (!auth.ok) return auth.response
+  const { companyId } = auth.ctx
+
   try {
     const { driverId } = await params
+    const existing = await prisma.driver.findFirst({ where: { id: driverId, companyId } })
+    if (!existing) return NextResponse.json({ error: "Driver not found" }, { status: 404 })
     await prisma.driver.delete({ where: { id: driverId } })
     return NextResponse.json({ success: true })
   } catch (error) {

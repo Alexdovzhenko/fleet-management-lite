@@ -18,7 +18,10 @@ model Company {
   state     String?
   zip       String?
   logo      String?
+  banner    String?
+  website   String?
   timezone  String   @default("America/New_York")
+  onboardingCompleted Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -26,13 +29,22 @@ model Company {
   drivers   Driver[]
   vehicles  Vehicle[]
   customers Customer[]
-  trips     Trip[]
-  invoices  Invoice[]
-  settings  CompanySettings?
+  trips        Trip[]
+  invoices     Invoice[]
+  settings     CompanySettings?
+  serviceTypes ServiceType[]
+  invites      CompanyInvite[]
+
+  sentConnections     AffiliateConnection[] @relation("SentConnections")
+  receivedConnections AffiliateConnection[] @relation("ReceivedConnections")
+
+  favoritesAdded AffiliateFavorite[] @relation("FavoriteOwner")
+  favoritedBy    AffiliateFavorite[] @relation("FavoritedBy")
 }
 
 model User {
   id        String   @id @default(cuid())
+  authId    String   @unique
   email     String   @unique
   name      String
   phone     String?
@@ -44,6 +56,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   @@index([companyId])
+  @@index([authId])
 }
 
 enum UserRole {
@@ -135,17 +148,26 @@ enum VehicleStatus {
 
 model Customer {
   id                   String       @id @default(cuid())
-  customerNumber       String?      @unique
+  customerNumber       String?
   name                 String
   email                String?
-  phone                String
+  phone                String?
   company              String?
+  isBillingContact     Boolean      @default(false)
+  isPassenger          Boolean      @default(false)
+  isBookingContact     Boolean      @default(false)
+  homeAddress          String?
+  addressLine2         String?
+  city                 String?
+  state                String?
+  zip                  String?
+  country              String?
+  workAddress          String?
   notes                String?
+  specialRequests      String?
+  driverNotes          String?
   preferredDriverId    String?
   preferredVehicleType VehicleType?
-  specialRequests      String?
-  homeAddress          String?
-  workAddress          String?
   companyId            String
   companyRef           Company      @relation(fields: [companyId], references: [id])
   createdAt            DateTime     @default(now())
@@ -154,6 +176,7 @@ model Customer {
   trips    Trip[]
   invoices Invoice[]
 
+  @@unique([companyId, customerNumber])
   @@index([companyId])
   @@index([phone])
   @@index([email])
@@ -165,7 +188,7 @@ model Trip {
   id           String     @id @default(cuid())
   tripNumber   String     @unique
   status       TripStatus @default(QUOTE)
-  tripType     TripType   @default(ONE_WAY)
+  tripType     String     @default("ONE_WAY")
   pickupDate   DateTime
   pickupTime   String
   pickupAddress  String
@@ -183,8 +206,10 @@ model Trip {
   airportCode   String?
 
   passengerCount Int     @default(1)
+  luggageCount   Int?
   passengerName  String?
   passengerPhone String?
+  passengerEmail String?
 
   driverId  String?
   driver    Driver?  @relation(fields: [driverId], references: [id])
@@ -201,8 +226,11 @@ model Trip {
 
   meetAndGreet     Boolean @default(false)
   childSeat        Boolean @default(false)
+  childSeatDetails String?
   wheelchairAccess Boolean @default(false)
   vip              Boolean @default(false)
+  clientRef        String?
+  notes            String?
   internalNotes    String?
 
   driverEnRouteAt    DateTime?
@@ -252,14 +280,23 @@ enum TripStatus {
   NO_SHOW
 }
 
-enum TripType {
-  ONE_WAY
-  ROUND_TRIP
-  HOURLY
-  AIRPORT_PICKUP
-  AIRPORT_DROPOFF
-  MULTI_STOP
-  SHUTTLE
+model ServiceType {
+  id          String   @id @default(cuid())
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  value       String
+  label       String
+  description String?
+  iconName    String   @default("Car")
+  color       String   @default("bg-gray-100 text-gray-600")
+  isBuiltIn   Boolean  @default(false)
+  isEnabled   Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([companyId, value])
+  @@index([companyId])
 }
 
 model TripNotification {
@@ -354,4 +391,60 @@ model CompanySettings {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ============ TEAM INVITES ============
+
+model CompanyInvite {
+  id         String    @id @default(cuid())
+  companyId  String
+  company    Company   @relation(fields: [companyId], references: [id])
+  email      String
+  role       UserRole  @default(DISPATCHER)
+  token      String    @unique @default(cuid())
+  expiresAt  DateTime
+  acceptedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([companyId])
+  @@index([token])
+}
+
+// ============ AFFILIATES ============
+
+enum AffiliateConnectionStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model AffiliateConnection {
+  id            String                    @id @default(cuid())
+  senderId      String
+  receiverId    String
+  status        AffiliateConnectionStatus @default(PENDING)
+  affiliateCode String?                   @unique  // LC-XXXXX, generated when ACCEPTED
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+
+  sender   Company @relation("SentConnections", fields: [senderId], references: [id])
+  receiver Company @relation("ReceivedConnections", fields: [receiverId], references: [id])
+
+  @@unique([senderId, receiverId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([status])
+}
+
+model AffiliateFavorite {
+  id         String   @id @default(cuid())
+  companyId  String
+  favoriteId String
+  createdAt  DateTime @default(now())
+
+  company  Company @relation("FavoriteOwner", fields: [companyId], references: [id])
+  favorite Company @relation("FavoritedBy", fields: [favoriteId], references: [id])
+
+  @@unique([companyId, favoriteId])
+  @@index([companyId])
 }

@@ -48,9 +48,14 @@ export function formatPhone(phone: string): string {
   return phone
 }
 
-export function generateTripNumber(): string {
-  const num = Math.floor(Math.random() * 999999).toString().padStart(6, "0")
-  return `TRP-${num}`
+export function generateConfirmationNumber(): string {
+  // Alphabet excludes visually ambiguous chars: 0/O, 1/I/L
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
+  let code = ""
+  for (let i = 0; i < 6; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)]
+  }
+  return `LC-${code}`
 }
 
 export function generateInvoiceNumber(): string {

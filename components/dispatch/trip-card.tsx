@@ -31,7 +31,10 @@ export function TripCard({ trip, isSelected, onClick }: TripCardProps) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-sm font-bold text-gray-900">{formatTime(trip.pickupTime)}</span>
-            <span className="text-xs text-gray-500">{trip.tripNumber}</span>
+            <span className="inline-flex items-center gap-1 bg-blue-50 border border-blue-100 rounded px-1.5 py-0.5">
+              <span className="text-[8px] font-semibold uppercase tracking-wider text-blue-400">Conf#</span>
+              <span className="text-[10px] font-mono font-bold text-blue-700">{trip.tripNumber}</span>
+            </span>
           </div>
         </div>
         {/* Flags */}

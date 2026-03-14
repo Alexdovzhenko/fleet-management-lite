@@ -42,7 +42,7 @@ export default function TripsPage() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search trips..."
+            placeholder="Search by confirmation #, address, customer…"
             className="pl-9"
           />
         </div>
@@ -105,7 +105,10 @@ function TripRow({ trip }: { trip: Trip }) {
         <div className="flex items-center gap-2 mb-0.5">
           <span className="text-sm font-bold text-gray-900">{formatTime(trip.pickupTime)}</span>
           <span className="text-xs text-gray-400">{formatDate(trip.pickupDate)}</span>
-          <span className="text-xs font-mono text-gray-400">{trip.tripNumber}</span>
+          <span className="inline-flex items-center gap-1 bg-blue-50 border border-blue-100 rounded px-1.5 py-0.5">
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-blue-400">Conf#</span>
+            <span className="text-xs font-mono font-bold text-blue-700">{trip.tripNumber}</span>
+          </span>
         </div>
         <div className="text-sm text-gray-600 truncate">
           {truncateAddress(trip.pickupAddress)} → {truncateAddress(trip.dropoffAddress)}

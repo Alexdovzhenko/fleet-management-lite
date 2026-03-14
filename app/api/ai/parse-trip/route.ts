@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { requireAuth } from "@/lib/auth-context"
 import Anthropic from "@anthropic-ai/sdk"
 
 const client = new Anthropic()
@@ -30,9 +31,11 @@ Rules:
 - Return ONLY the JSON object, no markdown, no explanation`
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAuth(request)
+  if (!auth.ok) return auth.response
+
   try {
     const { text } = await request.json()
-
     if (!text || typeof text !== "string") {
       return NextResponse.json({ error: "text is required" }, { status: 400 })
     }
@@ -40,12 +43,7 @@ export async function POST(request: NextRequest) {
     const message = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 1024,
-      messages: [
-        {
-          role: "user",
-          content: `Parse this trip booking: "${text}"`,
-        },
-      ],
+      messages: [{ role: "user", content: `Parse this trip booking: "${text}"` }],
       system: SYSTEM_PROMPT,
     })
 

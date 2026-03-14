@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
+import { requireAuth } from "@/lib/auth-context"
 import { z } from "zod"
 
 const updateCustomerSchema = z.object({
@@ -7,20 +8,32 @@ const updateCustomerSchema = z.object({
   email: z.string().email().optional().or(z.literal("")),
   phone: z.string().min(1).optional(),
   company: z.string().optional(),
+  isBillingContact: z.boolean().optional(),
+  isPassenger: z.boolean().optional(),
+  isBookingContact: z.boolean().optional(),
+  homeAddress: z.string().optional(),
+  addressLine2: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  zip: z.string().optional(),
+  country: z.string().optional(),
   notes: z.string().optional(),
   specialRequests: z.string().optional(),
-  homeAddress: z.string().optional(),
-  workAddress: z.string().optional(),
+  driverNotes: z.string().optional(),
 })
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ customerId: string }> }
 ) {
+  const auth = await requireAuth(request)
+  if (!auth.ok) return auth.response
+  const { companyId } = auth.ctx
+
   try {
     const { customerId } = await params
-    const customer = await prisma.customer.findUnique({
-      where: { id: customerId },
+    const customer = await prisma.customer.findFirst({
+      where: { id: customerId, companyId },
       include: {
         trips: {
           orderBy: { pickupDate: "desc" },
@@ -30,17 +43,11 @@ export async function GET(
             vehicle: { select: { id: true, name: true } },
           },
         },
-        invoices: {
-          orderBy: { createdAt: "desc" },
-          take: 5,
-        },
+        invoices: { orderBy: { createdAt: "desc" }, take: 5 },
       },
     })
 
-    if (!customer) {
-      return NextResponse.json({ error: "Customer not found" }, { status: 404 })
-    }
-
+    if (!customer) return NextResponse.json({ error: "Customer not found" }, { status: 404 })
     return NextResponse.json(customer)
   } catch (error) {
     console.error("GET /api/customers/[id] error:", error)
@@ -52,19 +59,21 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ customerId: string }> }
 ) {
+  const auth = await requireAuth(request)
+  if (!auth.ok) return auth.response
+  const { companyId } = auth.ctx
+
   try {
     const { customerId } = await params
+    const existing = await prisma.customer.findFirst({ where: { id: customerId, companyId } })
+    if (!existing) return NextResponse.json({ error: "Customer not found" }, { status: 404 })
+
     const body = await request.json()
     const data = updateCustomerSchema.parse(body)
-
     const customer = await prisma.customer.update({
       where: { id: customerId },
-      data: {
-        ...data,
-        email: data.email || null,
-      },
+      data: { ...data, email: data.email || null },
     })
-
     return NextResponse.json(customer)
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -76,11 +85,17 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ customerId: string }> }
 ) {
+  const auth = await requireAuth(request)
+  if (!auth.ok) return auth.response
+  const { companyId } = auth.ctx
+
   try {
     const { customerId } = await params
+    const existing = await prisma.customer.findFirst({ where: { id: customerId, companyId } })
+    if (!existing) return NextResponse.json({ error: "Customer not found" }, { status: 404 })
     await prisma.customer.delete({ where: { id: customerId } })
     return NextResponse.json({ success: true })
   } catch (error) {

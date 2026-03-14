@@ -1,25 +1,35 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
+import { requireAuth } from "@/lib/auth-context"
 import { z } from "zod"
 
 const createCustomerSchema = z.object({
   name: z.string().min(1),
   email: z.string().email().optional().or(z.literal("")),
-  phone: z.string().min(1),
+  phone: z.string().optional(),
   company: z.string().optional(),
-  notes: z.string().optional(),
-  preferredVehicleType: z.string().optional(),
-  specialRequests: z.string().optional(),
+  isBillingContact: z.boolean().optional(),
+  isPassenger: z.boolean().optional(),
+  isBookingContact: z.boolean().optional(),
   homeAddress: z.string().optional(),
-  workAddress: z.string().optional(),
-  companyId: z.string().min(1),
+  addressLine2: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  zip: z.string().optional(),
+  country: z.string().optional(),
+  notes: z.string().optional(),
+  specialRequests: z.string().optional(),
+  driverNotes: z.string().optional(),
+  preferredVehicleType: z.string().optional(),
 })
 
 export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request)
+  if (!auth.ok) return auth.response
+  const { companyId } = auth.ctx
+
   try {
-    const { searchParams } = new URL(request.url)
-    const companyId = searchParams.get("companyId") || "demo-company"
-    const search = searchParams.get("search") || ""
+    const search = new URL(request.url).searchParams.get("search") || ""
 
     const customers = await prisma.customer.findMany({
       where: {
@@ -30,13 +40,12 @@ export async function GET(request: NextRequest) {
             { email: { contains: search, mode: "insensitive" } },
             { phone: { contains: search } },
             { company: { contains: search, mode: "insensitive" } },
+            { customerNumber: { contains: search.replace(/^#/, "") } },
           ],
         }),
       },
       orderBy: { updatedAt: "desc" },
-      include: {
-        _count: { select: { trips: true } },
-      },
+      include: { _count: { select: { trips: true } } },
     })
 
     return NextResponse.json(customers)
@@ -47,13 +56,16 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await requireAuth(request)
+  if (!auth.ok) return auth.response
+  const { companyId } = auth.ctx
+
   try {
     const body = await request.json()
     const data = createCustomerSchema.parse(body)
 
-    // Generate next customer number (starts at 1001)
     const last = await prisma.customer.findFirst({
-      where: { companyId: data.companyId, customerNumber: { not: null } },
+      where: { companyId, customerNumber: { not: null } },
       orderBy: { customerNumber: "desc" },
     })
     const nextNum = last?.customerNumber ? parseInt(last.customerNumber) + 1 : 1001
@@ -64,13 +76,21 @@ export async function POST(request: NextRequest) {
         customerNumber,
         name: data.name,
         email: data.email || null,
-        phone: data.phone,
+        phone: data.phone || null,
         company: data.company || null,
+        isBillingContact: data.isBillingContact ?? false,
+        isPassenger: data.isPassenger ?? false,
+        isBookingContact: data.isBookingContact ?? false,
+        homeAddress: data.homeAddress || null,
+        addressLine2: data.addressLine2 || null,
+        city: data.city || null,
+        state: data.state || null,
+        zip: data.zip || null,
+        country: data.country || null,
         notes: data.notes || null,
         specialRequests: data.specialRequests || null,
-        homeAddress: data.homeAddress || null,
-        workAddress: data.workAddress || null,
-        companyId: data.companyId,
+        driverNotes: data.driverNotes || null,
+        companyId,
       },
     })
 

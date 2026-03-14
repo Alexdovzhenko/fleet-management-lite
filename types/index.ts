@@ -42,6 +42,8 @@ export interface Company {
   state?: string
   zip?: string
   logo?: string
+  banner?: string
+  website?: string
   timezone: string
   createdAt: string
   updatedAt: string
@@ -84,16 +86,26 @@ export interface Vehicle {
 
 export interface Customer {
   id: string
+  customerNumber?: string
   name: string
   email?: string
-  phone: string
+  phone?: string
   company?: string
+  isBillingContact?: boolean
+  isPassenger?: boolean
+  isBookingContact?: boolean
+  homeAddress?: string
+  addressLine2?: string
+  city?: string
+  state?: string
+  zip?: string
+  country?: string
+  workAddress?: string
   notes?: string
+  specialRequests?: string
+  driverNotes?: string
   preferredDriverId?: string
   preferredVehicleType?: VehicleType
-  specialRequests?: string
-  homeAddress?: string
-  workAddress?: string
   companyId: string
   createdAt: string
   updatedAt: string
@@ -132,6 +144,7 @@ export interface Trip {
   passengerCount: number
   passengerName?: string
   passengerPhone?: string
+  passengerEmail?: string
   driverId?: string
   driver?: Driver
   vehicleId?: string
@@ -144,8 +157,10 @@ export interface Trip {
   pricingNotes?: string
   meetAndGreet: boolean
   childSeat: boolean
+  childSeatDetails?: string
   wheelchairAccess: boolean
   vip: boolean
+  clientRef?: string
   internalNotes?: string
   driverEnRouteAt?: string
   driverArrivedAt?: string
@@ -192,4 +207,66 @@ export interface Alert {
   type: 'warning' | 'error' | 'info'
   message: string
   link?: string
+}
+
+// ============ AFFILIATES ============
+
+export type AffiliateConnectionStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED'
+
+/**
+ * How the current company relates to another affiliate from their perspective:
+ * NONE          – no relationship
+ * SENT          – current company sent a request, waiting
+ * RECEIVED      – other company sent a request to us, pending response
+ * CONNECTED     – request accepted, both are connected
+ * DECLINED_BY_ME    – we declined their incoming request
+ * DECLINED_BY_THEM  – they declined our outgoing request
+ */
+export type ConnectionView =
+  | 'NONE'
+  | 'SENT'
+  | 'RECEIVED'
+  | 'CONNECTED'
+  | 'DECLINED_BY_ME'
+  | 'DECLINED_BY_THEM'
+
+export interface AffiliateProfile {
+  id: string
+  name: string
+  email: string
+  phone?: string | null
+  logo?: string | null
+  banner?: string | null
+  city?: string | null
+  state?: string | null
+  website?: string | null
+  createdAt: string
+  connectionId?: string
+  connectionStatus: ConnectionView
+  affiliateCode?: string | null  // LC-XXXXX — only present when CONNECTED
+}
+
+export interface AffiliateConnection {
+  id: string
+  senderId: string
+  receiverId: string
+  status: AffiliateConnectionStatus
+  affiliateCode?: string | null
+  sender: AffiliateProfile
+  receiver: AffiliateProfile
+  createdAt: string
+  updatedAt: string
+}
+
+// Affiliate search result used in reservation booking
+export interface AffiliateSearchResult {
+  connectionId: string
+  affiliateCode: string | null
+  id: string
+  name: string
+  email: string | null
+  phone: string | null
+  logo: string | null
+  city: string | null
+  state: string | null
 }

@@ -9,8 +9,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "FleetLite — Pro Dispatch",
-  description: "Simple, beautiful fleet management for limo operators",
+  title: "Livery Connect — Pro Dispatch",
+  description: "Simple, beautiful dispatch management for limo operators",
 }
 
 export default function RootLayout({

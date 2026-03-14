@@ -1,10 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import type { Driver } from "@/types"
 
-const COMPANY_ID = "demo-company"
-
 async function fetchDrivers(search = "", status = ""): Promise<Driver[]> {
-  const params = new URLSearchParams({ companyId: COMPANY_ID })
+  const params = new URLSearchParams()
   if (search) params.set("search", search)
   if (status) params.set("status", status)
   const res = await fetch(`/api/drivers?${params}`)
@@ -22,7 +20,7 @@ async function createDriver(data: Partial<Driver>): Promise<Driver> {
   const res = await fetch("/api/drivers", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...data, companyId: COMPANY_ID }),
+    body: JSON.stringify(data),
   })
   if (!res.ok) throw new Error("Failed to create driver")
   return res.json()

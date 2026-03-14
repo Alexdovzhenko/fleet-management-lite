@@ -23,7 +23,7 @@ function getPageTitle(pathname: string): string {
   const match = Object.keys(pageTitles)
     .filter((k) => k !== "/")
     .find((k) => pathname.startsWith(k))
-  return match ? pageTitles[match] : "Fleet Management"
+  return match ? pageTitles[match] : "Livery Connect"
 }
 
 export function Header() {

@@ -1,10 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import type { Vehicle } from "@/types"
 
-const COMPANY_ID = "demo-company"
-
 async function fetchVehicles(status = ""): Promise<Vehicle[]> {
-  const params = new URLSearchParams({ companyId: COMPANY_ID })
+  const params = new URLSearchParams()
   if (status) params.set("status", status)
   const res = await fetch(`/api/vehicles?${params}`)
   if (!res.ok) throw new Error("Failed to fetch vehicles")
@@ -15,7 +13,7 @@ async function createVehicle(data: Partial<Vehicle>): Promise<Vehicle> {
   const res = await fetch("/api/vehicles", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...data, companyId: COMPANY_ID }),
+    body: JSON.stringify(data),
   })
   if (!res.ok) throw new Error("Failed to create vehicle")
   return res.json()

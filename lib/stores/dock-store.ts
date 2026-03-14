@@ -9,11 +9,13 @@ export interface DockItem {
 }
 
 export const ALL_DOCK_ITEMS: DockItem[] = [
-  { id: "dispatch", label: "Dispatch", href: "/dispatch", iconName: "LayoutGrid" },
-  { id: "trips", label: "Trips", href: "/trips", iconName: "Route" },
-  { id: "customers", label: "Customers", href: "/customers", iconName: "Users" },
-  { id: "drivers", label: "Drivers", href: "/drivers", iconName: "UserCheck" },
-  { id: "vehicles", label: "Vehicles", href: "/vehicles", iconName: "Car" },
+  { id: "dispatch",   label: "Dispatch",   href: "/dispatch",   iconName: "LayoutGrid" },
+  { id: "trips",      label: "Trips",      href: "/trips",      iconName: "Route" },
+  { id: "customers",  label: "Customers",  href: "/customers",  iconName: "Users" },
+  { id: "drivers",    label: "Drivers",    href: "/drivers",    iconName: "UserCheck" },
+  { id: "vehicles",   label: "Vehicles",   href: "/vehicles",   iconName: "Car" },
+  { id: "affiliates", label: "Affiliates", href: "/affiliates", iconName: "Network" },
+  { id: "settings",   label: "Settings",   href: "/settings",   iconName: "Settings" },
 ]
 
 interface DockStore {

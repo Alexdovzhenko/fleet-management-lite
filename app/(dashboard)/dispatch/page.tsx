@@ -1,20 +1,22 @@
 "use client"
 
-import { useState } from "react"
-import { Plus, Filter, ChevronLeft, ChevronRight, Grid3X3 } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { Plus, Search, X, ChevronLeft, ChevronRight, Grid3X3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useTodayTrips, useCreateTrip } from "@/lib/hooks/use-trips"
+import { useTrips, useCreateTrip } from "@/lib/hooks/use-trips"
+import { useDebounce } from "@/lib/hooks/use-debounce"
 import { useDrivers } from "@/lib/hooks/use-drivers"
-import { TripCard } from "@/components/dispatch/trip-card"
-import { TripDrawer } from "@/components/dispatch/trip-drawer"
+import { TripGrid } from "@/components/dispatch/trip-grid"
+import { TripEditModal } from "@/components/dispatch/trip-edit-modal"
 import { TripForm } from "@/components/trips/trip-form"
 import { EmptyState } from "@/components/shared/empty-state"
-import { TripCardSkeleton } from "@/components/shared/loading-skeleton"
-import { format, addDays, subDays } from "date-fns"
-import { formatDate } from "@/lib/utils"
-import type { Trip, TripStatus } from "@/types"
+import { TableSkeleton } from "@/components/shared/loading-skeleton"
+import { format, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, isToday, addMonths, subMonths, startOfWeek, endOfWeek } from "date-fns"
+import { cn } from "@/lib/utils"
+import type { Trip } from "@/types"
 
 const STATUS_FILTERS: { label: string; value: string }[] = [
   { label: "All", value: "all" },
@@ -26,13 +28,46 @@ const STATUS_FILTERS: { label: string; value: string }[] = [
 ]
 
 export default function DispatchPage() {
+  const router = useRouter()
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null)
   const [statusFilter, setStatusFilter] = useState("all")
   const [driverFilter, setDriverFilter] = useState("all")
   const [showNewTrip, setShowNewTrip] = useState(false)
+  const [search, setSearch] = useState("")
+  const [showCalendar, setShowCalendar] = useState(false)
+  const [calendarMonth, setCalendarMonth] = useState(new Date())
+  const [showSpecificDate, setShowSpecificDate] = useState(false)
+  const calendarRef = useRef<HTMLDivElement>(null)
+  const searchRef = useRef<HTMLInputElement>(null)
+  const debouncedSearch = useDebounce(search, 300)
+  const isSearching = debouncedSearch.length > 0
 
-  const { data: trips, isLoading } = useTodayTrips()
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (calendarRef.current && !calendarRef.current.contains(e.target as Node)) {
+        setShowCalendar(false)
+        setShowSpecificDate(false)
+      }
+    }
+    if (showCalendar) document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [showCalendar])
+
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape" && document.activeElement === searchRef.current) {
+        setSearch("")
+        searchRef.current?.blur()
+      }
+    }
+    document.addEventListener("keydown", handleKey)
+    return () => document.removeEventListener("keydown", handleKey)
+  }, [])
+
+  const { data: trips, isLoading } = useTrips(
+    isSearching ? { search: debouncedSearch } : { date: selectedDate }
+  )
   const { data: drivers } = useDrivers()
   const createTrip = useCreateTrip()
 
@@ -76,12 +111,79 @@ export default function DispatchPage() {
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <button
-            onClick={() => setSelectedDate(new Date())}
-            className="text-sm font-medium px-3 py-1 hover:bg-gray-50 rounded"
-          >
-            {formatDate(selectedDate)}
-          </button>
+          <div className="relative" ref={calendarRef}>
+            <button
+              onClick={() => { setShowCalendar((s) => !s); setCalendarMonth(selectedDate) }}
+              className="text-sm font-medium px-3 py-1 hover:bg-gray-50 rounded min-w-[96px] text-center"
+            >
+              {format(selectedDate, "MM/dd/yyyy")}
+            </button>
+            {showCalendar && (
+              <div className="absolute top-full left-0 mt-2 z-50 bg-white border rounded-xl shadow-lg overflow-hidden">
+                {!showSpecificDate ? (
+                  <div className="py-1 w-44">
+                    {[
+                      { label: "Today", action: () => { setSelectedDate(new Date()); setShowCalendar(false) } },
+                      { label: "Tomorrow", action: () => { setSelectedDate(addDays(new Date(), 1)); setShowCalendar(false) } },
+                      { label: "Yesterday", action: () => { setSelectedDate(subDays(new Date(), 1)); setShowCalendar(false) } },
+                    ].map(({ label, action }) => (
+                      <button key={label} onClick={action} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors">
+                        {label}
+                      </button>
+                    ))}
+                    <div className="border-t my-1" />
+                    <button
+                      onClick={() => { setShowSpecificDate(true); setCalendarMonth(selectedDate) }}
+                      className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between"
+                    >
+                      Specific Date <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="p-3 w-72">
+                    <div className="flex items-center gap-2 mb-3">
+                      <button onClick={() => setShowSpecificDate(false)} className="p-1 hover:bg-gray-100 rounded">
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <span className="text-sm font-semibold">Specific Date</span>
+                    </div>
+                    <div className="flex items-center justify-between mb-2">
+                      <button onClick={() => setCalendarMonth((m) => subMonths(m, 1))} className="p-1 hover:bg-gray-100 rounded">
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <span className="text-sm font-medium">{format(calendarMonth, "MMMM yyyy")}</span>
+                      <button onClick={() => setCalendarMonth((m) => addMonths(m, 1))} className="p-1 hover:bg-gray-100 rounded">
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-7 mb-1">
+                      {["Su","Mo","Tu","We","Th","Fr","Sa"].map((d) => (
+                        <div key={d} className="text-center text-xs text-gray-400 font-medium py-1">{d}</div>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-7">
+                      {Array.from({ length: getDay(startOfMonth(calendarMonth)) }).map((_, i) => (
+                        <div key={`e-${i}`} />
+                      ))}
+                      {eachDayOfInterval({ start: startOfMonth(calendarMonth), end: endOfMonth(calendarMonth) }).map((day) => (
+                        <button
+                          key={day.toISOString()}
+                          onClick={() => { setSelectedDate(day); setShowCalendar(false); setShowSpecificDate(false) }}
+                          className={cn(
+                            "text-center text-sm py-1 rounded transition-colors hover:bg-blue-50",
+                            isSameDay(day, selectedDate) && "bg-blue-600 text-white hover:bg-blue-600",
+                            isToday(day) && !isSameDay(day, selectedDate) && "font-semibold text-blue-600"
+                          )}
+                        >
+                          {format(day, "d")}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           <Button
             variant="ghost"
             size="icon"
@@ -118,7 +220,40 @@ export default function DispatchPage() {
           </SelectContent>
         </Select>
 
-        <div className="flex-1" />
+        {/* Search */}
+        <div className="relative flex-1 min-w-[180px] max-w-xs">
+          <Search className={cn(
+            "absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none transition-colors duration-150",
+            search ? "text-blue-500" : "text-gray-400"
+          )} />
+          <input
+            ref={searchRef}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by confirmation #, address, customer…"
+            className={cn(
+              "w-full h-9 pl-9 pr-3 text-sm rounded-lg border bg-white outline-none transition-all duration-150 text-gray-900 placeholder:text-gray-400",
+              search
+                ? "pr-16 border-blue-300 ring-2 ring-blue-100"
+                : "border-gray-200 hover:border-gray-300"
+            )}
+          />
+          {search && (
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+              {!isLoading && (
+                <span className="text-xs text-gray-400 whitespace-nowrap">
+                  {filteredTrips.length}
+                </span>
+              )}
+              <button
+                onClick={() => { setSearch(""); searchRef.current?.focus() }}
+                className="w-4 h-4 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors flex-shrink-0"
+              >
+                <X className="w-2.5 h-2.5 text-gray-600" />
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Quick stats */}
         <div className="flex items-center gap-3 text-xs text-gray-500">
@@ -132,7 +267,7 @@ export default function DispatchPage() {
         </div>
 
         <Button
-          onClick={() => setShowNewTrip(true)}
+          onClick={() => router.push("/trips/new")}
           className="text-white gap-2 h-9"
           style={{ backgroundColor: "#2563EB" }}
         >
@@ -143,34 +278,26 @@ export default function DispatchPage() {
 
       {/* Trip Grid */}
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <TripCardSkeleton key={i} />
-          ))}
-        </div>
+        <TableSkeleton rows={8} />
       ) : !filteredTrips.length ? (
         <EmptyState
           icon={Grid3X3}
-          title={statusFilter === "all" && driverFilter === "all" ? "No trips today" : "No trips match filters"}
-          description={statusFilter === "all" && driverFilter === "all" ? "Schedule a trip to get started." : "Try adjusting your filters."}
-          actionLabel={statusFilter === "all" && driverFilter === "all" ? "Schedule Trip" : undefined}
-          onAction={() => setShowNewTrip(true)}
+          title={isSearching ? "No reservations found" : statusFilter === "all" && driverFilter === "all" ? "No trips scheduled" : "No trips match filters"}
+          description={isSearching ? "Try a different name, address, or reservation number." : statusFilter === "all" && driverFilter === "all" ? "Schedule a trip to get started." : "Try adjusting your filters."}
+          actionLabel={!isSearching && statusFilter === "all" && driverFilter === "all" ? "Schedule Trip" : undefined}
+          onAction={() => router.push("/trips/new")}
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {filteredTrips.map((trip) => (
-            <TripCard
-              key={trip.id}
-              trip={trip}
-              isSelected={selectedTrip?.id === trip.id}
-              onClick={() => setSelectedTrip(selectedTrip?.id === trip.id ? null : trip)}
-            />
-          ))}
-        </div>
+        <TripGrid
+          trips={filteredTrips}
+          selectedTripId={selectedTrip?.id}
+          onSelect={(trip) => setSelectedTrip(selectedTrip?.id === trip.id ? null : trip)}
+          showDate={isSearching}
+        />
       )}
 
-      {/* Trip Detail Drawer */}
-      <TripDrawer
+      {/* Trip Edit Modal */}
+      <TripEditModal
         trip={selectedTrip}
         open={!!selectedTrip}
         onClose={() => setSelectedTrip(null)}
