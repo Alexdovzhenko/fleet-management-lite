@@ -418,7 +418,7 @@ function DriverPickerCard({
       ) : (
         <button
           type="button"
-          onClick={openDropdown}
+          onClick={() => open ? setOpen(false) : openDropdown()}
           className="w-full flex items-center gap-2.5 px-3 py-2.5 border border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-indigo-300 hover:text-indigo-500 hover:bg-indigo-50/50 transition-all"
         >
           <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
@@ -520,7 +520,7 @@ function VehiclePickerCard({
       ) : (
         <button
           type="button"
-          onClick={openDropdown}
+          onClick={() => open ? setOpen(false) : openDropdown()}
           className="w-full flex items-center gap-2.5 px-3 py-2.5 border border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-slate-400 hover:text-slate-600 hover:bg-slate-50/50 transition-all"
         >
           <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
