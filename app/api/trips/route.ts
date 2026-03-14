@@ -165,6 +165,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Validation failed", details: error.issues }, { status: 400 })
     }
     console.error("POST /api/trips error:", error)
-    return NextResponse.json({ error: "Failed to create trip" }, { status: 500 })
+    const msg = error instanceof Error ? error.message : String(error)
+    return NextResponse.json({ error: "Failed to create trip", detail: msg }, { status: 500 })
   }
 }

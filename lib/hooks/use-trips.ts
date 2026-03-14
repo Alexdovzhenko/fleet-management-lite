@@ -34,7 +34,8 @@ async function createTrip(data: Partial<Trip>): Promise<Trip> {
   })
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
-    throw new Error(body.error || "Failed to create trip")
+    const msg = [body.error, body.detail].filter(Boolean).join(" — ")
+    throw new Error(msg || "Failed to create trip")
   }
   return res.json()
 }
