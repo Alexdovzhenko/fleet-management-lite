@@ -384,7 +384,11 @@ function DriverPickerCard({
   function openDropdown() {
     if (ref.current) {
       const rect = ref.current.getBoundingClientRect()
-      setDropStyle({ position: "fixed", top: rect.bottom + 4, left: rect.left, width: rect.width, zIndex: 9999 })
+      const spaceBelow = window.innerHeight - rect.bottom
+      const style: React.CSSProperties = spaceBelow < 240
+        ? { position: "fixed", bottom: window.innerHeight - rect.top + 4, left: rect.left, width: rect.width, zIndex: 9999 }
+        : { position: "fixed", top: rect.bottom + 4, left: rect.left, width: rect.width, zIndex: 9999 }
+      setDropStyle(style)
     }
     setOpen(true)
   }
@@ -483,7 +487,11 @@ function VehiclePickerCard({
   function openDropdown() {
     if (ref.current) {
       const rect = ref.current.getBoundingClientRect()
-      setDropStyle({ position: "fixed", top: rect.bottom + 4, left: rect.left, width: rect.width, zIndex: 9999 })
+      const spaceBelow = window.innerHeight - rect.bottom
+      const style: React.CSSProperties = spaceBelow < 240
+        ? { position: "fixed", bottom: window.innerHeight - rect.top + 4, left: rect.left, width: rect.width, zIndex: 9999 }
+        : { position: "fixed", top: rect.bottom + 4, left: rect.left, width: rect.width, zIndex: 9999 }
+      setDropStyle(style)
     }
     setOpen(true)
   }
