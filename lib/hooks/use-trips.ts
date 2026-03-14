@@ -32,7 +32,10 @@ async function createTrip(data: Partial<Trip>): Promise<Trip> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   })
-  if (!res.ok) throw new Error("Failed to create trip")
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error(body.error || "Failed to create trip")
+  }
   return res.json()
 }
 

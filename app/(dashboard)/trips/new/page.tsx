@@ -1322,7 +1322,7 @@ export default function NewTripPage() {
       vip:              data.vip,
     } as never, {
       onSuccess: () => setCreatedConfirmation(confirmationNumber),
-      onError: () => setSubmitError("Failed to save reservation. Please check your information and try again."),
+      onError: (err) => setSubmitError(err instanceof Error ? err.message : "Failed to save reservation. Please check your information and try again."),
     })
   }
 
@@ -1446,7 +1446,14 @@ export default function NewTripPage() {
 
       {/* ─── Body ─── */}
       <div className="overflow-y-auto flex-1 bg-[#f0f2f5]">
-        <form id="new-trip-form" onSubmit={handleSubmit(onSubmit)}>
+        <form id="new-trip-form" onSubmit={handleSubmit(onSubmit, (errs) => {
+          const labels: Record<string, string> = {
+            customerId: "Account (Bill To)", pickupDate: "Pickup Date",
+            pickupTime: "Pickup Time", tripType: "Service Type",
+          }
+          const missing = Object.keys(errs).map(k => labels[k] || k).join(", ")
+          setSubmitError(`Please fill in required fields: ${missing}`)
+        })}>
           <div className="max-w-[1300px] mx-auto p-5 flex gap-5 items-start">
 
             {/* ─── Left: Main content ─── */}
