@@ -202,25 +202,22 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
             <span className="text-xs font-mono font-semibold text-blue-600">{trip.tripNumber}</span>
           </td>
         )
-      case "company":
+      case "company": {
+        const companyDisplay = trip.customer?.company || trip.customer?.name
         return (
           <td key={key} className="px-3 py-2.5 whitespace-nowrap">
-            {trip.customer?.company ? (
-              <span className="text-xs text-gray-700 truncate max-w-[130px] block">{trip.customer.company}</span>
+            {companyDisplay ? (
+              <span className="text-xs text-gray-700 truncate max-w-[130px] block">{companyDisplay}</span>
             ) : (
               <span className="text-xs text-gray-300">—</span>
             )}
           </td>
         )
+      }
       case "passenger":
         return (
           <td key={key} className="px-3 py-2.5">
-            <div className="flex flex-col min-w-0">
-              <span className="text-sm font-medium text-gray-900 truncate max-w-[150px]">{passengerDisplay}</span>
-              {trip.passengerName && trip.customer?.name && trip.passengerName !== trip.customer.name && (
-                <span className="text-xs text-gray-400 truncate max-w-[150px]">{trip.customer.name}</span>
-              )}
-            </div>
+            <span className="text-sm font-medium text-gray-900 truncate max-w-[150px] block">{passengerDisplay}</span>
           </td>
         )
       case "phone":

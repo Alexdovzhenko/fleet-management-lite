@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
       },
       orderBy: [{ pickupDate: "asc" }, { pickupTime: "asc" }],
       include: {
-        customer: { select: { id: true, name: true, phone: true, email: true } },
+        customer: { select: { id: true, name: true, phone: true, email: true, company: true } },
         driver: { select: { id: true, name: true, phone: true, avatarUrl: true } },
         vehicle: { select: { id: true, name: true, type: true } },
         stops: { orderBy: { order: "asc" } },
