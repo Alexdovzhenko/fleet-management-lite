@@ -19,6 +19,7 @@ const updateTripSchema = z.object({
   passengerCount: z.number().int().min(1).optional(),
   passengerName: z.string().optional().nullable(),
   passengerPhone: z.string().optional().nullable(),
+  customerId: z.string().optional().nullable(),
   driverId: z.string().optional().nullable(),
   vehicleId: z.string().optional().nullable(),
   price: z.number().optional().nullable(),
@@ -96,11 +97,13 @@ export async function PUT(
     }
     const extraData = data.status ? (statusTimestamps[data.status] || {}) : {}
 
+    const { customerId, ...restData } = data
     const trip = await prisma.trip.update({
       where: { id: tripId },
       data: {
-        ...data,
+        ...restData,
         ...extraData,
+        ...(customerId ? { customerId } : {}),
         pickupDate: data.pickupDate ? new Date(data.pickupDate) : undefined,
         flightArrival: data.flightArrival ? new Date(data.flightArrival) : undefined,
       },

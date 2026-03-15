@@ -20,8 +20,9 @@ import { useUpdateTrip } from "@/lib/hooks/use-trips"
 import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
 import { useServiceTypes } from "@/lib/hooks/use-service-types"
+import { useCustomers } from "@/lib/hooks/use-customers"
 import { formatCurrency, getTripStatusLabel, cn } from "@/lib/utils"
-import type { Trip, TripStatus, Driver, Vehicle } from "@/types"
+import type { Trip, TripStatus, Driver, Vehicle, Customer } from "@/types"
 import { format, parse, isValid } from "date-fns"
 
 // ── Status helpers ──────────────────────────────────────────────────────────
@@ -793,6 +794,10 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const [driverIdValue, setDriverIdValue] = useState("")
   const [vehicleIdValue, setVehicleIdValue] = useState("")
   const [tripTypeValue, setTripTypeValue] = useState("")
+  const [customerSearch, setCustomerSearch] = useState("")
+  const [customerPickerOpen, setCustomerPickerOpen] = useState(false)
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
+  const customerPickerRef = useRef<HTMLDivElement>(null)
   const [stops, setStops] = useState<StopEntry[]>([])
   const [stopsError, setStopsError] = useState("")
   const [saveError, setSaveError] = useState("")
@@ -807,6 +812,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   ]
   const totalChildSeats = childSeats.forward + childSeats.rear + childSeats.booster
 
+  const { data: allCustomers = [] } = useCustomers(customerSearch)
   const activeDrivers = allDrivers.filter((d) => d.status === "ACTIVE")
   const activeVehicles = allVehicles.filter((v) => v.status === "ACTIVE")
 
@@ -834,6 +840,9 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     setSaveError("")
     setStopsError("")
     setChildSeatsOpen(false)
+    setCustomerPickerOpen(false)
+    setCustomerSearch("")
+    setSelectedCustomer(trip.customer ?? null)
 
     // Parse existing child seat details
     const parsedSeats = { forward: 0, rear: 0, booster: 0 }
@@ -888,6 +897,19 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     })
   }, [trip, reset])
 
+  // Close customer picker on outside click
+  useEffect(() => {
+    if (!customerPickerOpen) return
+    function handler(e: MouseEvent) {
+      if (customerPickerRef.current && !customerPickerRef.current.contains(e.target as Node)) {
+        setCustomerPickerOpen(false)
+        setCustomerSearch("")
+      }
+    }
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [customerPickerOpen])
+
   const copyConfirmation = useCallback(() => {
     if (!trip) return
     navigator.clipboard.writeText(trip.tripNumber)
@@ -923,6 +945,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
     updateTrip.mutate({
       id: trip.id,
+      customerId:       selectedCustomer?.id ?? trip.customerId,
       tripType:         tripTypeValue as never,
       pickupDate:       isoDate,
       pickupTime:       data.pickupTime,
@@ -1011,27 +1034,85 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
               <div className="flex-1 p-5 space-y-4 min-w-0">
 
                 {/* Account */}
-                {trip.customer && (
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
-                    <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
-                      <span className="w-1 h-3 rounded-full bg-blue-400 inline-block flex-shrink-0" />Account
-                    </p>
-                    <div className="flex items-center gap-3 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
-                      <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center text-xs font-bold text-blue-700 flex-shrink-0">
-                        {getInitials(trip.customer.name)}
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
+                  <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
+                    <span className="w-1 h-3 rounded-full bg-blue-400 inline-block flex-shrink-0" />Account
+                  </p>
+                  <div ref={customerPickerRef} className="relative">
+                    {/* Current customer card + change button */}
+                    {selectedCustomer ? (
+                      <div className="flex items-center gap-3 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
+                        <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center text-xs font-bold text-blue-700 flex-shrink-0">
+                          {getInitials(selectedCustomer.name)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-semibold text-gray-900">{selectedCustomer.name}</div>
+                          {selectedCustomer.phone && <div className="text-xs text-gray-500">{selectedCustomer.phone}</div>}
+                        </div>
+                        {selectedCustomer.phone && (
+                          <a href={`tel:${selectedCustomer.phone}`} onClick={(e) => e.stopPropagation()}
+                            className="flex items-center gap-1.5 text-blue-600 hover:underline text-xs flex-shrink-0">
+                            <Phone className="w-3.5 h-3.5" />{selectedCustomer.phone}
+                          </a>
+                        )}
+                        <button type="button"
+                          onClick={() => { setCustomerPickerOpen(true); setCustomerSearch("") }}
+                          className="ml-1 text-[11px] text-blue-500 hover:text-blue-700 font-semibold flex-shrink-0 underline underline-offset-2">
+                          Change
+                        </button>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-gray-900">{trip.customer.name}</div>
-                        {trip.customer.phone && <div className="text-xs text-gray-500">{trip.customer.phone}</div>}
+                    ) : (
+                      <button type="button"
+                        onClick={() => { setCustomerPickerOpen(true); setCustomerSearch("") }}
+                        className="w-full flex items-center gap-2 border border-dashed border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-400 hover:border-blue-400 hover:text-blue-500 transition-colors">
+                        <User className="w-4 h-4" />
+                        Assign an account…
+                      </button>
+                    )}
+
+                    {/* Search dropdown */}
+                    {customerPickerOpen && (
+                      <div className="absolute left-0 right-0 top-full mt-1.5 z-50 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
+                        <div className="p-2 border-b border-gray-100">
+                          <input
+                            autoFocus
+                            type="text"
+                            value={customerSearch}
+                            onChange={(e) => setCustomerSearch(e.target.value)}
+                            placeholder="Search accounts…"
+                            className="w-full text-sm px-3 py-2 rounded-lg border border-gray-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400"
+                          />
+                        </div>
+                        <div className="max-h-52 overflow-y-auto">
+                          {allCustomers.length === 0 ? (
+                            <p className="text-xs text-gray-400 text-center py-4">No accounts found</p>
+                          ) : (
+                            allCustomers.map((c) => (
+                              <button key={c.id} type="button"
+                                onClick={() => { setSelectedCustomer(c); setCustomerPickerOpen(false); setCustomerSearch("") }}
+                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 text-left transition-colors">
+                                <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-700 flex-shrink-0">
+                                  {getInitials(c.name)}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-sm font-medium text-gray-900 truncate">{c.name}</div>
+                                  {c.phone && <div className="text-xs text-gray-400">{c.phone}</div>}
+                                </div>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                        <div className="p-2 border-t border-gray-100">
+                          <button type="button"
+                            onClick={() => { setCustomerPickerOpen(false); setCustomerSearch("") }}
+                            className="w-full text-xs text-gray-400 hover:text-gray-600 py-1">
+                            Cancel
+                          </button>
+                        </div>
                       </div>
-                      {trip.customer.phone && (
-                        <a href={`tel:${trip.customer.phone}`} className="flex items-center gap-1.5 text-blue-600 hover:underline text-xs flex-shrink-0">
-                          <Phone className="w-3.5 h-3.5" />{trip.customer.phone}
-                        </a>
-                      )}
-                    </div>
+                    )}
                   </div>
-                )}
+                </div>
 
                 {/* Schedule */}
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
