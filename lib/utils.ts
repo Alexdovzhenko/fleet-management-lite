@@ -19,8 +19,12 @@ export function formatDateTime(date: string | Date): string {
   return format(d, "MMM d 'at' h:mm a")
 }
 
-export function formatTime(time: string): string {
+export function formatTime(time: string | null | undefined): string {
+  if (!time) return ""
+  // Already includes AM/PM — return as-is (trim any extra whitespace)
+  if (/[AaPp][Mm]/.test(time)) return time.trim()
   const [hours, minutes] = time.split(":").map(Number)
+  if (isNaN(hours) || isNaN(minutes)) return time
   const period = hours >= 12 ? "PM" : "AM"
   const displayHours = hours % 12 || 12
   return `${displayHours}:${minutes.toString().padStart(2, "0")} ${period}`
@@ -65,15 +69,15 @@ export function generateInvoiceNumber(): string {
 
 export function getTripStatusLabel(status: TripStatus): string {
   const labels: Record<TripStatus, string> = {
-    QUOTE: "Quote",
-    CONFIRMED: "Confirmed",
-    DISPATCHED: "Dispatched",
-    DRIVER_EN_ROUTE: "En Route",
-    DRIVER_ARRIVED: "Arrived",
-    IN_PROGRESS: "In Progress",
-    COMPLETED: "Completed",
-    CANCELLED: "Cancelled",
-    NO_SHOW: "No Show",
+    QUOTE:           "Quote",
+    CONFIRMED:       "Assigned",
+    DISPATCHED:      "Dispatched",
+    DRIVER_EN_ROUTE: "On the Way",
+    DRIVER_ARRIVED:  "On Location",
+    IN_PROGRESS:     "POB",
+    COMPLETED:       "Completed",
+    CANCELLED:       "Cancelled",
+    NO_SHOW:         "No Show",
   }
   return labels[status]
 }
