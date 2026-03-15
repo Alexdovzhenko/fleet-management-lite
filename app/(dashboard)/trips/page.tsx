@@ -12,16 +12,15 @@ import { TripEditModal } from "@/components/dispatch/trip-edit-modal"
 import { EmptyState } from "@/components/shared/empty-state"
 import { TableSkeleton } from "@/components/shared/loading-skeleton"
 import { formatDate, formatTime, truncateAddress, formatCurrency } from "@/lib/utils"
-import { useDebounce } from "@/lib/hooks/use-debounce"
 import type { Trip } from "@/types"
 
 export default function TripsPage() {
   const [search, setSearch] = useState("")
+  const [committed, setCommitted] = useState("")
   const [showForm, setShowForm] = useState(false)
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null)
-  const debouncedSearch = useDebounce(search, 300)
 
-  const { data: trips, isLoading } = useTrips({ search: debouncedSearch })
+  const { data: trips, isLoading } = useTrips({ search: committed })
   const createTrip = useCreateTrip()
 
   function handleCreate(data: object) {
@@ -38,14 +37,25 @@ export default function TripsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by confirmation #, address, customer…"
-            className="pl-9"
-          />
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") setCommitted(search) }}
+              placeholder=""
+              className="pl-9 w-64"
+            />
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setCommitted(search)}
+            className="h-9 px-4 text-sm font-medium"
+          >
+            Find
+          </Button>
         </div>
         <Button
           onClick={() => setShowForm(true)}
