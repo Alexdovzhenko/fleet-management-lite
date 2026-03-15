@@ -156,7 +156,7 @@ function CreateAccountDialog({ onClose, onCreated }: { onClose: () => void; onCr
   )
 }
 
-function CustomerSearch({ onSelect, error }: { onSelect: (c: Customer) => void; error?: string }) {
+function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) => void; onClear?: () => void; error?: string }) {
   const [query, setQuery] = useState("")
   const [selected, setSelected] = useState<Customer | null>(null)
   const [selectedIsAffiliate, setSelectedIsAffiliate] = useState(false)
@@ -221,6 +221,7 @@ function CustomerSearch({ onSelect, error }: { onSelect: (c: Customer) => void; 
     setSelectedIsAffiliate(false)
     setQuery("")
     setOpen(false)
+    onClear?.()
   }
 
   const hasCustomers = customerResults.length > 0
@@ -1230,6 +1231,7 @@ export default function NewTripPage() {
   const { data: serviceTypes = [] } = useServiceTypes()
   const enabledTypes = serviceTypes.filter((t) => t.isEnabled)
 
+  const [selectedAccount, setSelectedAccount] = useState<Customer | null>(null)
   const [tripTypeValue, setTripTypeValue] = useState("ONE_WAY")
   const [driverIdValue, setDriverIdValue] = useState("")
   const [vehicleIdValue, setVehicleIdValue] = useState("")
@@ -1481,12 +1483,11 @@ export default function NewTripPage() {
                   <CustomerSearch
                     onSelect={(c) => {
                       setValue("customerId", c.id)
-                      const parts = c.name.trim().split(/\s+/)
-                      setValue("passengerFirstName", parts[0] || "")
-                      setValue("passengerLastName", parts.slice(1).join(" ") || "")
-                      if (c.phone) setValue("passengerPhone", c.phone)
-                      if (c.email) setValue("passengerEmail", c.email)
-                      if (c.company) setValue("passengerCompany", c.company)
+                      setSelectedAccount(c)
+                    }}
+                    onClear={() => {
+                      setValue("customerId", "")
+                      setSelectedAccount(null)
                     }}
                     error={errors.customerId?.message}
                   />
@@ -1503,6 +1504,40 @@ export default function NewTripPage() {
                     />
                   </div>
                 </div>
+
+                {/* Booked By sub-section */}
+                {selectedAccount && (
+                  <div className="px-5 pt-4 pb-4 border-b border-gray-50">
+                    <p className="text-[10px] font-bold text-teal-600 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                      <span className="w-1 h-3 rounded-full bg-teal-400 inline-block flex-shrink-0" />
+                      Booked By
+                    </p>
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+                      <div>
+                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Name</p>
+                        <p className="text-sm font-medium text-gray-800">{selectedAccount.name}</p>
+                      </div>
+                      {selectedAccount.company && (
+                        <div>
+                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Company</p>
+                          <p className="text-sm font-medium text-gray-800">{selectedAccount.company}</p>
+                        </div>
+                      )}
+                      {selectedAccount.phone && (
+                        <div>
+                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Phone</p>
+                          <p className="text-sm text-gray-700">{selectedAccount.phone}</p>
+                        </div>
+                      )}
+                      {selectedAccount.email && (
+                        <div>
+                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Email</p>
+                          <p className="text-sm text-gray-700">{selectedAccount.email}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Passenger sub-section */}
                 <div className="px-5 pt-4 pb-5">
