@@ -1470,7 +1470,7 @@ export default function NewTripPage() {
   const enabledTypes = serviceTypes.filter((t) => t.isEnabled)
 
   const [selectedAccount, setSelectedAccount] = useState<Customer | null>(null)
-  const [tripTypeValue, setTripTypeValue] = useState("ONE_WAY")
+  const [tripTypeValue, setTripTypeValue] = useState("")
   const [driverIdValue, setDriverIdValue] = useState("")
   const [vehicleIdValue, setVehicleIdValue] = useState("")
   const [stops, setStops] = useState<StopEntry[]>([])
@@ -1487,7 +1487,7 @@ export default function NewTripPage() {
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema) as Resolver<FormData>,
     defaultValues: {
-      tripType:         "ONE_WAY",
+      tripType:         "",
       pickupDate:       "",
       pickupTime:       "",
       passengerCount:   1,
@@ -1857,7 +1857,7 @@ export default function NewTripPage() {
                         }}
                       >
                         <SelectTrigger className={`h-9 text-sm w-full ${errors.tripType ? "border-red-400" : ""}`}>
-                          <SelectValue placeholder="Select service type…" />
+                          <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           {enabledTypes.map((t) => (
