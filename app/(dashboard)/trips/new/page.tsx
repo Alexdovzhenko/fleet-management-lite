@@ -678,6 +678,472 @@ const STATE_OPTIONS = [
   { code: "YT", name: "Yukon" },
 ]
 
+const AIRPORT_OPTIONS: { iata: string; name: string; city: string; country: string }[] = [
+  // United States
+  { iata: "ATL", name: "Hartsfield-Jackson Atlanta International Airport", city: "Atlanta", country: "US" },
+  { iata: "LAX", name: "Los Angeles International Airport", city: "Los Angeles", country: "US" },
+  { iata: "ORD", name: "Chicago O'Hare International Airport", city: "Chicago", country: "US" },
+  { iata: "DFW", name: "Dallas/Fort Worth International Airport", city: "Dallas", country: "US" },
+  { iata: "DEN", name: "Denver International Airport", city: "Denver", country: "US" },
+  { iata: "JFK", name: "John F. Kennedy International Airport", city: "New York", country: "US" },
+  { iata: "SFO", name: "San Francisco International Airport", city: "San Francisco", country: "US" },
+  { iata: "SEA", name: "Seattle-Tacoma International Airport", city: "Seattle", country: "US" },
+  { iata: "LAS", name: "Harry Reid International Airport", city: "Las Vegas", country: "US" },
+  { iata: "MCO", name: "Orlando International Airport", city: "Orlando", country: "US" },
+  { iata: "EWR", name: "Newark Liberty International Airport", city: "Newark", country: "US" },
+  { iata: "MIA", name: "Miami International Airport", city: "Miami", country: "US" },
+  { iata: "PHX", name: "Phoenix Sky Harbor International Airport", city: "Phoenix", country: "US" },
+  { iata: "IAH", name: "George Bush Intercontinental Airport", city: "Houston", country: "US" },
+  { iata: "BOS", name: "Boston Logan International Airport", city: "Boston", country: "US" },
+  { iata: "MSP", name: "Minneapolis-Saint Paul International Airport", city: "Minneapolis", country: "US" },
+  { iata: "DTW", name: "Detroit Metropolitan Wayne County Airport", city: "Detroit", country: "US" },
+  { iata: "FLL", name: "Fort Lauderdale-Hollywood International Airport", city: "Fort Lauderdale", country: "US" },
+  { iata: "PHL", name: "Philadelphia International Airport", city: "Philadelphia", country: "US" },
+  { iata: "LGA", name: "LaGuardia Airport", city: "New York", country: "US" },
+  { iata: "BWI", name: "Baltimore/Washington International Airport", city: "Baltimore", country: "US" },
+  { iata: "DCA", name: "Ronald Reagan Washington National Airport", city: "Washington DC", country: "US" },
+  { iata: "IAD", name: "Washington Dulles International Airport", city: "Washington DC", country: "US" },
+  { iata: "MDW", name: "Chicago Midway International Airport", city: "Chicago", country: "US" },
+  { iata: "SAN", name: "San Diego International Airport", city: "San Diego", country: "US" },
+  { iata: "TPA", name: "Tampa International Airport", city: "Tampa", country: "US" },
+  { iata: "BNA", name: "Nashville International Airport", city: "Nashville", country: "US" },
+  { iata: "AUS", name: "Austin-Bergstrom International Airport", city: "Austin", country: "US" },
+  { iata: "STL", name: "St. Louis Lambert International Airport", city: "St. Louis", country: "US" },
+  { iata: "SLC", name: "Salt Lake City International Airport", city: "Salt Lake City", country: "US" },
+  { iata: "MSY", name: "Louis Armstrong New Orleans International Airport", city: "New Orleans", country: "US" },
+  { iata: "CLT", name: "Charlotte Douglas International Airport", city: "Charlotte", country: "US" },
+  { iata: "RSW", name: "Southwest Florida International Airport", city: "Fort Myers", country: "US" },
+  { iata: "PBI", name: "Palm Beach International Airport", city: "West Palm Beach", country: "US" },
+  { iata: "DAL", name: "Dallas Love Field", city: "Dallas", country: "US" },
+  { iata: "HOU", name: "Houston Hobby Airport", city: "Houston", country: "US" },
+  { iata: "MCI", name: "Kansas City International Airport", city: "Kansas City", country: "US" },
+  { iata: "OAK", name: "Oakland International Airport", city: "Oakland", country: "US" },
+  { iata: "SJC", name: "San Jose International Airport", city: "San Jose", country: "US" },
+  { iata: "BUR", name: "Hollywood Burbank Airport", city: "Burbank", country: "US" },
+  { iata: "SNA", name: "John Wayne Airport", city: "Orange County", country: "US" },
+  { iata: "LGB", name: "Long Beach Airport", city: "Long Beach", country: "US" },
+  { iata: "ONT", name: "Ontario International Airport", city: "Ontario", country: "US" },
+  { iata: "SMF", name: "Sacramento International Airport", city: "Sacramento", country: "US" },
+  { iata: "RDU", name: "Raleigh-Durham International Airport", city: "Raleigh", country: "US" },
+  { iata: "MEM", name: "Memphis International Airport", city: "Memphis", country: "US" },
+  { iata: "IND", name: "Indianapolis International Airport", city: "Indianapolis", country: "US" },
+  { iata: "CMH", name: "John Glenn Columbus International Airport", city: "Columbus", country: "US" },
+  { iata: "PIT", name: "Pittsburgh International Airport", city: "Pittsburgh", country: "US" },
+  { iata: "CLE", name: "Cleveland Hopkins International Airport", city: "Cleveland", country: "US" },
+  { iata: "MKE", name: "Milwaukee Mitchell International Airport", city: "Milwaukee", country: "US" },
+  { iata: "OMA", name: "Eppley Airfield", city: "Omaha", country: "US" },
+  { iata: "BDL", name: "Bradley International Airport", city: "Hartford", country: "US" },
+  { iata: "PVD", name: "T.F. Green Airport", city: "Providence", country: "US" },
+  { iata: "BUF", name: "Buffalo Niagara International Airport", city: "Buffalo", country: "US" },
+  { iata: "ALB", name: "Albany International Airport", city: "Albany", country: "US" },
+  { iata: "ABQ", name: "Albuquerque International Sunport", city: "Albuquerque", country: "US" },
+  { iata: "TUS", name: "Tucson International Airport", city: "Tucson", country: "US" },
+  { iata: "ELP", name: "El Paso International Airport", city: "El Paso", country: "US" },
+  { iata: "PDX", name: "Portland International Airport", city: "Portland", country: "US" },
+  { iata: "RNO", name: "Reno-Tahoe International Airport", city: "Reno", country: "US" },
+  { iata: "BOI", name: "Boise Airport", city: "Boise", country: "US" },
+  { iata: "GEG", name: "Spokane International Airport", city: "Spokane", country: "US" },
+  { iata: "ANC", name: "Ted Stevens Anchorage International Airport", city: "Anchorage", country: "US" },
+  { iata: "HNL", name: "Daniel K. Inouye International Airport", city: "Honolulu", country: "US" },
+  { iata: "OGG", name: "Kahului Airport", city: "Maui", country: "US" },
+  { iata: "KOA", name: "Ellison Onizuka Kona International Airport", city: "Kona", country: "US" },
+  { iata: "LIH", name: "Lihue Airport", city: "Kauai", country: "US" },
+  { iata: "SJU", name: "Luis Muñoz Marín International Airport", city: "San Juan", country: "US" },
+  { iata: "JAX", name: "Jacksonville International Airport", city: "Jacksonville", country: "US" },
+  { iata: "SAV", name: "Savannah/Hilton Head International Airport", city: "Savannah", country: "US" },
+  { iata: "CHS", name: "Charleston International Airport", city: "Charleston", country: "US" },
+  { iata: "MYR", name: "Myrtle Beach International Airport", city: "Myrtle Beach", country: "US" },
+  { iata: "GSP", name: "Greenville-Spartanburg International Airport", city: "Greenville", country: "US" },
+  { iata: "AVL", name: "Asheville Regional Airport", city: "Asheville", country: "US" },
+  { iata: "ORF", name: "Norfolk International Airport", city: "Norfolk", country: "US" },
+  { iata: "RIC", name: "Richmond International Airport", city: "Richmond", country: "US" },
+  { iata: "PSP", name: "Palm Springs International Airport", city: "Palm Springs", country: "US" },
+  { iata: "SRQ", name: "Sarasota Bradenton International Airport", city: "Sarasota", country: "US" },
+  { iata: "PIE", name: "St. Pete-Clearwater International Airport", city: "St. Petersburg", country: "US" },
+  { iata: "DAB", name: "Daytona Beach International Airport", city: "Daytona Beach", country: "US" },
+  { iata: "PNS", name: "Pensacola International Airport", city: "Pensacola", country: "US" },
+  { iata: "TLH", name: "Tallahassee International Airport", city: "Tallahassee", country: "US" },
+  { iata: "VPS", name: "Destin-Fort Walton Beach Airport", city: "Fort Walton Beach", country: "US" },
+  { iata: "BZN", name: "Bozeman Yellowstone International Airport", city: "Bozeman", country: "US" },
+  { iata: "HPN", name: "Westchester County Airport", city: "White Plains", country: "US" },
+  { iata: "ISP", name: "Long Island MacArthur Airport", city: "Islip", country: "US" },
+  { iata: "FAT", name: "Fresno Yosemite International Airport", city: "Fresno", country: "US" },
+  // Canada
+  { iata: "YYZ", name: "Toronto Pearson International Airport", city: "Toronto", country: "CA" },
+  { iata: "YUL", name: "Montréal-Pierre Elliott Trudeau International Airport", city: "Montreal", country: "CA" },
+  { iata: "YVR", name: "Vancouver International Airport", city: "Vancouver", country: "CA" },
+  { iata: "YYC", name: "Calgary International Airport", city: "Calgary", country: "CA" },
+  { iata: "YEG", name: "Edmonton International Airport", city: "Edmonton", country: "CA" },
+  { iata: "YOW", name: "Ottawa Macdonald-Cartier International Airport", city: "Ottawa", country: "CA" },
+  { iata: "YHZ", name: "Halifax Stanfield International Airport", city: "Halifax", country: "CA" },
+  { iata: "YWG", name: "Winnipeg Richardson International Airport", city: "Winnipeg", country: "CA" },
+  { iata: "YQB", name: "Québec City Jean Lesage International Airport", city: "Quebec City", country: "CA" },
+  // Mexico & Central America
+  { iata: "MEX", name: "Benito Juárez International Airport", city: "Mexico City", country: "MX" },
+  { iata: "CUN", name: "Cancún International Airport", city: "Cancun", country: "MX" },
+  { iata: "GDL", name: "Don Miguel Hidalgo y Costilla International Airport", city: "Guadalajara", country: "MX" },
+  { iata: "MTY", name: "General Mariano Escobedo International Airport", city: "Monterrey", country: "MX" },
+  { iata: "SJD", name: "Los Cabos International Airport", city: "Los Cabos", country: "MX" },
+  { iata: "PVR", name: "Licenciado Gustavo Díaz Ordaz International Airport", city: "Puerto Vallarta", country: "MX" },
+  { iata: "PTY", name: "Tocumen International Airport", city: "Panama City", country: "PA" },
+  { iata: "SJO", name: "Juan Santamaría International Airport", city: "San Jose", country: "CR" },
+  { iata: "GUA", name: "La Aurora International Airport", city: "Guatemala City", country: "GT" },
+  { iata: "SAL", name: "El Salvador International Airport", city: "San Salvador", country: "SV" },
+  // Caribbean
+  { iata: "HAV", name: "José Martí International Airport", city: "Havana", country: "CU" },
+  { iata: "NAS", name: "Lynden Pindling International Airport", city: "Nassau", country: "BS" },
+  { iata: "MBJ", name: "Sangster International Airport", city: "Montego Bay", country: "JM" },
+  { iata: "KIN", name: "Norman Manley International Airport", city: "Kingston", country: "JM" },
+  { iata: "BGI", name: "Grantley Adams International Airport", city: "Bridgetown", country: "BB" },
+  { iata: "AUA", name: "Queen Beatrix International Airport", city: "Oranjestad", country: "AW" },
+  { iata: "SXM", name: "Princess Juliana International Airport", city: "Sint Maarten", country: "SX" },
+  { iata: "POS", name: "Piarco International Airport", city: "Port of Spain", country: "TT" },
+  // South America
+  { iata: "GRU", name: "São Paulo/Guarulhos International Airport", city: "São Paulo", country: "BR" },
+  { iata: "GIG", name: "Rio de Janeiro Galeão International Airport", city: "Rio de Janeiro", country: "BR" },
+  { iata: "BSB", name: "Brasília International Airport", city: "Brasília", country: "BR" },
+  { iata: "EZE", name: "Ministro Pistarini International Airport", city: "Buenos Aires", country: "AR" },
+  { iata: "SCL", name: "Arturo Merino Benítez International Airport", city: "Santiago", country: "CL" },
+  { iata: "LIM", name: "Jorge Chávez International Airport", city: "Lima", country: "PE" },
+  { iata: "BOG", name: "El Dorado International Airport", city: "Bogota", country: "CO" },
+  { iata: "UIO", name: "Mariscal Sucre International Airport", city: "Quito", country: "EC" },
+  { iata: "GYE", name: "José Joaquín de Olmedo International Airport", city: "Guayaquil", country: "EC" },
+  { iata: "CCS", name: "Simón Bolívar International Airport", city: "Caracas", country: "VE" },
+  { iata: "MVD", name: "Carrasco International Airport", city: "Montevideo", country: "UY" },
+  // Europe
+  { iata: "LHR", name: "London Heathrow Airport", city: "London", country: "GB" },
+  { iata: "LGW", name: "London Gatwick Airport", city: "London", country: "GB" },
+  { iata: "STN", name: "London Stansted Airport", city: "London", country: "GB" },
+  { iata: "LCY", name: "London City Airport", city: "London", country: "GB" },
+  { iata: "MAN", name: "Manchester Airport", city: "Manchester", country: "GB" },
+  { iata: "EDI", name: "Edinburgh Airport", city: "Edinburgh", country: "GB" },
+  { iata: "GLA", name: "Glasgow International Airport", city: "Glasgow", country: "GB" },
+  { iata: "BHX", name: "Birmingham Airport", city: "Birmingham", country: "GB" },
+  { iata: "DUB", name: "Dublin Airport", city: "Dublin", country: "IE" },
+  { iata: "CDG", name: "Paris Charles de Gaulle Airport", city: "Paris", country: "FR" },
+  { iata: "ORY", name: "Paris Orly Airport", city: "Paris", country: "FR" },
+  { iata: "NCE", name: "Nice Côte d'Azur Airport", city: "Nice", country: "FR" },
+  { iata: "LYS", name: "Lyon-Saint Exupéry Airport", city: "Lyon", country: "FR" },
+  { iata: "MRS", name: "Marseille Provence Airport", city: "Marseille", country: "FR" },
+  { iata: "AMS", name: "Amsterdam Schiphol Airport", city: "Amsterdam", country: "NL" },
+  { iata: "FRA", name: "Frankfurt Airport", city: "Frankfurt", country: "DE" },
+  { iata: "MUC", name: "Munich Airport", city: "Munich", country: "DE" },
+  { iata: "BER", name: "Berlin Brandenburg Airport", city: "Berlin", country: "DE" },
+  { iata: "HAM", name: "Hamburg Airport", city: "Hamburg", country: "DE" },
+  { iata: "DUS", name: "Düsseldorf Airport", city: "Düsseldorf", country: "DE" },
+  { iata: "CGN", name: "Cologne Bonn Airport", city: "Cologne", country: "DE" },
+  { iata: "STR", name: "Stuttgart Airport", city: "Stuttgart", country: "DE" },
+  { iata: "ZRH", name: "Zürich Airport", city: "Zurich", country: "CH" },
+  { iata: "GVA", name: "Geneva Airport", city: "Geneva", country: "CH" },
+  { iata: "VIE", name: "Vienna International Airport", city: "Vienna", country: "AT" },
+  { iata: "BRU", name: "Brussels Airport", city: "Brussels", country: "BE" },
+  { iata: "BCN", name: "Barcelona El Prat Airport", city: "Barcelona", country: "ES" },
+  { iata: "MAD", name: "Adolfo Suárez Madrid–Barajas Airport", city: "Madrid", country: "ES" },
+  { iata: "PMI", name: "Palma de Mallorca Airport", city: "Palma", country: "ES" },
+  { iata: "AGP", name: "Málaga Airport", city: "Malaga", country: "ES" },
+  { iata: "VLC", name: "Valencia Airport", city: "Valencia", country: "ES" },
+  { iata: "FCO", name: "Rome Fiumicino Airport", city: "Rome", country: "IT" },
+  { iata: "MXP", name: "Milan Malpensa Airport", city: "Milan", country: "IT" },
+  { iata: "LIN", name: "Milan Linate Airport", city: "Milan", country: "IT" },
+  { iata: "VCE", name: "Venice Marco Polo Airport", city: "Venice", country: "IT" },
+  { iata: "NAP", name: "Naples International Airport", city: "Naples", country: "IT" },
+  { iata: "FLR", name: "Florence Peretola Airport", city: "Florence", country: "IT" },
+  { iata: "LIS", name: "Lisbon Humberto Delgado Airport", city: "Lisbon", country: "PT" },
+  { iata: "OPO", name: "Porto Francisco Sá Carneiro Airport", city: "Porto", country: "PT" },
+  { iata: "FAO", name: "Faro Airport", city: "Faro", country: "PT" },
+  { iata: "ATH", name: "Athens International Airport", city: "Athens", country: "GR" },
+  { iata: "HER", name: "Heraklion Nikos Kazantzakis Airport", city: "Heraklion", country: "GR" },
+  { iata: "RHO", name: "Rhodes Diagoras Airport", city: "Rhodes", country: "GR" },
+  { iata: "SKG", name: "Thessaloniki Macedonia International Airport", city: "Thessaloniki", country: "GR" },
+  { iata: "IST", name: "Istanbul Airport", city: "Istanbul", country: "TR" },
+  { iata: "SAW", name: "Istanbul Sabiha Gökçen International Airport", city: "Istanbul", country: "TR" },
+  { iata: "AYT", name: "Antalya Airport", city: "Antalya", country: "TR" },
+  { iata: "ESB", name: "Ankara Esenboğa Airport", city: "Ankara", country: "TR" },
+  { iata: "CPH", name: "Copenhagen Airport", city: "Copenhagen", country: "DK" },
+  { iata: "OSL", name: "Oslo Gardermoen Airport", city: "Oslo", country: "NO" },
+  { iata: "ARN", name: "Stockholm Arlanda Airport", city: "Stockholm", country: "SE" },
+  { iata: "GOT", name: "Gothenburg Landvetter Airport", city: "Gothenburg", country: "SE" },
+  { iata: "HEL", name: "Helsinki-Vantaa Airport", city: "Helsinki", country: "FI" },
+  { iata: "RIX", name: "Riga International Airport", city: "Riga", country: "LV" },
+  { iata: "TLL", name: "Lennart Meri Tallinn Airport", city: "Tallinn", country: "EE" },
+  { iata: "VNO", name: "Vilnius Airport", city: "Vilnius", country: "LT" },
+  { iata: "WAW", name: "Warsaw Chopin Airport", city: "Warsaw", country: "PL" },
+  { iata: "KRK", name: "Kraków John Paul II International Airport", city: "Krakow", country: "PL" },
+  { iata: "PRG", name: "Václav Havel Airport Prague", city: "Prague", country: "CZ" },
+  { iata: "BUD", name: "Budapest Ferenc Liszt International Airport", city: "Budapest", country: "HU" },
+  { iata: "OTP", name: "Henri Coandă International Airport", city: "Bucharest", country: "RO" },
+  { iata: "SOF", name: "Sofia Airport", city: "Sofia", country: "BG" },
+  { iata: "BEG", name: "Belgrade Nikola Tesla Airport", city: "Belgrade", country: "RS" },
+  { iata: "ZAG", name: "Zagreb Airport", city: "Zagreb", country: "HR" },
+  { iata: "SPU", name: "Split Airport", city: "Split", country: "HR" },
+  { iata: "DBV", name: "Dubrovnik Airport", city: "Dubrovnik", country: "HR" },
+  { iata: "LJU", name: "Ljubljana Jože Pučnik Airport", city: "Ljubljana", country: "SI" },
+  { iata: "SVO", name: "Sheremetyevo International Airport", city: "Moscow", country: "RU" },
+  { iata: "DME", name: "Domodedovo International Airport", city: "Moscow", country: "RU" },
+  { iata: "LED", name: "Pulkovo Airport", city: "St. Petersburg", country: "RU" },
+  { iata: "KBP", name: "Kyiv Boryspil International Airport", city: "Kyiv", country: "UA" },
+  { iata: "TBS", name: "Tbilisi International Airport", city: "Tbilisi", country: "GE" },
+  { iata: "EVN", name: "Zvartnots International Airport", city: "Yerevan", country: "AM" },
+  { iata: "GYD", name: "Heydar Aliyev International Airport", city: "Baku", country: "AZ" },
+  // Middle East
+  { iata: "DXB", name: "Dubai International Airport", city: "Dubai", country: "AE" },
+  { iata: "AUH", name: "Abu Dhabi International Airport", city: "Abu Dhabi", country: "AE" },
+  { iata: "DOH", name: "Hamad International Airport", city: "Doha", country: "QA" },
+  { iata: "BAH", name: "Bahrain International Airport", city: "Manama", country: "BH" },
+  { iata: "KWI", name: "Kuwait International Airport", city: "Kuwait City", country: "KW" },
+  { iata: "RUH", name: "King Khalid International Airport", city: "Riyadh", country: "SA" },
+  { iata: "JED", name: "King Abdulaziz International Airport", city: "Jeddah", country: "SA" },
+  { iata: "MCT", name: "Muscat International Airport", city: "Muscat", country: "OM" },
+  { iata: "AMM", name: "Queen Alia International Airport", city: "Amman", country: "JO" },
+  { iata: "BEY", name: "Beirut Rafic Hariri International Airport", city: "Beirut", country: "LB" },
+  { iata: "TLV", name: "Ben Gurion International Airport", city: "Tel Aviv", country: "IL" },
+  // Africa
+  { iata: "CAI", name: "Cairo International Airport", city: "Cairo", country: "EG" },
+  { iata: "HRG", name: "Hurghada International Airport", city: "Hurghada", country: "EG" },
+  { iata: "SSH", name: "Sharm el-Sheikh International Airport", city: "Sharm el-Sheikh", country: "EG" },
+  { iata: "CMN", name: "Mohammed V International Airport", city: "Casablanca", country: "MA" },
+  { iata: "RAK", name: "Marrakesh Menara Airport", city: "Marrakesh", country: "MA" },
+  { iata: "TUN", name: "Tunis-Carthage International Airport", city: "Tunis", country: "TN" },
+  { iata: "ADD", name: "Bole International Airport", city: "Addis Ababa", country: "ET" },
+  { iata: "NBO", name: "Jomo Kenyatta International Airport", city: "Nairobi", country: "KE" },
+  { iata: "JNB", name: "O.R. Tambo International Airport", city: "Johannesburg", country: "ZA" },
+  { iata: "CPT", name: "Cape Town International Airport", city: "Cape Town", country: "ZA" },
+  { iata: "DUR", name: "King Shaka International Airport", city: "Durban", country: "ZA" },
+  { iata: "LOS", name: "Murtala Muhammed International Airport", city: "Lagos", country: "NG" },
+  { iata: "ABV", name: "Nnamdi Azikiwe International Airport", city: "Abuja", country: "NG" },
+  { iata: "ACC", name: "Kotoka International Airport", city: "Accra", country: "GH" },
+  { iata: "DAR", name: "Julius Nyerere International Airport", city: "Dar es Salaam", country: "TZ" },
+  // Asia-Pacific
+  { iata: "NRT", name: "Narita International Airport", city: "Tokyo", country: "JP" },
+  { iata: "HND", name: "Haneda Airport", city: "Tokyo", country: "JP" },
+  { iata: "KIX", name: "Kansai International Airport", city: "Osaka", country: "JP" },
+  { iata: "NGO", name: "Chubu Centrair International Airport", city: "Nagoya", country: "JP" },
+  { iata: "CTS", name: "New Chitose Airport", city: "Sapporo", country: "JP" },
+  { iata: "FUK", name: "Fukuoka Airport", city: "Fukuoka", country: "JP" },
+  { iata: "OKA", name: "Naha Airport", city: "Okinawa", country: "JP" },
+  { iata: "ICN", name: "Incheon International Airport", city: "Seoul", country: "KR" },
+  { iata: "GMP", name: "Gimpo International Airport", city: "Seoul", country: "KR" },
+  { iata: "PUS", name: "Gimhae International Airport", city: "Busan", country: "KR" },
+  { iata: "PEK", name: "Beijing Capital International Airport", city: "Beijing", country: "CN" },
+  { iata: "PKX", name: "Beijing Daxing International Airport", city: "Beijing", country: "CN" },
+  { iata: "PVG", name: "Shanghai Pudong International Airport", city: "Shanghai", country: "CN" },
+  { iata: "SHA", name: "Shanghai Hongqiao International Airport", city: "Shanghai", country: "CN" },
+  { iata: "CAN", name: "Guangzhou Baiyun International Airport", city: "Guangzhou", country: "CN" },
+  { iata: "SZX", name: "Shenzhen Bao'an International Airport", city: "Shenzhen", country: "CN" },
+  { iata: "CTU", name: "Chengdu Tianfu International Airport", city: "Chengdu", country: "CN" },
+  { iata: "HGH", name: "Hangzhou Xiaoshan International Airport", city: "Hangzhou", country: "CN" },
+  { iata: "XMN", name: "Xiamen Gaoqi International Airport", city: "Xiamen", country: "CN" },
+  { iata: "HKG", name: "Hong Kong International Airport", city: "Hong Kong", country: "HK" },
+  { iata: "TPE", name: "Taiwan Taoyuan International Airport", city: "Taipei", country: "TW" },
+  { iata: "TSA", name: "Taipei Songshan Airport", city: "Taipei", country: "TW" },
+  { iata: "BKK", name: "Suvarnabhumi Airport", city: "Bangkok", country: "TH" },
+  { iata: "DMK", name: "Don Mueang International Airport", city: "Bangkok", country: "TH" },
+  { iata: "HKT", name: "Phuket International Airport", city: "Phuket", country: "TH" },
+  { iata: "CNX", name: "Chiang Mai International Airport", city: "Chiang Mai", country: "TH" },
+  { iata: "SGN", name: "Tan Son Nhat International Airport", city: "Ho Chi Minh City", country: "VN" },
+  { iata: "HAN", name: "Noi Bai International Airport", city: "Hanoi", country: "VN" },
+  { iata: "DAD", name: "Da Nang International Airport", city: "Da Nang", country: "VN" },
+  { iata: "REP", name: "Siem Reap International Airport", city: "Siem Reap", country: "KH" },
+  { iata: "PNH", name: "Phnom Penh International Airport", city: "Phnom Penh", country: "KH" },
+  { iata: "KUL", name: "Kuala Lumpur International Airport", city: "Kuala Lumpur", country: "MY" },
+  { iata: "PEN", name: "Penang International Airport", city: "Penang", country: "MY" },
+  { iata: "SIN", name: "Singapore Changi Airport", city: "Singapore", country: "SG" },
+  { iata: "CGK", name: "Soekarno-Hatta International Airport", city: "Jakarta", country: "ID" },
+  { iata: "DPS", name: "Ngurah Rai International Airport", city: "Bali", country: "ID" },
+  { iata: "SUB", name: "Juanda International Airport", city: "Surabaya", country: "ID" },
+  { iata: "MNL", name: "Ninoy Aquino International Airport", city: "Manila", country: "PH" },
+  { iata: "CEB", name: "Mactan-Cebu International Airport", city: "Cebu", country: "PH" },
+  { iata: "BOM", name: "Chhatrapati Shivaji Maharaj International Airport", city: "Mumbai", country: "IN" },
+  { iata: "DEL", name: "Indira Gandhi International Airport", city: "Delhi", country: "IN" },
+  { iata: "MAA", name: "Chennai International Airport", city: "Chennai", country: "IN" },
+  { iata: "BLR", name: "Kempegowda International Airport", city: "Bengaluru", country: "IN" },
+  { iata: "HYD", name: "Rajiv Gandhi International Airport", city: "Hyderabad", country: "IN" },
+  { iata: "CCU", name: "Netaji Subhas Chandra Bose International Airport", city: "Kolkata", country: "IN" },
+  { iata: "COK", name: "Cochin International Airport", city: "Kochi", country: "IN" },
+  { iata: "AMD", name: "Sardar Vallabhbhai Patel International Airport", city: "Ahmedabad", country: "IN" },
+  { iata: "CMB", name: "Bandaranaike International Airport", city: "Colombo", country: "LK" },
+  { iata: "MLE", name: "Ibrahim Nasir International Airport", city: "Malé", country: "MV" },
+  { iata: "DAC", name: "Hazrat Shahjalal International Airport", city: "Dhaka", country: "BD" },
+  { iata: "KTM", name: "Tribhuvan International Airport", city: "Kathmandu", country: "NP" },
+  { iata: "ISB", name: "Islamabad International Airport", city: "Islamabad", country: "PK" },
+  { iata: "LHE", name: "Allama Iqbal International Airport", city: "Lahore", country: "PK" },
+  { iata: "KHI", name: "Jinnah International Airport", city: "Karachi", country: "PK" },
+  { iata: "TAS", name: "Tashkent International Airport", city: "Tashkent", country: "UZ" },
+  { iata: "ALA", name: "Almaty International Airport", city: "Almaty", country: "KZ" },
+  // Australia & NZ
+  { iata: "SYD", name: "Sydney Kingsford Smith International Airport", city: "Sydney", country: "AU" },
+  { iata: "MEL", name: "Melbourne Airport", city: "Melbourne", country: "AU" },
+  { iata: "BNE", name: "Brisbane Airport", city: "Brisbane", country: "AU" },
+  { iata: "PER", name: "Perth Airport", city: "Perth", country: "AU" },
+  { iata: "ADL", name: "Adelaide Airport", city: "Adelaide", country: "AU" },
+  { iata: "OOL", name: "Gold Coast Airport", city: "Gold Coast", country: "AU" },
+  { iata: "CNS", name: "Cairns Airport", city: "Cairns", country: "AU" },
+  { iata: "AKL", name: "Auckland International Airport", city: "Auckland", country: "NZ" },
+  { iata: "WLG", name: "Wellington International Airport", city: "Wellington", country: "NZ" },
+  { iata: "CHC", name: "Christchurch International Airport", city: "Christchurch", country: "NZ" },
+  { iata: "NAN", name: "Nadi International Airport", city: "Nadi", country: "FJ" },
+]
+
+function AirportPicker({
+  codeValue, nameValue,
+  onCodeChange, onNameChange,
+  codeError,
+}: {
+  codeValue: string
+  nameValue: string
+  onCodeChange: (v: string) => void
+  onNameChange: (v: string) => void
+  codeError?: boolean
+}) {
+  const [codeQuery, setCodeQuery] = useState(codeValue)
+  const [nameQuery, setNameQuery] = useState(nameValue)
+  const [codeOpen, setCodeOpen] = useState(false)
+  const [nameOpen, setNameOpen] = useState(false)
+  const [codeDropStyle, setCodeDropStyle] = useState<React.CSSProperties>({})
+  const [nameDropStyle, setNameDropStyle] = useState<React.CSSProperties>({})
+  const codeRef = useRef<HTMLDivElement>(null)
+  const nameRef = useRef<HTMLDivElement>(null)
+  const codeDropRef = useRef<HTMLDivElement>(null)
+  const nameDropRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => { setCodeQuery(codeValue) }, [codeValue])
+  useEffect(() => { setNameQuery(nameValue) }, [nameValue])
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      const t = e.target as Node
+      if (codeRef.current && !codeRef.current.contains(t) && codeDropRef.current && !codeDropRef.current.contains(t)) setCodeOpen(false)
+      if (nameRef.current && !nameRef.current.contains(t) && nameDropRef.current && !nameDropRef.current.contains(t)) setNameOpen(false)
+    }
+    document.addEventListener("mousedown", handle)
+    return () => document.removeEventListener("mousedown", handle)
+  }, [])
+
+  const codeFiltered = codeQuery.trim()
+    ? AIRPORT_OPTIONS.filter((a) =>
+        a.iata.toLowerCase().startsWith(codeQuery.toLowerCase()) ||
+        a.iata.toLowerCase().includes(codeQuery.toLowerCase()) ||
+        a.city.toLowerCase().includes(codeQuery.toLowerCase())
+      ).slice(0, 10)
+    : AIRPORT_OPTIONS.slice(0, 10)
+
+  const nameFiltered = nameQuery.trim()
+    ? AIRPORT_OPTIONS.filter((a) =>
+        a.name.toLowerCase().includes(nameQuery.toLowerCase()) ||
+        a.city.toLowerCase().includes(nameQuery.toLowerCase()) ||
+        a.iata.toLowerCase().includes(nameQuery.toLowerCase())
+      ).slice(0, 10)
+    : []
+
+  function openCodeDrop() {
+    if (codeRef.current) {
+      const rect = codeRef.current.getBoundingClientRect()
+      const spaceBelow = window.innerHeight - rect.bottom
+      const style: React.CSSProperties = spaceBelow < 250
+        ? { position: "fixed", bottom: window.innerHeight - rect.top + 4, left: rect.left, minWidth: Math.max(rect.width, 320), zIndex: 9999 }
+        : { position: "fixed", top: rect.bottom + 4, left: rect.left, minWidth: Math.max(rect.width, 320), zIndex: 9999 }
+      setCodeDropStyle(style)
+    }
+    setCodeOpen(true)
+  }
+
+  function openNameDrop() {
+    if (nameRef.current) {
+      const rect = nameRef.current.getBoundingClientRect()
+      const spaceBelow = window.innerHeight - rect.bottom
+      const style: React.CSSProperties = spaceBelow < 250
+        ? { position: "fixed", bottom: window.innerHeight - rect.top + 4, left: rect.left, minWidth: Math.max(rect.width, 360), zIndex: 9999 }
+        : { position: "fixed", top: rect.bottom + 4, left: rect.left, minWidth: Math.max(rect.width, 360), zIndex: 9999 }
+      setNameDropStyle(style)
+    }
+    setNameOpen(true)
+  }
+
+  function selectAirport(airport: typeof AIRPORT_OPTIONS[0]) {
+    setCodeQuery(airport.iata)
+    setNameQuery(airport.name)
+    onCodeChange(airport.iata)
+    onNameChange(airport.name)
+    setCodeOpen(false)
+    setNameOpen(false)
+  }
+
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      {/* Code field */}
+      <div className="space-y-1.5">
+        <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airport Code</Label>
+        <div ref={codeRef} className="relative">
+          <input
+            value={codeQuery}
+            onChange={(e) => { setCodeQuery(e.target.value); onCodeChange(e.target.value); openCodeDrop() }}
+            onFocus={openCodeDrop}
+            autoComplete="new-password"
+            className={`w-full h-9 text-sm border rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-gray-800 ${codeError ? "border-red-400" : "border-gray-200"}`}
+          />
+          {codeOpen && codeFiltered.length > 0 && createPortal(
+            <div ref={codeDropRef} style={codeDropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+              <div className="max-h-60 overflow-y-auto">
+                {codeFiltered.map((a) => (
+                  <button
+                    key={a.iata}
+                    type="button"
+                    onMouseDown={(e) => { e.preventDefault(); selectAirport(a) }}
+                    className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors flex items-center gap-2.5 ${a.iata === codeValue ? "bg-blue-50" : ""}`}
+                  >
+                    <span className="text-xs font-mono font-bold text-gray-900 w-8 flex-shrink-0">{a.iata}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs text-gray-700 truncate">{a.name}</div>
+                      <div className="text-[10px] text-gray-400">{a.city}, {a.country}</div>
+                    </div>
+                    {a.iata === codeValue && <Check className="w-3 h-3 text-blue-500 flex-shrink-0" />}
+                  </button>
+                ))}
+              </div>
+            </div>,
+            document.body
+          )}
+        </div>
+      </div>
+      {/* Name field */}
+      <div className="space-y-1.5">
+        <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airport Name</Label>
+        <div ref={nameRef} className="relative">
+          <input
+            value={nameQuery}
+            onChange={(e) => { setNameQuery(e.target.value); onNameChange(e.target.value); if (e.target.value) { openNameDrop() } else { setNameOpen(false) } }}
+            onFocus={() => { if (nameQuery) openNameDrop() }}
+            autoComplete="new-password"
+            className="w-full h-9 text-sm border border-gray-200 rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-gray-800"
+          />
+          {nameOpen && nameFiltered.length > 0 && createPortal(
+            <div ref={nameDropRef} style={nameDropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+              <div className="max-h-60 overflow-y-auto">
+                {nameFiltered.map((a) => (
+                  <button
+                    key={a.iata}
+                    type="button"
+                    onMouseDown={(e) => { e.preventDefault(); selectAirport(a) }}
+                    className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors flex items-center gap-2.5 ${a.iata === codeValue ? "bg-blue-50" : ""}`}
+                  >
+                    <span className="text-xs font-mono font-bold text-gray-900 w-8 flex-shrink-0">{a.iata}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs text-gray-700 truncate">{a.name}</div>
+                      <div className="text-[10px] text-gray-400">{a.city}, {a.country}</div>
+                    </div>
+                    {a.iata === codeValue && <Check className="w-3 h-3 text-blue-500 flex-shrink-0" />}
+                  </button>
+                ))}
+              </div>
+            </div>,
+            document.body
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function StateCombobox({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState(value)
@@ -1088,18 +1554,13 @@ function RouteBuilder({
           )}
           {locType === "airport" && (
             <>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airport Code</Label>
-                  <Input value={airportCode} onChange={(e) => { setAirportCode(e.target.value); setAddError("") }}
-                    className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airport Name</Label>
-                  <Input value={airportName} onChange={(e) => { setAirportName(e.target.value); setAddError("") }}
-                    className="h-9 text-sm" autoComplete="off" />
-                </div>
-              </div>
+              <AirportPicker
+                codeValue={airportCode}
+                nameValue={airportName}
+                onCodeChange={(v) => { setAirportCode(v); setAddError("") }}
+                onNameChange={(v) => { setAirportName(v); setAddError("") }}
+                codeError={!!addError}
+              />
               <div className="grid grid-cols-[100px_1fr_120px] gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airline Code</Label>
