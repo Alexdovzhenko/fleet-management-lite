@@ -8,7 +8,7 @@ import { z } from "zod"
 import {
   X, Plane, Phone, Copy, Check, User, Car, UserCheck,
   ChevronDown, MapPin, Building2, Ship, Plus, Star,
-  AlertTriangle,
+  AlertTriangle, Baby,
 } from "lucide-react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -797,6 +797,15 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const [stopsError, setStopsError] = useState("")
   const [saveError, setSaveError] = useState("")
   const [notesTab, setNotesTab] = useState<"trip" | "internal">("trip")
+  const [childSeats, setChildSeats] = useState({ forward: 0, rear: 0, booster: 0 })
+  const [childSeatsOpen, setChildSeatsOpen] = useState(false)
+
+  const CHILD_SEAT_TYPES = [
+    { key: "forward" as const, label: "Forward Facing" },
+    { key: "rear"    as const, label: "Rear Facing"    },
+    { key: "booster" as const, label: "Booster"        },
+  ]
+  const totalChildSeats = childSeats.forward + childSeats.rear + childSeats.booster
 
   const activeDrivers = allDrivers.filter((d) => d.status === "ACTIVE")
   const activeVehicles = allVehicles.filter((v) => v.status === "ACTIVE")
@@ -824,6 +833,21 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     setVehicleIdValue(trip.vehicleId ?? "")
     setSaveError("")
     setStopsError("")
+    setChildSeatsOpen(false)
+
+    // Parse existing child seat details
+    const parsedSeats = { forward: 0, rear: 0, booster: 0 }
+    if (trip.childSeatDetails) {
+      try {
+        const details = JSON.parse(trip.childSeatDetails) as Array<{ type: string; count: number }>
+        details.forEach(({ type, count }) => {
+          if (type === "FORWARD_FACING") parsedSeats.forward = count
+          if (type === "REAR_FACING")    parsedSeats.rear = count
+          if (type === "BOOSTER")        parsedSeats.booster = count
+        })
+      } catch { /* ignore */ }
+    }
+    setChildSeats(parsedSeats)
 
     // Initialise stops from existing trip data
     const initialStops: StopEntry[] = []
@@ -918,7 +942,12 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       notes:            data.notes || undefined,
       internalNotes:    data.internalNotes || undefined,
       meetAndGreet:     data.meetAndGreet,
-      childSeat:        data.childSeat,
+      childSeat:        totalChildSeats > 0,
+      childSeatDetails: totalChildSeats > 0 ? JSON.stringify([
+        ...(childSeats.forward > 0 ? [{ type: "FORWARD_FACING", count: childSeats.forward }] : []),
+        ...(childSeats.rear    > 0 ? [{ type: "REAR_FACING",    count: childSeats.rear    }] : []),
+        ...(childSeats.booster > 0 ? [{ type: "BOOSTER",        count: childSeats.booster }] : []),
+      ]) : undefined,
       wheelchairAccess: data.wheelchairAccess,
       vip:              data.vip,
     }, {
@@ -930,7 +959,6 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const checkboxFields = [
     { name: "vip" as const,             label: "VIP",          icon: Star },
     { name: "meetAndGreet" as const,    label: "Meet & Greet", icon: UserCheck },
-    { name: "childSeat" as const,       label: "Child Seat",   icon: null },
     { name: "wheelchairAccess" as const,label: "Wheelchair",   icon: null },
   ]
 
@@ -1058,14 +1086,6 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                   </div>
                 </div>
 
-                {/* Route */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
-                  <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                    <span className="w-1 h-3 rounded-full bg-emerald-400 inline-block flex-shrink-0" />Route
-                  </p>
-                  <RouteBuilder stops={stops} setStops={setStops} stopsError={stopsError} />
-                </div>
-
                 {/* Passenger */}
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
                   <p className="text-[10px] font-bold text-purple-500 uppercase tracking-widest mb-3 flex items-center gap-1.5">
@@ -1085,6 +1105,14 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                       <Input {...register("passengerEmail")} type="email" className="h-9 text-sm" placeholder="passenger@example.com" />
                     </div>
                   </div>
+                </div>
+
+                {/* Route */}
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
+                  <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                    <span className="w-1 h-3 rounded-full bg-emerald-400 inline-block flex-shrink-0" />Route
+                  </p>
+                  <RouteBuilder stops={stops} setStops={setStops} stopsError={stopsError} />
                 </div>
 
                 {/* Client Ref + Notes */}
@@ -1195,6 +1223,54 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                         </button>
                       )
                     })}
+                  </div>
+
+                  {/* Child Seats */}
+                  <div className="rounded-xl border border-gray-200 overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => setChildSeatsOpen((o) => !o)}
+                      className="w-full flex items-center gap-2.5 px-3 py-2.5"
+                      style={{ background: totalChildSeats > 0 ? "rgba(37,99,235,0.03)" : "white" }}
+                    >
+                      <Baby className={`w-3.5 h-3.5 flex-shrink-0 ${totalChildSeats > 0 ? "text-blue-500" : "text-gray-400"}`} />
+                      <span className={`text-xs font-semibold flex-1 text-left ${totalChildSeats > 0 ? "text-blue-700" : "text-gray-500"}`}>
+                        Child Seats
+                      </span>
+                      {totalChildSeats > 0 ? (
+                        <span className="text-[10px] font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">
+                          {totalChildSeats} seat{totalChildSeats !== 1 ? "s" : ""}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-gray-400">None</span>
+                      )}
+                      <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform flex-shrink-0 ${childSeatsOpen ? "rotate-180" : ""}`} />
+                    </button>
+                    {childSeatsOpen && (
+                      <div className="border-t border-gray-100 divide-y divide-gray-50">
+                        {CHILD_SEAT_TYPES.map(({ key, label }) => (
+                          <div key={key} className="flex items-center gap-3 px-3 py-2.5 bg-gray-50/60">
+                            <span className="text-xs text-gray-700 flex-1 font-medium">{label}</span>
+                            <div className="flex items-center gap-2">
+                              <button type="button"
+                                onClick={() => setChildSeats((s) => ({ ...s, [key]: Math.max(0, s[key] - 1) }))}
+                                disabled={childSeats[key] === 0}
+                                className="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:border-blue-300 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm leading-none">
+                                −
+                              </button>
+                              <span className={`w-5 text-center text-sm font-bold tabular-nums ${childSeats[key] > 0 ? "text-blue-700" : "text-gray-400"}`}>
+                                {childSeats[key]}
+                              </span>
+                              <button type="button"
+                                onClick={() => setChildSeats((s) => ({ ...s, [key]: s[key] + 1 }))}
+                                className="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:border-blue-300 hover:text-blue-600 transition-colors text-sm leading-none">
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </section>
 
