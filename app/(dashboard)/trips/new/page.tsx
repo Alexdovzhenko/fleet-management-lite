@@ -108,18 +108,18 @@ function CreateAccountDialog({ onClose, onCreated }: { onClose: () => void; onCr
               )}
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-gray-500">Last Name</Label>
+              <Label className="text-xs font-medium text-gray-900">Last Name</Label>
               <Input {...register("lastName")} className="h-10 text-sm" placeholder="Smith" />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-gray-500">Phone</Label>
+              <Label className="text-xs font-medium text-gray-900">Phone</Label>
               <Input {...register("phone")} type="tel" className="h-10 text-sm" placeholder="(305) 555-1234" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-gray-500">Email</Label>
+              <Label className="text-xs font-medium text-gray-900">Email</Label>
               <Input
                 {...register("email")}
                 type="email"
@@ -133,7 +133,7 @@ function CreateAccountDialog({ onClose, onCreated }: { onClose: () => void; onCr
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-xs font-medium text-gray-500">Company Name</Label>
+            <Label className="text-xs font-medium text-gray-900">Company Name</Label>
             <Input {...register("company")} className="h-10 text-sm" placeholder="Acme Corp" />
           </div>
 
@@ -400,7 +400,7 @@ function DriverPickerCard({
 
   return (
     <div ref={ref} className="space-y-1.5">
-      <Label className="text-xs font-medium text-gray-500">Driver</Label>
+      <Label className="text-xs font-medium text-gray-900">Driver</Label>
       {selected ? (
         <div className="flex items-center gap-2.5 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2.5">
           <div className="w-8 h-8 rounded-full bg-indigo-200 flex items-center justify-center text-xs font-bold text-indigo-700 flex-shrink-0">
@@ -507,7 +507,7 @@ function VehiclePickerCard({
 
   return (
     <div ref={ref} className="space-y-1.5">
-      <Label className="text-xs font-medium text-gray-500">Vehicle</Label>
+      <Label className="text-xs font-medium text-gray-900">Vehicle</Label>
       {selected ? (
         <div className="flex items-center gap-2.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
           <div className="w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0">
@@ -1032,55 +1032,55 @@ function RouteBuilder({
           {locType === "address" && (
             <>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Location Description / Name</Label>
+                <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Location Description / Name</Label>
                 <Input value={locationName} onChange={(e) => setLocationName(e.target.value)}
                   className="h-9 text-sm" autoComplete="off" />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Address 1 *</Label>
+                <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Address 1 *</Label>
                 <Input value={address1} onChange={(e) => { setAddress1(e.target.value); setAddError("") }}
                   className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Address 2</Label>
+                <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Address 2</Label>
                 <Input value={address2} onChange={(e) => setAddress2(e.target.value)}
                   className="h-9 text-sm" autoComplete="off" />
               </div>
               <div className="grid grid-cols-[2fr_90px_80px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">City</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">City</Label>
                   <Input value={city} onChange={(e) => setCity(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">State</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">State</Label>
                   <StateCombobox value={stateVal} onChange={setStateVal} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Zip</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Zip</Label>
                   <Input value={zip} onChange={(e) => setZip(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Country</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Country</Label>
                   <CountryCombobox value={country} onChange={setCountry} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Phone Number</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     type="tel" className="h-9 text-sm" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Time In</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Notes</Label>
+                <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Notes</Label>
                 <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                   className="h-8 text-xs" />
               </div>
@@ -1090,36 +1090,36 @@ function RouteBuilder({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Airport Code</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airport Code</Label>
                   <Input value={airportCode} onChange={(e) => { setAirportCode(e.target.value); setAddError("") }}
                     className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Airport Name</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airport Name</Label>
                   <Input value={airportName} onChange={(e) => { setAirportName(e.target.value); setAddError("") }}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-[100px_1fr_120px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Airline Code</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airline Code</Label>
                   <Input value={airlineCode} onChange={(e) => setAirlineCode(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Airline Name</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airline Name</Label>
                   <Input value={airlineName} onChange={(e) => setAirlineName(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Flight #</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Flight #</Label>
                   <Input value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-[120px_120px_1fr_120px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Arr/Dep</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Arr/Dep</Label>
                   <select value={arrDep} onChange={(e) => setArrDep(e.target.value)}
                     className="w-full h-9 text-sm border border-gray-200 rounded-md px-2 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
                     <option value="">Select…</option>
@@ -1128,17 +1128,17 @@ function RouteBuilder({
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Terminal/Gate</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Terminal/Gate</Label>
                   <Input value={terminalGate} onChange={(e) => setTerminalGate(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Airport Instructions</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airport Instructions</Label>
                   <Input value={airportInstructions} onChange={(e) => setAirportInstructions(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">ETA/ETD</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">ETA/ETD</Label>
                   <Input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)}
                     onBlur={(e) => setEtaEtd(formatTime(e.target.value))}
                     className="h-9 text-sm" autoComplete="off" />
@@ -1146,7 +1146,7 @@ function RouteBuilder({
               </div>
               <div className="grid grid-cols-[140px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Meet Option</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Meet Option</Label>
                   <select value={meetOption} onChange={(e) => setMeetOption(e.target.value)}
                     className="w-full h-9 text-sm border border-gray-200 rounded-md px-2 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
                     <option value="">Select…</option>
@@ -1157,19 +1157,19 @@ function RouteBuilder({
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Notes</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Notes</Label>
                   <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                     placeholder="Driver instructions, special requests…" className="h-9 text-sm" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Phone Number</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     placeholder="(305) 555-0000" type="tel" className="h-9 text-sm" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Time In</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
                     placeholder="e.g. 3:00 PM" className="h-9 text-sm" autoComplete="off" />
@@ -1181,43 +1181,43 @@ function RouteBuilder({
             <>
               <div className="grid grid-cols-[120px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Seaport Code *</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Seaport Code *</Label>
                   <Input value={seaportCode} onChange={(e) => { setSeaportCode(e.target.value.toUpperCase()); setAddError("") }}
                     placeholder="MIA" className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" maxLength={6} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Port of Call Name</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Port of Call Name</Label>
                   <Input value={portName} onChange={(e) => { setPortName(e.target.value); setAddError("") }}
                     placeholder="Port of Miami" className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Cruise Ship Name</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Cruise Ship Name</Label>
                   <Input value={cruiseShipName} onChange={(e) => setCruiseShipName(e.target.value)}
                     placeholder="Symphony of the Seas" className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Cruise Line Name</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Cruise Line Name</Label>
                   <Input value={cruiseLineName} onChange={(e) => setCruiseLineName(e.target.value)}
                     placeholder="Royal Caribbean" className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Arriving From / Departing To</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Arriving From / Departing To</Label>
                   <Input value={arrivingDepartingTo} onChange={(e) => setArrivingDepartingTo(e.target.value)}
                     placeholder="Nassau, Bahamas" className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">ETA / ETD</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">ETA / ETD</Label>
                   <Input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)}
                     onBlur={(e) => setEtaEtd(formatTime(e.target.value))}
                     placeholder="e.g. 9:00 AM" className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Seaport Instructions</Label>
+                <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Seaport Instructions</Label>
                 <Select value={seaportInstructions} onValueChange={(v) => typeof v === "string" && setSeaportInstructions(v)}>
                   <SelectTrigger className="h-9 text-sm">
                     <SelectValue placeholder="Select instructions…" />
@@ -1232,18 +1232,18 @@ function RouteBuilder({
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Notes</Label>
+                <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Notes</Label>
                 <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                   placeholder="Pier, terminal, additional instructions…" className="h-8 text-xs" />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Phone Number</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     placeholder="+1 (555) 000-0000" className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Time In</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
                     placeholder="e.g. 9:30 AM" className="h-9 text-sm" autoComplete="off" />
@@ -1255,61 +1255,61 @@ function RouteBuilder({
             <>
               <div className="grid grid-cols-[1fr_140px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Location Description / FBO Name *</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Location Description / FBO Name *</Label>
                   <Input value={locationName} onChange={(e) => { setLocationName(e.target.value); setAddError("") }}
                     className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Tail #</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Tail #</Label>
                   <Input value={tailNumber} onChange={(e) => setTailNumber(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Address 1</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Address 1</Label>
                   <Input value={address1} onChange={(e) => setAddress1(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Address 2</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Address 2</Label>
                   <Input value={address2} onChange={(e) => setAddress2(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-[2fr_90px_80px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">City</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">City</Label>
                   <Input value={city} onChange={(e) => setCity(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">State</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">State</Label>
                   <StateCombobox value={stateVal} onChange={setStateVal} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Zip</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Zip</Label>
                   <Input value={zip} onChange={(e) => setZip(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Country</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Country</Label>
                   <CountryCombobox value={country} onChange={setCountry} />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Notes</Label>
+                <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Notes</Label>
                 <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                   className="h-8 text-xs" />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Phone Number</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     type="tel" className="h-9 text-sm" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Time In</Label>
+                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
                     className="h-9 text-sm" autoComplete="off" />
@@ -1786,25 +1786,25 @@ export default function NewTripPage() {
                   </p>
                   <div className="grid grid-cols-[1fr_1fr_1fr_160px] gap-3 mb-3">
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">First Name</Label>
+                      <Label className="text-[11px] font-medium text-gray-900">First Name</Label>
                       <Input {...register("passengerFirstName")} className="h-9 text-sm" />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Last Name</Label>
+                      <Label className="text-[11px] font-medium text-gray-900">Last Name</Label>
                       <Input {...register("passengerLastName")} className="h-9 text-sm" />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Company</Label>
+                      <Label className="text-[11px] font-medium text-gray-900">Company</Label>
                       <Input {...register("passengerCompany")} className="h-9 text-sm" />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Phone</Label>
+                      <Label className="text-[11px] font-medium text-gray-900">Phone</Label>
                       <Input {...register("passengerPhone")} type="tel" className="h-9 text-sm" />
                     </div>
                   </div>
                   <div className="grid grid-cols-[260px_1fr] gap-3">
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Email</Label>
+                      <Label className="text-[11px] font-medium text-gray-900">Email</Label>
                       <Input {...register("passengerEmail")} type="email" className="h-9 text-sm" />
                     </div>
                   </div>
@@ -1824,7 +1824,7 @@ export default function NewTripPage() {
                 <div className="px-5 py-4">
                   <div className="grid grid-cols-[180px_160px_1fr_72px_72px] gap-3">
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Pickup Date</Label>
+                      <Label className="text-[11px] font-medium text-gray-900">Pickup Date</Label>
                       <DatePickerInput
                         value={watch("pickupDate") || ""}
                         onChange={(v) => setValue("pickupDate", v, { shouldValidate: true })}
@@ -1833,7 +1833,7 @@ export default function NewTripPage() {
                       {errors.pickupDate && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Pickup Time</Label>
+                      <Label className="text-[11px] font-medium text-gray-900">Pickup Time</Label>
                       <Input
                         type="text"
                         value={watch("pickupTime") || ""}
@@ -1846,7 +1846,7 @@ export default function NewTripPage() {
                       {errors.pickupTime && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Service Type</Label>
+                      <Label className="text-[11px] font-medium text-gray-900">Service Type</Label>
                       <Select
                         value={tripTypeValue}
                         onValueChange={(v) => {
@@ -1868,7 +1868,7 @@ export default function NewTripPage() {
                       {errors.tripType && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Pax</Label>
+                      <Label className="text-[11px] font-medium text-gray-900">Pax</Label>
                       <Input
                         type="number" min={1}
                         {...register("passengerCount", { valueAsNumber: true })}
@@ -1876,7 +1876,7 @@ export default function NewTripPage() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Bags</Label>
+                      <Label className="text-[11px] font-medium text-gray-900">Bags</Label>
                       <Input
                         type="number" min={0}
                         {...register("luggageCount", { valueAsNumber: true })}
@@ -1996,7 +1996,7 @@ export default function NewTripPage() {
                 <div className="px-4 py-3.5 space-y-3">
                   <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Base Fare</Label>
+                      <Label className="text-[11px] font-medium text-gray-900">Base Fare</Label>
                       <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">$</span>
                         <Input
@@ -2008,7 +2008,7 @@ export default function NewTripPage() {
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Gratuity %</Label>
+                      <Label className="text-[11px] font-medium text-gray-900">Gratuity %</Label>
                       <Input
                         type="number" min={0} max={100}
                         {...register("gratuityPercent", { valueAsNumber: true })}
