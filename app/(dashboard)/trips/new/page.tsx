@@ -1144,6 +1144,293 @@ function AirportPicker({
   )
 }
 
+const AIRLINE_OPTIONS: { iata: string; name: string; country: string }[] = [
+  // North America
+  { iata: "AA", name: "American Airlines", country: "US" },
+  { iata: "DL", name: "Delta Air Lines", country: "US" },
+  { iata: "UA", name: "United Airlines", country: "US" },
+  { iata: "WN", name: "Southwest Airlines", country: "US" },
+  { iata: "B6", name: "JetBlue Airways", country: "US" },
+  { iata: "AS", name: "Alaska Airlines", country: "US" },
+  { iata: "NK", name: "Spirit Airlines", country: "US" },
+  { iata: "F9", name: "Frontier Airlines", country: "US" },
+  { iata: "G4", name: "Allegiant Air", country: "US" },
+  { iata: "SY", name: "Sun Country Airlines", country: "US" },
+  { iata: "HA", name: "Hawaiian Airlines", country: "US" },
+  { iata: "MX", name: "Breeze Airways", country: "US" },
+  { iata: "AC", name: "Air Canada", country: "CA" },
+  { iata: "WS", name: "WestJet", country: "CA" },
+  { iata: "AM", name: "Aeromexico", country: "MX" },
+  { iata: "VB", name: "VivaAerobus", country: "MX" },
+  { iata: "Y4", name: "Volaris", country: "MX" },
+  // South America
+  { iata: "LA", name: "LATAM Airlines", country: "CL" },
+  { iata: "G3", name: "GOL Linhas Aéreas", country: "BR" },
+  { iata: "AD", name: "Azul Brazilian Airlines", country: "BR" },
+  { iata: "AR", name: "Aerolíneas Argentinas", country: "AR" },
+  { iata: "AV", name: "Avianca", country: "CO" },
+  { iata: "H2", name: "Sky Airline", country: "CL" },
+  // Europe
+  { iata: "BA", name: "British Airways", country: "GB" },
+  { iata: "VS", name: "Virgin Atlantic", country: "GB" },
+  { iata: "EZ", name: "easyJet", country: "GB" },
+  { iata: "FR", name: "Ryanair", country: "IE" },
+  { iata: "EI", name: "Aer Lingus", country: "IE" },
+  { iata: "AF", name: "Air France", country: "FR" },
+  { iata: "U2", name: "easyJet Europe", country: "FR" },
+  { iata: "TO", name: "Transavia France", country: "FR" },
+  { iata: "LH", name: "Lufthansa", country: "DE" },
+  { iata: "DE", name: "Condor", country: "DE" },
+  { iata: "EW", name: "Eurowings", country: "DE" },
+  { iata: "KL", name: "KLM Royal Dutch Airlines", country: "NL" },
+  { iata: "HV", name: "Transavia Netherlands", country: "NL" },
+  { iata: "IB", name: "Iberia", country: "ES" },
+  { iata: "VY", name: "Vueling Airlines", country: "ES" },
+  { iata: "UX", name: "Air Europa", country: "ES" },
+  { iata: "AZ", name: "ITA Airways", country: "IT" },
+  { iata: "IG", name: "Neos Air", country: "IT" },
+  { iata: "TP", name: "TAP Air Portugal", country: "PT" },
+  { iata: "LX", name: "Swiss International Air Lines", country: "CH" },
+  { iata: "OS", name: "Austrian Airlines", country: "AT" },
+  { iata: "SN", name: "Brussels Airlines", country: "BE" },
+  { iata: "SK", name: "Scandinavian Airlines", country: "SE" },
+  { iata: "DY", name: "Norwegian Air Shuttle", country: "NO" },
+  { iata: "AY", name: "Finnair", country: "FI" },
+  { iata: "TK", name: "Turkish Airlines", country: "TR" },
+  { iata: "PC", name: "Pegasus Airlines", country: "TR" },
+  { iata: "A3", name: "Aegean Airlines", country: "GR" },
+  { iata: "OK", name: "Czech Airlines", country: "CZ" },
+  { iata: "LO", name: "LOT Polish Airlines", country: "PL" },
+  { iata: "FB", name: "Bulgaria Air", country: "BG" },
+  { iata: "RO", name: "TAROM", country: "RO" },
+  { iata: "JP", name: "Adria Airways", country: "SI" },
+  { iata: "SU", name: "Aeroflot", country: "RU" },
+  { iata: "S7", name: "S7 Airlines", country: "RU" },
+  { iata: "U6", name: "Ural Airlines", country: "RU" },
+  { iata: "PS", name: "Ukraine International Airlines", country: "UA" },
+  { iata: "W6", name: "Wizz Air", country: "HU" },
+  { iata: "W9", name: "Wizz Air UK", country: "GB" },
+  { iata: "VW", name: "Aeromar", country: "MX" },
+  // Middle East
+  { iata: "EK", name: "Emirates", country: "AE" },
+  { iata: "EY", name: "Etihad Airways", country: "AE" },
+  { iata: "FZ", name: "flydubai", country: "AE" },
+  { iata: "QR", name: "Qatar Airways", country: "QA" },
+  { iata: "GF", name: "Gulf Air", country: "BH" },
+  { iata: "KU", name: "Kuwait Airways", country: "KW" },
+  { iata: "SV", name: "Saudia", country: "SA" },
+  { iata: "XY", name: "flynas", country: "SA" },
+  { iata: "WY", name: "Oman Air", country: "OM" },
+  { iata: "RJ", name: "Royal Jordanian", country: "JO" },
+  { iata: "ME", name: "Middle East Airlines", country: "LB" },
+  { iata: "LY", name: "El Al Israel Airlines", country: "IL" },
+  // Africa
+  { iata: "ET", name: "Ethiopian Airlines", country: "ET" },
+  { iata: "KQ", name: "Kenya Airways", country: "KE" },
+  { iata: "MS", name: "EgyptAir", country: "EG" },
+  { iata: "AT", name: "Royal Air Maroc", country: "MA" },
+  { iata: "SA", name: "South African Airways", country: "ZA" },
+  { iata: "FA", name: "Safair", country: "ZA" },
+  // Asia
+  { iata: "JL", name: "Japan Airlines", country: "JP" },
+  { iata: "NH", name: "All Nippon Airways", country: "JP" },
+  { iata: "MM", name: "Peach Aviation", country: "JP" },
+  { iata: "7C", name: "Jeju Air", country: "KR" },
+  { iata: "KE", name: "Korean Air", country: "KR" },
+  { iata: "OZ", name: "Asiana Airlines", country: "KR" },
+  { iata: "CA", name: "Air China", country: "CN" },
+  { iata: "MU", name: "China Eastern Airlines", country: "CN" },
+  { iata: "CZ", name: "China Southern Airlines", country: "CN" },
+  { iata: "HU", name: "Hainan Airlines", country: "CN" },
+  { iata: "3U", name: "Sichuan Airlines", country: "CN" },
+  { iata: "CX", name: "Cathay Pacific", country: "HK" },
+  { iata: "CI", name: "China Airlines", country: "TW" },
+  { iata: "BR", name: "EVA Air", country: "TW" },
+  { iata: "TG", name: "Thai Airways", country: "TH" },
+  { iata: "FD", name: "Thai AirAsia", country: "TH" },
+  { iata: "PG", name: "Bangkok Airways", country: "TH" },
+  { iata: "VN", name: "Vietnam Airlines", country: "VN" },
+  { iata: "VJ", name: "VietJet Air", country: "VN" },
+  { iata: "QH", name: "Bamboo Airways", country: "VN" },
+  { iata: "MH", name: "Malaysia Airlines", country: "MY" },
+  { iata: "AK", name: "AirAsia", country: "MY" },
+  { iata: "SQ", name: "Singapore Airlines", country: "SG" },
+  { iata: "TR", name: "Scoot", country: "SG" },
+  { iata: "MI", name: "SilkAir", country: "SG" },
+  { iata: "GA", name: "Garuda Indonesia", country: "ID" },
+  { iata: "JT", name: "Lion Air", country: "ID" },
+  { iata: "QG", name: "Citilink", country: "ID" },
+  { iata: "PR", name: "Philippine Airlines", country: "PH" },
+  { iata: "Z2", name: "Philippines AirAsia", country: "PH" },
+  { iata: "5J", name: "Cebu Pacific", country: "PH" },
+  { iata: "AI", name: "Air India", country: "IN" },
+  { iata: "6E", name: "IndiGo", country: "IN" },
+  { iata: "SG", name: "SpiceJet", country: "IN" },
+  { iata: "IX", name: "Air India Express", country: "IN" },
+  { iata: "UL", name: "SriLankan Airlines", country: "LK" },
+  { iata: "PK", name: "Pakistan International Airlines", country: "PK" },
+  { iata: "PA", name: "airblue", country: "PK" },
+  // Oceania
+  { iata: "QF", name: "Qantas", country: "AU" },
+  { iata: "JQ", name: "Jetstar Airways", country: "AU" },
+  { iata: "VA", name: "Virgin Australia", country: "AU" },
+  { iata: "NZ", name: "Air New Zealand", country: "NZ" },
+  { iata: "FJ", name: "Fiji Airways", country: "FJ" },
+  // Caribbean & Central America
+  { iata: "CM", name: "Copa Airlines", country: "PA" },
+  { iata: "BW", name: "Caribbean Airlines", country: "TT" },
+  { iata: "8J", name: "Jet2.com", country: "GB" },
+]
+
+function AirlinePicker({
+  codeValue, nameValue,
+  onCodeChange, onNameChange,
+}: {
+  codeValue: string
+  nameValue: string
+  onCodeChange: (v: string) => void
+  onNameChange: (v: string) => void
+}) {
+  const [codeQuery, setCodeQuery] = useState(codeValue)
+  const [nameQuery, setNameQuery] = useState(nameValue)
+  const [codeOpen, setCodeOpen] = useState(false)
+  const [nameOpen, setNameOpen] = useState(false)
+  const [codeDropStyle, setCodeDropStyle] = useState<React.CSSProperties>({})
+  const [nameDropStyle, setNameDropStyle] = useState<React.CSSProperties>({})
+  const codeRef = useRef<HTMLDivElement>(null)
+  const nameRef = useRef<HTMLDivElement>(null)
+  const codeDropRef = useRef<HTMLDivElement>(null)
+  const nameDropRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => { setCodeQuery(codeValue) }, [codeValue])
+  useEffect(() => { setNameQuery(nameValue) }, [nameValue])
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      const t = e.target as Node
+      if (codeRef.current && !codeRef.current.contains(t) && codeDropRef.current && !codeDropRef.current.contains(t)) setCodeOpen(false)
+      if (nameRef.current && !nameRef.current.contains(t) && nameDropRef.current && !nameDropRef.current.contains(t)) setNameOpen(false)
+    }
+    document.addEventListener("mousedown", handle)
+    return () => document.removeEventListener("mousedown", handle)
+  }, [])
+
+  const codeFiltered = codeQuery.trim()
+    ? AIRLINE_OPTIONS.filter((a) =>
+        a.iata.toLowerCase().startsWith(codeQuery.toLowerCase()) ||
+        a.iata.toLowerCase().includes(codeQuery.toLowerCase()) ||
+        a.name.toLowerCase().includes(codeQuery.toLowerCase())
+      ).slice(0, 10)
+    : AIRLINE_OPTIONS.slice(0, 10)
+
+  const nameFiltered = nameQuery.trim()
+    ? AIRLINE_OPTIONS.filter((a) =>
+        a.name.toLowerCase().includes(nameQuery.toLowerCase()) ||
+        a.iata.toLowerCase().includes(nameQuery.toLowerCase())
+      ).slice(0, 10)
+    : []
+
+  function openCodeDrop() {
+    if (codeRef.current) {
+      const rect = codeRef.current.getBoundingClientRect()
+      const spaceBelow = window.innerHeight - rect.bottom
+      const style: React.CSSProperties = spaceBelow < 250
+        ? { position: "fixed", bottom: window.innerHeight - rect.top + 4, left: rect.left, minWidth: Math.max(rect.width, 300), zIndex: 9999 }
+        : { position: "fixed", top: rect.bottom + 4, left: rect.left, minWidth: Math.max(rect.width, 300), zIndex: 9999 }
+      setCodeDropStyle(style)
+    }
+    setCodeOpen(true)
+  }
+
+  function openNameDrop() {
+    if (nameRef.current) {
+      const rect = nameRef.current.getBoundingClientRect()
+      const spaceBelow = window.innerHeight - rect.bottom
+      const style: React.CSSProperties = spaceBelow < 250
+        ? { position: "fixed", bottom: window.innerHeight - rect.top + 4, left: rect.left, minWidth: Math.max(rect.width, 320), zIndex: 9999 }
+        : { position: "fixed", top: rect.bottom + 4, left: rect.left, minWidth: Math.max(rect.width, 320), zIndex: 9999 }
+      setNameDropStyle(style)
+    }
+    setNameOpen(true)
+  }
+
+  function selectAirline(airline: typeof AIRLINE_OPTIONS[0]) {
+    setCodeQuery(airline.iata)
+    setNameQuery(airline.name)
+    onCodeChange(airline.iata)
+    onNameChange(airline.name)
+    setCodeOpen(false)
+    setNameOpen(false)
+  }
+
+  return (
+    <div className="grid grid-cols-[100px_1fr] gap-2">
+      <div className="space-y-1.5">
+        <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airline Code</Label>
+        <div ref={codeRef} className="relative">
+          <input
+            value={codeQuery}
+            onChange={(e) => { setCodeQuery(e.target.value); onCodeChange(e.target.value); openCodeDrop() }}
+            onFocus={openCodeDrop}
+            autoComplete="new-password"
+            className="w-full h-9 text-sm border border-gray-200 rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-gray-800"
+          />
+          {codeOpen && codeFiltered.length > 0 && createPortal(
+            <div ref={codeDropRef} style={codeDropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+              <div className="max-h-60 overflow-y-auto">
+                {codeFiltered.map((a) => (
+                  <button key={a.iata} type="button" onMouseDown={(e) => { e.preventDefault(); selectAirline(a) }}
+                    className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors flex items-center gap-2.5 ${a.iata === codeValue ? "bg-blue-50" : ""}`}
+                  >
+                    <span className="text-xs font-mono font-bold text-gray-900 w-6 flex-shrink-0">{a.iata}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs text-gray-700 truncate">{a.name}</div>
+                      <div className="text-[10px] text-gray-400">{a.country}</div>
+                    </div>
+                    {a.iata === codeValue && <Check className="w-3 h-3 text-blue-500 flex-shrink-0" />}
+                  </button>
+                ))}
+              </div>
+            </div>,
+            document.body
+          )}
+        </div>
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airline Name</Label>
+        <div ref={nameRef} className="relative">
+          <input
+            value={nameQuery}
+            onChange={(e) => { setNameQuery(e.target.value); onNameChange(e.target.value); if (e.target.value) { openNameDrop() } else { setNameOpen(false) } }}
+            onFocus={() => { if (nameQuery) openNameDrop() }}
+            autoComplete="new-password"
+            className="w-full h-9 text-sm border border-gray-200 rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-gray-800"
+          />
+          {nameOpen && nameFiltered.length > 0 && createPortal(
+            <div ref={nameDropRef} style={nameDropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+              <div className="max-h-60 overflow-y-auto">
+                {nameFiltered.map((a) => (
+                  <button key={a.iata} type="button" onMouseDown={(e) => { e.preventDefault(); selectAirline(a) }}
+                    className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors flex items-center gap-2.5 ${a.iata === codeValue ? "bg-blue-50" : ""}`}
+                  >
+                    <span className="text-xs font-mono font-bold text-gray-900 w-6 flex-shrink-0">{a.iata}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs text-gray-700 truncate">{a.name}</div>
+                      <div className="text-[10px] text-gray-400">{a.country}</div>
+                    </div>
+                    {a.iata === codeValue && <Check className="w-3 h-3 text-blue-500 flex-shrink-0" />}
+                  </button>
+                ))}
+              </div>
+            </div>,
+            document.body
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function StateCombobox({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState(value)
@@ -1561,17 +1848,13 @@ function RouteBuilder({
                 onNameChange={(v) => { setAirportName(v); setAddError("") }}
                 codeError={!!addError}
               />
-              <div className="grid grid-cols-[100px_1fr_120px] gap-2">
-                <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airline Code</Label>
-                  <Input value={airlineCode} onChange={(e) => setAirlineCode(e.target.value)}
-                    className="h-9 text-sm" autoComplete="off" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airline Name</Label>
-                  <Input value={airlineName} onChange={(e) => setAirlineName(e.target.value)}
-                    className="h-9 text-sm" autoComplete="off" />
-                </div>
+              <div className="grid grid-cols-[1fr_120px] gap-2">
+                <AirlinePicker
+                  codeValue={airlineCode}
+                  nameValue={airlineName}
+                  onCodeChange={setAirlineCode}
+                  onNameChange={setAirlineName}
+                />
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Flight #</Label>
                   <Input value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)}
