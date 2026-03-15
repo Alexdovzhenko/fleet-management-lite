@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import { createPortal } from "react-dom"
 import { useRouter } from "next/navigation"
 import { useForm, type Resolver } from "react-hook-form"
@@ -617,6 +617,18 @@ interface StopEntry {
   airportInstructions?: string
   etaEtd?: string
   meetOption?: string
+  flightTracking?: {
+    status?: string | null
+    estimatedArrival?: string | null
+    actualArrival?: string | null
+    scheduledArrival?: string | null
+    arrivalGate?: string | null
+    baggageClaim?: string | null
+    arrivalDelayMinutes?: number | null
+    loading?: boolean
+    error?: string
+    lastFetched?: number
+  }
 }
 
 const STOP_LOC_TABS: { type: StopLocationType; label: string; Icon: React.ElementType }[] = [
@@ -1646,12 +1658,79 @@ function CountryCombobox({ value, onChange }: { value: string; onChange: (v: str
   )
 }
 
+type FlightTrackingData = StopEntry["flightTracking"]
+
+function FlightTrackingBadge({ tracking }: { tracking: NonNullable<FlightTrackingData> }) {
+  if (tracking.loading) {
+    return (
+      <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-blue-500">
+        <div className="w-3 h-3 border-[1.5px] border-blue-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+        <span>Fetching live flight data…</span>
+      </div>
+    )
+  }
+
+  if (tracking.error) {
+    return (
+      <div className="mt-1.5 inline-flex items-center gap-1 text-[11px] text-amber-600 bg-amber-50 border border-amber-100 rounded-md px-2 py-0.5">
+        <span className="font-medium">Flight data:</span> {tracking.error}
+      </div>
+    )
+  }
+
+  const hasData = tracking.estimatedArrival || tracking.actualArrival || tracking.arrivalGate || tracking.baggageClaim
+
+  if (!hasData) return null
+
+  const arrivalTime = tracking.actualArrival || tracking.estimatedArrival
+  const formattedTime = arrivalTime
+    ? new Date(arrivalTime).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "UTC" })
+    : null
+
+  const isArrived = tracking.status?.toLowerCase().includes("arrived") || !!tracking.actualArrival
+  const isDelayed = tracking.arrivalDelayMinutes && tracking.arrivalDelayMinutes > 5
+  const isCancelled = tracking.status?.toLowerCase().includes("cancel")
+
+  const statusColor = isCancelled
+    ? "bg-red-50 border-red-200 text-red-700"
+    : isArrived
+    ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+    : isDelayed
+    ? "bg-amber-50 border-amber-200 text-amber-700"
+    : "bg-blue-50 border-blue-200 text-blue-700"
+
+  return (
+    <div className={`mt-1.5 rounded-lg border px-2.5 py-1.5 ${statusColor}`}>
+      <div className="flex items-center gap-2 flex-wrap">
+        {tracking.status && (
+          <span className="text-[10px] font-bold uppercase tracking-wide opacity-70">{tracking.status}</span>
+        )}
+        {formattedTime && (
+          <span className="text-[11px] font-semibold">
+            {tracking.actualArrival ? "Landed" : "ETA"}: {formattedTime}
+            {isDelayed && tracking.arrivalDelayMinutes ? (
+              <span className="ml-1 opacity-70">(+{tracking.arrivalDelayMinutes}m delay)</span>
+            ) : null}
+          </span>
+        )}
+        {tracking.arrivalGate && (
+          <span className="text-[11px] font-medium">· Gate {tracking.arrivalGate}</span>
+        )}
+        {tracking.baggageClaim && (
+          <span className="text-[11px] font-medium">· Baggage {tracking.baggageClaim}</span>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function RouteBuilder({
-  stops, setStops, stopsError,
+  stops, setStops, stopsError, pickupDate,
 }: {
   stops: StopEntry[]
   setStops: React.Dispatch<React.SetStateAction<StopEntry[]>>
   stopsError: string
+  pickupDate?: string
 }) {
   const [locType, setLocType] = useState<StopLocationType>("address")
   const [role, setRole] = useState<StopRole>("pickup")
@@ -1687,6 +1766,53 @@ function RouteBuilder({
   const [arrivingDepartingTo, setArrivingDepartingTo] = useState("")
   const [seaportInstructions, setSeaportInstructions] = useState("")
   const [addError, setAddError] = useState("")
+
+  const fetchFlightData = useCallback(async (stopId: string, flightNum: string) => {
+    if (!flightNum.trim()) return
+    setStops(prev => prev.map(s => s.id === stopId
+      ? { ...s, flightTracking: { ...s.flightTracking, loading: true, error: undefined } }
+      : s
+    ))
+    try {
+      const params = new URLSearchParams({ flight: flightNum.trim() })
+      if (pickupDate) params.set("date", pickupDate)
+      const res = await fetch(`/api/flights/track?${params}`)
+      const data = await res.json()
+      if (!res.ok) {
+        setStops(prev => prev.map(s => s.id === stopId
+          ? { ...s, flightTracking: { loading: false, error: data.error || "Unavailable", lastFetched: Date.now() } }
+          : s
+        ))
+        return
+      }
+      setStops(prev => prev.map(s => s.id === stopId
+        ? { ...s, flightTracking: { ...data, loading: false, lastFetched: Date.now() } }
+        : s
+      ))
+    } catch {
+      setStops(prev => prev.map(s => s.id === stopId
+        ? { ...s, flightTracking: { loading: false, error: "Network error", lastFetched: Date.now() } }
+        : s
+      ))
+    }
+  }, [pickupDate, setStops])
+
+  // Auto-refresh flight data every 60 seconds for stops with flight tracking
+  useEffect(() => {
+    const interval = setInterval(() => {
+      stops.forEach(stop => {
+        if (stop.locType === "airport" && stop.flightNumber && stop.flightTracking && !stop.flightTracking.loading) {
+          // Only refresh if not arrived and data is older than 55 seconds
+          const isArrived = stop.flightTracking.status?.toLowerCase().includes("arrived") || !!stop.flightTracking.actualArrival
+          const age = stop.flightTracking.lastFetched ? Date.now() - stop.flightTracking.lastFetched : Infinity
+          if (!isArrived && age > 55000) {
+            fetchFlightData(stop.id, stop.flightNumber)
+          }
+        }
+      })
+    }, 60000)
+    return () => clearInterval(interval)
+  }, [stops, fetchFlightData])
 
   function resetForm() {
     setLocationName(""); setAddress1(""); setAddress2(""); setCity("")
@@ -1725,8 +1851,9 @@ function RouteBuilder({
       formattedAddress = [portName || seaportCode, seaportCode && portName ? `(${seaportCode})` : ""].filter(Boolean).join(" ") || seaportCode || portName
     }
 
+    const newStopId = `s${Date.now()}`
     setStops(prev => [...prev, {
-      id: `s${Date.now()}`, locType, role,
+      id: newStopId, locType, role,
       address: formattedAddress,
       notes: notes.trim(),
       flightNumber: flightNumber.trim(),
@@ -1758,6 +1885,9 @@ function RouteBuilder({
       arrivingDepartingTo: arrivingDepartingTo.trim() || undefined,
       seaportInstructions: seaportInstructions.trim() || undefined,
     }])
+    if (locType === "airport" && flightNumber.trim()) {
+      setTimeout(() => fetchFlightData(newStopId, flightNumber.trim()), 50)
+    }
     resetForm()
     if (role === "pickup") setRole("drop")
   }
@@ -2109,8 +2239,15 @@ function RouteBuilder({
                 {stop.locationName && <div className="text-xs font-semibold truncate">{stop.locationName}</div>}
                 <div className="text-sm font-medium truncate">{stop.address}</div>
                 {stop.tailNumber && <div className="text-[11px] opacity-70">Tail: {stop.tailNumber}</div>}
-                {stop.flightNumber && <div className="text-[11px] opacity-70">Flight: {stop.flightNumber}{stop.arrDep ? ` · ${stop.arrDep}` : ""}{stop.terminalGate ? ` · Gate ${stop.terminalGate}` : ""}</div>}
+                {stop.flightNumber && (
+                  <div className="text-[11px] opacity-70">
+                    Flight: {stop.flightNumber}{stop.arrDep ? ` · ${stop.arrDep}` : ""}{stop.terminalGate ? ` · Gate ${stop.terminalGate}` : ""}
+                  </div>
+                )}
                 {stop.etaEtd && <div className="text-[11px] opacity-60">ETA/ETD: {stop.etaEtd}</div>}
+                {stop.flightTracking && (
+                  <FlightTrackingBadge tracking={stop.flightTracking} />
+                )}
                 {stop.cruiseShipName && <div className="text-[11px] opacity-70">Ship: {stop.cruiseShipName}{stop.cruiseLineName ? ` · ${stop.cruiseLineName}` : ""}</div>}
                 {stop.arrivingDepartingTo && <div className="text-[11px] opacity-60">{stop.arrivingDepartingTo}</div>}
                 {stop.seaportInstructions && <div className="text-[11px] opacity-60">{stop.seaportInstructions}</div>}
@@ -2647,7 +2784,7 @@ export default function NewTripPage() {
                   )}
                 </div>
                 <div className="px-5 py-4">
-                  <RouteBuilder stops={stops} setStops={setStops} stopsError={stopsError} />
+                  <RouteBuilder stops={stops} setStops={setStops} stopsError={stopsError} pickupDate={watch("pickupDate") || ""} />
                 </div>
               </div>
 
