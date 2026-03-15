@@ -716,7 +716,7 @@ function StateCombobox({ value, onChange }: { value: string; onChange: (v: strin
         className="w-full h-9 text-sm border border-gray-200 rounded-md px-2 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-gray-800"
       />
       {open && filtered.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-0.5 z-50 bg-white border border-gray-100 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+        <div className="absolute top-full left-0 mt-0.5 z-50 bg-white border border-gray-100 rounded-lg shadow-lg max-h-48 overflow-y-auto" style={{ minWidth: "200px" }}>
           {filtered.map((s) => (
             <button
               key={s.code}
