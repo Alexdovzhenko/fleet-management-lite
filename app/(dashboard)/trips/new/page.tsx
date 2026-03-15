@@ -1787,25 +1787,25 @@ export default function NewTripPage() {
                   <div className="grid grid-cols-[1fr_1fr_1fr_160px] gap-3 mb-3">
                     <div className="space-y-1.5">
                       <Label className="text-[11px] font-medium text-gray-500">First Name</Label>
-                      <Input {...register("passengerFirstName")} className="h-9 text-sm" placeholder="John" />
+                      <Input {...register("passengerFirstName")} className="h-9 text-sm" />
                     </div>
                     <div className="space-y-1.5">
                       <Label className="text-[11px] font-medium text-gray-500">Last Name</Label>
-                      <Input {...register("passengerLastName")} className="h-9 text-sm" placeholder="Smith" />
+                      <Input {...register("passengerLastName")} className="h-9 text-sm" />
                     </div>
                     <div className="space-y-1.5">
                       <Label className="text-[11px] font-medium text-gray-500">Company</Label>
-                      <Input {...register("passengerCompany")} className="h-9 text-sm" placeholder="Acme Corp" />
+                      <Input {...register("passengerCompany")} className="h-9 text-sm" />
                     </div>
                     <div className="space-y-1.5">
                       <Label className="text-[11px] font-medium text-gray-500">Phone</Label>
-                      <Input {...register("passengerPhone")} type="tel" className="h-9 text-sm" placeholder="(305) 555-0000" />
+                      <Input {...register("passengerPhone")} type="tel" className="h-9 text-sm" />
                     </div>
                   </div>
                   <div className="grid grid-cols-[260px_1fr] gap-3">
                     <div className="space-y-1.5">
                       <Label className="text-[11px] font-medium text-gray-500">Email</Label>
-                      <Input {...register("passengerEmail")} type="email" className="h-9 text-sm" placeholder="passenger@example.com" />
+                      <Input {...register("passengerEmail")} type="email" className="h-9 text-sm" />
                     </div>
                   </div>
                 </div>
