@@ -734,6 +734,115 @@ function StateCombobox({ value, onChange }: { value: string; onChange: (v: strin
   )
 }
 
+const COUNTRY_OPTIONS = [
+  { code: "USA", name: "United States" },
+  { code: "CAN", name: "Canada" },
+  { code: "MEX", name: "Mexico" },
+  { code: "GBR", name: "United Kingdom" },
+  { code: "FRA", name: "France" },
+  { code: "DEU", name: "Germany" },
+  { code: "ITA", name: "Italy" },
+  { code: "ESP", name: "Spain" },
+  { code: "PRT", name: "Portugal" },
+  { code: "NLD", name: "Netherlands" },
+  { code: "BEL", name: "Belgium" },
+  { code: "CHE", name: "Switzerland" },
+  { code: "AUT", name: "Austria" },
+  { code: "SWE", name: "Sweden" },
+  { code: "NOR", name: "Norway" },
+  { code: "DNK", name: "Denmark" },
+  { code: "FIN", name: "Finland" },
+  { code: "POL", name: "Poland" },
+  { code: "CZE", name: "Czech Republic" },
+  { code: "HUN", name: "Hungary" },
+  { code: "ROU", name: "Romania" },
+  { code: "GRC", name: "Greece" },
+  { code: "TUR", name: "Turkey" },
+  { code: "RUS", name: "Russia" },
+  { code: "UAE", name: "United Arab Emirates" },
+  { code: "SAU", name: "Saudi Arabia" },
+  { code: "ISR", name: "Israel" },
+  { code: "JPN", name: "Japan" },
+  { code: "CHN", name: "China" },
+  { code: "KOR", name: "South Korea" },
+  { code: "IND", name: "India" },
+  { code: "AUS", name: "Australia" },
+  { code: "NZL", name: "New Zealand" },
+  { code: "BRA", name: "Brazil" },
+  { code: "ARG", name: "Argentina" },
+  { code: "COL", name: "Colombia" },
+  { code: "CHL", name: "Chile" },
+  { code: "PER", name: "Peru" },
+  { code: "ZAF", name: "South Africa" },
+  { code: "EGY", name: "Egypt" },
+  { code: "MAR", name: "Morocco" },
+  { code: "NGR", name: "Nigeria" },
+  { code: "KEN", name: "Kenya" },
+  { code: "SGP", name: "Singapore" },
+  { code: "HKG", name: "Hong Kong" },
+  { code: "TWN", name: "Taiwan" },
+  { code: "THA", name: "Thailand" },
+  { code: "PHL", name: "Philippines" },
+  { code: "IDN", name: "Indonesia" },
+  { code: "MYS", name: "Malaysia" },
+]
+
+function CountryCombobox({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState(value)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => { setQuery(value) }, [value])
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener("mousedown", handle)
+    return () => document.removeEventListener("mousedown", handle)
+  }, [])
+
+  const filtered = query.trim()
+    ? COUNTRY_OPTIONS.filter((c) =>
+        c.code.toLowerCase().includes(query.toLowerCase()) ||
+        c.name.toLowerCase().includes(query.toLowerCase())
+      )
+    : COUNTRY_OPTIONS
+
+  function handleSelect(code: string) {
+    onChange(code)
+    setQuery(code)
+    setOpen(false)
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <input
+        value={query}
+        onChange={(e) => { setQuery(e.target.value); setOpen(true) }}
+        onFocus={() => setOpen(true)}
+        autoComplete="off"
+        className="w-full h-9 text-sm border border-gray-200 rounded-md px-2 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-gray-800"
+      />
+      {open && filtered.length > 0 && (
+        <div className="absolute top-full left-0 mt-0.5 z-50 bg-white border border-gray-100 rounded-lg shadow-lg max-h-48 overflow-y-auto" style={{ minWidth: "220px" }}>
+          {filtered.map((c) => (
+            <button
+              key={c.code}
+              type="button"
+              onClick={() => handleSelect(c.code)}
+              className={`w-full text-left px-2.5 py-1.5 hover:bg-blue-50 transition-colors flex items-center gap-2 ${c.code === value ? "bg-blue-50" : ""}`}
+            >
+              <span className="text-xs font-mono font-bold text-gray-800 w-8 flex-shrink-0">{c.code}</span>
+              <span className="text-xs text-gray-500">{c.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function RouteBuilder({
   stops, setStops, stopsError,
 }: {
@@ -904,8 +1013,7 @@ function RouteBuilder({
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Country</Label>
-                  <Input value={country} onChange={(e) => setCountry(e.target.value)}
-                    className="h-9 text-sm" autoComplete="off" />
+                  <CountryCombobox value={country} onChange={setCountry} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -1136,8 +1244,7 @@ function RouteBuilder({
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Country</Label>
-                  <Input value={country} onChange={(e) => setCountry(e.target.value)}
-                    className="h-9 text-sm" autoComplete="off" />
+                  <CountryCombobox value={country} onChange={setCountry} />
                 </div>
               </div>
               <div className="space-y-1.5">
