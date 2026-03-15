@@ -8,16 +8,17 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { useTrips, useCreateTrip } from "@/lib/hooks/use-trips"
 import { TripStatusBadge, TripStatusDot } from "@/components/trips/trip-status-badge"
 import { TripForm } from "@/components/trips/trip-form"
+import { TripEditModal } from "@/components/dispatch/trip-edit-modal"
 import { EmptyState } from "@/components/shared/empty-state"
 import { TableSkeleton } from "@/components/shared/loading-skeleton"
 import { formatDate, formatTime, truncateAddress, formatCurrency } from "@/lib/utils"
 import { useDebounce } from "@/lib/hooks/use-debounce"
 import type { Trip } from "@/types"
-import Link from "next/link"
 
 export default function TripsPage() {
   const [search, setSearch] = useState("")
   const [showForm, setShowForm] = useState(false)
+  const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null)
   const debouncedSearch = useDebounce(search, 300)
 
   const { data: trips, isLoading } = useTrips({ search: debouncedSearch })
@@ -69,10 +70,17 @@ export default function TripsPage() {
       ) : (
         <div className="space-y-2">
           {trips.map((trip) => (
-            <TripRow key={trip.id} trip={trip} />
+            <TripRow key={trip.id} trip={trip} onClick={() => setSelectedTrip(trip)} />
           ))}
         </div>
       )}
+
+      {/* Edit Trip Modal */}
+      <TripEditModal
+        trip={selectedTrip}
+        open={!!selectedTrip}
+        onClose={() => setSelectedTrip(null)}
+      />
 
       {/* New Trip Sheet */}
       <Sheet open={showForm} onOpenChange={setShowForm}>
@@ -93,11 +101,12 @@ export default function TripsPage() {
   )
 }
 
-function TripRow({ trip }: { trip: Trip }) {
+function TripRow({ trip, onClick }: { trip: Trip; onClick: () => void }) {
   return (
-    <Link
-      href={`/trips/${trip.id}`}
-      className="flex items-center gap-4 p-4 bg-white rounded-xl border hover:border-blue-300 hover:shadow-sm transition-all"
+    <button
+      type="button"
+      onClick={onClick}
+      className="w-full flex items-center gap-4 p-4 bg-white rounded-xl border hover:border-blue-300 hover:shadow-sm transition-all text-left"
     >
       <TripStatusDot status={trip.status} />
 
@@ -140,6 +149,6 @@ function TripRow({ trip }: { trip: Trip }) {
         )}
         <TripStatusBadge status={trip.status} />
       </div>
-    </Link>
+    </button>
   )
 }
