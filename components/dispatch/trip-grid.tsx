@@ -1,11 +1,12 @@
 "use client"
 
-import { useRef } from "react"
-import { Plane, Star, Baby, Accessibility, Bell, Phone, ArrowRight } from "lucide-react"
+import { useRef, useState } from "react"
+import { Plane, Star, Baby, Accessibility, Bell, Phone, GripVertical } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { formatTime, formatCurrency, getInitials, getTripStatusLabel, cn } from "@/lib/utils"
 import { format, parseISO } from "date-fns"
 import type { Trip, TripStatus, TripType } from "@/types"
+import { useColumnOrderStore, DEFAULT_COLUMN_ORDER } from "@/lib/stores/column-order-store"
 
 interface TripGridProps {
   trips: Trip[]
@@ -71,24 +72,40 @@ const TYPE_STYLE: Record<TripType, string> = {
   SHUTTLE:        "bg-purple-100 text-purple-700",
 }
 
-const COLUMNS = [
-  { key: "status",   label: "Status",   width: "w-32"  },
-  { key: "time",     label: "PU Time",  width: "w-20"  },
-  { key: "conf",     label: "Conf #",   width: "w-24"  },
-  { key: "passenger",label: "Passenger",width: "w-40"  },
-  { key: "phone",    label: "Phone",    width: "w-32"  },
-  { key: "type",     label: "Service",  width: "w-28"  },
-  { key: "pickup",   label: "Pickup",   width: "w-48"  },
-  { key: "dropoff",  label: "Dropoff",  width: "w-48"  },
-  { key: "driver",   label: "Driver",   width: "w-36"  },
-  { key: "vehicle",  label: "Vehicle",  width: "w-32"  },
-  { key: "pax",      label: "Pax",      width: "w-12"  },
-  { key: "price",    label: "Price",    width: "w-24"  },
-  { key: "flags",    label: "",         width: "w-20"  },
+const ALL_COLUMNS = [
+  { key: "status",    label: "Status",    width: "w-32" },
+  { key: "time",      label: "PU Time",   width: "w-20" },
+  { key: "conf",      label: "Conf #",    width: "w-24" },
+  { key: "passenger", label: "Passenger", width: "w-40" },
+  { key: "phone",     label: "Phone",     width: "w-32" },
+  { key: "type",      label: "Service",   width: "w-28" },
+  { key: "pickup",    label: "Pickup",    width: "w-48" },
+  { key: "dropoff",   label: "Dropoff",   width: "w-48" },
+  { key: "driver",    label: "Driver",    width: "w-36" },
+  { key: "vehicle",   label: "Vehicle",   width: "w-32" },
+  { key: "pax",       label: "Pax",       width: "w-12" },
+  { key: "price",     label: "Price",     width: "w-24" },
+  { key: "flags",     label: "",          width: "w-20" },
 ]
 
 export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showDate }: TripGridProps) {
   const clickRef = useRef<{ timer: ReturnType<typeof setTimeout>; trip: Trip } | null>(null)
+  const { columnOrder, setColumnOrder } = useColumnOrderStore()
+
+  // Drag-and-drop state
+  const [dragKey, setDragKey] = useState<string | null>(null)
+  const [overKey, setOverKey] = useState<string | null>(null)
+  const [dropSide, setDropSide] = useState<"left" | "right">("left")
+
+  // Merge stored order with ALL_COLUMNS — ensures new columns always appear
+  const orderedColumns = [
+    ...columnOrder
+      .map((key) => ALL_COLUMNS.find((c) => c.key === key))
+      .filter(Boolean),
+    ...ALL_COLUMNS.filter((c) => !columnOrder.includes(c.key)),
+  ] as typeof ALL_COLUMNS
+
+  // ── Click / double-click handlers ──────────────────────────────────────────
 
   function handleRowClick(trip: Trip) {
     if (!onDoubleClick) { onSelect(trip); return }
@@ -110,6 +127,186 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
     onDoubleClick?.(trip, { x: e.clientX, y: e.clientY })
   }
 
+  // ── Drag-and-drop handlers ──────────────────────────────────────────────────
+
+  function handleDragStart(e: React.DragEvent, key: string) {
+    setDragKey(key)
+    e.dataTransfer.effectAllowed = "move"
+    // Transparent drag ghost
+    const ghost = document.createElement("div")
+    ghost.style.cssText = "position:fixed;top:-999px;left:-999px;pointer-events:none;opacity:0"
+    document.body.appendChild(ghost)
+    e.dataTransfer.setDragImage(ghost, 0, 0)
+    setTimeout(() => document.body.removeChild(ghost), 0)
+  }
+
+  function handleDragOver(e: React.DragEvent, key: string) {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = "move"
+    if (key === dragKey) return
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    const side = e.clientX < rect.left + rect.width / 2 ? "left" : "right"
+    setOverKey(key)
+    setDropSide(side)
+  }
+
+  function handleDrop(targetKey: string) {
+    if (!dragKey || dragKey === targetKey) { reset(); return }
+    const order = [...orderedColumns.map((c) => c.key)]
+    const fromIdx = order.indexOf(dragKey)
+    const toIdx = order.indexOf(targetKey)
+    if (fromIdx === -1 || toIdx === -1) { reset(); return }
+
+    order.splice(fromIdx, 1)
+    const insertAt = dropSide === "left"
+      ? order.indexOf(targetKey)
+      : order.indexOf(targetKey) + 1
+    order.splice(insertAt, 0, dragKey)
+    setColumnOrder(order)
+    reset()
+  }
+
+  function reset() {
+    setDragKey(null)
+    setOverKey(null)
+  }
+
+  // ── Cell renderer ──────────────────────────────────────────────────────────
+
+  function renderCell(key: string, trip: Trip) {
+    const passengerDisplay = trip.passengerName || trip.customer?.name || "—"
+    const phone = trip.passengerPhone || trip.customer?.phone
+
+    switch (key) {
+      case "status":
+        return (
+          <td key={key} className="px-3 py-2.5 whitespace-nowrap">
+            <span className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full", STATUS_BADGE[trip.status])}>
+              <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", STATUS_DOT[trip.status])} />
+              {getTripStatusLabel(trip.status)}
+            </span>
+          </td>
+        )
+      case "time":
+        return (
+          <td key={key} className="px-3 py-2.5 whitespace-nowrap">
+            <span className="text-sm font-bold text-gray-900">{formatTime(trip.pickupTime)}</span>
+          </td>
+        )
+      case "conf":
+        return (
+          <td key={key} className="px-3 py-2.5 whitespace-nowrap">
+            <span className="text-xs font-mono text-gray-500">{trip.tripNumber}</span>
+          </td>
+        )
+      case "passenger":
+        return (
+          <td key={key} className="px-3 py-2.5">
+            <div className="flex flex-col min-w-0">
+              <span className="text-sm font-medium text-gray-900 truncate max-w-[150px]">{passengerDisplay}</span>
+              {trip.passengerName && trip.customer?.name && trip.passengerName !== trip.customer.name && (
+                <span className="text-xs text-gray-400 truncate max-w-[150px]">{trip.customer.name}</span>
+              )}
+            </div>
+          </td>
+        )
+      case "phone":
+        return (
+          <td key={key} className="px-3 py-2.5 whitespace-nowrap">
+            {phone ? (
+              <a href={`tel:${phone}`} onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline">
+                <Phone className="w-3 h-3" />{phone}
+              </a>
+            ) : (
+              <span className="text-xs text-gray-300">—</span>
+            )}
+          </td>
+        )
+      case "type":
+        return (
+          <td key={key} className="px-3 py-2.5 whitespace-nowrap">
+            <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full", TYPE_STYLE[trip.tripType])}>
+              {TYPE_LABELS[trip.tripType]}
+            </span>
+          </td>
+        )
+      case "pickup":
+        return (
+          <td key={key} className="px-3 py-2.5">
+            <div className="flex items-start gap-1.5 max-w-[180px]">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0 mt-1" />
+              <span className="text-xs text-gray-700 leading-tight line-clamp-2">{trip.pickupAddress}</span>
+            </div>
+          </td>
+        )
+      case "dropoff":
+        return (
+          <td key={key} className="px-3 py-2.5">
+            <div className="flex items-start gap-1.5 max-w-[180px]">
+              <span className="w-2 h-2 rounded-sm bg-red-400 flex-shrink-0 mt-1" />
+              <span className="text-xs text-gray-700 leading-tight line-clamp-2">{trip.dropoffAddress}</span>
+            </div>
+          </td>
+        )
+      case "driver":
+        return (
+          <td key={key} className="px-3 py-2.5 whitespace-nowrap">
+            {trip.driver ? (
+              <div className="flex items-center gap-2">
+                <Avatar className="w-6 h-6 flex-shrink-0">
+                  <AvatarFallback className="text-[9px] font-bold text-white bg-[#2E4369]">
+                    {getInitials(trip.driver.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-xs text-gray-700 truncate max-w-[90px]">{trip.driver.name}</span>
+              </div>
+            ) : (
+              <span className="text-xs text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full">Unassigned</span>
+            )}
+          </td>
+        )
+      case "vehicle":
+        return (
+          <td key={key} className="px-3 py-2.5 whitespace-nowrap">
+            {trip.vehicle ? (
+              <span className="text-xs text-gray-600 truncate max-w-[110px] block">{trip.vehicle.name}</span>
+            ) : (
+              <span className="text-xs text-gray-300">—</span>
+            )}
+          </td>
+        )
+      case "pax":
+        return (
+          <td key={key} className="px-3 py-2.5 whitespace-nowrap text-center">
+            <span className="text-sm font-medium text-gray-700">{trip.passengerCount}</span>
+          </td>
+        )
+      case "price":
+        return (
+          <td key={key} className="px-3 py-2.5 whitespace-nowrap">
+            <span className="text-sm font-semibold text-gray-900">
+              {trip.totalPrice ? formatCurrency(trip.totalPrice) : trip.price ? formatCurrency(trip.price) : <span className="text-gray-300 font-normal text-xs">—</span>}
+            </span>
+          </td>
+        )
+      case "flags":
+        return (
+          <td key={key} className="px-3 py-2.5 whitespace-nowrap">
+            <div className="flex items-center gap-1">
+              {trip.flightNumber && <Plane className="w-3.5 h-3.5 text-sky-500" />}
+              {trip.vip && <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />}
+              {trip.meetAndGreet && <Bell className="w-3.5 h-3.5 text-purple-400" />}
+              {trip.childSeat && <Baby className="w-3.5 h-3.5 text-pink-400" />}
+              {trip.wheelchairAccess && <Accessibility className="w-3.5 h-3.5 text-blue-400" />}
+            </div>
+          </td>
+        )
+      default:
+        return <td key={key} />
+    }
+  }
+
   if (!trips.length) return null
 
   return (
@@ -119,17 +316,34 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
           {/* Header */}
           <thead>
             <tr className="border-b bg-gray-50">
-              {COLUMNS.map((col) => (
-                <th
-                  key={col.key}
-                  className={cn(
-                    "text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2.5 whitespace-nowrap",
-                    col.width
-                  )}
-                >
-                  {col.label}
-                </th>
-              ))}
+              {orderedColumns.map((col) => {
+                const isDragging = col.key === dragKey
+                const isOver = col.key === overKey && !isDragging
+                return (
+                  <th
+                    key={col.key}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, col.key)}
+                    onDragOver={(e) => handleDragOver(e, col.key)}
+                    onDrop={() => handleDrop(col.key)}
+                    onDragEnd={reset}
+                    className={cn(
+                      "text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2.5 whitespace-nowrap",
+                      "select-none transition-all duration-100",
+                      col.width,
+                      isDragging && "opacity-30",
+                      isOver && dropSide === "left"  && "border-l-2 border-l-blue-500 bg-blue-50/40",
+                      isOver && dropSide === "right" && "border-r-2 border-r-blue-500 bg-blue-50/40",
+                    )}
+                    style={{ cursor: isDragging ? "grabbing" : "grab" }}
+                  >
+                    <div className="flex items-center gap-1 group">
+                      <GripVertical className="w-3 h-3 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 -ml-1" />
+                      {col.label}
+                    </div>
+                  </th>
+                )
+              })}
               {showDate && (
                 <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2.5 whitespace-nowrap w-28">
                   Date
@@ -143,8 +357,6 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
             {trips.map((trip, idx) => {
               const isSelected = trip.id === selectedTripId
               const isUnassigned = !trip.driverId && !["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status)
-              const passengerDisplay = trip.passengerName || trip.customer?.name || "—"
-              const phone = trip.passengerPhone || trip.customer?.phone
 
               return (
                 <tr
@@ -161,122 +373,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
                     idx % 2 === 1 && !isSelected ? "brightness-[0.98]" : ""
                   )}
                 >
-                  {/* Status */}
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <span className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full", STATUS_BADGE[trip.status])}>
-                      <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", STATUS_DOT[trip.status])} />
-                      {getTripStatusLabel(trip.status)}
-                    </span>
-                  </td>
-
-                  {/* PU Time */}
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <span className="text-sm font-bold text-gray-900">{formatTime(trip.pickupTime)}</span>
-                  </td>
-
-                  {/* Conf # */}
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <span className="text-xs font-mono text-gray-500">{trip.tripNumber}</span>
-                  </td>
-
-                  {/* Passenger */}
-                  <td className="px-3 py-2.5">
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-sm font-medium text-gray-900 truncate max-w-[150px]">{passengerDisplay}</span>
-                      {trip.passengerName && trip.customer?.name && trip.passengerName !== trip.customer.name && (
-                        <span className="text-xs text-gray-400 truncate max-w-[150px]">{trip.customer.name}</span>
-                      )}
-                    </div>
-                  </td>
-
-                  {/* Phone */}
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    {phone ? (
-                      <a
-                        href={`tel:${phone}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline"
-                      >
-                        <Phone className="w-3 h-3" />
-                        {phone}
-                      </a>
-                    ) : (
-                      <span className="text-xs text-gray-300">—</span>
-                    )}
-                  </td>
-
-                  {/* Service type */}
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full", TYPE_STYLE[trip.tripType])}>
-                      {TYPE_LABELS[trip.tripType]}
-                    </span>
-                  </td>
-
-                  {/* Pickup */}
-                  <td className="px-3 py-2.5">
-                    <div className="flex items-start gap-1.5 max-w-[180px]">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0 mt-1" />
-                      <span className="text-xs text-gray-700 leading-tight line-clamp-2">{trip.pickupAddress}</span>
-                    </div>
-                  </td>
-
-                  {/* Dropoff */}
-                  <td className="px-3 py-2.5">
-                    <div className="flex items-start gap-1.5 max-w-[180px]">
-                      <span className="w-2 h-2 rounded-sm bg-red-400 flex-shrink-0 mt-1" />
-                      <span className="text-xs text-gray-700 leading-tight line-clamp-2">{trip.dropoffAddress}</span>
-                    </div>
-                  </td>
-
-                  {/* Driver */}
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    {trip.driver ? (
-                      <div className="flex items-center gap-2">
-                        <Avatar className="w-6 h-6 flex-shrink-0">
-                          <AvatarFallback className="text-[9px] font-bold text-white bg-[#2E4369]">
-                            {getInitials(trip.driver.name)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="text-xs text-gray-700 truncate max-w-[90px]">{trip.driver.name}</span>
-                      </div>
-                    ) : (
-                      <span className="text-xs text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full">Unassigned</span>
-                    )}
-                  </td>
-
-                  {/* Vehicle */}
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    {trip.vehicle ? (
-                      <span className="text-xs text-gray-600 truncate max-w-[110px] block">{trip.vehicle.name}</span>
-                    ) : (
-                      <span className="text-xs text-gray-300">—</span>
-                    )}
-                  </td>
-
-                  {/* Pax */}
-                  <td className="px-3 py-2.5 whitespace-nowrap text-center">
-                    <span className="text-sm font-medium text-gray-700">{trip.passengerCount}</span>
-                  </td>
-
-                  {/* Price */}
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <span className="text-sm font-semibold text-gray-900">
-                      {trip.totalPrice ? formatCurrency(trip.totalPrice) : trip.price ? formatCurrency(trip.price) : <span className="text-gray-300 font-normal text-xs">—</span>}
-                    </span>
-                  </td>
-
-                  {/* Flags */}
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <div className="flex items-center gap-1">
-                      {trip.flightNumber && <Plane className="w-3.5 h-3.5 text-sky-500" />}
-                      {trip.vip && <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />}
-                      {trip.meetAndGreet && <Bell className="w-3.5 h-3.5 text-purple-400" />}
-                      {trip.childSeat && <Baby className="w-3.5 h-3.5 text-pink-400" />}
-                      {trip.wheelchairAccess && <Accessibility className="w-3.5 h-3.5 text-blue-400" />}
-                    </div>
-                  </td>
-
-                  {/* Date (search mode only) */}
+                  {orderedColumns.map((col) => renderCell(col.key, trip))}
                   {showDate && (
                     <td className="px-3 py-2.5 whitespace-nowrap">
                       <span className="text-xs font-medium text-gray-600">
