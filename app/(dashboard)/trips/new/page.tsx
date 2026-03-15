@@ -996,7 +996,7 @@ function RouteBuilder({
                 <Input value={address2} onChange={(e) => setAddress2(e.target.value)}
                   className="h-9 text-sm" autoComplete="off" />
               </div>
-              <div className="grid grid-cols-[140px_90px_80px_1fr] gap-2">
+              <div className="grid grid-cols-[2fr_90px_80px_1fr] gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">City</Label>
                   <Input value={city} onChange={(e) => setCity(e.target.value)}
@@ -1227,7 +1227,7 @@ function RouteBuilder({
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
-              <div className="grid grid-cols-[140px_90px_80px_1fr] gap-2">
+              <div className="grid grid-cols-[2fr_90px_80px_1fr] gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">City</Label>
                   <Input value={city} onChange={(e) => setCity(e.target.value)}
