@@ -6,9 +6,8 @@ import { X, Check, Loader2, ChevronDown, Clock } from "lucide-react"
 import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
 import { useUpdateTrip } from "@/lib/hooks/use-trips"
-import { useStatusActionsStore, type StatusAction } from "@/lib/stores/status-actions-store"
 import type { Trip, TripStatus } from "@/types"
-import { cn, formatTime } from "@/lib/utils"
+import { cn, formatTime, getTripStatusLabel } from "@/lib/utils"
 
 // ─── Color maps (fully resolved classes so Tailwind includes them) ────────────
 
@@ -77,21 +76,24 @@ const LEFT_BAR: Record<string, string> = {
   indigo:  "bg-indigo-400",
 }
 
-// ─── Status grouping ──────────────────────────────────────────────────────────
+// ─── All statuses in display order ────────────────────────────────────────────
 
-const STATUS_PHASE: Record<TripStatus, string> = {
-  QUOTE:           "Booking",
-  CONFIRMED:       "Booking",
-  DISPATCHED:      "Dispatched",
-  DRIVER_EN_ROUTE: "En Route",
-  DRIVER_ARRIVED:  "At Pickup",
-  IN_PROGRESS:     "In Progress",
-  COMPLETED:       "Completed",
-  CANCELLED:       "Cancelled",
-  NO_SHOW:         "Cancelled",
+const ALL_TRIP_STATUSES: TripStatus[] = [
+  "QUOTE", "CONFIRMED", "DISPATCHED", "DRIVER_EN_ROUTE",
+  "DRIVER_ARRIVED", "IN_PROGRESS", "COMPLETED", "CANCELLED", "NO_SHOW",
+]
+
+const STATUS_COLOR: Record<TripStatus, string> = {
+  QUOTE:           "gray",
+  CONFIRMED:       "blue",
+  DISPATCHED:      "violet",
+  DRIVER_EN_ROUTE: "amber",
+  DRIVER_ARRIVED:  "yellow",
+  IN_PROGRESS:     "emerald",
+  COMPLETED:       "gray",
+  CANCELLED:       "red",
+  NO_SHOW:         "red",
 }
-
-const PHASE_ORDER = ["Booking", "Dispatched", "En Route", "At Pickup", "In Progress", "Completed", "Cancelled"]
 
 // ─── Current trip status badge ────────────────────────────────────────────────
 
@@ -117,11 +119,10 @@ interface QuickActionPopupProps {
 
 export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupProps) {
   const popupRef = useRef<HTMLDivElement>(null)
-  const { actions } = useStatusActionsStore()
   const { data: drivers = [] } = useDrivers()
   const { data: vehicles = [] } = useVehicles()
   const updateTrip = useUpdateTrip()
-  const [appliedActionId, setAppliedActionId] = useState<string | null>(null)
+  const [appliedStatus, setAppliedStatus] = useState<TripStatus | null>(null)
   const [driverId, setDriverId] = useState(trip.driverId ?? "")
   const [vehicleId, setVehicleId] = useState(trip.vehicleId ?? "")
   const [mounted, setMounted] = useState(false)
@@ -166,17 +167,11 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
     }
   }, [onClose])
 
-  // Group enabled actions by phase
-  const enabledActions = actions.filter((a) => a.isEnabled)
-  const groupedActions = PHASE_ORDER.map((phase) => ({
-    phase,
-    actions: enabledActions.filter((a) => STATUS_PHASE[a.dbStatus] === phase),
-  })).filter((g) => g.actions.length > 0)
-
-  function handleStatusClick(dbStatus: TripStatus, actionId: string) {
-    setAppliedActionId(actionId)
+  function handleStatusClick(status: TripStatus) {
+    if (status === trip.status) return
+    setAppliedStatus(status)
     updateTrip.mutate(
-      { id: trip.id, status: dbStatus },
+      { id: trip.id, status },
       { onSuccess: () => setTimeout(onClose, 650) }
     )
   }
@@ -257,83 +252,51 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
       </div>
 
       {/* ── Status List ───────────────────────────────────────── */}
-      <div
-        className="max-h-64 overflow-y-auto bg-white"
-        style={{ scrollbarWidth: "none" }}
-      >
-        {groupedActions.map(({ phase, actions: phaseActions }, gi) => (
-          <div key={phase}>
-            {/* Group header */}
-            <div className={cn(
-              "flex items-center gap-2.5 px-4 py-1.5",
-              gi > 0 ? "mt-0.5" : ""
-            )}>
-              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">
-                {phase}
+      <div className="py-1 bg-white">
+        {ALL_TRIP_STATUSES.map((s) => {
+          const isActive = trip.status === s
+          const isLoading = updateTrip.isPending && appliedStatus === s
+          const isDone = appliedStatus === s && !updateTrip.isPending
+          const color = STATUS_COLOR[s]
+          const dotCls = DOT[color] ?? "bg-gray-400"
+          const activeBg = ACTIVE_BG[color] ?? "bg-gray-100"
+          const activeTxt = ACTIVE_TEXT[color] ?? "text-gray-700"
+          const activeChk = ACTIVE_CHECK[color] ?? "text-gray-500"
+          const leftBar = LEFT_BAR[color] ?? "bg-gray-400"
+
+          return (
+            <button
+              key={s}
+              onClick={() => handleStatusClick(s)}
+              disabled={updateTrip.isPending}
+              className={cn(
+                "w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors relative",
+                isActive ? cn(activeBg, "cursor-default") : "hover:bg-gray-50 cursor-pointer active:bg-gray-100",
+                "disabled:opacity-60"
+              )}
+            >
+              {isActive && (
+                <div className={cn("absolute left-0 top-0 bottom-0 w-[3px] rounded-r-full", leftBar)} />
+              )}
+              <div className={cn("w-2 h-2 rounded-full flex-shrink-0", isActive ? dotCls : "bg-gray-200")} />
+              <span className={cn(
+                "text-[13px] flex-1",
+                isActive ? cn("font-semibold", activeTxt) : "font-medium text-gray-700"
+              )}>
+                {getTripStatusLabel(s)}
               </span>
-              <div className="flex-1 h-px bg-gray-100" />
-            </div>
-
-            {/* Action rows */}
-            {phaseActions.map((action) => {
-              const isActive = trip.status === action.dbStatus
-              const isLoading = updateTrip.isPending && appliedActionId === action.id
-              const isDone = appliedActionId === action.id && !updateTrip.isPending
-              const dotCls = DOT[action.color] ?? "bg-gray-400"
-              const activeBg = ACTIVE_BG[action.color] ?? "bg-gray-100"
-              const activeTxt = ACTIVE_TEXT[action.color] ?? "text-gray-700"
-              const activeChk = ACTIVE_CHECK[action.color] ?? "text-gray-500"
-              const leftBar = LEFT_BAR[action.color] ?? "bg-gray-400"
-
-              return (
-                <button
-                  key={action.id}
-                  onClick={() => !isActive && handleStatusClick(action.dbStatus, action.id)}
-                  disabled={updateTrip.isPending}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors relative",
-                    isActive
-                      ? cn(activeBg, "cursor-default")
-                      : "hover:bg-gray-50 cursor-pointer active:bg-gray-100",
-                    "disabled:opacity-60"
-                  )}
-                >
-                  {/* Active left bar */}
-                  {isActive && (
-                    <div className={cn("absolute left-0 top-0 bottom-0 w-[3px] rounded-r-full", leftBar)} />
-                  )}
-
-                  {/* Status dot */}
-                  <div className={cn(
-                    "w-2 h-2 rounded-full flex-shrink-0 transition-all",
-                    isActive ? dotCls : "bg-gray-200 group-hover:bg-gray-300"
-                  )} />
-
-                  {/* Label */}
-                  <span className={cn(
-                    "text-[13px] flex-1 transition-colors",
-                    isActive
-                      ? cn("font-semibold", activeTxt)
-                      : "font-medium text-gray-700"
-                  )}>
-                    {action.label}
-                  </span>
-
-                  {/* Right indicator */}
-                  <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
-                    {isLoading ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-gray-400" />
-                    ) : isDone ? (
-                      <Check className="w-3.5 h-3.5 text-emerald-500" />
-                    ) : isActive ? (
-                      <Check className={cn("w-3.5 h-3.5", activeChk)} />
-                    ) : null}
-                  </div>
-                </button>
-              )
-            })}
-          </div>
-        ))}
+              <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
+                {isLoading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-gray-400" />
+                ) : isDone ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                ) : isActive ? (
+                  <Check className={cn("w-3.5 h-3.5", activeChk)} />
+                ) : null}
+              </div>
+            </button>
+          )
+        })}
       </div>
 
       {/* ── Driver / Vehicle ──────────────────────────────────── */}
