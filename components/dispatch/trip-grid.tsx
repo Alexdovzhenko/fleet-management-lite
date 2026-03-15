@@ -1,5 +1,6 @@
 "use client"
 
+import { useRef } from "react"
 import { Plane, Star, Baby, Accessibility, Bell, Phone, ArrowRight } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { formatTime, formatCurrency, getInitials, getTripStatusLabel, cn } from "@/lib/utils"
@@ -10,6 +11,7 @@ interface TripGridProps {
   trips: Trip[]
   selectedTripId?: string | null
   onSelect: (trip: Trip) => void
+  onDoubleClick?: (trip: Trip, position: { x: number; y: number }) => void
   showDate?: boolean
 }
 
@@ -85,7 +87,29 @@ const COLUMNS = [
   { key: "flags",    label: "",         width: "w-20"  },
 ]
 
-export function TripGrid({ trips, selectedTripId, onSelect, showDate }: TripGridProps) {
+export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showDate }: TripGridProps) {
+  const clickRef = useRef<{ timer: ReturnType<typeof setTimeout>; trip: Trip } | null>(null)
+
+  function handleRowClick(trip: Trip) {
+    if (!onDoubleClick) { onSelect(trip); return }
+    if (clickRef.current) return
+    clickRef.current = {
+      timer: setTimeout(() => {
+        clickRef.current = null
+        onSelect(trip)
+      }, 230),
+      trip,
+    }
+  }
+
+  function handleRowDoubleClick(trip: Trip, e: React.MouseEvent) {
+    if (clickRef.current) {
+      clearTimeout(clickRef.current.timer)
+      clickRef.current = null
+    }
+    onDoubleClick?.(trip, { x: e.clientX, y: e.clientY })
+  }
+
   if (!trips.length) return null
 
   return (
@@ -125,9 +149,10 @@ export function TripGrid({ trips, selectedTripId, onSelect, showDate }: TripGrid
               return (
                 <tr
                   key={trip.id}
-                  onClick={() => onSelect(trip)}
+                  onClick={() => handleRowClick(trip)}
+                  onDoubleClick={(e) => handleRowDoubleClick(trip, e)}
                   className={cn(
-                    "border-b last:border-0 cursor-pointer transition-all",
+                    "border-b last:border-0 cursor-pointer transition-all select-none",
                     STATUS_ROW[trip.status],
                     isSelected
                       ? "ring-2 ring-inset ring-blue-500 bg-blue-50/80"

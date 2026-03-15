@@ -25,8 +25,15 @@ import {
   useDeleteServiceType,
   type ServiceType,
 } from "@/lib/hooks/use-service-types"
+import {
+  useStatusActionsStore,
+  DEFAULT_STATUS_ACTIONS,
+  ALL_COLORS,
+  STATUS_LABEL_MAP,
+  type StatusAction,
+} from "@/lib/stores/status-actions-store"
 import { cn } from "@/lib/utils"
-import type { Company } from "@/types"
+import type { Company, TripStatus } from "@/types"
 
 // ─── Icon map ─────────────────────────────────────────────────────────────────
 
@@ -251,6 +258,186 @@ function CreateServiceTypeDialog({ onClose }: { onClose: () => void }) {
   )
 }
 
+// ─── Status Actions ───────────────────────────────────────────────────────────
+
+const ACTION_DOT: Record<string, string> = {
+  blue:    "bg-blue-500",
+  amber:   "bg-amber-500",
+  yellow:  "bg-yellow-400",
+  emerald: "bg-emerald-500",
+  gray:    "bg-gray-500",
+  violet:  "bg-violet-500",
+  red:     "bg-red-500",
+  teal:    "bg-teal-500",
+  pink:    "bg-pink-500",
+  indigo:  "bg-indigo-500",
+}
+
+const ALL_STATUSES: TripStatus[] = [
+  "QUOTE", "CONFIRMED", "DISPATCHED", "DRIVER_EN_ROUTE", "DRIVER_ARRIVED",
+  "IN_PROGRESS", "COMPLETED", "CANCELLED", "NO_SHOW",
+]
+
+function StatusActionRow({ action }: { action: StatusAction }) {
+  const { toggleAction, renameAction, changeColor, removeAction } = useStatusActionsStore()
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(action.label)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  function commitRename() {
+    const trimmed = draft.trim()
+    if (trimmed && trimmed !== action.label) renameAction(action.id, trimmed)
+    else setDraft(action.label)
+    setEditing(false)
+  }
+
+  return (
+    <div className="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50/60 transition-colors group">
+      {/* Color dot + label */}
+      <div className="flex items-center gap-2.5 flex-1 min-w-0">
+        <div className={cn("w-2.5 h-2.5 rounded-full flex-shrink-0", ACTION_DOT[action.color] ?? "bg-gray-400")} />
+        {editing ? (
+          <input
+            ref={inputRef}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commitRename}
+            onKeyDown={(e) => { if (e.key === "Enter") commitRename(); if (e.key === "Escape") { setDraft(action.label); setEditing(false) } }}
+            className="text-sm font-semibold text-gray-900 bg-transparent border-b border-blue-400 outline-none w-32"
+            autoFocus
+          />
+        ) : (
+          <button
+            onClick={() => { setEditing(true); setTimeout(() => inputRef.current?.select(), 10) }}
+            className="text-sm font-semibold text-gray-900 hover:text-blue-600 transition-colors text-left truncate"
+            title="Click to rename"
+          >
+            {action.label}
+          </button>
+        )}
+        {!action.isBuiltIn && (
+          <span className="text-[10px] font-semibold bg-violet-100 text-violet-600 px-1.5 py-0.5 rounded-full flex-shrink-0">Custom</span>
+        )}
+        <span className="text-xs text-gray-400 truncate">{STATUS_LABEL_MAP[action.dbStatus]}</span>
+      </div>
+
+      {/* Color picker */}
+      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+        {ALL_COLORS.map((c) => (
+          <button
+            key={c}
+            onClick={() => changeColor(action.id, c)}
+            className={cn(
+              "w-4 h-4 rounded-full transition-transform hover:scale-125",
+              ACTION_DOT[c],
+              action.color === c && "ring-2 ring-offset-1 ring-gray-400 scale-110"
+            )}
+          />
+        ))}
+      </div>
+
+      {/* Toggle */}
+      <button
+        onClick={() => toggleAction(action.id)}
+        className={cn(
+          "w-10 h-6 rounded-full transition-all flex-shrink-0 relative",
+          action.isEnabled ? "bg-blue-500" : "bg-gray-200"
+        )}
+      >
+        <span className={cn(
+          "absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-all",
+          action.isEnabled ? "left-4.5 translate-x-0" : "left-0.5"
+        )} />
+      </button>
+
+      {/* Delete (custom only) */}
+      {!action.isBuiltIn && (
+        <button
+          onClick={() => removeAction(action.id)}
+          className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-300 hover:text-red-400 ml-1"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      )}
+    </div>
+  )
+}
+
+function CreateStatusActionDialog({ onClose }: { onClose: () => void }) {
+  const { addAction } = useStatusActionsStore()
+  const [label, setLabel] = useState("")
+  const [dbStatus, setDbStatus] = useState<TripStatus>("CONFIRMED")
+  const [color, setColor] = useState("blue")
+
+  function handleCreate() {
+    if (!label.trim()) return
+    addAction({ label: label.trim(), dbStatus, color })
+    onClose()
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h3 className="text-sm font-semibold text-gray-900">New Status Action</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X className="w-4 h-4" /></button>
+        </div>
+        <div className="p-6 space-y-4">
+          {/* Preview */}
+          <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl">
+            <div className={cn("w-2.5 h-2.5 rounded-full", ACTION_DOT[color] ?? "bg-gray-400")} />
+            <span className="text-sm font-semibold text-gray-900">{label || <span className="text-gray-300">Button label</span>}</span>
+            <span className="text-xs text-gray-400 ml-auto">{STATUS_LABEL_MAP[dbStatus]}</span>
+          </div>
+          <div>
+            <Label className="text-xs font-medium text-gray-500 mb-1.5 block">Button Label *</Label>
+            <Input value={label} onChange={(e) => setLabel(e.target.value)} className="h-10 text-sm" placeholder='e.g. "At Hotel"' autoFocus />
+          </div>
+          <div>
+            <Label className="text-xs font-medium text-gray-500 mb-1.5 block">Maps to Status</Label>
+            <select
+              value={dbStatus}
+              onChange={(e) => setDbStatus(e.target.value as TripStatus)}
+              className="w-full h-10 text-sm border border-gray-200 rounded-lg px-3 bg-white text-gray-900 outline-none focus:border-blue-400"
+            >
+              {ALL_STATUSES.map((s) => (
+                <option key={s} value={s}>{STATUS_LABEL_MAP[s]}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <Label className="text-xs font-medium text-gray-500 mb-2 block">Color</Label>
+            <div className="flex flex-wrap gap-2">
+              {ALL_COLORS.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setColor(c)}
+                  className={cn(
+                    "w-7 h-7 rounded-full transition-all",
+                    ACTION_DOT[c],
+                    color === c ? "ring-2 ring-offset-2 ring-gray-400 scale-110" : "opacity-70 hover:opacity-100"
+                  )}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50">
+          <Button variant="ghost" size="sm" onClick={onClose} className="h-8 px-4 text-sm">Cancel</Button>
+          <Button
+            size="sm"
+            onClick={handleCreate}
+            disabled={!label.trim()}
+            className="h-8 px-4 text-sm bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            Add Action
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
@@ -272,6 +459,9 @@ export default function SettingsPage() {
   })
   const [saved, setSaved] = useState(false)
   const [createOpen, setCreateOpen] = useState(false)
+  const [createStatusOpen, setCreateStatusOpen] = useState(false)
+  const { actions: statusActions, reset: resetStatusActions } = useStatusActionsStore()
+  const enabledStatusCount = statusActions.filter((a) => a.isEnabled).length
 
   // Personal details (User table)
   const [profile, setProfile] = useState({ name: "", email: "" })
@@ -427,6 +617,9 @@ export default function SettingsPage() {
 
       {/* ── Create Service Type Dialog ──────────────────────────────────────── */}
       {createOpen && <CreateServiceTypeDialog onClose={() => setCreateOpen(false)} />}
+
+      {/* ── Create Status Action Dialog ─────────────────────────────────────── */}
+      {createStatusOpen && <CreateStatusActionDialog onClose={() => setCreateStatusOpen(false)} />}
 
       <div className="max-w-3xl mx-auto space-y-5">
 
@@ -612,6 +805,47 @@ export default function SettingsPage() {
               ))}
             </div>
           )}
+        </div>
+
+        {/* ── Trip Status Actions ─────────────────────────────────────────── */}
+        <div className="rounded-2xl border border-gray-200/80 bg-white shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <Zap className="w-3.5 h-3.5 text-emerald-600" />
+              </div>
+              <div>
+                <span className="text-sm font-semibold text-gray-800">Trip Status Actions</span>
+                <p className="text-xs text-gray-400 mt-0.5">Buttons shown in the dispatch quick-action popup</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">
+                {enabledStatusCount} enabled
+              </span>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={resetStatusActions}
+                className="h-8 px-3 text-xs text-gray-400 hover:text-gray-600"
+              >
+                Reset
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => setCreateStatusOpen(true)}
+                className="h-8 px-3 text-xs bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Add Custom
+              </Button>
+            </div>
+          </div>
+          <div className="divide-y divide-gray-50">
+            {statusActions.map((action) => (
+              <StatusActionRow key={action.id} action={action} />
+            ))}
+          </div>
         </div>
 
         {/* ── Personal Details ──────────────────────────────────────────────── */}

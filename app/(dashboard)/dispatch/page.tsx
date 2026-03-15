@@ -10,6 +10,7 @@ import { useTrips, useCreateTrip } from "@/lib/hooks/use-trips"
 import { useDrivers } from "@/lib/hooks/use-drivers"
 import { TripGrid } from "@/components/dispatch/trip-grid"
 import { TripEditModal } from "@/components/dispatch/trip-edit-modal"
+import { QuickActionPopup } from "@/components/dispatch/quick-action-popup"
 import { TripForm } from "@/components/trips/trip-form"
 import { EmptyState } from "@/components/shared/empty-state"
 import { TableSkeleton } from "@/components/shared/loading-skeleton"
@@ -30,6 +31,8 @@ export default function DispatchPage() {
   const router = useRouter()
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null)
+  const [quickTrip, setQuickTrip] = useState<Trip | null>(null)
+  const [quickPos, setQuickPos] = useState({ x: 0, y: 0 })
   const [statusFilter, setStatusFilter] = useState("all")
   const [driverFilter, setDriverFilter] = useState("all")
   const [showNewTrip, setShowNewTrip] = useState(false)
@@ -287,7 +290,17 @@ export default function DispatchPage() {
           trips={filteredTrips}
           selectedTripId={selectedTrip?.id}
           onSelect={(trip) => setSelectedTrip(selectedTrip?.id === trip.id ? null : trip)}
+          onDoubleClick={(trip, pos) => { setQuickTrip(trip); setQuickPos(pos) }}
           showDate={isSearching}
+        />
+      )}
+
+      {/* Quick Action Popup */}
+      {quickTrip && (
+        <QuickActionPopup
+          trip={quickTrip}
+          position={quickPos}
+          onClose={() => setQuickTrip(null)}
         />
       )}
 
