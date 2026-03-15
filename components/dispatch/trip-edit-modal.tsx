@@ -38,13 +38,76 @@ const STATUS_BADGE: Record<TripStatus, string> = {
   NO_SHOW:          "bg-red-100 text-red-600",
 }
 
-const STATUS_ACTIONS: Partial<Record<TripStatus, { label: string; next: TripStatus; cls: string }>> = {
-  QUOTE:           { label: "Confirm",    next: "CONFIRMED",       cls: "bg-blue-600 hover:bg-blue-700" },
-  CONFIRMED:       { label: "Dispatch",   next: "DISPATCHED",      cls: "bg-violet-600 hover:bg-violet-700" },
-  DISPATCHED:      { label: "En Route",   next: "DRIVER_EN_ROUTE", cls: "bg-amber-500 hover:bg-amber-600" },
-  DRIVER_EN_ROUTE: { label: "Arrived",    next: "DRIVER_ARRIVED",  cls: "bg-yellow-500 hover:bg-yellow-600" },
-  DRIVER_ARRIVED:  { label: "Start Trip", next: "IN_PROGRESS",     cls: "bg-emerald-600 hover:bg-emerald-700" },
-  IN_PROGRESS:     { label: "Complete",   next: "COMPLETED",       cls: "bg-emerald-700 hover:bg-emerald-800" },
+const STATUS_DOT: Record<TripStatus, string> = {
+  QUOTE:            "bg-slate-400",
+  CONFIRMED:        "bg-blue-500",
+  DISPATCHED:       "bg-violet-500",
+  DRIVER_EN_ROUTE:  "bg-amber-500",
+  DRIVER_ARRIVED:   "bg-yellow-500",
+  IN_PROGRESS:      "bg-emerald-500",
+  COMPLETED:        "bg-gray-400",
+  CANCELLED:        "bg-red-500",
+  NO_SHOW:          "bg-red-400",
+}
+
+const ALL_STATUSES: TripStatus[] = [
+  "QUOTE", "CONFIRMED", "DISPATCHED", "DRIVER_EN_ROUTE",
+  "DRIVER_ARRIVED", "IN_PROGRESS", "COMPLETED", "CANCELLED", "NO_SHOW",
+]
+
+function StatusDropdown({ trip, onUpdate }: { trip: Trip; onUpdate: (status: TripStatus) => void }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [open])
+
+  return (
+    <div ref={ref} className="relative flex-shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className={cn(
+          "inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full transition-all",
+          "hover:brightness-95 active:scale-95",
+          STATUS_BADGE[trip.status]
+        )}
+      >
+        <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", STATUS_DOT[trip.status])} />
+        {getTripStatusLabel(trip.status)}
+        <ChevronDown className={cn("w-3 h-3 transition-transform", open && "rotate-180")} />
+      </button>
+
+      {open && (
+        <div className="absolute left-0 top-full mt-1.5 z-50 bg-white border border-gray-200 rounded-xl shadow-lg py-1 min-w-[160px]">
+          {ALL_STATUSES.map((s) => {
+            const isActive = s === trip.status
+            return (
+              <button
+                key={s}
+                type="button"
+                onClick={() => { onUpdate(s); setOpen(false) }}
+                className={cn(
+                  "w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left transition-colors",
+                  isActive ? "bg-gray-50 font-semibold text-gray-900" : "text-gray-700 hover:bg-gray-50"
+                )}
+              >
+                <span className={cn("w-2 h-2 rounded-full flex-shrink-0", STATUS_DOT[s])} />
+                {getTripStatusLabel(s)}
+                {isActive && <Check className="w-3 h-3 ml-auto text-gray-400" />}
+              </button>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
 }
 
 // ── formatTime helper ────────────────────────────────────────────────────────
@@ -815,8 +878,6 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const gratuityAmt = price ? Math.round(price * (gratuityPercent / 100) * 100) / 100 : 0
   const total = price ? price + gratuityAmt : 0
 
-  const statusAction = STATUS_ACTIONS[trip.status]
-  const isFinished = ["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status)
 
   function onSubmit(data: FormData) {
     if (!trip) return
@@ -895,22 +956,16 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
           </button>
 
           <div className="flex items-center gap-2 min-w-0">
-            <span className={cn("text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0", STATUS_BADGE[trip.status])}>
-              {getTripStatusLabel(trip.status)}
-            </span>
+            <StatusDropdown
+              trip={trip}
+              onUpdate={(status) => updateTrip.mutate({ id: trip.id, status })}
+            />
             {trip.customer && <span className="text-sm text-gray-400 truncate">— {trip.customer.name}</span>}
           </div>
 
           <div className="flex-1" />
 
           <div className="flex items-center gap-2 flex-shrink-0">
-            {statusAction && !isFinished && (
-              <Button type="button" size="sm" disabled={updateTrip.isPending}
-                onClick={() => updateTrip.mutate({ id: trip.id, status: statusAction.next })}
-                className={cn("text-white h-9 text-sm px-4 font-medium", statusAction.cls)}>
-                {statusAction.label}
-              </Button>
-            )}
             <Button form="trip-edit-form" type="submit" size="sm" disabled={updateTrip.isPending}
               className="bg-[#2563EB] hover:bg-blue-700 text-white h-9 text-sm px-5 font-semibold">
               {updateTrip.isPending ? "Saving…" : "Save Changes"}
