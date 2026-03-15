@@ -2,7 +2,7 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
 export const DEFAULT_COLUMN_ORDER = [
-  "status", "time", "conf", "passenger", "phone", "type",
+  "status", "time", "conf", "company", "passenger", "phone", "type",
   "pickup", "dropoff", "driver", "vehicle", "pax", "price", "flags",
 ]
 

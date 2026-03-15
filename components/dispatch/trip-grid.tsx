@@ -76,6 +76,7 @@ const ALL_COLUMNS = [
   { key: "status",    label: "Status",    width: "w-32" },
   { key: "time",      label: "PU Time",   width: "w-20" },
   { key: "conf",      label: "Conf #",    width: "w-24" },
+  { key: "company",   label: "Company",   width: "w-36" },
   { key: "passenger", label: "Passenger", width: "w-40" },
   { key: "phone",     label: "Phone",     width: "w-32" },
   { key: "type",      label: "Service",   width: "w-28" },
@@ -198,7 +199,17 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
       case "conf":
         return (
           <td key={key} className="px-3 py-2.5 whitespace-nowrap">
-            <span className="text-xs font-mono text-gray-500">{trip.tripNumber}</span>
+            <span className="text-xs font-mono font-semibold text-blue-600">{trip.tripNumber}</span>
+          </td>
+        )
+      case "company":
+        return (
+          <td key={key} className="px-3 py-2.5 whitespace-nowrap">
+            {trip.customer?.company ? (
+              <span className="text-xs text-gray-700 truncate max-w-[130px] block">{trip.customer.company}</span>
+            ) : (
+              <span className="text-xs text-gray-300">—</span>
+            )}
           </td>
         )
       case "passenger":
