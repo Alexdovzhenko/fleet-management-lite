@@ -801,6 +801,13 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     })
   }, [trip, reset])
 
+  const copyConfirmation = useCallback(() => {
+    if (!trip) return
+    navigator.clipboard.writeText(trip.tripNumber)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }, [trip?.tripNumber])
+
   if (!trip) return null
 
   const price = watch("price") || 0
@@ -810,12 +817,6 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
   const statusAction = STATUS_ACTIONS[trip.status]
   const isFinished = ["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status)
-
-  const copyConfirmation = useCallback(() => {
-    navigator.clipboard.writeText(trip.tripNumber)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }, [trip.tripNumber])
 
   function onSubmit(data: FormData) {
     if (!trip) return
