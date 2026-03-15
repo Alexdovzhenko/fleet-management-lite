@@ -1866,7 +1866,6 @@ function RouteBuilder({
                   <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Arr/Dep</Label>
                   <select value={arrDep} onChange={(e) => setArrDep(e.target.value)}
                     className="w-full h-9 text-sm border border-gray-200 rounded-md px-2 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                    <option value="">Select…</option>
                     <option value="Arrival">Arrival</option>
                     <option value="Departure">Departure</option>
                   </select>
