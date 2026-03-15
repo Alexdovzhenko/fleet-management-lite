@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, Reorder, AnimatePresence } from "framer-motion"
-import { LayoutGrid, Route, Users, UserCheck, Car, Settings, Settings2, Plus, X, Network } from "lucide-react"
+import { LayoutGrid, Users, UserCheck, Car, Settings, Settings2, Plus, X, Network } from "lucide-react"
 import { useDockStore, ALL_DOCK_ITEMS } from "@/lib/stores/dock-store"
 import type { DockItem } from "@/lib/stores/dock-store"
 import type { LucideIcon } from "lucide-react"
@@ -12,7 +12,6 @@ import { useAffiliatePendingCount } from "@/lib/hooks/use-affiliates"
 
 const ICON_MAP: Record<string, LucideIcon> = {
   LayoutGrid,
-  Route,
   Users,
   UserCheck,
   Car,
