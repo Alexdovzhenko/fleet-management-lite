@@ -825,7 +825,7 @@ function CountryCombobox({ value, onChange }: { value: string; onChange: (v: str
         className="w-full h-9 text-sm border border-gray-200 rounded-md px-2 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-gray-800"
       />
       {open && filtered.length > 0 && (
-        <div className="absolute top-full left-0 mt-0.5 z-50 bg-white border border-gray-100 rounded-lg shadow-lg max-h-48 overflow-y-auto" style={{ minWidth: "220px" }}>
+        <div className="absolute top-full left-0 mt-0.5 z-50 bg-white border border-gray-100 rounded-lg shadow-lg max-h-48 overflow-y-auto" style={{ minWidth: "270px" }}>
           {filtered.map((c) => (
             <button
               key={c.code}
@@ -996,7 +996,7 @@ function RouteBuilder({
                 <Input value={address2} onChange={(e) => setAddress2(e.target.value)}
                   className="h-9 text-sm" autoComplete="off" />
               </div>
-              <div className="grid grid-cols-[1fr_90px_90px_120px] gap-2">
+              <div className="grid grid-cols-[140px_90px_80px_1fr] gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">City</Label>
                   <Input value={city} onChange={(e) => setCity(e.target.value)}
@@ -1227,7 +1227,7 @@ function RouteBuilder({
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
-              <div className="grid grid-cols-[1fr_90px_90px_120px] gap-2">
+              <div className="grid grid-cols-[140px_90px_80px_1fr] gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">City</Label>
                   <Input value={city} onChange={(e) => setCity(e.target.value)}
