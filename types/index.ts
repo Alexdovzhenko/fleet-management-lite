@@ -142,6 +142,7 @@ export interface Trip {
   flightStatus?: string
   airportCode?: string
   passengerCount: number
+  luggageCount?: number
   passengerName?: string
   passengerPhone?: string
   passengerEmail?: string
@@ -161,6 +162,7 @@ export interface Trip {
   wheelchairAccess: boolean
   vip: boolean
   clientRef?: string
+  notes?: string
   internalNotes?: string
   driverEnRouteAt?: string
   driverArrivedAt?: string

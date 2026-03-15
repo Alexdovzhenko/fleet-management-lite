@@ -33,6 +33,7 @@ const updateTripSchema = z.object({
   wheelchairAccess: z.boolean().optional(),
   vip: z.boolean().optional(),
   clientRef: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
   internalNotes: z.string().optional().nullable(),
   driverEnRouteAt: z.string().optional().nullable(),
   driverArrivedAt: z.string().optional().nullable(),
