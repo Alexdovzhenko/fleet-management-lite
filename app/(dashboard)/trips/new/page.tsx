@@ -651,6 +651,89 @@ const ROLE_ROW_BG: Record<StopRole, string> = {
   wait:   "bg-amber-50 text-amber-900 border-amber-100",
 }
 
+const STATE_OPTIONS = [
+  // US States
+  { code: "AL", name: "Alabama" }, { code: "AK", name: "Alaska" }, { code: "AZ", name: "Arizona" },
+  { code: "AR", name: "Arkansas" }, { code: "CA", name: "California" }, { code: "CO", name: "Colorado" },
+  { code: "CT", name: "Connecticut" }, { code: "DE", name: "Delaware" }, { code: "DC", name: "Dist. of Columbia" },
+  { code: "FL", name: "Florida" }, { code: "GA", name: "Georgia" }, { code: "HI", name: "Hawaii" },
+  { code: "ID", name: "Idaho" }, { code: "IL", name: "Illinois" }, { code: "IN", name: "Indiana" },
+  { code: "IA", name: "Iowa" }, { code: "KS", name: "Kansas" }, { code: "KY", name: "Kentucky" },
+  { code: "LA", name: "Louisiana" }, { code: "ME", name: "Maine" }, { code: "MD", name: "Maryland" },
+  { code: "MA", name: "Massachusetts" }, { code: "MI", name: "Michigan" }, { code: "MN", name: "Minnesota" },
+  { code: "MS", name: "Mississippi" }, { code: "MO", name: "Missouri" }, { code: "MT", name: "Montana" },
+  { code: "NE", name: "Nebraska" }, { code: "NV", name: "Nevada" }, { code: "NH", name: "New Hampshire" },
+  { code: "NJ", name: "New Jersey" }, { code: "NM", name: "New Mexico" }, { code: "NY", name: "New York" },
+  { code: "NC", name: "North Carolina" }, { code: "ND", name: "North Dakota" }, { code: "OH", name: "Ohio" },
+  { code: "OK", name: "Oklahoma" }, { code: "OR", name: "Oregon" }, { code: "PA", name: "Pennsylvania" },
+  { code: "RI", name: "Rhode Island" }, { code: "SC", name: "South Carolina" }, { code: "SD", name: "South Dakota" },
+  { code: "TN", name: "Tennessee" }, { code: "TX", name: "Texas" }, { code: "UT", name: "Utah" },
+  { code: "VT", name: "Vermont" }, { code: "VA", name: "Virginia" }, { code: "WA", name: "Washington" },
+  { code: "WV", name: "West Virginia" }, { code: "WI", name: "Wisconsin" }, { code: "WY", name: "Wyoming" },
+  // Canadian Provinces
+  { code: "AB", name: "Alberta" }, { code: "BC", name: "British Columbia" }, { code: "MB", name: "Manitoba" },
+  { code: "NB", name: "New Brunswick" }, { code: "NL", name: "Newfoundland" }, { code: "NS", name: "Nova Scotia" },
+  { code: "NT", name: "Northwest Territories" }, { code: "NU", name: "Nunavut" }, { code: "ON", name: "Ontario" },
+  { code: "PE", name: "Prince Edward Island" }, { code: "QC", name: "Quebec" }, { code: "SK", name: "Saskatchewan" },
+  { code: "YT", name: "Yukon" },
+]
+
+function StateCombobox({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState(value)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => { setQuery(value) }, [value])
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener("mousedown", handle)
+    return () => document.removeEventListener("mousedown", handle)
+  }, [])
+
+  const filtered = query.trim()
+    ? STATE_OPTIONS.filter((s) =>
+        s.code.toLowerCase().includes(query.toLowerCase()) ||
+        s.name.toLowerCase().includes(query.toLowerCase())
+      )
+    : STATE_OPTIONS
+
+  function handleSelect(code: string) {
+    onChange(code)
+    setQuery(code)
+    setOpen(false)
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <input
+        value={query}
+        onChange={(e) => { setQuery(e.target.value); setOpen(true) }}
+        onFocus={() => setOpen(true)}
+        autoComplete="off"
+        className="w-full h-9 text-sm border border-gray-200 rounded-md px-2 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white text-gray-800"
+      />
+      {open && filtered.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-0.5 z-50 bg-white border border-gray-100 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+          {filtered.map((s) => (
+            <button
+              key={s.code}
+              type="button"
+              onClick={() => handleSelect(s.code)}
+              className={`w-full text-left px-2.5 py-1.5 hover:bg-blue-50 transition-colors flex items-center gap-2 ${s.code === value ? "bg-blue-50" : ""}`}
+            >
+              <span className="text-xs font-mono font-bold text-gray-800 w-7 flex-shrink-0">{s.code}</span>
+              <span className="text-xs text-gray-500">{s.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function RouteBuilder({
   stops, setStops, stopsError,
 }: {
@@ -792,57 +875,56 @@ function RouteBuilder({
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Location Description / Name</Label>
                 <Input value={locationName} onChange={(e) => setLocationName(e.target.value)}
-                  placeholder="Hotel, office building, venue name…" className="h-9 text-sm" autoComplete="off" />
+                  className="h-9 text-sm" autoComplete="off" />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Address 1 *</Label>
                 <Input value={address1} onChange={(e) => { setAddress1(e.target.value); setAddError("") }}
-                  placeholder="123 Main St" className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" />
+                  className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Address 2</Label>
                 <Input value={address2} onChange={(e) => setAddress2(e.target.value)}
-                  placeholder="Suite, floor, apt…" className="h-9 text-sm" autoComplete="off" />
+                  className="h-9 text-sm" autoComplete="off" />
               </div>
               <div className="grid grid-cols-[1fr_90px_90px_120px] gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">City</Label>
                   <Input value={city} onChange={(e) => setCity(e.target.value)}
-                    placeholder="Miami" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">State</Label>
-                  <Input value={stateVal} onChange={(e) => setStateVal(e.target.value)}
-                    placeholder="FL" className="h-9 text-sm" autoComplete="off" />
+                  <StateCombobox value={stateVal} onChange={setStateVal} />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Zip</Label>
                   <Input value={zip} onChange={(e) => setZip(e.target.value)}
-                    placeholder="33101" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Country</Label>
                   <Input value={country} onChange={(e) => setCountry(e.target.value)}
-                    placeholder="USA" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
-                    placeholder="(305) 555-0000" type="tel" className="h-9 text-sm" />
+                    type="tel" className="h-9 text-sm" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
-                    placeholder="e.g. 3:00 PM" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Notes</Label>
                 <Input value={notes} onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Gate code, building entrance, driver instructions…" className="h-8 text-xs" />
+                  className="h-8 text-xs" />
               </div>
             </>
           )}
@@ -852,29 +934,29 @@ function RouteBuilder({
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Airport Code</Label>
                   <Input value={airportCode} onChange={(e) => { setAirportCode(e.target.value); setAddError("") }}
-                    placeholder="MIA" className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" />
+                    className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Airport Name</Label>
                   <Input value={airportName} onChange={(e) => { setAirportName(e.target.value); setAddError("") }}
-                    placeholder="Miami International" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-[100px_1fr_120px] gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Airline Code</Label>
                   <Input value={airlineCode} onChange={(e) => setAirlineCode(e.target.value)}
-                    placeholder="AA" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Airline Name</Label>
                   <Input value={airlineName} onChange={(e) => setAirlineName(e.target.value)}
-                    placeholder="American Airlines" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Flight #</Label>
                   <Input value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)}
-                    placeholder="AA 123" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-[120px_120px_1fr_120px] gap-2">
@@ -890,18 +972,18 @@ function RouteBuilder({
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Terminal/Gate</Label>
                   <Input value={terminalGate} onChange={(e) => setTerminalGate(e.target.value)}
-                    placeholder="D22" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Airport Instructions</Label>
                   <Input value={airportInstructions} onChange={(e) => setAirportInstructions(e.target.value)}
-                    placeholder="Meet at baggage claim…" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">ETA/ETD</Label>
                   <Input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)}
                     onBlur={(e) => setEtaEtd(formatTime(e.target.value))}
-                    placeholder="e.g. 3:00 PM" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-[140px_1fr] gap-2">
@@ -1017,64 +1099,63 @@ function RouteBuilder({
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Location Description / FBO Name *</Label>
                   <Input value={locationName} onChange={(e) => { setLocationName(e.target.value); setAddError("") }}
-                    placeholder="Signature Flight Support, Atlantic Aviation…" className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" />
+                    className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Tail #</Label>
                   <Input value={tailNumber} onChange={(e) => setTailNumber(e.target.value)}
-                    placeholder="N12345" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Address 1</Label>
                   <Input value={address1} onChange={(e) => setAddress1(e.target.value)}
-                    placeholder="123 Aviation Blvd" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Address 2</Label>
                   <Input value={address2} onChange={(e) => setAddress2(e.target.value)}
-                    placeholder="Suite, hangar…" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-[1fr_90px_90px_120px] gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">City</Label>
                   <Input value={city} onChange={(e) => setCity(e.target.value)}
-                    placeholder="Miami" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">State</Label>
-                  <Input value={stateVal} onChange={(e) => setStateVal(e.target.value)}
-                    placeholder="FL" className="h-9 text-sm" autoComplete="off" />
+                  <StateCombobox value={stateVal} onChange={setStateVal} />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Zip</Label>
                   <Input value={zip} onChange={(e) => setZip(e.target.value)}
-                    placeholder="33101" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Country</Label>
                   <Input value={country} onChange={(e) => setCountry(e.target.value)}
-                    placeholder="USA" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Notes</Label>
                 <Input value={notes} onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Driver instructions, access codes…" className="h-8 text-xs" />
+                  className="h-8 text-xs" />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
-                    placeholder="(305) 555-0000" type="tel" className="h-9 text-sm" />
+                    type="tel" className="h-9 text-sm" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
-                    placeholder="e.g. 3:00 PM" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
             </>
