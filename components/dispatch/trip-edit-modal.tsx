@@ -957,9 +957,8 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   }
 
   const checkboxFields = [
-    { name: "vip" as const,             label: "VIP",          icon: Star },
-    { name: "meetAndGreet" as const,    label: "Meet & Greet", icon: UserCheck },
-    { name: "wheelchairAccess" as const,label: "Wheelchair",   icon: null },
+    { name: "vip" as const,          label: "VIP",          icon: Star },
+    { name: "meetAndGreet" as const, label: "Meet & Greet", icon: UserCheck },
   ]
 
   return (
