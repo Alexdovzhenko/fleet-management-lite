@@ -1200,7 +1200,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
                 <div className="flex-1" />
 
-                {!isFinished && (
+                {!["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
                   <Button type="button" variant="ghost"
                     className="w-full text-red-500 hover:bg-red-50 hover:text-red-600 text-sm h-9 border border-red-200"
                     onClick={() => {
