@@ -685,7 +685,10 @@ function StateCombobox({ value, onChange }: { value: string; onChange: (v: strin
   const ref = useRef<HTMLDivElement>(null)
   const dropRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => { setQuery(value) }, [value])
+  useEffect(() => {
+    const found = STATE_OPTIONS.find((s) => s.code === value)
+    setQuery(found ? `${found.code} — ${found.name}` : value)
+  }, [value])
 
   useEffect(() => {
     function handle(e: MouseEvent) {
@@ -698,14 +701,16 @@ function StateCombobox({ value, onChange }: { value: string; onChange: (v: strin
     return () => document.removeEventListener("mousedown", handle)
   }, [])
 
-  const filtered = query.trim()
+  const searchQuery = query.includes(" — ") ? "" : query
+  const filtered = searchQuery.trim()
     ? STATE_OPTIONS.filter((s) =>
-        s.code.toLowerCase().includes(query.toLowerCase()) ||
-        s.name.toLowerCase().includes(query.toLowerCase())
+        s.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.name.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : STATE_OPTIONS
 
   function openDropdown() {
+    if (query.includes(" — ")) setQuery("")
     if (ref.current) {
       const rect = ref.current.getBoundingClientRect()
       const spaceBelow = window.innerHeight - rect.bottom
@@ -718,8 +723,9 @@ function StateCombobox({ value, onChange }: { value: string; onChange: (v: strin
   }
 
   function handleSelect(code: string) {
+    const option = STATE_OPTIONS.find((s) => s.code === code)
     onChange(code)
-    setQuery(code)
+    setQuery(option ? `${code} — ${option.name}` : code)
     setOpen(false)
   }
 
@@ -816,7 +822,10 @@ function CountryCombobox({ value, onChange }: { value: string; onChange: (v: str
   const ref = useRef<HTMLDivElement>(null)
   const dropRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => { setQuery(value) }, [value])
+  useEffect(() => {
+    const found = COUNTRY_OPTIONS.find((c) => c.code === value)
+    setQuery(found ? `${found.code} — ${found.name}` : value)
+  }, [value])
 
   useEffect(() => {
     function handle(e: MouseEvent) {
@@ -829,14 +838,16 @@ function CountryCombobox({ value, onChange }: { value: string; onChange: (v: str
     return () => document.removeEventListener("mousedown", handle)
   }, [])
 
-  const filtered = query.trim()
+  const searchQuery = query.includes(" — ") ? "" : query
+  const filtered = searchQuery.trim()
     ? COUNTRY_OPTIONS.filter((c) =>
-        c.code.toLowerCase().includes(query.toLowerCase()) ||
-        c.name.toLowerCase().includes(query.toLowerCase())
+        c.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.name.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : COUNTRY_OPTIONS
 
   function openDropdown() {
+    if (query.includes(" — ")) setQuery("")
     if (ref.current) {
       const rect = ref.current.getBoundingClientRect()
       const spaceBelow = window.innerHeight - rect.bottom
@@ -849,8 +860,9 @@ function CountryCombobox({ value, onChange }: { value: string; onChange: (v: str
   }
 
   function handleSelect(code: string) {
+    const option = COUNTRY_OPTIONS.find((c) => c.code === code)
     onChange(code)
-    setQuery(code)
+    setQuery(option ? `${code} — ${option.name}` : code)
     setOpen(false)
   }
 
