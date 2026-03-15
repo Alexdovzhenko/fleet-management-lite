@@ -93,7 +93,9 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
   const { columnOrder, setColumnOrder } = useColumnOrderStore()
 
   // Drag-and-drop state
-  const [dragKey, setDragKey] = useState<string | null>(null)
+  // dragKeyRef holds the active drag key without causing re-renders (prevents drag cancellation)
+  const dragKeyRef = useRef<string | null>(null)
+  const [dragKey, setDragKey] = useState<string | null>(null)   // visual only
   const [overKey, setOverKey] = useState<string | null>(null)
   const [dropSide, setDropSide] = useState<"left" | "right">("left")
 
@@ -130,43 +132,43 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
   // ── Drag-and-drop handlers ──────────────────────────────────────────────────
 
   function handleDragStart(e: React.DragEvent, key: string) {
-    setDragKey(key)
+    dragKeyRef.current = key
+    // Required for Firefox — must set data for drag to work
+    e.dataTransfer.setData("text/plain", key)
     e.dataTransfer.effectAllowed = "move"
-    // Transparent drag ghost
-    const ghost = document.createElement("div")
-    ghost.style.cssText = "position:fixed;top:-999px;left:-999px;pointer-events:none;opacity:0"
-    document.body.appendChild(ghost)
-    e.dataTransfer.setDragImage(ghost, 0, 0)
-    setTimeout(() => document.body.removeChild(ghost), 0)
+    // Delay visual state so the browser captures the drag image before opacity changes
+    requestAnimationFrame(() => setDragKey(key))
   }
 
   function handleDragOver(e: React.DragEvent, key: string) {
     e.preventDefault()
     e.dataTransfer.dropEffect = "move"
-    if (key === dragKey) return
+    if (key === dragKeyRef.current) return
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
     const side = e.clientX < rect.left + rect.width / 2 ? "left" : "right"
     setOverKey(key)
     setDropSide(side)
   }
 
-  function handleDrop(targetKey: string) {
-    if (!dragKey || dragKey === targetKey) { reset(); return }
+  function handleDrop(e: React.DragEvent, targetKey: string) {
+    e.preventDefault()
+    const fromKey = dragKeyRef.current
+    if (!fromKey || fromKey === targetKey) { reset(); return }
     const order = [...orderedColumns.map((c) => c.key)]
-    const fromIdx = order.indexOf(dragKey)
-    const toIdx = order.indexOf(targetKey)
-    if (fromIdx === -1 || toIdx === -1) { reset(); return }
+    const fromIdx = order.indexOf(fromKey)
+    if (fromIdx === -1) { reset(); return }
 
     order.splice(fromIdx, 1)
-    const insertAt = dropSide === "left"
-      ? order.indexOf(targetKey)
-      : order.indexOf(targetKey) + 1
-    order.splice(insertAt, 0, dragKey)
+    const toIdx = order.indexOf(targetKey)
+    if (toIdx === -1) { reset(); return }
+    const insertAt = dropSide === "left" ? toIdx : toIdx + 1
+    order.splice(insertAt, 0, fromKey)
     setColumnOrder(order)
     reset()
   }
 
   function reset() {
+    dragKeyRef.current = null
     setDragKey(null)
     setOverKey(null)
   }
@@ -325,7 +327,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
                     draggable
                     onDragStart={(e) => handleDragStart(e, col.key)}
                     onDragOver={(e) => handleDragOver(e, col.key)}
-                    onDrop={() => handleDrop(col.key)}
+                    onDrop={(e) => handleDrop(e, col.key)}
                     onDragEnd={reset}
                     className={cn(
                       "text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2.5 whitespace-nowrap",
