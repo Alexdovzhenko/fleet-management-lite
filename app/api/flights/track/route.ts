@@ -50,9 +50,11 @@ export async function GET(request: NextRequest) {
     })
 
     if (!res.ok) {
+      const errBody = await res.text()
+      console.error(`AeroDataBox ${res.status} for ${flight}:`, errBody)
       if (res.status === 404) return NextResponse.json({ error: "Flight not found" }, { status: 404 })
-      if (res.status === 401 || res.status === 403) return NextResponse.json({ error: "Invalid API key" }, { status: 503 })
-      return NextResponse.json({ error: "Flight data unavailable" }, { status: res.status })
+      if (res.status === 401 || res.status === 403) return NextResponse.json({ error: `Auth error ${res.status}: ${errBody.slice(0, 120)}` }, { status: 503 })
+      return NextResponse.json({ error: `API error ${res.status}: ${errBody.slice(0, 120)}` }, { status: res.status })
     }
 
     const data: AeroDataBoxFlight[] = await res.json()
