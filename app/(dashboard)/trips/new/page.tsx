@@ -1797,20 +1797,19 @@ function RouteBuilder({
     }
   }, [pickupDate, setStops])
 
-  // Auto-refresh flight data every 60 seconds for stops with flight tracking
+  // Auto-refresh flight data every 5 minutes for stops with flight tracking
   useEffect(() => {
     const interval = setInterval(() => {
       stops.forEach(stop => {
         if (stop.locType === "airport" && stop.flightNumber && stop.flightTracking && !stop.flightTracking.loading) {
-          // Only refresh if not arrived and data is older than 55 seconds
           const isArrived = stop.flightTracking.status?.toLowerCase().includes("arrived") || !!stop.flightTracking.actualArrival
           const age = stop.flightTracking.lastFetched ? Date.now() - stop.flightTracking.lastFetched : Infinity
-          if (!isArrived && age > 55000) {
+          if (!isArrived && age > 290000) {
             fetchFlightData(stop.id, stop.flightNumber)
           }
         }
       })
-    }, 60000)
+    }, 300000)
     return () => clearInterval(interval)
   }, [stops, fetchFlightData])
 

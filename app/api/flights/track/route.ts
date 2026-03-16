@@ -1,20 +1,28 @@
 import { NextRequest, NextResponse } from "next/server"
 
-const AEROAPI_BASE = "https://aeroapi.flightaware.com/aeroapi"
+// AeroDataBox via RapidAPI — https://rapidapi.com/aerodatabox/api/aerodatabox
+const AERODATABOX_BASE = "https://aerodatabox.p.rapidapi.com"
 
-interface AeroFlight {
-  ident: string
-  ident_iata?: string
-  status: string
-  origin?: { code_iata: string; name: string }
-  destination?: { code_iata: string; name: string }
-  scheduled_in?: string
-  estimated_in?: string
-  actual_in?: string
-  gate_destination?: string
-  baggage_claim?: string
-  arrival_delay?: number  // in seconds
-  operator_iata?: string
+interface AeroDataBoxFlight {
+  number?: string
+  status?: string
+  departure?: {
+    airport?: { iata?: string; name?: string }
+    scheduledTime?: { utc?: string; local?: string }
+    revisedTime?: { utc?: string; local?: string }
+    actualTime?: { utc?: string; local?: string }
+    gate?: string
+    terminal?: string
+  }
+  arrival?: {
+    airport?: { iata?: string; name?: string }
+    scheduledTime?: { utc?: string; local?: string }
+    revisedTime?: { utc?: string; local?: string }
+    actualTime?: { utc?: string; local?: string }
+    gate?: string
+    terminal?: string
+    baggageBelt?: string
+  }
 }
 
 export async function GET(request: NextRequest) {
@@ -24,49 +32,65 @@ export async function GET(request: NextRequest) {
 
   if (!flight) return NextResponse.json({ error: "flight param required" }, { status: 400 })
 
-  const apiKey = process.env.AEROAPI_KEY
+  const apiKey = process.env.AERODATABOX_API_KEY
   if (!apiKey) {
     return NextResponse.json({ error: "Flight tracking not configured" }, { status: 503 })
   }
 
   try {
     const baseDate = date || new Date().toISOString().split("T")[0]
-    const start = `${baseDate}T00:00:00Z`
-    const end = `${baseDate}T23:59:59Z`
-    const url = `${AEROAPI_BASE}/flights/${encodeURIComponent(flight)}?start=${start}&end=${end}&max_pages=1`
+    const url = `${AERODATABOX_BASE}/flights/number/${encodeURIComponent(flight)}/${baseDate}`
 
     const res = await fetch(url, {
-      headers: { "x-apikey": apiKey },
-      next: { revalidate: 60 },
+      headers: {
+        "X-RapidAPI-Key": apiKey,
+        "X-RapidAPI-Host": "aerodatabox.p.rapidapi.com",
+      },
+      next: { revalidate: 300 }, // cache 5 min
     })
 
     if (!res.ok) {
       if (res.status === 404) return NextResponse.json({ error: "Flight not found" }, { status: 404 })
-      if (res.status === 401) return NextResponse.json({ error: "Invalid API key" }, { status: 503 })
+      if (res.status === 401 || res.status === 403) return NextResponse.json({ error: "Invalid API key" }, { status: 503 })
       return NextResponse.json({ error: "Flight data unavailable" }, { status: res.status })
     }
 
-    const data = await res.json()
-    const flights: AeroFlight[] = data.flights || []
-
-    if (!flights.length) {
+    const data: AeroDataBoxFlight[] = await res.json()
+    if (!data?.length) {
       return NextResponse.json({ error: "No flight data found for this date" }, { status: 404 })
     }
 
-    const f = flights[0]
-    const delayMinutes = f.arrival_delay ? Math.round(f.arrival_delay / 60) : null
+    const f = data[0]
+    const arr = f.arrival
+
+    const scheduledArrival = arr?.scheduledTime?.utc || null
+    const estimatedArrival = arr?.revisedTime?.utc || arr?.scheduledTime?.utc || null
+    const actualArrival = arr?.actualTime?.utc || null
+
+    // Calculate delay in minutes
+    let arrivalDelayMinutes: number | null = null
+    if (scheduledArrival && estimatedArrival && !actualArrival) {
+      const diff = new Date(estimatedArrival).getTime() - new Date(scheduledArrival).getTime()
+      arrivalDelayMinutes = Math.round(diff / 60000)
+      if (arrivalDelayMinutes <= 0) arrivalDelayMinutes = null
+    }
+
+    // Build gate string — include terminal if available
+    const gate = arr?.gate || null
+    const terminal = arr?.terminal || null
+    const arrivalGate = gate && terminal ? `${terminal}${gate}` : gate || (terminal ? `Terminal ${terminal}` : null)
 
     return NextResponse.json({
-      flightNumber: f.ident_iata || f.ident || flight,
+      flightNumber: f.number || flight,
       status: f.status || null,
-      origin: f.origin?.code_iata || null,
-      destination: f.destination?.code_iata || null,
-      scheduledArrival: f.scheduled_in || null,
-      estimatedArrival: f.estimated_in || f.scheduled_in || null,
-      actualArrival: f.actual_in || null,
-      arrivalGate: f.gate_destination || null,
-      baggageClaim: f.baggage_claim || null,
-      arrivalDelayMinutes: delayMinutes,
+      origin: f.departure?.airport?.iata || null,
+      destination: arr?.airport?.iata || null,
+      scheduledArrival,
+      estimatedArrival,
+      actualArrival,
+      arrivalGate,
+      baggageClaim: arr?.baggageBelt ? `Carousel ${arr.baggageBelt}` : null,
+      arrivalDelayMinutes,
     })
   } catch (err) {
     console.error("Flight track error:", err)
