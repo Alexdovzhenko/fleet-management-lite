@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
         "X-RapidAPI-Key": apiKey,
         "X-RapidAPI-Host": "aerodatabox.p.rapidapi.com",
       },
-      next: { revalidate: 300 }, // cache 5 min
+      cache: "no-store",
     })
 
     if (!res.ok) {
