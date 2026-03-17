@@ -622,6 +622,7 @@ interface StopEntry {
     estimatedArrival?: string | null
     actualArrival?: string | null
     scheduledArrival?: string | null
+    destinationTimezone?: string | null
     arrivalGate?: string | null
     baggageClaim?: string | null
     arrivalDelayMinutes?: number | null
@@ -1682,12 +1683,27 @@ function FlightTrackingBadge({ tracking }: { tracking: NonNullable<FlightTrackin
 
   if (!hasData) return null
 
-  const arrivalTime = tracking.actualArrival || tracking.estimatedArrival
-  const formattedTime = arrivalTime
-    ? new Date(arrivalTime).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "UTC" })
+  const hasActualArrival = !!tracking.actualArrival
+
+  function formatArrivalTime(utcIso: string, timezone: string | null | undefined): string | null {
+    try {
+      return new Date(utcIso).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: timezone || "UTC",
+      })
+    } catch {
+      return null
+    }
+  }
+
+  const arrivalTimeUtc = tracking.actualArrival || tracking.estimatedArrival
+  const formattedTime = arrivalTimeUtc
+    ? formatArrivalTime(arrivalTimeUtc, tracking.destinationTimezone)
     : null
 
-  const isArrived = tracking.status?.toLowerCase().includes("arrived") || !!tracking.actualArrival
+  const isArrived = tracking.status?.toLowerCase().includes("arrived") || hasActualArrival
   const isDelayed = tracking.arrivalDelayMinutes && tracking.arrivalDelayMinutes > 5
   const isCancelled = tracking.status?.toLowerCase().includes("cancel")
 
@@ -1707,7 +1723,7 @@ function FlightTrackingBadge({ tracking }: { tracking: NonNullable<FlightTrackin
         )}
         {formattedTime && (
           <span className="text-[11px] font-semibold">
-            {tracking.actualArrival ? "Landed" : "ETA"}: {formattedTime}
+            {hasActualArrival ? "Landed" : "ETA"}: {formattedTime}
             {isDelayed && tracking.arrivalDelayMinutes ? (
               <span className="ml-1 opacity-70">(+{tracking.arrivalDelayMinutes}m delay)</span>
             ) : null}
@@ -1775,12 +1791,19 @@ function RouteBuilder({
     ))
     try {
       const params = new URLSearchParams({ flight: flightNum.trim() })
-      if (pickupDate) params.set("date", pickupDate)
+      if (pickupDate) {
+        // Convert MM/DD/YYYY → YYYY-MM-DD for the API
+        const parts = pickupDate.split("/")
+        const isoDate = parts.length === 3
+          ? `${parts[2]}-${parts[0].padStart(2, "0")}-${parts[1].padStart(2, "0")}`
+          : pickupDate
+        params.set("date", isoDate)
+      }
       const res = await fetch(`/api/flights/track?${params}`)
       const data = await res.json()
       if (!res.ok) {
         setStops(prev => prev.map(s => s.id === stopId
-          ? { ...s, flightTracking: { loading: false, error: data.error || "Unavailable", lastFetched: Date.now() } }
+          ? { ...s, flightTracking: { loading: false, error: data.detail ? `${data.error}: ${data.detail}` : (data.error || "Unavailable"), lastFetched: Date.now() } }
           : s
         ))
         return
@@ -1804,12 +1827,12 @@ function RouteBuilder({
         if (stop.locType === "airport" && stop.flightNumber && stop.flightTracking && !stop.flightTracking.loading) {
           const isArrived = stop.flightTracking.status?.toLowerCase().includes("arrived") || !!stop.flightTracking.actualArrival
           const age = stop.flightTracking.lastFetched ? Date.now() - stop.flightTracking.lastFetched : Infinity
-          if (!isArrived && age > 290000) {
+          if (!isArrived && age > 590000) {
             fetchFlightData(stop.id, stop.flightNumber)
           }
         }
       })
-    }, 300000)
+    }, 600000)
     return () => clearInterval(interval)
   }, [stops, fetchFlightData])
 
@@ -1851,11 +1874,17 @@ function RouteBuilder({
     }
 
     const newStopId = `s${Date.now()}`
+    const rawFlight = flightNumber.trim()
+    const rawAirline = airlineCode.trim().toUpperCase()
+    // Build full IATA flight number (e.g. "AA620"). Don't double-prepend if user already typed "AA620".
+    const fullFlightNum = rawAirline && !rawFlight.toUpperCase().startsWith(rawAirline)
+      ? rawAirline + rawFlight
+      : rawFlight
     setStops(prev => [...prev, {
       id: newStopId, locType, role,
       address: formattedAddress,
       notes: notes.trim(),
-      flightNumber: flightNumber.trim(),
+      flightNumber: fullFlightNum,
       // Address / FBO fields
       locationName: locationName.trim() || undefined,
       address2: address2.trim() || undefined,
@@ -1884,8 +1913,8 @@ function RouteBuilder({
       arrivingDepartingTo: arrivingDepartingTo.trim() || undefined,
       seaportInstructions: seaportInstructions.trim() || undefined,
     }])
-    if (locType === "airport" && flightNumber.trim()) {
-      setTimeout(() => fetchFlightData(newStopId, flightNumber.trim()), 50)
+    if (locType === "airport" && fullFlightNum) {
+      setTimeout(() => fetchFlightData(newStopId, fullFlightNum), 50)
     }
     resetForm()
     if (role === "pickup") setRole("drop")
@@ -1987,7 +2016,7 @@ function RouteBuilder({
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Flight #</Label>
                   <Input value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)}
-                    className="h-9 text-sm" autoComplete="off" />
+                    placeholder="1234" className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-[120px_120px_1fr_120px] gap-2">
