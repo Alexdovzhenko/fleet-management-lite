@@ -5,8 +5,6 @@ import { Plus, Car, Users, Camera, X, Upload } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useVehicles, useCreateVehicle } from "@/lib/hooks/use-vehicles"
-import { EmptyState } from "@/components/shared/empty-state"
-import { TableSkeleton } from "@/components/shared/loading-skeleton"
 import { getVehicleTypeLabel } from "@/lib/utils"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -14,6 +12,7 @@ import { z } from "zod"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
+
 const MAX_PHOTOS = 3
 
 const vehicleSchema = z.object({
@@ -29,21 +28,30 @@ const vehicleSchema = z.object({
 
 type VehicleFormData = z.infer<typeof vehicleSchema>
 
-const statusColors: Record<string, string> = {
-  ACTIVE: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
-  MAINTENANCE: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
-  OUT_OF_SERVICE: "bg-red-50 text-red-700 ring-1 ring-red-200",
-}
-
 const vehicleTypes: { value: VehicleFormData["type"]; label: string; short: string }[] = [
-  { value: "SEDAN",       label: "Sedan",        short: "Sedan" },
-  { value: "SUV",         label: "SUV",           short: "SUV" },
-  { value: "STRETCH_LIMO",label: "Stretch Limo",  short: "Limo" },
-  { value: "SPRINTER",    label: "Sprinter Van",  short: "Sprinter" },
-  { value: "PARTY_BUS",   label: "Party Bus",     short: "Party Bus" },
-  { value: "COACH",       label: "Coach Bus",     short: "Coach" },
-  { value: "OTHER",       label: "Other",         short: "Other" },
+  { value: "SEDAN",        label: "Sedan",        short: "Sedan" },
+  { value: "SUV",          label: "SUV",           short: "SUV" },
+  { value: "STRETCH_LIMO", label: "Stretch Limo",  short: "Limo" },
+  { value: "SPRINTER",     label: "Sprinter Van",  short: "Sprinter" },
+  { value: "PARTY_BUS",    label: "Party Bus",     short: "Party Bus" },
+  { value: "COACH",        label: "Coach Bus",     short: "Coach" },
+  { value: "OTHER",        label: "Other",         short: "Other" },
 ]
+
+const STATUS_CONFIG = {
+  ACTIVE:         { label: "Active",      dot: "bg-emerald-400", badge: "bg-emerald-500/20 text-emerald-100 ring-1 ring-emerald-400/30" },
+  MAINTENANCE:    { label: "Maintenance", dot: "bg-amber-400",   badge: "bg-amber-500/20 text-amber-100 ring-1 ring-amber-400/30" },
+  OUT_OF_SERVICE: { label: "Offline",     dot: "bg-red-400",     badge: "bg-red-500/20 text-red-100 ring-1 ring-red-400/30" },
+} as const
+
+type StatusKey = keyof typeof STATUS_CONFIG
+
+const FILTERS = [
+  { key: "ALL",            label: "All" },
+  { key: "ACTIVE",         label: "Active" },
+  { key: "MAINTENANCE",    label: "Maintenance" },
+  { key: "OUT_OF_SERVICE", label: "Offline" },
+] as const
 
 async function uploadPhoto(file: File): Promise<string> {
   const fd = new FormData()
@@ -57,8 +65,25 @@ async function uploadPhoto(file: File): Promise<string> {
   return url
 }
 
+function CardSkeleton() {
+  return (
+    <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm animate-pulse">
+      <div className="h-56 bg-gray-200" />
+      <div className="p-4 space-y-3">
+        <div className="h-4 bg-gray-200 rounded-full w-2/3" />
+        <div className="h-3 bg-gray-100 rounded-full w-1/2" />
+        <div className="flex gap-2 pt-1">
+          <div className="h-6 bg-gray-100 rounded-full w-20" />
+          <div className="h-6 bg-gray-100 rounded-full w-16" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function VehiclesPage() {
   const [showForm, setShowForm] = useState(false)
+  const [filter, setFilter] = useState<"ALL" | "ACTIVE" | "MAINTENANCE" | "OUT_OF_SERVICE">("ALL")
   const { data: vehicles, isLoading } = useVehicles()
   const createVehicle = useCreateVehicle()
 
@@ -69,7 +94,6 @@ export default function VehiclesPage() {
 
   const selectedType = watch("type")
 
-  // Image state
   const [imageFiles, setImageFiles] = useState<File[]>([])
   const [previews, setPreviews] = useState<string[]>([])
   const [isDragging, setIsDragging] = useState(false)
@@ -80,9 +104,8 @@ export default function VehiclesPage() {
     const remaining = MAX_PHOTOS - imageFiles.length
     const allowed = files.filter(f => f.type.startsWith("image/")).slice(0, remaining)
     if (!allowed.length) return
-    const newPreviews = allowed.map(f => URL.createObjectURL(f))
     setImageFiles(prev => [...prev, ...allowed])
-    setPreviews(prev => [...prev, ...newPreviews])
+    setPreviews(prev => [...prev, ...allowed.map(f => URL.createObjectURL(f))])
   }
 
   function removeImage(idx: number) {
@@ -117,20 +140,52 @@ export default function VehiclesPage() {
         return
       }
     }
-    createVehicle.mutate({ ...data, photos } as never, {
-      onSuccess: closeForm,
-    })
+    createVehicle.mutate({ ...data, photos } as never, { onSuccess: closeForm })
   }
 
   const canAddMore = imageFiles.length < MAX_PHOTOS
 
+  const totalCount      = vehicles?.length ?? 0
+  const activeCount     = vehicles?.filter(v => v.status === "ACTIVE").length ?? 0
+  const maintenanceCount = vehicles?.filter(v => v.status === "MAINTENANCE").length ?? 0
+  const offlineCount    = vehicles?.filter(v => v.status === "OUT_OF_SERVICE").length ?? 0
+
+  const filtered = filter === "ALL" ? vehicles : vehicles?.filter(v => v.status === filter)
+
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500">{vehicles?.length || 0} vehicles</p>
+    <div className="space-y-6">
+
+      {/* ── Page Header ── */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-semibold text-gray-900">Fleet</h1>
+          {!isLoading && totalCount > 0 && (
+            <div className="flex items-center gap-3 mt-1.5 text-sm text-gray-500">
+              <span>{totalCount} vehicle{totalCount !== 1 ? "s" : ""}</span>
+              {activeCount > 0 && (
+                <span className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  {activeCount} active
+                </span>
+              )}
+              {maintenanceCount > 0 && (
+                <span className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  {maintenanceCount} in maintenance
+                </span>
+              )}
+              {offlineCount > 0 && (
+                <span className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                  {offlineCount} offline
+                </span>
+              )}
+            </div>
+          )}
+        </div>
         <Button
           onClick={() => setShowForm(true)}
-          className="text-white gap-2"
+          className="text-white gap-2 shrink-0"
           style={{ backgroundColor: "#2563EB" }}
         >
           <Plus className="w-4 h-4" />
@@ -138,61 +193,167 @@ export default function VehiclesPage() {
         </Button>
       </div>
 
+      {/* ── Filter Tabs ── */}
+      {!isLoading && totalCount > 0 && (
+        <div className="flex gap-1 bg-gray-100/80 rounded-xl p-1 w-fit">
+          {FILTERS.map(({ key, label }) => {
+            const count =
+              key === "ALL"            ? totalCount :
+              key === "ACTIVE"         ? activeCount :
+              key === "MAINTENANCE"    ? maintenanceCount :
+              offlineCount
+            if (key !== "ALL" && count === 0) return null
+            return (
+              <button
+                key={key}
+                onClick={() => setFilter(key as typeof filter)}
+                className={cn(
+                  "px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all",
+                  filter === key
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                )}
+              >
+                {label}
+                <span className={cn("ml-1.5 text-xs", filter === key ? "text-gray-400" : "text-gray-400")}>
+                  {count}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      )}
+
+      {/* ── Grid ── */}
       {isLoading ? (
-        <TableSkeleton rows={4} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)}
+        </div>
       ) : !vehicles?.length ? (
-        <EmptyState
-          icon={Car}
-          title="No vehicles yet"
-          description="Add your fleet vehicles to assign them to trips."
-          actionLabel="Add Vehicle"
-          onAction={() => setShowForm(true)}
-        />
+        /* Empty state — no vehicles at all */
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+            <Car className="w-8 h-8 text-gray-400" />
+          </div>
+          <h3 className="text-base font-semibold text-gray-900">No vehicles yet</h3>
+          <p className="text-sm text-gray-500 mt-1 mb-5 max-w-xs">
+            Add your first vehicle to start assigning trips and tracking your fleet.
+          </p>
+          <Button
+            onClick={() => setShowForm(true)}
+            className="text-white gap-2"
+            style={{ backgroundColor: "#2563EB" }}
+          >
+            <Plus className="w-4 h-4" />
+            Add your first vehicle
+          </Button>
+        </div>
+      ) : !filtered?.length ? (
+        /* Empty state — filter returns nothing */
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <p className="text-sm text-gray-500">No vehicles with this status.</p>
+          <button onClick={() => setFilter("ALL")} className="text-sm text-blue-600 hover:underline mt-1">
+            View all vehicles
+          </button>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {vehicles.map((vehicle) => {
-            const photos = (vehicle as { photos?: string[] }).photos
-            const thumb = photos?.[0] || (vehicle as { photoUrl?: string }).photoUrl
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((vehicle) => {
+            const photos = (vehicle as { photos?: string[] }).photos ?? []
+            const thumb = photos[0] || (vehicle as { photoUrl?: string }).photoUrl
+            const status = vehicle.status as StatusKey
+            const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.ACTIVE
+            const subtitle = [vehicle.year, vehicle.make, vehicle.model || getVehicleTypeLabel(vehicle.type)]
+              .filter(Boolean).join(" ")
+
             return (
               <div
                 key={vehicle.id}
-                className="bg-white rounded-xl border overflow-hidden hover:border-blue-300 hover:shadow-sm transition-all"
+                className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
               >
-                {thumb ? (
-                  <div className="h-32 bg-gray-100 overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={thumb} alt={vehicle.name} className="w-full h-full object-cover" />
-                  </div>
-                ) : (
-                  <div className="h-32 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-                    <Car className="w-8 h-8 text-gray-300" />
-                  </div>
-                )}
-                <div className="p-4">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div>
-                      <div className="font-semibold text-gray-900 text-sm">{vehicle.name}</div>
-                      <div className="text-xs text-gray-500 mt-0.5">
-                        {vehicle.year && `${vehicle.year} `}
-                        {vehicle.make && `${vehicle.make} `}
-                        {vehicle.model || getVehicleTypeLabel(vehicle.type)}
-                      </div>
+                {/* ── Image Hero ── */}
+                <div className="relative h-56 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+                  {thumb ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={thumb}
+                      alt={vehicle.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+                      <Car className="w-10 h-10 text-gray-300" />
+                      <span className="text-xs text-gray-400 font-medium">No photo</span>
                     </div>
-                    <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0", statusColors[vehicle.status])}>
-                      {vehicle.status === "OUT_OF_SERVICE" ? "Offline" : vehicle.status.charAt(0) + vehicle.status.slice(1).toLowerCase()}
+                  )}
+
+                  {/* Dark gradient at bottom so text reads cleanly */}
+                  {thumb && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+                  )}
+
+                  {/* Status — top right, frosted glass */}
+                  <div className="absolute top-3 right-3">
+                    <span className={cn(
+                      "inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm",
+                      cfg.badge
+                    )}>
+                      <span className={cn("w-1.5 h-1.5 rounded-full", cfg.dot)} />
+                      {cfg.label}
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 text-xs text-gray-500">
-                    <span className="flex items-center gap-1">
-                      <Users className="w-3 h-3" />
+
+                  {/* Photo count — top left (only when multiple) */}
+                  {photos.length > 1 && (
+                    <div className="absolute top-3 left-3">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-black/40 backdrop-blur-sm text-white">
+                        <Camera className="w-3 h-3" />
+                        {photos.length}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Vehicle name + subtitle overlaid on gradient */}
+                  {thumb && (
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <h3 className="text-white font-semibold text-[15px] leading-snug">{vehicle.name}</h3>
+                      {subtitle && (
+                        <p className="text-white/60 text-xs mt-0.5">{subtitle}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* ── Card Body ── */}
+                <div className="px-4 py-3.5">
+                  {/* Name row when there is no image */}
+                  {!thumb && (
+                    <div className="mb-3">
+                      <h3 className="font-semibold text-gray-900 text-sm leading-snug">{vehicle.name}</h3>
+                      {subtitle && <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>}
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {/* Capacity chip */}
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full">
+                      <Users className="w-3 h-3 text-gray-400" />
                       {vehicle.capacity} pax
                     </span>
+
+                    {/* License plate chip */}
                     {vehicle.licensePlate && (
-                      <span className="font-mono bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">
+                      <span className="inline-flex items-center text-xs font-mono font-medium text-gray-700 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full tracking-wider">
                         {vehicle.licensePlate}
                       </span>
                     )}
-                    {vehicle.color && <span>{vehicle.color}</span>}
+
+                    {/* Color */}
+                    {vehicle.color && (
+                      <span className="text-xs text-gray-400">
+                        {vehicle.color}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -279,19 +440,15 @@ export default function VehiclesPage() {
               <Input {...register("licensePlate")} placeholder="ABC-1234" className="h-10 uppercase" />
             </div>
 
-            {/* Divider */}
             <div className="border-t border-gray-100" />
 
             {/* Photo Upload */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label className="text-xs font-medium text-gray-600 uppercase tracking-wide">
-                  Photos
-                </Label>
+                <Label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Photos</Label>
                 <span className="text-xs text-gray-400">{imageFiles.length}/{MAX_PHOTOS} added</span>
               </div>
 
-              {/* Previews */}
               {previews.length > 0 && (
                 <div className="grid grid-cols-3 gap-2">
                   {previews.map((src, idx) => (
@@ -307,14 +464,9 @@ export default function VehiclesPage() {
                       </button>
                     </div>
                   ))}
-                  {/* Empty slots */}
-                  {canAddMore && Array.from({ length: MAX_PHOTOS - imageFiles.length - (canAddMore ? 0 : 0) }).slice(0, 0).map((_, i) => (
-                    <div key={`empty-${i}`} className="aspect-[4/3] rounded-xl border-2 border-dashed border-gray-200 bg-gray-50" />
-                  ))}
                 </div>
               )}
 
-              {/* Upload Zone */}
               {canAddMore && (
                 <div
                   onClick={() => fileInputRef.current?.click()}
@@ -332,11 +484,10 @@ export default function VehiclesPage() {
                     "w-9 h-9 rounded-full flex items-center justify-center transition-colors",
                     isDragging ? "bg-blue-100" : "bg-white border border-gray-200"
                   )}>
-                    {isDragging ? (
-                      <Upload className="w-4 h-4 text-blue-500" />
-                    ) : (
-                      <Camera className="w-4 h-4 text-gray-400" />
-                    )}
+                    {isDragging
+                      ? <Upload className="w-4 h-4 text-blue-500" />
+                      : <Camera className="w-4 h-4 text-gray-400" />
+                    }
                   </div>
                   <div className="text-center">
                     <p className="text-sm font-medium text-gray-700">
@@ -357,9 +508,7 @@ export default function VehiclesPage() {
                 </div>
               )}
 
-              {uploadError && (
-                <p className="text-xs text-red-500">{uploadError}</p>
-              )}
+              {uploadError && <p className="text-xs text-red-500">{uploadError}</p>}
             </div>
 
             {/* Actions */}
