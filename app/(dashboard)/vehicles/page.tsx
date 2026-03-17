@@ -22,7 +22,8 @@ const vehicleSchema = z.object({
   capacity: z.number().int().min(1),
   licensePlate: z.string().optional(),
   color: z.string().optional(),
-  year: z.number().int().optional(),
+  // valueAsNumber returns NaN for empty number inputs — treat NaN as undefined
+  year: z.number().int().optional().nullable().transform(v => (typeof v === "number" && isNaN(v)) ? undefined : v ?? undefined),
   make: z.string().optional(),
   model: z.string().optional(),
   status: z.enum(["ACTIVE", "MAINTENANCE", "OUT_OF_SERVICE"]).optional(),
@@ -100,7 +101,7 @@ function VehicleForm({
 }: {
   defaultValues: Partial<VehicleFormData>
   existingPhotos?: string[]
-  onSubmit: (data: VehicleFormData, photos: string[]) => void
+  onSubmit: (data: VehicleFormData, photos: string[], onError: (msg: string) => void) => void
   onCancel: () => void
   isPending: boolean
   submitLabel: string
@@ -120,6 +121,7 @@ function VehicleForm({
   const [keptPhotos, setKeptPhotos] = useState<string[]>(existingPhotos)
   const [isDragging, setIsDragging] = useState(false)
   const [uploadError, setUploadError] = useState("")
+  const [saveError, setSaveError] = useState("")
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -165,7 +167,8 @@ function VehicleForm({
     }
     setIsUploading(false)
     const allPhotos = [...keptPhotos, ...uploadedUrls]
-    onSubmit(data, allPhotos)
+    setSaveError("")
+    onSubmit(data, allPhotos, (msg) => setSaveError(msg))
   }
 
   return (
@@ -349,6 +352,10 @@ function VehicleForm({
         {uploadError && <p className="text-xs text-red-500">{uploadError}</p>}
       </div>
 
+      {saveError && (
+        <p className="text-xs text-red-500 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{saveError}</p>
+      )}
+
       {/* Actions */}
       <div className="flex gap-2 pt-1">
         <Button
@@ -377,16 +384,18 @@ export default function VehiclesPage() {
   const createVehicle = useCreateVehicle()
   const updateVehicle = useUpdateVehicle()
 
-  function handleCreate(data: VehicleFormData, photos: string[]) {
+  function handleCreate(data: VehicleFormData, photos: string[], onError: (msg: string) => void) {
     createVehicle.mutate({ ...data, photos } as never, {
       onSuccess: () => setShowAdd(false),
+      onError: (err) => onError(err instanceof Error ? err.message : "Failed to save vehicle"),
     })
   }
 
-  function handleUpdate(data: VehicleFormData, photos: string[]) {
+  function handleUpdate(data: VehicleFormData, photos: string[], onError: (msg: string) => void) {
     if (!editVehicle) return
     updateVehicle.mutate({ id: editVehicle.id, ...data, photos } as never, {
       onSuccess: () => setEditVehicle(null),
+      onError: (err) => onError(err instanceof Error ? err.message : "Failed to save vehicle"),
     })
   }
 
