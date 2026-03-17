@@ -19,7 +19,7 @@ const MAX_PHOTOS = 3
 const vehicleSchema = z.object({
   name: z.string().min(1, "Vehicle name is required"),
   type: z.enum(["SEDAN", "SUV", "STRETCH_LIMO", "SPRINTER", "PARTY_BUS", "COACH", "OTHER"]),
-  capacity: z.number({ invalid_type_error: "Required" }).int().min(1),
+  capacity: z.number().int().min(1),
   licensePlate: z.string().optional(),
   color: z.string().optional(),
   year: z.number().int().optional(),
