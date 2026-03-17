@@ -19,11 +19,10 @@ const MAX_PHOTOS = 3
 const vehicleSchema = z.object({
   name: z.string().min(1, "Vehicle name is required"),
   type: z.enum(["SEDAN", "SUV", "STRETCH_LIMO", "SPRINTER", "PARTY_BUS", "COACH", "OTHER"]),
-  capacity: z.number().int().min(1),
+  capacity: z.number().min(1),
   licensePlate: z.string().optional(),
   color: z.string().optional(),
-  // valueAsNumber returns NaN for empty number inputs — treat NaN as undefined
-  year: z.number().int().optional().nullable().transform(v => (typeof v === "number" && isNaN(v)) ? undefined : v ?? undefined),
+  year: z.number().optional(),
   make: z.string().optional(),
   model: z.string().optional(),
   status: z.enum(["ACTIVE", "MAINTENANCE", "OUT_OF_SERVICE"]).optional(),
@@ -172,7 +171,13 @@ function VehicleForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5 mt-1">
+    <form
+      onSubmit={handleSubmit(handleFormSubmit, (errs) => {
+        const fields = Object.keys(errs).join(", ")
+        setSaveError(`Validation failed on: ${fields}`)
+      })}
+      className="space-y-5 mt-1"
+    >
 
       {/* Vehicle Name */}
       <div className="space-y-1.5">
