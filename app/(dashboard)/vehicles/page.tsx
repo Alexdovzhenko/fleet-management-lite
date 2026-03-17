@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useCallback } from "react"
-import { Plus, Car, Users, Camera, X, Upload, Trash2 } from "lucide-react"
+import { Plus, Car, Users, Camera, X, Upload, Trash2, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useVehicles, useCreateVehicle, useUpdateVehicle } from "@/lib/hooks/use-vehicles"
@@ -88,6 +88,131 @@ function CardSkeleton() {
         <div className="flex gap-2 pt-1">
           <div className="h-6 bg-gray-100 rounded-full w-20" />
           <div className="h-6 bg-gray-100 rounded-full w-16" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Vehicle Card with photo carousel ────────────────────────────────────────
+function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void }) {
+  const photos = vehicle.photos?.length ? vehicle.photos : vehicle.photoUrl ? [vehicle.photoUrl] : []
+  const [idx, setIdx] = useState(0)
+  const thumb = photos[idx] ?? null
+  const status = vehicle.status as StatusKey
+  const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.ACTIVE
+  const subtitle = [vehicle.year, vehicle.make, vehicle.model || getVehicleTypeLabel(vehicle.type)]
+    .filter(Boolean).join(" ")
+
+  function prev(e: React.MouseEvent) {
+    e.stopPropagation()
+    setIdx(i => (i - 1 + photos.length) % photos.length)
+  }
+  function next(e: React.MouseEvent) {
+    e.stopPropagation()
+    setIdx(i => (i + 1) % photos.length)
+  }
+
+  return (
+    <div
+      onClick={onEdit}
+      className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+    >
+      {/* Image Hero */}
+      <div className="relative h-72 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+        {thumb ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={thumb}
+            src={thumb}
+            alt={vehicle.name}
+            className="w-full h-full object-cover transition-opacity duration-300"
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+            <Car className="w-10 h-10 text-gray-300" />
+            <span className="text-xs text-gray-400 font-medium">No photo</span>
+          </div>
+        )}
+
+        {thumb && (
+          <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/5 to-transparent" />
+        )}
+
+        {/* Status badge */}
+        <div className="absolute top-3 right-3">
+          <span className={cn(
+            "inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm",
+            cfg.badge
+          )}>
+            <span className={cn("w-1.5 h-1.5 rounded-full", cfg.dot)} />
+            {cfg.label}
+          </span>
+        </div>
+
+        {/* Dot indicators (multiple photos) */}
+        {photos.length > 1 && (
+          <div className="absolute top-3 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
+            {photos.map((_, i) => (
+              <span
+                key={i}
+                className={cn(
+                  "w-1.5 h-1.5 rounded-full transition-all",
+                  i === idx ? "bg-white scale-110" : "bg-white/50"
+                )}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Prev / Next arrows — visible on hover when multiple photos */}
+        {photos.length > 1 && (
+          <>
+            <button
+              onClick={prev}
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={next}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </>
+        )}
+
+        {/* Vehicle name overlay */}
+        {thumb && (
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <h3 className="text-white font-semibold text-[15px] leading-snug">{vehicle.name}</h3>
+            {subtitle && <p className="text-white/60 text-xs mt-0.5">{subtitle}</p>}
+          </div>
+        )}
+      </div>
+
+      {/* Card Body */}
+      <div className="px-4 py-3.5">
+        {!thumb && (
+          <div className="mb-3">
+            <h3 className="font-semibold text-gray-900 text-sm leading-snug">{vehicle.name}</h3>
+            {subtitle && <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>}
+          </div>
+        )}
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full">
+            <Users className="w-3 h-3 text-gray-400" />
+            {vehicle.capacity} pax
+          </span>
+          {vehicle.licensePlate && (
+            <span className="inline-flex items-center text-xs font-mono font-medium text-gray-700 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full tracking-wider">
+              {vehicle.licensePlate}
+            </span>
+          )}
+          {vehicle.color && (
+            <span className="text-xs text-gray-400">{vehicle.color}</span>
+          )}
         </div>
       </div>
     </div>
@@ -524,96 +649,13 @@ export default function VehiclesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((vehicle) => {
-            const photos = vehicle.photos ?? []
-            const thumb  = photos[0] || vehicle.photoUrl
-            const status = vehicle.status as StatusKey
-            const cfg    = STATUS_CONFIG[status] ?? STATUS_CONFIG.ACTIVE
-            const subtitle = [vehicle.year, vehicle.make, vehicle.model || getVehicleTypeLabel(vehicle.type)]
-              .filter(Boolean).join(" ")
-
-            return (
-              <div
-                key={vehicle.id}
-                onClick={() => setEditVehicle(vehicle)}
-                className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-              >
-                {/* Image Hero */}
-                <div className="relative h-56 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-                  {thumb ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={thumb}
-                      alt={vehicle.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-                      <Car className="w-10 h-10 text-gray-300" />
-                      <span className="text-xs text-gray-400 font-medium">No photo</span>
-                    </div>
-                  )}
-
-                  {thumb && (
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
-                  )}
-
-                  {/* Status badge */}
-                  <div className="absolute top-3 right-3">
-                    <span className={cn(
-                      "inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm",
-                      cfg.badge
-                    )}>
-                      <span className={cn("w-1.5 h-1.5 rounded-full", cfg.dot)} />
-                      {cfg.label}
-                    </span>
-                  </div>
-
-                  {/* Photo count */}
-                  {photos.length > 1 && (
-                    <div className="absolute top-3 left-3">
-                      <span className="inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full bg-black/40 backdrop-blur-sm text-white">
-                        <Camera className="w-3 h-3" />
-                        {photos.length}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Vehicle name overlay */}
-                  {thumb && (
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="text-white font-semibold text-[15px] leading-snug">{vehicle.name}</h3>
-                      {subtitle && <p className="text-white/60 text-xs mt-0.5">{subtitle}</p>}
-                    </div>
-                  )}
-                </div>
-
-                {/* Card Body */}
-                <div className="px-4 py-3.5">
-                  {!thumb && (
-                    <div className="mb-3">
-                      <h3 className="font-semibold text-gray-900 text-sm leading-snug">{vehicle.name}</h3>
-                      {subtitle && <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full">
-                      <Users className="w-3 h-3 text-gray-400" />
-                      {vehicle.capacity} pax
-                    </span>
-                    {vehicle.licensePlate && (
-                      <span className="inline-flex items-center text-xs font-mono font-medium text-gray-700 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full tracking-wider">
-                        {vehicle.licensePlate}
-                      </span>
-                    )}
-                    {vehicle.color && (
-                      <span className="text-xs text-gray-400">{vehicle.color}</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )
-          })}
+          {filtered.map((vehicle) => (
+            <VehicleCard
+              key={vehicle.id}
+              vehicle={vehicle}
+              onEdit={() => setEditVehicle(vehicle)}
+            />
+          ))}
         </div>
       )}
 
