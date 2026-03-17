@@ -77,6 +77,7 @@ export interface Vehicle {
   make?: string
   model?: string
   photoUrl?: string
+  photos?: string[]
   status: VehicleStatus
   notes?: string
   companyId: string
