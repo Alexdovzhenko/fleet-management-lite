@@ -100,7 +100,7 @@ function VehicleForm({
 }: {
   defaultValues: Partial<VehicleFormData>
   existingPhotos?: string[]
-  onSubmit: (data: VehicleFormData, photos: string[]) => Promise<void>
+  onSubmit: (data: VehicleFormData, photos: string[]) => void
   onCancel: () => void
   isPending: boolean
   submitLabel: string
@@ -120,6 +120,7 @@ function VehicleForm({
   const [keptPhotos, setKeptPhotos] = useState<string[]>(existingPhotos)
   const [isDragging, setIsDragging] = useState(false)
   const [uploadError, setUploadError] = useState("")
+  const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const totalPhotos = keptPhotos.length + imageFiles.length
@@ -151,17 +152,20 @@ function VehicleForm({
 
   async function handleFormSubmit(data: VehicleFormData) {
     setUploadError("")
+    setIsUploading(true)
     let uploadedUrls: string[] = []
-    if (imageFiles.length) {
-      try {
+    try {
+      if (imageFiles.length) {
         uploadedUrls = await Promise.all(imageFiles.map(uploadPhoto))
-      } catch {
-        setUploadError("Image upload failed. Try again.")
-        return
       }
+    } catch {
+      setUploadError("Image upload failed. Try again.")
+      setIsUploading(false)
+      return
     }
+    setIsUploading(false)
     const allPhotos = [...keptPhotos, ...uploadedUrls]
-    await onSubmit(data, allPhotos)
+    onSubmit(data, allPhotos)
   }
 
   return (
@@ -349,11 +353,11 @@ function VehicleForm({
       <div className="flex gap-2 pt-1">
         <Button
           type="submit"
-          disabled={isPending}
+          disabled={isPending || isUploading}
           className="flex-1 h-10 text-white font-medium"
           style={{ backgroundColor: "#2563EB" }}
         >
-          {isPending ? "Saving…" : submitLabel}
+          {isUploading ? "Uploading…" : isPending ? "Saving…" : submitLabel}
         </Button>
         <Button type="button" variant="outline" onClick={onCancel} className="h-10 px-5">
           Cancel
@@ -373,22 +377,16 @@ export default function VehiclesPage() {
   const createVehicle = useCreateVehicle()
   const updateVehicle = useUpdateVehicle()
 
-  async function handleCreate(data: VehicleFormData, photos: string[]) {
-    await new Promise<void>((resolve, reject) => {
-      createVehicle.mutate({ ...data, photos } as never, {
-        onSuccess: () => { setShowAdd(false); resolve() },
-        onError: reject,
-      })
+  function handleCreate(data: VehicleFormData, photos: string[]) {
+    createVehicle.mutate({ ...data, photos } as never, {
+      onSuccess: () => setShowAdd(false),
     })
   }
 
-  async function handleUpdate(data: VehicleFormData, photos: string[]) {
+  function handleUpdate(data: VehicleFormData, photos: string[]) {
     if (!editVehicle) return
-    await new Promise<void>((resolve, reject) => {
-      updateVehicle.mutate({ id: editVehicle.id, ...data, photos } as never, {
-        onSuccess: () => { setEditVehicle(null); resolve() },
-        onError: reject,
-      })
+    updateVehicle.mutate({ id: editVehicle.id, ...data, photos } as never, {
+      onSuccess: () => setEditVehicle(null),
     })
   }
 
