@@ -117,6 +117,7 @@ model Vehicle {
   make         String?
   model        String?
   photoUrl     String?
+  photos       String[]
   status       VehicleStatus @default(ACTIVE)
   notes        String?
   companyId    String

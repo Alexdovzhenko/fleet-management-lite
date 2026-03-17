@@ -2016,7 +2016,7 @@ function RouteBuilder({
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Flight #</Label>
                   <Input value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)}
-                    placeholder="1234" className="h-9 text-sm" autoComplete="off" />
+                    className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-[120px_120px_1fr_120px] gap-2">

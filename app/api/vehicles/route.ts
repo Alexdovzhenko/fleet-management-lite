@@ -13,6 +13,7 @@ const vehicleSchema = z.object({
   make: z.string().optional(),
   model: z.string().optional(),
   notes: z.string().optional(),
+  photos: z.array(z.string()).optional(),
 })
 
 export async function GET(request: NextRequest) {
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
         name: data.name, type: data.type, capacity: data.capacity,
         licensePlate: data.licensePlate || null, color: data.color || null,
         year: data.year || null, make: data.make || null, model: data.model || null,
-        notes: data.notes || null, companyId,
+        notes: data.notes || null, photos: data.photos || [], companyId,
       },
     })
     return NextResponse.json(vehicle, { status: 201 })
