@@ -61,13 +61,18 @@ const STATUS_OPTIONS: { value: VehicleFormData["status"]; label: string }[] = [
   { value: "OUT_OF_SERVICE", label: "Offline" },
 ]
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
+
 async function uploadPhoto(file: File): Promise<string> {
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error(`"${file.name}" is ${(file.size / 1024 / 1024).toFixed(1)} MB — max allowed is 5 MB`)
+  }
   const fd = new FormData()
   fd.append("file", file)
   const res = await fetch("/api/vehicles/upload-photo", { method: "POST", body: fd })
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
-    throw new Error(err.error || "Upload failed")
+    throw new Error(err.error || `Upload failed (${res.status})`)
   }
   const { url } = await res.json()
   return url
@@ -129,8 +134,15 @@ function VehicleForm({
 
   function addFiles(files: File[]) {
     const remaining = MAX_PHOTOS - totalPhotos
-    const allowed = files.filter(f => f.type.startsWith("image/")).slice(0, remaining)
+    const images = files.filter(f => f.type.startsWith("image/"))
+    const tooBig = images.filter(f => f.size > MAX_FILE_SIZE)
+    if (tooBig.length) {
+      setUploadError(`File too large: ${tooBig.map(f => `${f.name} (${(f.size / 1024 / 1024).toFixed(1)} MB)`).join(", ")} — max 5 MB per photo`)
+      return
+    }
+    const allowed = images.slice(0, remaining)
     if (!allowed.length) return
+    setUploadError("")
     setImageFiles(prev => [...prev, ...allowed])
     setNewPreviews(prev => [...prev, ...allowed.map(f => URL.createObjectURL(f))])
   }
@@ -159,8 +171,8 @@ function VehicleForm({
       if (imageFiles.length) {
         uploadedUrls = await Promise.all(imageFiles.map(uploadPhoto))
       }
-    } catch {
-      setUploadError("Image upload failed. Try again.")
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed. Try again.")
       setIsUploading(false)
       return
     }
@@ -340,7 +352,7 @@ function VehicleForm({
                 {isDragging ? "Drop to add" : totalPhotos === 0 ? "Add photos" : "Add more"}
               </p>
               <p className="text-xs text-gray-400 mt-0.5">
-                {MAX_PHOTOS - totalPhotos} remaining · JPG, PNG, WEBP
+                {MAX_PHOTOS - totalPhotos} remaining · JPG, PNG, WEBP · max 5 MB
               </p>
             </div>
             <input
