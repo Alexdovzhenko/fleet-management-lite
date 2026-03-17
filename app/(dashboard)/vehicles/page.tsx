@@ -640,11 +640,11 @@ export default function VehiclesPage() {
                   name:         editVehicle.name,
                   type:         editVehicle.type,
                   capacity:     editVehicle.capacity,
-                  licensePlate: editVehicle.licensePlate,
-                  color:        editVehicle.color,
-                  year:         editVehicle.year,
-                  make:         editVehicle.make,
-                  model:        editVehicle.model,
+                  licensePlate: editVehicle.licensePlate ?? undefined,
+                  color:        editVehicle.color        ?? undefined,
+                  year:         editVehicle.year         ?? undefined,
+                  make:         editVehicle.make         ?? undefined,
+                  model:        editVehicle.model        ?? undefined,
                   status:       editVehicle.status,
                 }}
                 existingPhotos={editVehicle.photos ?? []}
