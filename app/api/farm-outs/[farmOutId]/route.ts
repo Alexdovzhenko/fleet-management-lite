@@ -69,7 +69,7 @@ export async function DELETE(
 
   try {
     const farmOut = await prisma.farmOut.findFirst({
-      where: { id: farmOutId, fromCompanyId: companyId, status: "PENDING" },
+      where: { id: farmOutId, fromCompanyId: companyId, status: { in: ["PENDING", "ACCEPTED"] } },
     })
     if (!farmOut) {
       return NextResponse.json({ error: "Farm-out not found or cannot be cancelled" }, { status: 404 })

@@ -64,64 +64,90 @@ export async function GET(request: NextRequest) {
     const driverId = searchParams.get("driverId")
     const search = searchParams.get("search") || ""
 
-    const trips = await prisma.trip.findMany({
-      where: {
-        AND: [
-          {
-            OR: [
-              { companyId },
-              { farmOuts: { some: { toCompanyId: companyId, status: "ACCEPTED" } } },
-            ],
-          },
-          ...(date ? [{ pickupDate: { gte: new Date(date + "T00:00:00"), lte: new Date(date + "T23:59:59") } }] : []),
-          ...(status ? [{ status: status as never }] : []),
-          ...(driverId ? [{ driverId }] : []),
-          ...(search ? [{
-            OR: [
-              { tripNumber: { contains: search, mode: "insensitive" as const } },
-              { clientRef: { contains: search, mode: "insensitive" as const } },
-              { pickupAddress: { contains: search, mode: "insensitive" as const } },
-              { dropoffAddress: { contains: search, mode: "insensitive" as const } },
-              { passengerName: { contains: search, mode: "insensitive" as const } },
-              { customer: { name: { contains: search, mode: "insensitive" as const } } },
-            ],
-          }] : []),
-        ],
-      },
-      orderBy: [{ pickupDate: "asc" }, { pickupTime: "asc" }],
-      include: {
-        customer: { select: { id: true, name: true, phone: true, email: true, company: true } },
-        driver: { select: { id: true, name: true, phone: true, avatarUrl: true } },
-        vehicle: { select: { id: true, name: true, type: true } },
-        stops: { orderBy: { order: "asc" } },
-        farmOuts: {
-          where: { status: { in: ["PENDING", "ACCEPTED"] } },
-          orderBy: { createdAt: "desc" },
-          take: 1,
-          select: {
-            id: true, status: true,
-            toCompany: { select: { id: true, name: true } },
-            fromCompany: { select: { id: true, name: true } },
-          },
+    const dateFilter = date ? { pickupDate: { gte: new Date(date + "T00:00:00"), lte: new Date(date + "T23:59:59") } } : {}
+    const statusFilter = status ? { status: status as never } : {}
+    const driverFilter = driverId ? { driverId } : {}
+    const searchFilter = search ? {
+      OR: [
+        { tripNumber: { contains: search, mode: "insensitive" as const } },
+        { clientRef: { contains: search, mode: "insensitive" as const } },
+        { pickupAddress: { contains: search, mode: "insensitive" as const } },
+        { dropoffAddress: { contains: search, mode: "insensitive" as const } },
+        { passengerName: { contains: search, mode: "insensitive" as const } },
+        { customer: { name: { contains: search, mode: "insensitive" as const } } },
+      ],
+    } : {}
+
+    const tripInclude = {
+      customer: { select: { id: true, name: true, phone: true, email: true, company: true } },
+      driver: { select: { id: true, name: true, phone: true, avatarUrl: true } },
+      vehicle: { select: { id: true, name: true, type: true } },
+      stops: { orderBy: { order: "asc" as const } },
+      farmOuts: {
+        where: { status: { in: ["PENDING" as const, "ACCEPTED" as const] } },
+        orderBy: { createdAt: "desc" as const },
+        take: 1,
+        select: {
+          id: true, status: true,
+          toCompany: { select: { id: true, name: true } },
+          fromCompany: { select: { id: true, name: true } },
         },
       },
+    }
+
+    // Query 1: owned trips
+    const ownedTrips = await prisma.trip.findMany({
+      where: { companyId, ...dateFilter, ...statusFilter, ...driverFilter, ...searchFilter },
+      orderBy: [{ pickupDate: "asc" }, { pickupTime: "asc" }],
+      include: tripInclude,
     })
 
-    // Annotate farm-in trips (owned by another company but dispatched to us via accepted farm-out)
-    const annotated = trips.map((trip) => {
-      if (trip.companyId !== companyId) {
-        const farmIn = trip.farmOuts?.[0]
-        return {
-          ...trip,
-          customer: null,
-          internalNotes: null,
-          farmedIn: farmIn?.fromCompany ?? null,
-        }
-      }
-      return trip
+    // Query 2: accepted farm-ins for this company
+    const acceptedFarmIns = await prisma.farmOut.findMany({
+      where: { toCompanyId: companyId, status: "ACCEPTED" },
+      select: { tripId: true, fromCompany: { select: { id: true, name: true } } },
     })
 
-    return NextResponse.json(annotated)
+    let farmInTrips: unknown[] = []
+    if (acceptedFarmIns.length > 0) {
+      const fromCompanyByTripId = new Map(acceptedFarmIns.map((f) => [f.tripId, f.fromCompany]))
+      const farmInSearchFilter = search ? {
+        OR: [
+          { tripNumber: { contains: search, mode: "insensitive" as const } },
+          { pickupAddress: { contains: search, mode: "insensitive" as const } },
+          { dropoffAddress: { contains: search, mode: "insensitive" as const } },
+          { passengerName: { contains: search, mode: "insensitive" as const } },
+        ],
+      } : {}
+
+      const rawFarmInTrips = await prisma.trip.findMany({
+        where: {
+          id: { in: acceptedFarmIns.map((f) => f.tripId) },
+          ...dateFilter,
+          ...statusFilter,
+          ...driverFilter,
+          ...farmInSearchFilter,
+        },
+        orderBy: [{ pickupDate: "asc" }, { pickupTime: "asc" }],
+        include: tripInclude,
+      })
+
+      farmInTrips = rawFarmInTrips.map((trip) => ({
+        ...trip,
+        customer: null,
+        internalNotes: null,
+        farmedIn: fromCompanyByTripId.get(trip.id) ?? null,
+      }))
+    }
+
+    // Merge and sort by date + time
+    const allTrips = [...ownedTrips, ...(farmInTrips as typeof ownedTrips)]
+      .sort((a, b) => {
+        const d = new Date(a.pickupDate).getTime() - new Date(b.pickupDate).getTime()
+        return d !== 0 ? d : a.pickupTime.localeCompare(b.pickupTime)
+      })
+
+    return NextResponse.json(allTrips)
   } catch (error) {
     console.error("GET /api/trips error:", error)
     return NextResponse.json({ error: "Failed to fetch trips" }, { status: 500 })

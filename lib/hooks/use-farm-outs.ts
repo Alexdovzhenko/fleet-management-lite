@@ -98,6 +98,7 @@ export function useCancelFarmOut(tripId: string) {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["farm-outs", "trip", tripId] })
+      qc.invalidateQueries({ queryKey: ["trips"] })
     },
   })
 }

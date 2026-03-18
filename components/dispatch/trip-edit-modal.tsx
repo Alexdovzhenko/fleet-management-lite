@@ -21,7 +21,7 @@ import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
 import { useServiceTypes } from "@/lib/hooks/use-service-types"
 import { useCustomers } from "@/lib/hooks/use-customers"
-import { useTripFarmOuts } from "@/lib/hooks/use-farm-outs"
+import { useTripFarmOuts, useCancelFarmOut } from "@/lib/hooks/use-farm-outs"
 import { FarmOutModal } from "@/components/dispatch/farm-out-modal"
 import { formatCurrency, getTripStatusLabel, cn } from "@/lib/utils"
 import type { Trip, TripStatus, Driver, Vehicle, Customer } from "@/types"
@@ -798,6 +798,8 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const { data: farmOuts } = useTripFarmOuts(isFarmedIn ? null : (trip?.id ?? null))
   const pendingFarmOut = farmOuts?.find((f) => f.status === "PENDING")
   const acceptedFarmOut = farmOuts?.find((f) => f.status === "ACCEPTED")
+  const activeFarmOut = acceptedFarmOut || pendingFarmOut
+  const cancelFarmOut = useCancelFarmOut(trip?.id ?? "")
 
   const [copied, setCopied] = useState(false)
   const [driverIdValue, setDriverIdValue] = useState("")
@@ -1383,20 +1385,44 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                 {/* Farm-Out — hidden for farm-in trips */}
                 {!isFarmedIn && !["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
                   acceptedFarmOut ? (
-                    <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-100 rounded-lg">
-                      <div className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
-                      <div className="min-w-0">
-                        <p className="text-xs font-semibold text-emerald-800">Farmed Out</p>
-                        <p className="text-xs text-emerald-600 truncate">{acceptedFarmOut.toCompany?.name}</p>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-100 rounded-lg">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-semibold text-emerald-800">Farmed Out</p>
+                          <p className="text-xs text-emerald-600 truncate">{acceptedFarmOut.toCompany?.name}</p>
+                        </div>
                       </div>
+                      <Button type="button" variant="ghost" size="sm"
+                        className="w-full text-xs text-orange-600 hover:bg-orange-50 hover:text-orange-700 h-7 border border-orange-200"
+                        disabled={cancelFarmOut.isPending}
+                        onClick={() => {
+                          if (window.confirm(`Cancel the farm-out to ${acceptedFarmOut.toCompany?.name}?`)) {
+                            cancelFarmOut.mutate(acceptedFarmOut.id, { onSuccess: () => {} })
+                          }
+                        }}>
+                        Cancel Farm-Out
+                      </Button>
                     </div>
                   ) : pendingFarmOut ? (
-                    <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-100 rounded-lg">
-                      <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
-                      <div className="min-w-0">
-                        <p className="text-xs font-semibold text-amber-800">Awaiting Response</p>
-                        <p className="text-xs text-amber-600 truncate">{pendingFarmOut.toCompany?.name}</p>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-100 rounded-lg">
+                        <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-semibold text-amber-800">Awaiting Response</p>
+                          <p className="text-xs text-amber-600 truncate">{pendingFarmOut.toCompany?.name}</p>
+                        </div>
                       </div>
+                      <Button type="button" variant="ghost" size="sm"
+                        className="w-full text-xs text-orange-600 hover:bg-orange-50 hover:text-orange-700 h-7 border border-orange-200"
+                        disabled={cancelFarmOut.isPending}
+                        onClick={() => {
+                          if (window.confirm(`Cancel the pending farm-out to ${pendingFarmOut.toCompany?.name}?`)) {
+                            cancelFarmOut.mutate(pendingFarmOut.id, { onSuccess: () => {} })
+                          }
+                        }}>
+                        Cancel Farm-Out
+                      </Button>
                     </div>
                   ) : (
                     <Button
