@@ -1246,7 +1246,8 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
               </div>
 
               {/* ── RIGHT SIDEBAR ── */}
-              <div className="w-[300px] flex-shrink-0 border-l bg-white p-5 space-y-5 flex flex-col overflow-y-auto">
+              <div className="w-[300px] flex-shrink-0 border-l bg-white flex flex-col">
+              <div className="flex-1 overflow-y-auto p-5 space-y-5">
 
                 {/* Dispatch */}
                 <section className="space-y-3">
@@ -1362,8 +1363,10 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                   </div>
                 </section>
 
-                <div className="border-t border-gray-100" />
+              </div>{/* end scrollable */}
 
+              {/* Sticky action footer */}
+              <div className="border-t border-gray-100 p-4 space-y-2 flex-shrink-0">
                 {/* Farm-Out */}
                 {!["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
                   acceptedFarmOut ? (
@@ -1406,6 +1409,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                     Cancel Trip
                   </Button>
                 )}
+              </div>{/* end sticky footer */}
               </div>
             </div>
           </form>
