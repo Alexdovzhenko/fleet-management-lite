@@ -66,24 +66,27 @@ export async function GET(request: NextRequest) {
 
     const trips = await prisma.trip.findMany({
       where: {
-        companyId,
-        ...(date && {
-          pickupDate: {
-            gte: new Date(date + "T00:00:00"),
-            lte: new Date(date + "T23:59:59"),
+        AND: [
+          {
+            OR: [
+              { companyId },
+              { farmOuts: { some: { toCompanyId: companyId, status: "ACCEPTED" } } },
+            ],
           },
-        }),
-        ...(status && { status: status as never }),
-        ...(driverId && { driverId }),
-        ...(search && {
-          OR: [
-            { tripNumber: { contains: search, mode: "insensitive" } },
-            { clientRef: { contains: search, mode: "insensitive" } },
-            { pickupAddress: { contains: search, mode: "insensitive" } },
-            { dropoffAddress: { contains: search, mode: "insensitive" } },
-            { customer: { name: { contains: search, mode: "insensitive" } } },
-          ],
-        }),
+          ...(date ? [{ pickupDate: { gte: new Date(date + "T00:00:00"), lte: new Date(date + "T23:59:59") } }] : []),
+          ...(status ? [{ status: status as never }] : []),
+          ...(driverId ? [{ driverId }] : []),
+          ...(search ? [{
+            OR: [
+              { tripNumber: { contains: search, mode: "insensitive" as const } },
+              { clientRef: { contains: search, mode: "insensitive" as const } },
+              { pickupAddress: { contains: search, mode: "insensitive" as const } },
+              { dropoffAddress: { contains: search, mode: "insensitive" as const } },
+              { passengerName: { contains: search, mode: "insensitive" as const } },
+              { customer: { name: { contains: search, mode: "insensitive" as const } } },
+            ],
+          }] : []),
+        ],
       },
       orderBy: [{ pickupDate: "asc" }, { pickupTime: "asc" }],
       include: {
@@ -104,7 +107,21 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    return NextResponse.json(trips)
+    // Annotate farm-in trips (owned by another company but dispatched to us via accepted farm-out)
+    const annotated = trips.map((trip) => {
+      if (trip.companyId !== companyId) {
+        const farmIn = trip.farmOuts?.[0]
+        return {
+          ...trip,
+          customer: null,
+          internalNotes: null,
+          farmedIn: farmIn?.fromCompany ?? null,
+        }
+      }
+      return trip
+    })
+
+    return NextResponse.json(annotated)
   } catch (error) {
     console.error("GET /api/trips error:", error)
     return NextResponse.json({ error: "Failed to fetch trips" }, { status: 500 })

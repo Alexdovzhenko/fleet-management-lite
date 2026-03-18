@@ -310,16 +310,19 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
               {trip.meetAndGreet && <Bell className="w-3.5 h-3.5 text-purple-400" />}
               {trip.childSeat && <Baby className="w-3.5 h-3.5 text-pink-400" />}
               {trip.wheelchairAccess && <Accessibility className="w-3.5 h-3.5 text-blue-400" />}
-              {activeFarmOut?.status === "PENDING" && (
+              {trip.farmedIn ? (
+                <span title={`Farm-in from: ${trip.farmedIn.name}`}>
+                  <ArrowRightLeft className="w-3.5 h-3.5 text-indigo-500" />
+                </span>
+              ) : activeFarmOut?.status === "PENDING" ? (
                 <span title={`Farm-out pending: ${activeFarmOut.toCompany?.name}`}>
                   <ArrowRightLeft className="w-3.5 h-3.5 text-amber-500" />
                 </span>
-              )}
-              {activeFarmOut?.status === "ACCEPTED" && (
+              ) : activeFarmOut?.status === "ACCEPTED" ? (
                 <span title={`Farmed out to: ${activeFarmOut.toCompany?.name}`}>
                   <ArrowRightLeft className="w-3.5 h-3.5 text-emerald-500" />
                 </span>
-              )}
+              ) : null}
             </div>
           </td>
         )

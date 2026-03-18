@@ -792,8 +792,10 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const { data: serviceTypes = [] } = useServiceTypes()
   const enabledTypes = serviceTypes.filter((t) => t.isEnabled)
 
+  const isFarmedIn = !!trip?.farmedIn
+
   const [farmOutOpen, setFarmOutOpen] = useState(false)
-  const { data: farmOuts } = useTripFarmOuts(trip?.id ?? null)
+  const { data: farmOuts } = useTripFarmOuts(isFarmedIn ? null : (trip?.id ?? null))
   const pendingFarmOut = farmOuts?.find((f) => f.status === "PENDING")
   const acceptedFarmOut = farmOuts?.find((f) => f.status === "ACCEPTED")
 
@@ -1249,6 +1251,17 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
               <div className="w-[300px] flex-shrink-0 border-l bg-white flex flex-col">
               <div className="flex-1 overflow-y-auto p-5 space-y-5">
 
+                {/* Farm-In banner */}
+                {isFarmedIn && trip.farmedIn && (
+                  <div className="flex items-center gap-2.5 px-3 py-2.5 bg-indigo-50 border border-indigo-100 rounded-xl">
+                    <ArrowRightLeft className="w-4 h-4 text-indigo-500 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs font-semibold text-indigo-800">Farm-In</p>
+                      <p className="text-xs text-indigo-600 truncate">{trip.farmedIn.name}</p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Dispatch */}
                 <section className="space-y-3">
                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Dispatch</p>
@@ -1256,10 +1269,10 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                   <VehiclePickerCard vehicles={activeVehicles} value={vehicleIdValue} onChange={setVehicleIdValue} />
                 </section>
 
-                <div className="border-t border-gray-100" />
+                {!isFarmedIn && <div className="border-t border-gray-100" />}
 
                 {/* Pricing */}
-                <section className="space-y-3">
+                {!isFarmedIn && <section className="space-y-3">
                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pricing</p>
                   <div className="grid grid-cols-2 gap-2.5">
                     <div className="space-y-1.5">
@@ -1287,7 +1300,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                       </div>
                     </div>
                   )}
-                </section>
+                </section>}
 
                 <div className="border-t border-gray-100" />
 
@@ -1367,8 +1380,8 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
               {/* Sticky action footer */}
               <div className="border-t border-gray-100 p-4 space-y-2 flex-shrink-0">
-                {/* Farm-Out */}
-                {!["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
+                {/* Farm-Out — hidden for farm-in trips */}
+                {!isFarmedIn && !["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
                   acceptedFarmOut ? (
                     <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-100 rounded-lg">
                       <div className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
@@ -1398,7 +1411,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                   )
                 )}
 
-                {!["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
+                {!isFarmedIn && !["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
                   <Button type="button" variant="ghost"
                     className="w-full text-red-500 hover:bg-red-50 hover:text-red-600 text-sm h-9 border border-red-200"
                     onClick={() => {

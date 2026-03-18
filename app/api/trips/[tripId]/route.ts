@@ -54,7 +54,13 @@ export async function GET(
   try {
     const { tripId } = await params
     const trip = await prisma.trip.findFirst({
-      where: { id: tripId, companyId },
+      where: {
+        id: tripId,
+        OR: [
+          { companyId },
+          { farmOuts: { some: { toCompanyId: companyId, status: "ACCEPTED" } } },
+        ],
+      },
       include: {
         customer: true,
         driver: true,
@@ -62,10 +68,27 @@ export async function GET(
         stops: { orderBy: { order: "asc" } },
         notifications: { orderBy: { sentAt: "desc" }, take: 20 },
         invoice: true,
+        farmOuts: {
+          where: { status: "ACCEPTED" },
+          take: 1,
+          select: { fromCompany: { select: { id: true, name: true } } },
+        },
       },
     })
 
     if (!trip) return NextResponse.json({ error: "Trip not found" }, { status: 404 })
+
+    // Sanitize if this is a farm-in
+    if (trip.companyId !== companyId) {
+      const { farmOuts, ...rest } = trip as typeof trip & { farmOuts?: Array<{ fromCompany: { id: string; name: string } | null }> }
+      return NextResponse.json({
+        ...rest,
+        customer: null,
+        internalNotes: null,
+        farmedIn: farmOuts?.[0]?.fromCompany ?? null,
+      })
+    }
+
     return NextResponse.json(trip)
   } catch (error) {
     console.error("GET /api/trips/[id] error:", error)
@@ -83,7 +106,15 @@ export async function PUT(
 
   try {
     const { tripId } = await params
-    const existing = await prisma.trip.findFirst({ where: { id: tripId, companyId } })
+    const existing = await prisma.trip.findFirst({
+      where: {
+        id: tripId,
+        OR: [
+          { companyId },
+          { farmOuts: { some: { toCompanyId: companyId, status: "ACCEPTED" } } },
+        ],
+      },
+    })
     if (!existing) return NextResponse.json({ error: "Trip not found" }, { status: 404 })
 
     const body = await request.json()
@@ -97,16 +128,30 @@ export async function PUT(
     }
     const extraData = data.status ? (statusTimestamps[data.status] || {}) : {}
 
-    const { customerId, ...restData } = data
+    const isOwned = existing.companyId === companyId
+
+    // Farm-in trips: only allow updating dispatch fields and status
+    const updateData = isOwned
+      ? (() => {
+          const { customerId, ...restData } = data
+          return {
+            ...restData,
+            ...extraData,
+            ...(customerId ? { customerId } : {}),
+            pickupDate: data.pickupDate ? new Date(data.pickupDate) : undefined,
+            flightArrival: data.flightArrival ? new Date(data.flightArrival) : undefined,
+          }
+        })()
+      : {
+          // Receiving company can only update dispatch + status
+          ...(data.status !== undefined ? { status: data.status, ...extraData } : {}),
+          ...(data.driverId !== undefined ? { driverId: data.driverId } : {}),
+          ...(data.vehicleId !== undefined ? { vehicleId: data.vehicleId } : {}),
+        }
+
     const trip = await prisma.trip.update({
       where: { id: tripId },
-      data: {
-        ...restData,
-        ...extraData,
-        ...(customerId ? { customerId } : {}),
-        pickupDate: data.pickupDate ? new Date(data.pickupDate) : undefined,
-        flightArrival: data.flightArrival ? new Date(data.flightArrival) : undefined,
-      },
+      data: updateData,
       include: {
         customer: { select: { id: true, name: true, phone: true } },
         driver: { select: { id: true, name: true } },
