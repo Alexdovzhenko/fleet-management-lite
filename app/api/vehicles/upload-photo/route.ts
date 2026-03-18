@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAuth } from "@/lib/auth-context"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@supabase/supabase-js"
 
 const BUCKET = "vehicle-photos"
 const MAX_SIZE = 5 * 1024 * 1024 // 5 MB
+
+// Use service role key server-side — bypasses RLS, safe since requireAuth gates the route
+function getAdminClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) throw new Error("Supabase env vars not configured")
+  return createClient(url, key, { auth: { persistSession: false } })
+}
 
 export async function POST(request: NextRequest) {
   const auth = await requireAuth(request)
@@ -20,7 +28,7 @@ export async function POST(request: NextRequest) {
     const ext = file.name.split(".").pop() || "jpg"
     const path = `${companyId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
 
-    const supabase = await createClient()
+    const supabase = getAdminClient()
     const bytes = await file.arrayBuffer()
     const { error } = await supabase.storage
       .from(BUCKET)
@@ -35,6 +43,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url: publicUrl })
   } catch (err) {
     console.error("Upload error:", err)
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 })
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Upload failed" }, { status: 500 })
   }
 }

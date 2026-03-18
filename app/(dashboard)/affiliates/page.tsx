@@ -20,6 +20,7 @@ import {
   useToggleAffiliateFavorite,
 } from "@/lib/hooks/use-affiliates"
 import type { AffiliateProfile, AffiliateConnection, ConnectionView } from "@/types"
+import { cn } from "@/lib/utils"
 
 // ─── Location suggestions (US cities + states, Canadian cities + provinces) ───
 
@@ -569,39 +570,40 @@ function TabBar({
   connectedCount: number
 }) {
   const tabs: { id: Tab; label: string; badge?: number }[] = [
-    { id: "browse", label: "Browse" },
-    { id: "requests", label: "Requests", badge: pendingCount },
+    { id: "browse",    label: "Browse" },
+    { id: "requests",  label: "Requests",  badge: pendingCount },
     { id: "connected", label: "Connected", badge: connectedCount || undefined },
   ]
 
   return (
-    <div className="flex items-center gap-1 bg-gray-100/70 rounded-xl p-1 w-fit">
+    <div className="flex items-center">
       {tabs.map((tab) => (
         <button
           key={tab.id}
           onClick={() => onChange(tab.id)}
-          className={`
-            relative flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-150
-            ${active === tab.id
-              ? "bg-white text-gray-900 shadow-sm"
-              : "text-gray-500 hover:text-gray-700"
-            }
-          `}
+          className={cn(
+            "relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-150 select-none",
+            active === tab.id ? "text-gray-900" : "text-gray-400 hover:text-gray-600"
+          )}
         >
           {tab.label}
           {tab.badge ? (
-            <span
-              className={`
-                inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold
-                ${tab.id === "requests"
-                  ? "bg-red-500 text-white"
-                  : "bg-gray-200 text-gray-600"
-                }
-              `}
-            >
+            <span className={cn(
+              "inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold leading-none",
+              tab.id === "requests" && tab.badge > 0
+                ? "bg-red-500 text-white"
+                : "bg-gray-100 text-gray-500"
+            )}>
               {tab.badge}
             </span>
           ) : null}
+          {active === tab.id && (
+            <motion.div
+              layoutId="affiliates-tab-indicator"
+              className="absolute bottom-0 left-0 right-0 h-[2px] bg-blue-600 rounded-full"
+              transition={{ type: "spring", bounce: 0.2, duration: 0.35 }}
+            />
+          )}
         </button>
       ))}
     </div>
@@ -662,115 +664,142 @@ export default function AffiliatesPage() {
   }, [connectedList, favoriteIds])
 
   return (
-    <div className="max-w-5xl mx-auto">
-      {/* Page header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-1">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{
-              background: "linear-gradient(135deg, rgb(37,99,235) 0%, rgb(79,70,229) 100%)",
-              boxShadow: "0 4px 14px rgba(37,99,235,0.25)",
-            }}
-          >
-            <Network className="w-4.5 h-4.5 text-white w-[18px] h-[18px]" />
+    <div className="max-w-5xl mx-auto space-y-5">
+
+      {/* ── Premium header card ───────────────────────────────────── */}
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
+
+        {/* Title row + inline metric strip */}
+        <div className="flex items-center justify-between gap-4 px-6 pt-5 pb-5">
+
+          {/* Left: icon + title + description */}
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div
+              className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
+              style={{
+                background: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)",
+                boxShadow: "0 4px 12px rgba(37,99,235,0.18)",
+              }}
+            >
+              <Network className="w-[18px] h-[18px] text-white" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-[17px] font-bold text-gray-900 tracking-tight leading-tight">
+                Affiliates Network
+              </h1>
+              <p className="text-[13px] text-gray-400 mt-0.5 leading-snug">
+                Connect with trusted limo companies for coverage and referrals
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900 leading-tight">Affiliates Network</h1>
-            <p className="text-xs text-gray-400 mt-0.5">
-              Connect with other limousine companies for collaboration and coverage
-            </p>
+
+          {/* Right: metric strip */}
+          <div className="flex items-stretch divide-x divide-gray-100 rounded-xl border border-gray-100 bg-gray-50/50 overflow-hidden shrink-0">
+            {([
+              { label: "On Network", value: affiliates.length, dot: "bg-blue-500",    tab: "browse"    as Tab },
+              { label: "Connected",  value: connectedCount,    dot: "bg-emerald-500", tab: "connected" as Tab },
+              { label: "Pending",    value: pendingCount,      dot: "bg-amber-400",   tab: "requests"  as Tab },
+            ] as const).map((stat) => (
+              <button
+                key={stat.label}
+                onClick={() => setActiveTab(stat.tab)}
+                className={cn(
+                  "flex flex-col items-center justify-center px-5 py-3 min-w-[88px] transition-all duration-150",
+                  activeTab === stat.tab
+                    ? "bg-white shadow-[0_0_0_1px_rgba(37,99,235,0.08)] relative"
+                    : "hover:bg-white/70"
+                )}
+              >
+                <span className={cn(
+                  "text-[22px] font-bold leading-none tracking-tight",
+                  activeTab === stat.tab ? "text-blue-600" : "text-gray-800"
+                )}>
+                  {stat.value}
+                </span>
+                <span className="flex items-center gap-1.5 mt-1.5">
+                  <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", stat.dot)} />
+                  <span className="text-[11px] text-gray-400 font-medium leading-none whitespace-nowrap">
+                    {stat.label}
+                  </span>
+                </span>
+              </button>
+            ))}
           </div>
         </div>
-      </div>
 
-      {/* Stats strip */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        {[
-          { label: "On Platform", value: affiliates.length, icon: Building2, color: "text-blue-600 bg-blue-50", tab: "browse" as Tab },
-          { label: "Connected",   value: connectedCount,    icon: Handshake,  color: "text-emerald-600 bg-emerald-50", tab: "connected" as Tab },
-          { label: "Pending",     value: pendingCount,      icon: Clock,      color: "text-amber-600 bg-amber-50",   tab: "requests" as Tab },
-        ].map((stat) => {
-          const isActive = activeTab === stat.tab
-          return (
-            <button
-              key={stat.label}
-              onClick={() => setActiveTab(stat.tab)}
-              className={`
-                bg-white rounded-xl border shadow-sm p-3.5 flex items-center gap-3 w-full text-left
-                transition-all duration-150 hover:shadow-md active:scale-[0.98]
-                ${isActive ? "border-blue-200 ring-1 ring-blue-100" : "border-gray-100 hover:border-gray-200"}
-              `}
-            >
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${stat.color}`}>
-                <stat.icon className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="text-lg font-bold text-gray-900 leading-none">{stat.value}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{stat.label}</p>
-              </div>
-            </button>
-          )
-        })}
-      </div>
+        {/* Gradient divider */}
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-100 to-transparent mx-6" />
 
-      {/* Toolbar: tabs + search */}
-      <div className="flex items-center justify-between gap-3 mb-5 flex-wrap">
-        <TabBar
-          active={activeTab}
-          onChange={setActiveTab}
-          pendingCount={pendingCount}
-          connectedCount={connectedCount}
-        />
-
-        {activeTab === "browse" && (
-          <div className="relative flex-1 max-w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by company or email…"
-              className="pl-8 h-9 text-sm bg-white rounded-xl border-gray-200"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Filter bar — Browse tab only */}
-      {activeTab === "browse" && (
-        <div className="flex flex-wrap items-center gap-2 mb-4">
-          {/* Location filter */}
-          <LocationInput value={locationFilter} onChange={setLocationFilter} />
-
-          {/* Vehicle type dropdown */}
-          <VehicleDropdown
-            selected={vehicleTypeFilter}
-            onToggle={toggleVehicleType}
-            onClear={() => setVehicleTypeFilter([])}
+        {/* Toolbar: tabs (left) + controls (right) */}
+        <div className="flex items-center justify-between gap-4 px-6">
+          <TabBar
+            active={activeTab}
+            onChange={setActiveTab}
+            pendingCount={pendingCount}
+            connectedCount={connectedCount}
           />
 
-          {/* Clear all filters */}
-          {hasActiveFilters && (
-            <button
-              onClick={clearFilters}
-              className="flex items-center gap-1 px-2.5 h-8 rounded-lg text-xs text-gray-400 hover:text-gray-600 hover:bg-gray-50 border border-transparent hover:border-gray-200 transition-all"
-            >
-              <X className="w-3 h-3" />
-              Clear all
-            </button>
-          )}
-        </div>
-      )}
+          {/* Browse controls */}
+          <AnimatePresence>
+            {activeTab === "browse" && (
+              <motion.div
+                key="browse-controls"
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 4 }}
+                transition={{ duration: 0.15 }}
+                className="flex items-center gap-2 py-2"
+              >
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-300 pointer-events-none" />
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search companies…"
+                    className="pl-8 pr-7 h-8 w-52 text-[13px] bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-50 placeholder:text-gray-300 transition-all duration-150"
+                  />
+                  {search && (
+                    <button
+                      onClick={() => setSearch("")}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
 
-      {/* Tab content */}
+                {/* Thin divider */}
+                <div className="w-px h-5 bg-gray-200" />
+
+                {/* Location */}
+                <LocationInput value={locationFilter} onChange={setLocationFilter} />
+
+                {/* Vehicle type */}
+                <VehicleDropdown
+                  selected={vehicleTypeFilter}
+                  onToggle={toggleVehicleType}
+                  onClear={() => setVehicleTypeFilter([])}
+                />
+
+                {/* Clear filters */}
+                {hasActiveFilters && (
+                  <button
+                    onClick={clearFilters}
+                    className="flex items-center gap-1 h-8 px-2.5 text-[12px] text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-200 transition-all"
+                  >
+                    <X className="w-3 h-3" />
+                    Clear
+                  </button>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* ── Tab content ──────────────────────────────────────────── */}
 
         {/* ── Browse ── */}
         {activeTab === "browse" && (

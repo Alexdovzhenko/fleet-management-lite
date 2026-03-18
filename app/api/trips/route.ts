@@ -91,6 +91,16 @@ export async function GET(request: NextRequest) {
         driver: { select: { id: true, name: true, phone: true, avatarUrl: true } },
         vehicle: { select: { id: true, name: true, type: true } },
         stops: { orderBy: { order: "asc" } },
+        farmOuts: {
+          where: { status: { in: ["PENDING", "ACCEPTED"] } },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          select: {
+            id: true, status: true,
+            toCompany: { select: { id: true, name: true } },
+            fromCompany: { select: { id: true, name: true } },
+          },
+        },
       },
     })
 

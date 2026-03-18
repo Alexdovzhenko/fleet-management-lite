@@ -40,6 +40,9 @@ model Company {
 
   favoritesAdded AffiliateFavorite[] @relation("FavoriteOwner")
   favoritedBy    AffiliateFavorite[] @relation("FavoritedBy")
+
+  farmOutsSent     FarmOut[] @relation("FarmOutsSent")
+  farmOutsReceived FarmOut[] @relation("FarmOutsReceived")
 }
 
 model User {
@@ -247,6 +250,7 @@ model Trip {
   stops         TripStop[]
   invoice       Invoice?
   notifications TripNotification[]
+  farmOuts      FarmOut[]
 
   @@index([companyId])
   @@index([status])
@@ -409,6 +413,39 @@ model CompanyInvite {
 
   @@index([companyId])
   @@index([token])
+}
+
+// ============ FARM-OUT / FARM-IN ============
+
+enum FarmOutStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  CANCELLED
+}
+
+model FarmOut {
+  id              String        @id @default(cuid())
+  tripId          String
+  trip            Trip          @relation(fields: [tripId], references: [id])
+  fromCompanyId   String
+  fromCompany     Company       @relation("FarmOutsSent", fields: [fromCompanyId], references: [id])
+  toCompanyId     String
+  toCompany       Company       @relation("FarmOutsReceived", fields: [toCompanyId], references: [id])
+  status          FarmOutStatus @default(PENDING)
+  message         String?
+  agreedPrice     Decimal?      @db.Decimal(10, 2)
+  parentFarmOutId String?
+  parentFarmOut   FarmOut?      @relation("FarmOutChain", fields: [parentFarmOutId], references: [id])
+  childFarmOuts   FarmOut[]     @relation("FarmOutChain")
+  respondedAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([tripId])
+  @@index([fromCompanyId])
+  @@index([toCompanyId])
+  @@index([status])
 }
 
 // ============ AFFILIATES ============

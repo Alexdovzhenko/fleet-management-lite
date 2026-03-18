@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { Plane, Star, Baby, Accessibility, Bell, Phone, GripVertical } from "lucide-react"
+import { Plane, Star, Baby, Accessibility, Bell, Phone, GripVertical, ArrowRightLeft } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { formatTime, formatCurrency, getInitials, getTripStatusLabel, cn } from "@/lib/utils"
 import { format, parseISO } from "date-fns"
@@ -300,7 +300,8 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
             </span>
           </td>
         )
-      case "flags":
+      case "flags": {
+        const activeFarmOut = trip.farmOuts?.[0]
         return (
           <td key={key} className="px-3 py-2.5 whitespace-nowrap">
             <div className="flex items-center gap-1">
@@ -309,9 +310,20 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
               {trip.meetAndGreet && <Bell className="w-3.5 h-3.5 text-purple-400" />}
               {trip.childSeat && <Baby className="w-3.5 h-3.5 text-pink-400" />}
               {trip.wheelchairAccess && <Accessibility className="w-3.5 h-3.5 text-blue-400" />}
+              {activeFarmOut?.status === "PENDING" && (
+                <span title={`Farm-out pending: ${activeFarmOut.toCompany?.name}`}>
+                  <ArrowRightLeft className="w-3.5 h-3.5 text-amber-500" />
+                </span>
+              )}
+              {activeFarmOut?.status === "ACCEPTED" && (
+                <span title={`Farmed out to: ${activeFarmOut.toCompany?.name}`}>
+                  <ArrowRightLeft className="w-3.5 h-3.5 text-emerald-500" />
+                </span>
+              )}
             </div>
           </td>
         )
+      }
       default:
         return <td key={key} />
     }

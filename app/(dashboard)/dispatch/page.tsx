@@ -11,6 +11,7 @@ import { useDrivers } from "@/lib/hooks/use-drivers"
 import { TripGrid } from "@/components/dispatch/trip-grid"
 import { TripEditModal } from "@/components/dispatch/trip-edit-modal"
 import { QuickActionPopup } from "@/components/dispatch/quick-action-popup"
+import { FarmInNotification } from "@/components/dispatch/farm-in-notification"
 import { TripForm } from "@/components/trips/trip-form"
 import { EmptyState } from "@/components/shared/empty-state"
 import { TableSkeleton } from "@/components/shared/loading-skeleton"
@@ -100,6 +101,8 @@ export default function DispatchPage() {
   }
 
   return (
+    <>
+    <FarmInNotification />
     <div className="h-full flex flex-col space-y-4">
       {/* Toolbar */}
       <div className="flex items-center gap-3 flex-wrap">
@@ -327,5 +330,6 @@ export default function DispatchPage() {
         </SheetContent>
       </Sheet>
     </div>
+    </>
   )
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Phone, MapPin, Clock, User, Car, DollarSign, FileText, X, Plane } from "lucide-react"
+import { Phone, MapPin, Clock, User, Car, DollarSign, FileText, X, Plane, ArrowRightLeft } from "lucide-react"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { TripStatusBadge } from "@/components/trips/trip-status-badge"
@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUpdateTrip } from "@/lib/hooks/use-trips"
 import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
+import { useTripFarmOuts } from "@/lib/hooks/use-farm-outs"
+import { FarmOutModal } from "@/components/dispatch/farm-out-modal"
 import { formatDate, formatTime, formatCurrency, formatPhone } from "@/lib/utils"
 import type { Trip, TripStatus } from "@/types"
 
@@ -29,9 +31,14 @@ interface TripDrawerProps {
 
 export function TripDrawer({ trip, open, onClose }: TripDrawerProps) {
   const [assigningDriver, setAssigningDriver] = useState(false)
+  const [farmOutOpen, setFarmOutOpen] = useState(false)
   const updateTrip = useUpdateTrip()
   const { data: drivers } = useDrivers()
   const { data: vehicles } = useVehicles()
+  const { data: farmOuts } = useTripFarmOuts(trip?.id ?? null)
+
+  const pendingFarmOut = farmOuts?.find((f) => f.status === "PENDING")
+  const acceptedFarmOut = farmOuts?.find((f) => f.status === "ACCEPTED")
 
   if (!trip) return null
 
@@ -55,6 +62,14 @@ export function TripDrawer({ trip, open, onClose }: TripDrawerProps) {
   }
 
   return (
+    <>
+    {farmOutOpen && (
+      <FarmOutModal
+        trip={trip}
+        open={farmOutOpen}
+        onClose={() => setFarmOutOpen(false)}
+      />
+    )}
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent className="w-full sm:max-w-md overflow-y-auto p-0">
         {/* Header */}
@@ -78,6 +93,34 @@ export function TripDrawer({ trip, open, onClose }: TripDrawerProps) {
               style={{ backgroundColor: "#2563EB" }}
             >
               {updateTrip.isPending ? "Updating..." : statusAction.label}
+            </Button>
+          )}
+
+          {/* Farm-Out status / button */}
+          {acceptedFarmOut ? (
+            <div className="flex items-center gap-2.5 px-3 py-2.5 bg-emerald-50 border border-emerald-100 rounded-xl">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-emerald-800">Farmed Out</p>
+                <p className="text-xs text-emerald-600 truncate">{acceptedFarmOut.toCompany?.name}</p>
+              </div>
+            </div>
+          ) : pendingFarmOut ? (
+            <div className="flex items-center gap-2.5 px-3 py-2.5 bg-amber-50 border border-amber-100 rounded-xl">
+              <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-amber-800">Awaiting Farm-Out Response</p>
+                <p className="text-xs text-amber-600 truncate">{pendingFarmOut.toCompany?.name}</p>
+              </div>
+            </div>
+          ) : !["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
+            <Button
+              variant="outline"
+              className="w-full text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300 gap-2"
+              onClick={() => setFarmOutOpen(true)}
+            >
+              <ArrowRightLeft className="w-4 h-4" />
+              Farm Out to Affiliate
             </Button>
           )}
 
@@ -241,5 +284,6 @@ export function TripDrawer({ trip, open, onClose }: TripDrawerProps) {
         </div>
       </SheetContent>
     </Sheet>
+    </>
   )
 }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useCallback } from "react"
-import { Plus, Car, Users, Camera, X, Upload, Trash2, ChevronLeft, ChevronRight } from "lucide-react"
+import { Plus, Car, Users, Camera, X, Upload, Trash2, ChevronLeft, ChevronRight, Truck, Bus, CarFront, CircleDot, GripVertical, ImagePlus, Tag, Gauge, Palette, Info, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useVehicles, useCreateVehicle, useUpdateVehicle } from "@/lib/hooks/use-vehicles"
@@ -40,10 +40,26 @@ const vehicleTypes: { value: VehicleFormData["type"]; label: string; short: stri
   { value: "OTHER",        label: "Other",         short: "Other" },
 ]
 
+const TYPE_ICONS: Record<VehicleFormData["type"], React.ElementType> = {
+  SEDAN:        Car,
+  SUV:          Truck,
+  STRETCH_LIMO: CarFront,
+  SPRINTER:     Truck,
+  PARTY_BUS:    Bus,
+  COACH:        Bus,
+  OTHER:        CircleDot,
+}
+
+const STATUS_DOT: Record<string, string> = {
+  ACTIVE:         "bg-emerald-500",
+  MAINTENANCE:    "bg-amber-400",
+  OUT_OF_SERVICE: "bg-red-500",
+}
+
 const STATUS_CONFIG = {
-  ACTIVE:         { label: "Active",      dot: "bg-emerald-400", badge: "bg-emerald-500/20 text-emerald-100 ring-1 ring-emerald-400/30" },
-  MAINTENANCE:    { label: "Maintenance", dot: "bg-amber-400",   badge: "bg-amber-500/20 text-amber-100 ring-1 ring-amber-400/30" },
-  OUT_OF_SERVICE: { label: "Offline",     dot: "bg-red-400",     badge: "bg-red-500/20 text-red-100 ring-1 ring-red-400/30" },
+  ACTIVE:         { label: "Active",      dot: "bg-emerald-400", badge: "bg-emerald-600 text-white shadow-sm" },
+  MAINTENANCE:    { label: "Maintenance", dot: "bg-amber-400",   badge: "bg-amber-500 text-white shadow-sm" },
+  OUT_OF_SERVICE: { label: "Offline",     dot: "bg-red-500",     badge: "bg-red-600 text-white shadow-sm" },
 } as const
 
 type StatusKey = keyof typeof STATUS_CONFIG
@@ -69,7 +85,17 @@ async function uploadPhoto(file: File): Promise<string> {
   }
   const fd = new FormData()
   fd.append("file", file)
-  const res = await fetch("/api/vehicles/upload-photo", { method: "POST", body: fd })
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 30_000)
+  let res: Response
+  try {
+    res = await fetch("/api/vehicles/upload-photo", { method: "POST", body: fd, signal: controller.signal })
+  } catch (e: unknown) {
+    clearTimeout(timeout)
+    const msg = e instanceof Error && e.name === "AbortError" ? "Upload timed out after 30 s" : "Network error during upload"
+    throw new Error(msg)
+  }
+  clearTimeout(timeout)
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
     throw new Error(err.error || `Upload failed (${res.status})`)
@@ -142,7 +168,7 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
         {/* Status badge */}
         <div className="absolute top-3 right-3">
           <span className={cn(
-            "inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm",
+            "inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full",
             cfg.badge
           )}>
             <span className={cn("w-1.5 h-1.5 rounded-full", cfg.dot)} />
@@ -237,24 +263,25 @@ function VehicleForm({
 }) {
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<VehicleFormData>({
     resolver: zodResolver(vehicleSchema) as never,
-    defaultValues: { type: "SPRINTER", capacity: 14, status: "ACTIVE", ...defaultValues },
+    defaultValues: { status: "ACTIVE", ...defaultValues },
   })
 
   const selectedType = watch("type")
   const selectedStatus = watch("status")
 
-  // New files to upload
-  const [imageFiles, setImageFiles] = useState<File[]>([])
-  const [newPreviews, setNewPreviews] = useState<string[]>([])
-  // Existing photo URLs (can be removed)
-  const [keptPhotos, setKeptPhotos] = useState<string[]>(existingPhotos)
-  const [isDragging, setIsDragging] = useState(false)
+  // Unified ordered photo list for drag-and-drop reordering
+  type PhotoItem = { kind: "kept"; url: string } | { kind: "new"; file: File; preview: string }
+  const [photos, setPhotos] = useState<PhotoItem[]>(
+    existingPhotos.map(url => ({ kind: "kept" as const, url }))
+  )
+  const [isDropZoneDragging, setIsDropZoneDragging] = useState(false)
   const [uploadError, setUploadError] = useState("")
   const [saveError, setSaveError] = useState("")
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const dragIndexRef = useRef<number | null>(null)
 
-  const totalPhotos = keptPhotos.length + imageFiles.length
+  const totalPhotos = photos.length
   const canAddMore = totalPhotos < MAX_PHOTOS
 
   function addFiles(files: File[]) {
@@ -268,218 +295,226 @@ function VehicleForm({
     const allowed = images.slice(0, remaining)
     if (!allowed.length) return
     setUploadError("")
-    setImageFiles(prev => [...prev, ...allowed])
-    setNewPreviews(prev => [...prev, ...allowed.map(f => URL.createObjectURL(f))])
+    setPhotos(prev => [
+      ...prev,
+      ...allowed.map(file => ({ kind: "new" as const, file, preview: URL.createObjectURL(file) })),
+    ])
   }
 
-  function removeNewImage(idx: number) {
-    URL.revokeObjectURL(newPreviews[idx])
-    setImageFiles(prev => prev.filter((_, i) => i !== idx))
-    setNewPreviews(prev => prev.filter((_, i) => i !== idx))
+  function removePhoto(idx: number) {
+    setPhotos(prev => {
+      const item = prev[idx]
+      if (item.kind === "new") URL.revokeObjectURL(item.preview)
+      return prev.filter((_, i) => i !== idx)
+    })
   }
 
-  function removeKeptPhoto(idx: number) {
-    setKeptPhotos(prev => prev.filter((_, i) => i !== idx))
+  function handleDragStart(idx: number) {
+    dragIndexRef.current = idx
+  }
+
+  function handleDragOver(e: React.DragEvent, idx: number) {
+    e.preventDefault()
+    const from = dragIndexRef.current
+    if (from === null || from === idx) return
+    setPhotos(prev => {
+      const next = [...prev]
+      const [item] = next.splice(from, 1)
+      next.splice(idx, 0, item)
+      return next
+    })
+    dragIndexRef.current = idx
+  }
+
+  function handleDragEnd() {
+    dragIndexRef.current = null
   }
 
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
-    setIsDragging(false)
+    setIsDropZoneDragging(false)
     addFiles(Array.from(e.dataTransfer.files))
   }, [totalPhotos]) // eslint-disable-line
 
   async function handleFormSubmit(data: VehicleFormData) {
     setUploadError("")
     setIsUploading(true)
-    let uploadedUrls: string[] = []
+    const uploadedByIndex: Map<number, string> = new Map()
     try {
-      if (imageFiles.length) {
-        uploadedUrls = await Promise.all(imageFiles.map(uploadPhoto))
+      const newItems = photos
+        .map((p, i) => ({ p, i }))
+        .filter(({ p }) => p.kind === "new")
+      if (newItems.length) {
+        const urls = await Promise.all(newItems.map(({ p }) => uploadPhoto((p as { kind: "new"; file: File; preview: string }).file)))
+        newItems.forEach(({ i }, j) => uploadedByIndex.set(i, urls[j]))
       }
     } catch (err) {
       setUploadError(err instanceof Error ? err.message : "Upload failed. Try again.")
       setIsUploading(false)
       return
+    } finally {
+      // Failsafe: always unblock the button even if something unexpected throws
+      setIsUploading(false)
     }
-    setIsUploading(false)
-    const allPhotos = [...keptPhotos, ...uploadedUrls]
+    const allPhotos = photos.map((p, i) =>
+      p.kind === "kept" ? p.url : uploadedByIndex.get(i)!
+    )
     setSaveError("")
     onSubmit(data, allPhotos, (msg) => setSaveError(msg))
   }
 
   return (
     <form
-      onSubmit={handleSubmit(handleFormSubmit, (errs) => {
-        const fields = Object.keys(errs).join(", ")
-        setSaveError(`Validation failed on: ${fields}`)
+      onSubmit={handleSubmit(handleFormSubmit, () => {
+        setSaveError("Please fill in all required fields.")
       })}
-      className="space-y-5 mt-1"
+      className="mt-2"
     >
+      {/* ── Two-column layout ──────────────────────────────────────── */}
+      <div className="grid grid-cols-[5fr_6fr] gap-7">
 
-      {/* Vehicle Name */}
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Vehicle Name *</Label>
-        <Input
-          {...register("name")}
-          placeholder="e.g. Black Sprinter 1"
-          className={cn("h-10", errors.name && "border-red-400")}
-          autoFocus
-        />
-        {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
-      </div>
+        {/* ── LEFT: Identity + Type ──────────────────────────────────── */}
+        <div className="flex flex-col gap-5">
 
-      {/* Vehicle Type */}
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Type *</Label>
-        <div className="grid grid-cols-4 gap-1.5">
-          {vehicleTypes.map((t) => (
-            <button
-              key={t.value}
-              type="button"
-              onClick={() => setValue("type", t.value)}
+          {/* Vehicle Name */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Vehicle Name <span className="text-red-400">*</span></label>
+            <Input
+              {...register("name")}
+              placeholder="e.g. Black Sprinter 1"
+              autoFocus
               className={cn(
-                "h-9 rounded-lg text-xs font-medium border transition-all",
-                selectedType === t.value
-                  ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                  : "bg-white text-gray-600 border-gray-200 hover:border-blue-300 hover:text-blue-600"
+                "h-11 text-sm font-medium placeholder:font-normal placeholder:text-gray-400 rounded-xl border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all",
+                errors.name && "border-red-400 focus:border-red-400 focus:ring-red-100"
               )}
-            >
-              {t.short}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Status (edit only — present when defaultValues.status is set) */}
-      {"status" in defaultValues && (
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Status</Label>
-          <div className="flex gap-2">
-            {STATUS_OPTIONS.map((s) => (
-              <button
-                key={s.value}
-                type="button"
-                onClick={() => setValue("status", s.value)}
-                className={cn(
-                  "flex-1 h-9 rounded-lg text-xs font-medium border transition-all",
-                  selectedStatus === s.value
-                    ? "bg-blue-600 text-white border-blue-600 shadow-sm"
-                    : "bg-white text-gray-600 border-gray-200 hover:border-blue-300 hover:text-blue-600"
-                )}
-              >
-                {s.label}
-              </button>
-            ))}
+            />
+            {errors.name
+              ? <p className="text-xs text-red-500 flex items-center gap-1"><Info className="w-3 h-3" />{errors.name.message}</p>
+              : <p className="text-xs text-gray-400">Used in trip assignments and reports.</p>
+            }
           </div>
-        </div>
-      )}
 
-      {/* Capacity + Color */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Capacity *</Label>
-          <Input
-            {...register("capacity", { valueAsNumber: true })}
-            type="number" min={1}
-            className={cn("h-10", errors.capacity && "border-red-400")}
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Color</Label>
-          <Input {...register("color")} placeholder="Black" className="h-10" />
-        </div>
-      </div>
-
-      {/* Year + Make */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Year</Label>
-          <Input {...register("year", { valueAsNumber: true })} type="number" placeholder="2023" className="h-10" />
-        </div>
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Make</Label>
-          <Input {...register("make")} placeholder="Mercedes" className="h-10" />
-        </div>
-      </div>
-
-      {/* License Plate */}
-      <div className="space-y-1.5">
-        <Label className="text-xs font-medium text-gray-600 uppercase tracking-wide">License Plate</Label>
-        <Input {...register("licensePlate")} placeholder="ABC-1234" className="h-10 uppercase" />
-      </div>
-
-      <div className="border-t border-gray-100" />
-
-      {/* Photos */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label className="text-xs font-medium text-gray-600 uppercase tracking-wide">Photos</Label>
-          <span className="text-xs text-gray-400">{totalPhotos}/{MAX_PHOTOS} added</span>
-        </div>
-
-        {/* Existing photos */}
-        {(keptPhotos.length > 0 || newPreviews.length > 0) && (
-          <div className="grid grid-cols-3 gap-2">
-            {keptPhotos.map((src, idx) => (
-              <div key={`kept-${idx}`} className="relative group aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 ring-1 ring-gray-200">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt={`Photo ${idx + 1}`} className="w-full h-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => removeKeptPhoto(idx)}
-                  className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
-            {newPreviews.map((src, idx) => (
-              <div key={`new-${idx}`} className="relative group aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 ring-1 ring-blue-300">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt={`New photo ${idx + 1}`} className="w-full h-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => removeNewImage(idx)}
-                  className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
+          {/* Vehicle Type */}
+          <div className="space-y-2.5 flex-1">
+            <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">
+              Vehicle Type <span className="text-red-400">*</span>
+            </label>
+            <div className="grid grid-cols-4 gap-2">
+              {vehicleTypes.map((t) => {
+                const Icon = TYPE_ICONS[t.value]
+                const selected = selectedType === t.value
+                return (
+                  <button
+                    key={t.value}
+                    type="button"
+                    onClick={() => setValue("type", t.value)}
+                    className={cn(
+                      "flex flex-col items-center justify-center gap-1.5 h-[68px] rounded-xl border text-center transition-all select-none",
+                      selected
+                        ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-200"
+                        : "bg-white border-gray-200 text-gray-500 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50/40"
+                    )}
+                  >
+                    <Icon className={cn("w-5 h-5", selected ? "text-white" : "text-gray-400")} strokeWidth={1.75} />
+                    <span className="text-[10px] font-semibold leading-tight">{t.short}</span>
+                  </button>
+                )
+              })}
+            </div>
+            {errors.type && <p className="text-xs text-red-500 flex items-center gap-1"><Info className="w-3 h-3" />Please select a type.</p>}
           </div>
-        )}
 
-        {/* Upload zone */}
-        {canAddMore && (
-          <div
-            onClick={() => fileInputRef.current?.click()}
-            onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
-            onDragLeave={() => setIsDragging(false)}
-            onDrop={onDrop}
-            className={cn(
-              "relative flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed cursor-pointer transition-all py-6",
-              isDragging
-                ? "border-blue-400 bg-blue-50"
-                : "border-gray-200 bg-gray-50 hover:border-blue-300 hover:bg-blue-50/50"
+          {/* Photos */}
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Photos</label>
+              <span className={cn(
+                "text-[11px] font-medium px-2 py-0.5 rounded-full",
+                totalPhotos === MAX_PHOTOS ? "bg-green-50 text-green-600" : "bg-gray-100 text-gray-400"
+              )}>
+                {totalPhotos}/{MAX_PHOTOS}
+              </span>
+            </div>
+
+            {/* Photo slots */}
+            <div className="grid grid-cols-3 gap-2">
+              {photos.map((item, idx) => {
+                const src = item.kind === "kept" ? item.url : item.preview
+                const isNew = item.kind === "new"
+                return (
+                  <div
+                    key={`photo-${idx}`}
+                    draggable
+                    onDragStart={() => handleDragStart(idx)}
+                    onDragOver={(e) => handleDragOver(e, idx)}
+                    onDragEnd={handleDragEnd}
+                    className={cn(
+                      "relative group aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 cursor-grab active:cursor-grabbing select-none ring-1",
+                      isNew ? "ring-blue-300" : "ring-gray-200"
+                    )}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={src} alt={`Photo ${idx + 1}`} className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors pointer-events-none" />
+                    {idx === 0 && (
+                      <span className="absolute bottom-1.5 left-1.5 text-[9px] font-bold bg-blue-600 text-white px-1.5 py-0.5 rounded-full pointer-events-none tracking-wide">
+                        COVER
+                      </span>
+                    )}
+                    <div className="absolute top-1.5 right-1.5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="w-5 h-5 rounded-full bg-black/50 text-white flex items-center justify-center cursor-grab">
+                        <GripVertical className="w-3 h-3" />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(idx)}
+                        className="w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-500 transition-colors"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+
+              {/* Add slot(s) */}
+              {canAddMore && Array.from({ length: MAX_PHOTOS - totalPhotos }).map((_, i) => (
+                <div
+                  key={`slot-${i}`}
+                  onClick={i === 0 ? () => fileInputRef.current?.click() : undefined}
+                  onDragOver={i === 0 ? (e) => { e.preventDefault(); setIsDropZoneDragging(true) } : undefined}
+                  onDragLeave={i === 0 ? () => setIsDropZoneDragging(false) : undefined}
+                  onDrop={i === 0 ? onDrop : undefined}
+                  className={cn(
+                    "aspect-[4/3] rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-1 transition-all",
+                    i === 0
+                      ? isDropZoneDragging
+                        ? "border-blue-400 bg-blue-50 cursor-pointer"
+                        : "border-gray-200 bg-gray-50 hover:border-blue-300 hover:bg-blue-50/40 cursor-pointer"
+                      : "border-gray-100 bg-gray-50/40 cursor-default"
+                  )}
+                >
+                  {i === 0 && (
+                    <>
+                      {isDropZoneDragging
+                        ? <Upload className="w-4 h-4 text-blue-400" />
+                        : <ImagePlus className="w-4 h-4 text-gray-300" />
+                      }
+                      <span className="text-[10px] text-gray-400 font-medium">
+                        {totalPhotos === 0 ? "Add photo" : "Add"}
+                      </span>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {uploadError && (
+              <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-2.5 py-1.5 flex items-start gap-1.5">
+                <Info className="w-3 h-3 mt-0.5 shrink-0" />{uploadError}
+              </p>
             )}
-          >
-            <div className={cn(
-              "w-9 h-9 rounded-full flex items-center justify-center transition-colors",
-              isDragging ? "bg-blue-100" : "bg-white border border-gray-200"
-            )}>
-              {isDragging
-                ? <Upload className="w-4 h-4 text-blue-500" />
-                : <Camera className="w-4 h-4 text-gray-400" />
-              }
-            </div>
-            <div className="text-center">
-              <p className="text-sm font-medium text-gray-700">
-                {isDragging ? "Drop to add" : totalPhotos === 0 ? "Add photos" : "Add more"}
-              </p>
-              <p className="text-xs text-gray-400 mt-0.5">
-                {MAX_PHOTOS - totalPhotos} remaining · JPG, PNG, WEBP · max 5 MB
-              </p>
-            </div>
+
             <input
               ref={fileInputRef}
               type="file"
@@ -489,28 +524,128 @@ function VehicleForm({
               onChange={(e) => addFiles(Array.from(e.target.files || []))}
             />
           </div>
-        )}
+        </div>
 
-        {uploadError && <p className="text-xs text-red-500">{uploadError}</p>}
-      </div>
+        {/* ── RIGHT: Specs + Operations ──────────────────────────────── */}
+        <div className="flex flex-col gap-5">
 
-      {saveError && (
-        <p className="text-xs text-red-500 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{saveError}</p>
-      )}
+          {/* Specifications */}
+          <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 space-y-3.5">
+            <div className="flex items-center gap-2">
+              <Gauge className="w-3.5 h-3.5 text-gray-400" />
+              <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Specifications</span>
+            </div>
 
-      {/* Actions */}
-      <div className="flex gap-2 pt-1">
-        <Button
-          type="submit"
-          disabled={isPending || isUploading}
-          className="flex-1 h-10 text-white font-medium"
-          style={{ backgroundColor: "#2563EB" }}
-        >
-          {isUploading ? "Uploading…" : isPending ? "Saving…" : submitLabel}
-        </Button>
-        <Button type="button" variant="outline" onClick={onCancel} className="h-10 px-5">
-          Cancel
-        </Button>
+            <div className="grid grid-cols-3 gap-2.5">
+              <div className="space-y-1.5">
+                <Label className="text-[11px] font-medium text-gray-500">Year</Label>
+                <Input {...register("year", { valueAsNumber: true })} type="number" placeholder="2024" className="h-10 bg-white border-gray-200 rounded-lg text-sm" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[11px] font-medium text-gray-500">Make</Label>
+                <Input {...register("make")} placeholder="Mercedes" className="h-10 bg-white border-gray-200 rounded-lg text-sm" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[11px] font-medium text-gray-500">Model</Label>
+                <Input {...register("model")} placeholder="Sprinter" className="h-10 bg-white border-gray-200 rounded-lg text-sm" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="space-y-1.5">
+                <Label className="text-[11px] font-medium text-gray-500">Capacity <span className="text-red-400">*</span></Label>
+                <div className="relative">
+                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+                  <Input
+                    {...register("capacity", { valueAsNumber: true })}
+                    type="number" min={1} placeholder="0"
+                    className={cn("h-10 pl-8 bg-white border-gray-200 rounded-lg text-sm", errors.capacity && "border-red-400")}
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[11px] font-medium text-gray-500">Color</Label>
+                <div className="relative">
+                  <Palette className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+                  <Input {...register("color")} placeholder="Black" className="h-10 pl-8 bg-white border-gray-200 rounded-lg text-sm" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Operations */}
+          <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 space-y-3.5">
+            <div className="flex items-center gap-2">
+              <Tag className="w-3.5 h-3.5 text-gray-400" />
+              <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Operations</span>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-medium text-gray-500">License Plate</Label>
+              <Input
+                {...register("licensePlate")}
+                placeholder="ABC-1234"
+                className="h-10 bg-white border-gray-200 rounded-lg text-sm uppercase tracking-widest font-medium"
+              />
+            </div>
+
+            {"status" in defaultValues && (
+              <div className="space-y-2">
+                <Label className="text-[11px] font-medium text-gray-500">Status</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {STATUS_OPTIONS.map((s) => {
+                    const selected = selectedStatus === s.value
+                    return (
+                      <button
+                        key={s.value}
+                        type="button"
+                        onClick={() => setValue("status", s.value)}
+                        className={cn(
+                          "flex items-center justify-center gap-1.5 h-9 rounded-lg border text-xs font-medium transition-all",
+                          selected ? "border-transparent text-white shadow-sm" : "bg-white border-gray-200 text-gray-500 hover:border-gray-300"
+                        )}
+                        style={selected ? {
+                          backgroundColor: s.value === "ACTIVE" ? "#059669" : s.value === "MAINTENANCE" ? "#d97706" : "#dc2626"
+                        } : {}}
+                      >
+                        <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", selected ? "bg-white/80" : STATUS_DOT[s.value ?? ""])} />
+                        {s.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Spacer + Actions flush to bottom */}
+          <div className="flex-1" />
+
+          {saveError && (
+            <p className="text-xs text-red-500 bg-red-50 border border-red-200 rounded-xl px-3 py-2.5 flex items-center gap-1.5">
+              <Info className="w-3.5 h-3.5 shrink-0" />{saveError}
+            </p>
+          )}
+
+          <div className="flex gap-2">
+            <Button
+              type="submit"
+              disabled={isPending || isUploading}
+              className="flex-1 h-11 text-white font-semibold text-sm rounded-xl shadow-sm shadow-blue-200 transition-all hover:shadow-md"
+              style={{ backgroundColor: "#2563EB" }}
+            >
+              {isUploading ? "Uploading…" : isPending ? "Saving…" : submitLabel}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              className="h-11 px-5 rounded-xl text-sm font-medium text-gray-600"
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
       </div>
     </form>
   )
@@ -521,6 +656,7 @@ export default function VehiclesPage() {
   const [showAdd, setShowAdd]         = useState(false)
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
   const [filter, setFilter]           = useState<"ALL" | "ACTIVE" | "MAINTENANCE" | "OUT_OF_SERVICE">("ALL")
+  const [typeFilter, setTypeFilter]   = useState<VehicleFormData["type"] | "ALL">("ALL")
 
   const { data: vehicles, isLoading } = useVehicles()
   const createVehicle = useCreateVehicle()
@@ -545,77 +681,130 @@ export default function VehiclesPage() {
   const activeCount      = vehicles?.filter(v => v.status === "ACTIVE").length ?? 0
   const maintenanceCount = vehicles?.filter(v => v.status === "MAINTENANCE").length ?? 0
   const offlineCount     = vehicles?.filter(v => v.status === "OUT_OF_SERVICE").length ?? 0
-  const filtered         = filter === "ALL" ? vehicles : vehicles?.filter(v => v.status === filter)
+  const filtered         = vehicles
+    ?.filter(v => filter === "ALL" || v.status === filter)
+    .filter(v => typeFilter === "ALL" || v.type === typeFilter)
+
+  const typesInFleet = vehicles
+    ? [...new Set(vehicles.map(v => v.type as VehicleFormData["type"]))]
+    : []
 
   return (
     <div className="space-y-6">
 
-      {/* ── Page Header ── */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-semibold text-gray-900">Fleet</h1>
+      {/* ── Toolbar ── */}
+      <div className="flex items-center justify-between gap-4">
+
+        {/* Left: title + stat pills */}
+        <div className="flex items-center gap-4 min-w-0">
+          <h1 className="text-xl font-semibold text-gray-900 shrink-0">Fleet</h1>
+
           {!isLoading && totalCount > 0 && (
-            <div className="flex items-center gap-3 mt-1.5 text-sm text-gray-500">
-              <span>{totalCount} vehicle{totalCount !== 1 ? "s" : ""}</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
+                {totalCount} total
+              </span>
               {activeCount > 0 && (
-                <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                   {activeCount} active
                 </span>
               )}
               {maintenanceCount > 0 && (
-                <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                  {maintenanceCount} in maintenance
+                <span className="text-xs font-medium text-amber-700 bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                  {maintenanceCount} maintenance
                 </span>
               )}
               {offlineCount > 0 && (
-                <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                <span className="text-xs font-medium text-red-600 bg-red-50 border border-red-100 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
                   {offlineCount} offline
                 </span>
               )}
             </div>
           )}
         </div>
-        <Button
-          onClick={() => setShowAdd(true)}
-          className="text-white gap-2 shrink-0"
-          style={{ backgroundColor: "#2563EB" }}
-        >
-          <Plus className="w-4 h-4" />
-          Add Vehicle
-        </Button>
-      </div>
 
-      {/* ── Filter Tabs ── */}
-      {!isLoading && totalCount > 0 && (
-        <div className="flex gap-1 bg-gray-100/80 rounded-xl p-1 w-fit">
-          {FILTERS.map(({ key, label }) => {
-            const count =
-              key === "ALL"            ? totalCount :
-              key === "ACTIVE"         ? activeCount :
-              key === "MAINTENANCE"    ? maintenanceCount :
-              offlineCount
-            if (key !== "ALL" && count === 0) return null
-            return (
-              <button
-                key={key}
-                onClick={() => setFilter(key as typeof filter)}
+        {/* Right: filters + CTA */}
+        <div className="flex items-center gap-2 shrink-0">
+
+          {/* Status segmented control */}
+          {!isLoading && totalCount > 0 && (
+            <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
+              {FILTERS.map(({ key, label }) => {
+                const count =
+                  key === "ALL"         ? totalCount :
+                  key === "ACTIVE"      ? activeCount :
+                  key === "MAINTENANCE" ? maintenanceCount :
+                  offlineCount
+                if (key !== "ALL" && count === 0) return null
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setFilter(key as typeof filter)}
+                    className={cn(
+                      "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all",
+                      filter === key
+                        ? "bg-white text-gray-900 shadow-sm"
+                        : "text-gray-500 hover:text-gray-700 hover:bg-white/60"
+                    )}
+                  >
+                    {label}
+                    <span className={cn(
+                      "text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none",
+                      filter === key ? "bg-gray-100 text-gray-600" : "text-gray-400"
+                    )}>
+                      {count}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Type dropdown */}
+          {!isLoading && typesInFleet.length > 1 && (
+            <div className="relative">
+              <select
+                value={typeFilter}
+                onChange={e => setTypeFilter(e.target.value as typeof typeFilter)}
                 className={cn(
-                  "px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all",
-                  filter === key
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
+                  "appearance-none h-8 pl-3 pr-7 rounded-lg border text-xs font-semibold cursor-pointer transition-all outline-none",
+                  typeFilter !== "ALL"
+                    ? "bg-blue-600 border-blue-600 text-white"
+                    : "bg-white border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"
                 )}
               >
-                {label}
-                <span className="ml-1.5 text-xs text-gray-400">{count}</span>
-              </button>
-            )
-          })}
+                <option value="ALL">All types</option>
+                {typesInFleet.map(type => (
+                  <option key={type} value={type}>
+                    {vehicleTypes.find(t => t.value === type)?.label ?? type}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className={cn(
+                "absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none",
+                typeFilter !== "ALL" ? "text-white/80" : "text-gray-400"
+              )} />
+            </div>
+          )}
+
+          {/* Divider */}
+          {!isLoading && totalCount > 0 && (
+            <div className="w-px h-5 bg-gray-200" />
+          )}
+
+          <Button
+            onClick={() => setShowAdd(true)}
+            className="h-8 text-white text-xs font-semibold gap-1.5 px-3.5 rounded-lg shrink-0"
+            style={{ backgroundColor: "#2563EB" }}
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Add Vehicle
+          </Button>
         </div>
-      )}
+      </div>
 
       {/* ── Grid ── */}
       {isLoading ? (
@@ -661,13 +850,13 @@ export default function VehiclesPage() {
 
       {/* ── Add Vehicle Dialog ── */}
       <Dialog open={showAdd} onOpenChange={(open) => { if (!open) setShowAdd(false) }}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[960px] max-h-[92vh] overflow-y-auto p-7">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold">Add New Vehicle</DialogTitle>
-            <p className="text-sm text-gray-500 mt-0.5">Fill in the details below to add a vehicle to your fleet.</p>
+            <DialogTitle className="text-xl font-bold tracking-tight">Add New Vehicle</DialogTitle>
+            <p className="text-sm text-gray-400 mt-0.5">Fill in the details below to add a vehicle to your fleet.</p>
           </DialogHeader>
           <VehicleForm
-            defaultValues={{ type: "SPRINTER", capacity: 14 }}
+            defaultValues={{ status: "ACTIVE" }}
             onSubmit={handleCreate}
             onCancel={() => setShowAdd(false)}
             isPending={createVehicle.isPending}
@@ -678,7 +867,7 @@ export default function VehiclesPage() {
 
       {/* ── Edit Vehicle Dialog ── */}
       <Dialog open={!!editVehicle} onOpenChange={(open) => { if (!open) setEditVehicle(null) }}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[960px] max-h-[92vh] overflow-y-auto p-7">
           {editVehicle && (
             <>
               <DialogHeader>

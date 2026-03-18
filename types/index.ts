@@ -171,6 +171,12 @@ export interface Trip {
   tripCompletedAt?: string
   companyId: string
   stops?: TripStop[]
+  farmOuts?: Array<{
+    id: string
+    status: FarmOutStatus
+    toCompany?: { id: string; name: string }
+    fromCompany?: { id: string; name: string }
+  }>
   createdAt: string
   updatedAt: string
 }
@@ -272,4 +278,25 @@ export interface AffiliateSearchResult {
   logo: string | null
   city: string | null
   state: string | null
+}
+
+// ============ FARM-OUT / FARM-IN ============
+
+export type FarmOutStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'CANCELLED'
+
+export interface FarmOut {
+  id: string
+  tripId: string
+  trip?: Pick<Trip, 'id' | 'tripNumber' | 'pickupDate' | 'pickupTime' | 'pickupAddress' | 'dropoffAddress' | 'passengerCount' | 'vehicleId' | 'price' | 'totalPrice' | 'notes' | 'vip' | 'meetAndGreet' | 'childSeat' | 'wheelchairAccess' | 'passengerName' | 'passengerPhone' | 'flightNumber' | 'airportCode' | 'stops'>
+  fromCompanyId: string
+  fromCompany?: Pick<Company, 'id' | 'name' | 'phone' | 'email' | 'logo' | 'city' | 'state'>
+  toCompanyId: string
+  toCompany?: Pick<Company, 'id' | 'name' | 'phone' | 'email' | 'logo' | 'city' | 'state'>
+  status: FarmOutStatus
+  message?: string
+  agreedPrice?: string
+  parentFarmOutId?: string
+  respondedAt?: string
+  createdAt: string
+  updatedAt: string
 }
