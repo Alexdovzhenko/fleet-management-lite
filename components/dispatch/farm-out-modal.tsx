@@ -5,6 +5,7 @@ import { Search, Building2, MapPin, Phone, CheckCircle2, ChevronRight, Loader2, 
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { useAffiliateConnections } from "@/lib/hooks/use-affiliates"
+import { useCompany } from "@/lib/hooks/use-company"
 import { useCreateFarmOut } from "@/lib/hooks/use-farm-outs"
 import { formatCurrency } from "@/lib/utils"
 import type { Trip } from "@/types"
@@ -24,16 +25,17 @@ export function FarmOutModal({ trip, open, onClose }: FarmOutModalProps) {
   const [successId, setSuccessId] = useState<string | null>(null)
 
   const { data: connections, isLoading } = useAffiliateConnections("connected")
+  const { data: myCompany } = useCompany()
   const createFarmOut = useCreateFarmOut(trip.id)
 
   const affiliates = useMemo(() => {
-    if (!connections) return []
+    if (!connections || !myCompany) return []
     return connections.map((c) => {
-      // The "other" company is whichever side isn't us — connections include both sender/receiver profiles
-      const other = c.sender.id === c.senderId ? c.receiver : c.sender
+      // Pick whichever side of the connection is NOT the current company
+      const other = c.senderId === myCompany.id ? c.receiver : c.sender
       return { connectionId: c.id, affiliateCode: c.affiliateCode, ...other }
     })
-  }, [connections])
+  }, [connections, myCompany])
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
