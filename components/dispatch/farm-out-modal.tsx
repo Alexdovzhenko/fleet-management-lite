@@ -1,14 +1,37 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { Search, Building2, MapPin, Phone, CheckCircle2, ChevronRight, Loader2, X } from "lucide-react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { useAffiliateConnections } from "@/lib/hooks/use-affiliates"
-import { useCompany } from "@/lib/hooks/use-company"
 import { useCreateFarmOut } from "@/lib/hooks/use-farm-outs"
 import { formatCurrency } from "@/lib/utils"
 import type { Trip } from "@/types"
+
+interface Partner {
+  connectionId: string
+  affiliateCode: string | null
+  id: string
+  name: string
+  email: string | null
+  phone: string | null
+  logo: string | null
+  city: string | null
+  state: string | null
+}
+
+function usePartners() {
+  return useQuery<Partner[]>({
+    queryKey: ["affiliate-partners"],
+    queryFn: async () => {
+      const res = await fetch("/api/affiliates/connections/partners")
+      if (!res.ok) throw new Error("Failed to fetch partners")
+      return res.json()
+    },
+    staleTime: 30_000,
+  })
+}
 
 interface FarmOutModalProps {
   trip: Trip
@@ -24,31 +47,21 @@ export function FarmOutModal({ trip, open, onClose }: FarmOutModalProps) {
   const [step, setStep] = useState<"select" | "confirm">("select")
   const [successId, setSuccessId] = useState<string | null>(null)
 
-  const { data: connections, isLoading } = useAffiliateConnections("connected")
-  const { data: myCompany } = useCompany()
+  const { data: partners = [], isLoading } = usePartners()
   const createFarmOut = useCreateFarmOut(trip.id)
-
-  const affiliates = useMemo(() => {
-    if (!connections || !myCompany) return []
-    return connections.map((c) => {
-      // Pick whichever side of the connection is NOT the current company
-      const other = c.senderId === myCompany.id ? c.receiver : c.sender
-      return { connectionId: c.id, affiliateCode: c.affiliateCode, ...other }
-    })
-  }, [connections, myCompany])
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase()
-    return affiliates.filter(
+    return partners.filter(
       (a) =>
         a.name.toLowerCase().includes(q) ||
         (a.city || "").toLowerCase().includes(q) ||
         (a.state || "").toLowerCase().includes(q) ||
         (a.affiliateCode || "").toLowerCase().includes(q)
     )
-  }, [affiliates, search])
+  }, [partners, search])
 
-  const selectedAffiliate = affiliates.find((a) => a.id === selectedId)
+  const selectedAffiliate = partners.find((a) => a.id === selectedId)
 
   function handleSelectAffiliate(id: string) {
     setSelectedId(id)
@@ -157,7 +170,7 @@ export function FarmOutModal({ trip, open, onClose }: FarmOutModalProps) {
               )}
               {!isLoading && filtered.length === 0 && (
                 <div className="text-center py-10 text-sm text-gray-400">
-                  {affiliates.length === 0
+                  {partners.length === 0
                     ? "No connected affiliates. Connect with affiliates in the Affiliates Network."
                     : "No affiliates match your search."}
                 </div>
