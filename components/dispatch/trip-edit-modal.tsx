@@ -8,7 +8,7 @@ import { z } from "zod"
 import {
   X, Plane, Phone, Copy, Check, User, Car, UserCheck,
   ChevronDown, MapPin, Building2, Ship, Plus, Star,
-  AlertTriangle, Baby,
+  AlertTriangle, Baby, ArrowRightLeft,
 } from "lucide-react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -21,6 +21,8 @@ import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
 import { useServiceTypes } from "@/lib/hooks/use-service-types"
 import { useCustomers } from "@/lib/hooks/use-customers"
+import { useTripFarmOuts } from "@/lib/hooks/use-farm-outs"
+import { FarmOutModal } from "@/components/dispatch/farm-out-modal"
 import { formatCurrency, getTripStatusLabel, cn } from "@/lib/utils"
 import type { Trip, TripStatus, Driver, Vehicle, Customer } from "@/types"
 import { format, parse, isValid } from "date-fns"
@@ -790,6 +792,11 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const { data: serviceTypes = [] } = useServiceTypes()
   const enabledTypes = serviceTypes.filter((t) => t.isEnabled)
 
+  const [farmOutOpen, setFarmOutOpen] = useState(false)
+  const { data: farmOuts } = useTripFarmOuts(trip?.id ?? null)
+  const pendingFarmOut = farmOuts?.find((f) => f.status === "PENDING")
+  const acceptedFarmOut = farmOuts?.find((f) => f.status === "ACCEPTED")
+
   const [copied, setCopied] = useState(false)
   const [driverIdValue, setDriverIdValue] = useState("")
   const [vehicleIdValue, setVehicleIdValue] = useState("")
@@ -985,6 +992,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   ]
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent showCloseButton={false} className="sm:max-w-[1180px] w-[96vw] p-0 flex flex-col overflow-hidden max-h-[92vh] gap-0">
 
@@ -1356,6 +1364,37 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
                 <div className="flex-1" />
 
+                {/* Farm-Out */}
+                {!["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
+                  acceptedFarmOut ? (
+                    <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-100 rounded-lg">
+                      <div className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-emerald-800">Farmed Out</p>
+                        <p className="text-xs text-emerald-600 truncate">{acceptedFarmOut.toCompany?.name}</p>
+                      </div>
+                    </div>
+                  ) : pendingFarmOut ? (
+                    <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-100 rounded-lg">
+                      <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-amber-800">Awaiting Response</p>
+                        <p className="text-xs text-amber-600 truncate">{pendingFarmOut.toCompany?.name}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300 text-sm h-9 gap-2"
+                      onClick={() => setFarmOutOpen(true)}
+                    >
+                      <ArrowRightLeft className="w-4 h-4" />
+                      Farm Out to Affiliate
+                    </Button>
+                  )
+                )}
+
                 {!["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
                   <Button type="button" variant="ghost"
                     className="w-full text-red-500 hover:bg-red-50 hover:text-red-600 text-sm h-9 border border-red-200"
@@ -1373,5 +1412,13 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
         </div>
       </DialogContent>
     </Dialog>
+    {farmOutOpen && trip && (
+      <FarmOutModal
+        trip={trip}
+        open={farmOutOpen}
+        onClose={() => setFarmOutOpen(false)}
+      />
+    )}
+    </>
   )
 }
