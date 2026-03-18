@@ -23,7 +23,7 @@ import { useServiceTypes } from "@/lib/hooks/use-service-types"
 import { useCustomers } from "@/lib/hooks/use-customers"
 import { useTripFarmOuts, useCancelFarmOut } from "@/lib/hooks/use-farm-outs"
 import { FarmOutModal } from "@/components/dispatch/farm-out-modal"
-import { formatCurrency, getTripStatusLabel, cn } from "@/lib/utils"
+import { formatCurrency, formatPhone, getTripStatusLabel, cn } from "@/lib/utils"
 import type { Trip, TripStatus, Driver, Vehicle, Customer } from "@/types"
 import { format, parse, isValid } from "date-fns"
 
@@ -611,48 +611,53 @@ function DriverPickerCard({ drivers, value, onChange }: { drivers: Driver[]; val
   }
 
   return (
-    <div ref={ref} className="space-y-1.5">
-      <Label className="text-xs font-medium text-gray-500">Driver</Label>
+    <div ref={ref}>
       {selected ? (
-        <div className="flex items-center gap-2.5 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2.5">
-          <div className="w-8 h-8 rounded-full bg-indigo-200 flex items-center justify-center text-xs font-bold text-indigo-700 flex-shrink-0">
-            {getInitials(selected.name)}
+        <div className="group flex items-center gap-3 bg-violet-50 border border-violet-100 rounded-xl px-3 py-2.5 hover:border-violet-200 transition-colors">
+          <div className="relative flex-shrink-0">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center text-[11px] font-bold text-white shadow-sm">
+              {getInitials(selected.name)}
+            </div>
+            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-white" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-semibold text-gray-900 truncate">{selected.name}</div>
-            {selected.phone && <div className="text-[11px] text-gray-500 truncate">{selected.phone}</div>}
+            {selected.phone && <div className="text-[11px] text-violet-500 truncate">{formatPhone(selected.phone)}</div>}
           </div>
-          <button type="button" onClick={() => onChange("")} className="text-gray-300 hover:text-gray-500 transition-colors flex-shrink-0">
-            <X className="w-3.5 h-3.5" />
+          <button type="button" onClick={() => onChange("")}
+            className="w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-300 hover:text-red-400 hover:border-red-200 opacity-0 group-hover:opacity-100 transition-all shadow-sm flex-shrink-0">
+            <X className="w-3 h-3" />
           </button>
         </div>
       ) : (
         <button type="button" onClick={() => open ? setOpen(false) : openDropdown()}
-          className="w-full flex items-center gap-2.5 px-3 py-2.5 border border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-indigo-300 hover:text-indigo-500 hover:bg-indigo-50/50 transition-all">
-          <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-            <UserCheck className="w-3.5 h-3.5 text-gray-400" />
+          className="w-full flex items-center gap-3 px-3 py-2.5 bg-gray-50 border border-dashed border-gray-200 rounded-xl text-gray-400 hover:border-violet-300 hover:bg-violet-50/40 hover:text-violet-500 transition-all">
+          <div className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center flex-shrink-0 shadow-sm">
+            <UserCheck className="w-4 h-4 text-gray-300" />
           </div>
-          <span className="flex-1 text-left">Assign driver…</span>
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+          <span className="flex-1 text-left text-sm">Assign driver…</span>
+          <ChevronDown className={cn("w-4 h-4 text-gray-300 transition-transform", open && "rotate-180")} />
         </button>
       )}
       {open && !selected && createPortal(
-        <div ref={dropRef} style={dropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
-          <div className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">Active Drivers</div>
-          <div className="max-h-44 overflow-y-auto">
+        <div ref={dropRef} style={dropStyle} className="bg-white border border-gray-200 rounded-2xl shadow-2xl shadow-gray-200/60 overflow-hidden">
+          <div className="px-4 py-2.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 border-b border-gray-100">Active Drivers</div>
+          <div className="max-h-48 overflow-y-auto">
             {drivers.length === 0
-              ? <div className="px-3 py-3 text-xs text-gray-400 text-center">No active drivers</div>
+              ? <div className="px-4 py-4 text-xs text-gray-400 text-center">No active drivers</div>
               : drivers.map((d) => (
                 <button key={d.id} type="button" onClick={() => { onChange(d.id); setOpen(false) }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-indigo-50/60 transition-colors">
-                  <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-[11px] font-bold text-indigo-600 flex-shrink-0">
-                    {getInitials(d.name)}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-violet-50/60 transition-colors">
+                  <div className="relative flex-shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center text-[10px] font-bold text-white">
+                      {getInitials(d.name)}
+                    </div>
+                    <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white" />
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <div className="text-sm font-medium text-gray-800">{d.name}</div>
-                    {d.phone && <div className="text-[11px] text-gray-400">{d.phone}</div>}
+                    <div className="text-sm font-semibold text-gray-800">{d.name}</div>
+                    {d.phone && <div className="text-[11px] text-gray-400">{formatPhone(d.phone)}</div>}
                   </div>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
                 </button>
               ))}
           </div>
@@ -890,7 +895,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       pickupDate:      displayDate,
       pickupTime:      trip.pickupTime,
       passengerName:   trip.passengerName ?? "",
-      passengerPhone:  trip.passengerPhone ?? "",
+      passengerPhone:  trip.passengerPhone ? formatPhone(trip.passengerPhone) : "",
       passengerEmail:  trip.passengerEmail ?? "",
       passengerCount:  trip.passengerCount,
       luggageCount:    trip.luggageCount ?? 0,
@@ -967,6 +972,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       flightNumber:     airportStop?.flightNumber || undefined,
       passengerName:    data.passengerName || undefined,
       passengerPhone:   data.passengerPhone || undefined,
+      passengerEmail:   data.passengerEmail || undefined,
       driverId:         driverIdValue || undefined,
       vehicleId:        vehicleIdValue || undefined,
       price:            data.price as never,
@@ -1059,12 +1065,12 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-semibold text-gray-900">{selectedCustomer.name}</div>
-                          {selectedCustomer.phone && <div className="text-xs text-gray-500">{selectedCustomer.phone}</div>}
+                          {selectedCustomer.phone && <div className="text-xs text-gray-500">{formatPhone(selectedCustomer.phone)}</div>}
                         </div>
                         {selectedCustomer.phone && (
                           <a href={`tel:${selectedCustomer.phone}`} onClick={(e) => e.stopPropagation()}
                             className="flex items-center gap-1.5 text-blue-600 hover:underline text-xs flex-shrink-0">
-                            <Phone className="w-3.5 h-3.5" />{selectedCustomer.phone}
+                            <Phone className="w-3.5 h-3.5" />{formatPhone(selectedCustomer.phone)}
                           </a>
                         )}
                         <button type="button"
@@ -1190,7 +1196,20 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                     </div>
                     <div className="space-y-1.5">
                       <Label className="text-[11px] font-medium text-gray-500">Phone</Label>
-                      <Input {...register("passengerPhone")} type="tel" className="h-9 text-sm" placeholder="(305) 555-1234" />
+                      <Input
+                        {...register("passengerPhone")}
+                        type="tel"
+                        className="h-9 text-sm"
+                        placeholder="(305) 555-1234"
+                        onChange={(e) => {
+                          const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
+                          let formatted = digits
+                          if (digits.length > 6) formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
+                          else if (digits.length > 3) formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
+                          else if (digits.length > 0) formatted = `(${digits}`
+                          setValue("passengerPhone", formatted, { shouldDirty: true })
+                        }}
+                      />
                     </div>
                     <div className="space-y-1.5">
                       <Label className="text-[11px] font-medium text-gray-500">Email</Label>
@@ -1270,6 +1289,63 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                   <DriverPickerCard drivers={activeDrivers} value={driverIdValue} onChange={setDriverIdValue} />
                   <VehiclePickerCard vehicles={activeVehicles} value={vehicleIdValue} onChange={setVehicleIdValue} />
                 </section>
+
+                {/* Farm-Out status — shown inline after Dispatch */}
+                {!isFarmedIn && !["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
+                  <div className="space-y-1.5">
+                    {acceptedFarmOut ? (
+                      <>
+                        <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-100 rounded-lg">
+                          <div className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-semibold text-emerald-800">Farmed Out</p>
+                            <p className="text-xs text-emerald-600 truncate">{acceptedFarmOut.toCompany?.name}</p>
+                          </div>
+                        </div>
+                        <Button type="button" variant="ghost" size="sm"
+                          className="w-full text-xs text-orange-600 hover:bg-orange-50 hover:text-orange-700 h-7 border border-orange-200"
+                          disabled={cancelFarmOut.isPending}
+                          onClick={() => {
+                            if (window.confirm(`Cancel the farm-out to ${acceptedFarmOut.toCompany?.name}?`)) {
+                              cancelFarmOut.mutate(acceptedFarmOut.id, { onSuccess: () => {} })
+                            }
+                          }}>
+                          Cancel Farm-Out
+                        </Button>
+                      </>
+                    ) : pendingFarmOut ? (
+                      <>
+                        <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-100 rounded-lg">
+                          <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-xs font-semibold text-amber-800">Awaiting Response</p>
+                            <p className="text-xs text-amber-600 truncate">{pendingFarmOut.toCompany?.name}</p>
+                          </div>
+                        </div>
+                        <Button type="button" variant="ghost" size="sm"
+                          className="w-full text-xs text-orange-600 hover:bg-orange-50 hover:text-orange-700 h-7 border border-orange-200"
+                          disabled={cancelFarmOut.isPending}
+                          onClick={() => {
+                            if (window.confirm(`Cancel the pending farm-out to ${pendingFarmOut.toCompany?.name}?`)) {
+                              cancelFarmOut.mutate(pendingFarmOut.id, { onSuccess: () => {} })
+                            }
+                          }}>
+                          Cancel Farm-Out
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300 text-sm h-9 gap-2"
+                        onClick={() => setFarmOutOpen(true)}
+                      >
+                        <ArrowRightLeft className="w-4 h-4" />
+                        Farm Out to Affiliate
+                      </Button>
+                    )}
+                  </div>
+                )}
 
                 {!isFarmedIn && <div className="border-t border-gray-100" />}
 
@@ -1378,77 +1454,23 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                   </div>
                 </section>
 
-              </div>{/* end scrollable */}
-
-              {/* Sticky action footer */}
-              <div className="border-t border-gray-100 p-4 space-y-2 flex-shrink-0">
-                {/* Farm-Out — hidden for farm-in trips */}
-                {!isFarmedIn && !["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
-                  acceptedFarmOut ? (
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-100 rounded-lg">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-semibold text-emerald-800">Farmed Out</p>
-                          <p className="text-xs text-emerald-600 truncate">{acceptedFarmOut.toCompany?.name}</p>
-                        </div>
-                      </div>
-                      <Button type="button" variant="ghost" size="sm"
-                        className="w-full text-xs text-orange-600 hover:bg-orange-50 hover:text-orange-700 h-7 border border-orange-200"
-                        disabled={cancelFarmOut.isPending}
-                        onClick={() => {
-                          if (window.confirm(`Cancel the farm-out to ${acceptedFarmOut.toCompany?.name}?`)) {
-                            cancelFarmOut.mutate(acceptedFarmOut.id, { onSuccess: () => {} })
-                          }
-                        }}>
-                        Cancel Farm-Out
-                      </Button>
-                    </div>
-                  ) : pendingFarmOut ? (
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-100 rounded-lg">
-                        <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs font-semibold text-amber-800">Awaiting Response</p>
-                          <p className="text-xs text-amber-600 truncate">{pendingFarmOut.toCompany?.name}</p>
-                        </div>
-                      </div>
-                      <Button type="button" variant="ghost" size="sm"
-                        className="w-full text-xs text-orange-600 hover:bg-orange-50 hover:text-orange-700 h-7 border border-orange-200"
-                        disabled={cancelFarmOut.isPending}
-                        onClick={() => {
-                          if (window.confirm(`Cancel the pending farm-out to ${pendingFarmOut.toCompany?.name}?`)) {
-                            cancelFarmOut.mutate(pendingFarmOut.id, { onSuccess: () => {} })
-                          }
-                        }}>
-                        Cancel Farm-Out
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300 text-sm h-9 gap-2"
-                      onClick={() => setFarmOutOpen(true)}
-                    >
-                      <ArrowRightLeft className="w-4 h-4" />
-                      Farm Out to Affiliate
+                {/* Cancel Trip */}
+                {!["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
+                  <>
+                    <div className="border-t border-gray-100" />
+                    <Button type="button" variant="ghost"
+                      className="w-full text-red-500 hover:bg-red-50 hover:text-red-600 text-sm h-9 border border-red-200"
+                      onClick={() => {
+                        if (trip && window.confirm("Cancel this trip?")) {
+                          updateTrip.mutate({ id: trip.id, status: "CANCELLED" }, { onSuccess: onClose })
+                        }
+                      }}>
+                      Cancel Trip
                     </Button>
-                  )
+                  </>
                 )}
 
-                {!isFarmedIn && !["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
-                  <Button type="button" variant="ghost"
-                    className="w-full text-red-500 hover:bg-red-50 hover:text-red-600 text-sm h-9 border border-red-200"
-                    onClick={() => {
-                      if (trip && window.confirm("Cancel this trip?")) {
-                        updateTrip.mutate({ id: trip.id, status: "CANCELLED" }, { onSuccess: onClose })
-                      }
-                    }}>
-                    Cancel Trip
-                  </Button>
-                )}
-              </div>{/* end sticky footer */}
+              </div>{/* end scrollable */}
               </div>
             </div>
           </form>

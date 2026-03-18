@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { requireAuth } from "@/lib/auth-context"
+import { createNotification } from "@/lib/create-notification"
 import { z } from "zod"
 
 const respondSchema = z.object({
@@ -47,6 +48,29 @@ export async function PATCH(
       },
     })
 
+    // Notify the sender
+    if (action === "ACCEPT") {
+      await createNotification({
+        companyId: farmOut.fromCompanyId,
+        type: "FARM_OUT_ACCEPTED",
+        title: "Farm-out accepted",
+        body: `${farmOut.toCompany.name} accepted job ${farmOut.trip.tripNumber}`,
+        entityId: farmOut.tripId,
+        entityType: "trip",
+        metadata: { farmOutId, tripNumber: farmOut.trip.tripNumber, affiliateName: farmOut.toCompany.name },
+      })
+    } else {
+      await createNotification({
+        companyId: farmOut.fromCompanyId,
+        type: "FARM_OUT_DECLINED",
+        title: "Farm-out declined",
+        body: `${farmOut.toCompany.name} declined job ${farmOut.trip.tripNumber}`,
+        entityId: farmOut.tripId,
+        entityType: "trip",
+        metadata: { farmOutId, tripNumber: farmOut.trip.tripNumber, affiliateName: farmOut.toCompany.name },
+      })
+    }
+
     return NextResponse.json(updated)
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -70,6 +94,10 @@ export async function DELETE(
   try {
     const farmOut = await prisma.farmOut.findFirst({
       where: { id: farmOutId, fromCompanyId: companyId, status: { in: ["PENDING", "ACCEPTED"] } },
+      include: {
+        trip: { select: { tripNumber: true } },
+        fromCompany: { select: { name: true } },
+      },
     })
     if (!farmOut) {
       return NextResponse.json({ error: "Farm-out not found or cannot be cancelled" }, { status: 404 })
@@ -78,6 +106,17 @@ export async function DELETE(
     await prisma.farmOut.update({
       where: { id: farmOutId },
       data: { status: "CANCELLED" },
+    })
+
+    // Notify the receiving company
+    await createNotification({
+      companyId: farmOut.toCompanyId,
+      type: "FARM_OUT_CANCELLED",
+      title: "Farm-out cancelled",
+      body: `${farmOut.fromCompany.name} cancelled the farm-out for job ${farmOut.trip.tripNumber}`,
+      entityId: farmOut.tripId,
+      entityType: "trip",
+      metadata: { farmOutId, tripNumber: farmOut.trip.tripNumber, affiliateName: farmOut.fromCompany.name },
     })
 
     return NextResponse.json({ success: true })

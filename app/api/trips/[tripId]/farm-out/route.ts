@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { requireAuth } from "@/lib/auth-context"
+import { createNotification } from "@/lib/create-notification"
 import { z } from "zod"
 
 const VEHICLE_TYPES = ["SEDAN","SUV","STRETCH_LIMO","SPRINTER","PARTY_BUS","COACH","OTHER"] as const
@@ -81,6 +82,17 @@ export async function POST(
         fromCompany: { select: { id: true, name: true, phone: true, email: true, logo: true, city: true, state: true } },
         toCompany: { select: { id: true, name: true, phone: true, email: true, logo: true, city: true, state: true } },
       },
+    })
+
+    // Notify receiving company
+    await createNotification({
+      companyId: data.toCompanyId,
+      type: "FARM_OUT_RECEIVED",
+      title: "New farm-out request",
+      body: `${farmOut.fromCompany.name} sent you job ${trip.tripNumber} to cover`,
+      entityId: trip.id,
+      entityType: "trip",
+      metadata: { farmOutId: farmOut.id, tripNumber: trip.tripNumber, affiliateName: farmOut.fromCompany.name },
     })
 
     return NextResponse.json(farmOut, { status: 201 })

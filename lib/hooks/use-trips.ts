@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useEffect } from "react"
 import { format } from "date-fns"
 import type { Trip } from "@/types"
+import { createClient } from "@/lib/supabase/client"
 
 interface TripFilters {
   date?: Date
@@ -50,7 +52,22 @@ async function updateTrip({ id, ...data }: Partial<Trip> & { id: string }): Prom
   return res.json()
 }
 
+export function useTripsRealtime() {
+  const qc = useQueryClient()
+  useEffect(() => {
+    const supabase = createClient()
+    const channel = supabase
+      .channel("trips-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "Trip" }, () => {
+        qc.invalidateQueries({ queryKey: ["trips"] })
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [qc])
+}
+
 export function useTrips(filters: TripFilters = {}) {
+  useTripsRealtime()
   return useQuery({
     queryKey: ["trips", filters],
     queryFn: () => fetchTrips(filters),

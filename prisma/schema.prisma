@@ -43,6 +43,8 @@ model Company {
 
   farmOutsSent     FarmOut[] @relation("FarmOutsSent")
   farmOutsReceived FarmOut[] @relation("FarmOutsReceived")
+
+  appNotifications AppNotification[]
 }
 
 model User {
@@ -486,4 +488,41 @@ model AffiliateFavorite {
 
   @@unique([companyId, favoriteId])
   @@index([companyId])
+}
+
+// ============ IN-APP NOTIFICATIONS ============
+
+enum AppNotificationType {
+  AFFILIATE_INVITE_RECEIVED
+  AFFILIATE_INVITE_ACCEPTED
+  AFFILIATE_INVITE_DECLINED
+  FARM_OUT_RECEIVED
+  FARM_OUT_ACCEPTED
+  FARM_OUT_DECLINED
+  FARM_OUT_CANCELLED
+  TRIP_PICKUP_TIME_CHANGED
+  TRIP_PICKUP_ADDRESS_CHANGED
+  TRIP_DROPOFF_ADDRESS_CHANGED
+  TRIP_NOTES_CHANGED
+  TRIP_STATUS_CHANGED
+  TRIP_DRIVER_CHANGED
+  TRIP_CANCELLED
+}
+
+model AppNotification {
+  id         String              @id @default(cuid())
+  companyId  String
+  company    Company             @relation(fields: [companyId], references: [id])
+  type       AppNotificationType
+  title      String
+  body       String
+  entityId   String?
+  entityType String?
+  metadata   Json?
+  readAt     DateTime?
+  createdAt  DateTime            @default(now())
+
+  @@index([companyId])
+  @@index([companyId, readAt])
+  @@index([createdAt])
 }

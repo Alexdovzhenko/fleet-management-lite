@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { requireAuth } from "@/lib/auth-context"
+import { createNotification } from "@/lib/create-notification"
 import { z } from "zod"
 
 const actionSchema = z.object({
@@ -79,7 +80,44 @@ export async function PATCH(
       const updated = await prisma.affiliateConnection.update({
         where: { id: connectionId },
         data: updateData,
+        include: {
+          sender: { select: { id: true, name: true } },
+          receiver: { select: { id: true, name: true } },
+        },
       })
+
+      // Notify the original sender
+      if (action === "accept") {
+        await createNotification({
+          companyId: connection.senderId,
+          type: "AFFILIATE_INVITE_ACCEPTED",
+          title: "Affiliate invite accepted",
+          body: `${updated.receiver.name} accepted your affiliate connection invite`,
+          entityId: connectionId,
+          entityType: "affiliate",
+          metadata: { affiliateName: updated.receiver.name, affiliateCode: updated.affiliateCode },
+        })
+        // Notify receiver too — they're now connected
+        await createNotification({
+          companyId: connection.receiverId,
+          type: "AFFILIATE_INVITE_ACCEPTED",
+          title: "Affiliate connection established",
+          body: `You are now connected with ${updated.sender.name}`,
+          entityId: connectionId,
+          entityType: "affiliate",
+          metadata: { affiliateName: updated.sender.name, affiliateCode: updated.affiliateCode },
+        })
+      } else {
+        await createNotification({
+          companyId: connection.senderId,
+          type: "AFFILIATE_INVITE_DECLINED",
+          title: "Affiliate invite declined",
+          body: `${updated.receiver.name} declined your affiliate connection invite`,
+          entityId: connectionId,
+          entityType: "affiliate",
+          metadata: { affiliateName: updated.receiver.name },
+        })
+      }
 
       return NextResponse.json(updated)
     }

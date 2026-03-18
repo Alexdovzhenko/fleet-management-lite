@@ -4,11 +4,12 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, Reorder, AnimatePresence } from "framer-motion"
-import { LayoutGrid, Users, UserCheck, Car, Settings, Settings2, Plus, X, Network } from "lucide-react"
+import { LayoutGrid, Users, UserCheck, Car, Settings, Settings2, Plus, X, Network, Bell } from "lucide-react"
 import { useDockStore, ALL_DOCK_ITEMS } from "@/lib/stores/dock-store"
 import type { DockItem } from "@/lib/stores/dock-store"
 import type { LucideIcon } from "lucide-react"
 import { useAffiliatePendingCount } from "@/lib/hooks/use-affiliates"
+import { useUnreadCount } from "@/lib/hooks/use-notifications"
 
 const ICON_MAP: Record<string, LucideIcon> = {
   LayoutGrid,
@@ -16,6 +17,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   UserCheck,
   Car,
   Network,
+  Bell,
   Settings,
 }
 
@@ -69,6 +71,8 @@ export function DockNav() {
   const [showAddPanel, setShowAddPanel] = useState(false)
   const { data: pendingData } = useAffiliatePendingCount()
   const pendingCount = pendingData?.count ?? 0
+  const { data: unreadData } = useUnreadCount()
+  const unreadCount = unreadData?.count ?? 0
 
   useEffect(() => {
     resetEditing()
@@ -171,7 +175,10 @@ export function DockNav() {
               {items.map((item) => {
                 const Icon = ICON_MAP[item.iconName] || LayoutGrid
                 const active = isActive(item.href)
-                const showBadge = item.id === "affiliates" && pendingCount > 0
+                const showBadge =
+                  (item.id === "affiliates" && pendingCount > 0) ||
+                  (item.id === "notifications" && unreadCount > 0)
+                const badgeCount = item.id === "affiliates" ? pendingCount : unreadCount
 
                 return (
                   <Link key={item.id} href={item.href} className="flex flex-col items-center">
@@ -184,7 +191,7 @@ export function DockNav() {
                     >
                       <Icon className="w-5 h-5" style={{ color: active ? "white" : "rgb(100,116,139)" }} />
                       <AnimatePresence>
-                        {showBadge && <PendingBadge count={pendingCount} />}
+                        {showBadge && <PendingBadge count={badgeCount} />}
                       </AnimatePresence>
                     </motion.div>
                     <span className="text-[10px] text-gray-500 mt-1.5 font-medium tracking-tight">{item.label}</span>

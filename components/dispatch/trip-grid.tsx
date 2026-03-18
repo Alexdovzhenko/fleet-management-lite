@@ -1,9 +1,9 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { Plane, Star, Baby, Accessibility, Bell, Phone, GripVertical, ArrowRightLeft } from "lucide-react"
+import { Plane, Star, Baby, Accessibility, Bell, Phone, GripVertical } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { formatTime, formatCurrency, getInitials, getTripStatusLabel, cn } from "@/lib/utils"
+import { formatTime, formatCurrency, formatPhone, getInitials, getTripStatusLabel, cn } from "@/lib/utils"
 import { format, parseISO } from "date-fns"
 import type { Trip, TripStatus, TripType } from "@/types"
 import { useColumnOrderStore, DEFAULT_COLUMN_ORDER } from "@/lib/stores/column-order-store"
@@ -84,10 +84,12 @@ const ALL_COLUMNS = [
   { key: "dropoff",   label: "Dropoff",   width: "w-48" },
   { key: "driver",    label: "Driver",    width: "w-36" },
   { key: "vehicle",   label: "Vehicle",   width: "w-32" },
+  { key: "affiliate", label: "Affiliate", width: "w-36" },
   { key: "pax",       label: "Pax",       width: "w-12" },
   { key: "price",     label: "Price",     width: "w-24" },
   { key: "flags",     label: "",          width: "w-20" },
 ]
+
 
 export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showDate }: TripGridProps) {
   const clickRef = useRef<{ timer: ReturnType<typeof setTimeout>; trip: Trip } | null>(null)
@@ -179,15 +181,24 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
   function renderCell(key: string, trip: Trip) {
     const passengerDisplay = trip.passengerName || trip.customer?.name || "—"
     const phone = trip.passengerPhone || trip.customer?.phone
+    const activeFarmOut = trip.farmOuts?.[0]
+    const isFarmedOut = !trip.farmedIn && activeFarmOut?.status === "ACCEPTED"
 
     switch (key) {
       case "status":
         return (
           <td key={key} className="px-3 py-2.5 whitespace-nowrap">
-            <span className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full", STATUS_BADGE[trip.status])}>
-              <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", STATUS_DOT[trip.status])} />
-              {getTripStatusLabel(trip.status)}
-            </span>
+            {isFarmedOut ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full bg-indigo-100 text-indigo-700">
+                <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-indigo-500" />
+                Farmed Out
+              </span>
+            ) : (
+              <span className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full", STATUS_BADGE[trip.status])}>
+                <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", STATUS_DOT[trip.status])} />
+                {getTripStatusLabel(trip.status)}
+              </span>
+            )}
           </td>
         )
       case "time":
@@ -226,7 +237,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
             {phone ? (
               <a href={`tel:${phone}`} onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline">
-                <Phone className="w-3 h-3" />{phone}
+                <Phone className="w-3 h-3" />{formatPhone(phone)}
               </a>
             ) : (
               <span className="text-xs text-gray-300">—</span>
@@ -286,6 +297,20 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
             )}
           </td>
         )
+      case "affiliate": {
+        const affiliateName = trip.farmedIn?.name || (isFarmedOut ? activeFarmOut?.toCompany?.name : null)
+        return (
+          <td key={key} className="px-3 py-2.5 whitespace-nowrap">
+            {affiliateName ? (
+              <span className="text-xs font-medium text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full truncate max-w-[130px] block">
+                {affiliateName}
+              </span>
+            ) : (
+              <span className="text-xs text-gray-300">—</span>
+            )}
+          </td>
+        )
+      }
       case "pax":
         return (
           <td key={key} className="px-3 py-2.5 whitespace-nowrap text-center">
@@ -301,7 +326,6 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
           </td>
         )
       case "flags": {
-        const activeFarmOut = trip.farmOuts?.[0]
         return (
           <td key={key} className="px-3 py-2.5 whitespace-nowrap">
             <div className="flex items-center gap-1">
@@ -310,19 +334,6 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
               {trip.meetAndGreet && <Bell className="w-3.5 h-3.5 text-purple-400" />}
               {trip.childSeat && <Baby className="w-3.5 h-3.5 text-pink-400" />}
               {trip.wheelchairAccess && <Accessibility className="w-3.5 h-3.5 text-blue-400" />}
-              {trip.farmedIn ? (
-                <span title={`Farm-in from: ${trip.farmedIn.name}`}>
-                  <ArrowRightLeft className="w-3.5 h-3.5 text-indigo-500" />
-                </span>
-              ) : activeFarmOut?.status === "PENDING" ? (
-                <span title={`Farm-out pending: ${activeFarmOut.toCompany?.name}`}>
-                  <ArrowRightLeft className="w-3.5 h-3.5 text-amber-500" />
-                </span>
-              ) : activeFarmOut?.status === "ACCEPTED" ? (
-                <span title={`Farmed out to: ${activeFarmOut.toCompany?.name}`}>
-                  <ArrowRightLeft className="w-3.5 h-3.5 text-emerald-500" />
-                </span>
-              ) : null}
             </div>
           </td>
         )

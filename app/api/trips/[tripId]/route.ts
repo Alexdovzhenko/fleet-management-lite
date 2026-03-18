@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { requireAuth } from "@/lib/auth-context"
+import { createNotification } from "@/lib/create-notification"
 import { z } from "zod"
 
 const updateTripSchema = z.object({
@@ -19,6 +20,7 @@ const updateTripSchema = z.object({
   passengerCount: z.number().int().min(1).optional(),
   passengerName: z.string().optional().nullable(),
   passengerPhone: z.string().optional().nullable(),
+  passengerEmail: z.string().optional().nullable(),
   customerId: z.string().optional().nullable(),
   driverId: z.string().optional().nullable(),
   vehicleId: z.string().optional().nullable(),
@@ -158,6 +160,77 @@ export async function PUT(
         vehicle: { select: { id: true, name: true, type: true } },
       },
     })
+
+    // ── Notification triggers ────────────────────────────────────────────
+    // Determine which company to notify: if the updater is the owner, notify
+    // the accepted affiliate (if any); if the updater is the affiliate, notify the owner.
+    const acceptedFarmOut = await prisma.farmOut.findFirst({
+      where: { tripId, status: "ACCEPTED" },
+      select: { fromCompanyId: true, toCompanyId: true },
+    })
+    const notifyCompanyId = isOwned
+      ? (acceptedFarmOut?.toCompanyId ?? null)
+      : existing.companyId
+
+    if (notifyCompanyId && isOwned) {
+      // Owner made changes — notify affiliate
+      if (data.pickupTime && data.pickupTime !== existing.pickupTime) {
+        await createNotification({
+          companyId: notifyCompanyId,
+          type: "TRIP_PICKUP_TIME_CHANGED",
+          title: "Pickup time changed",
+          body: `Job ${existing.tripNumber}: pickup time changed from ${existing.pickupTime} to ${data.pickupTime}`,
+          entityId: tripId,
+          entityType: "trip",
+          metadata: { tripNumber: existing.tripNumber, oldValue: existing.pickupTime, newValue: data.pickupTime },
+        })
+      }
+      if (data.pickupAddress && data.pickupAddress !== existing.pickupAddress) {
+        await createNotification({
+          companyId: notifyCompanyId,
+          type: "TRIP_PICKUP_ADDRESS_CHANGED",
+          title: "Pickup address changed",
+          body: `Job ${existing.tripNumber}: pickup address was updated`,
+          entityId: tripId,
+          entityType: "trip",
+          metadata: { tripNumber: existing.tripNumber, oldValue: existing.pickupAddress, newValue: data.pickupAddress },
+        })
+      }
+      if (data.dropoffAddress && data.dropoffAddress !== existing.dropoffAddress) {
+        await createNotification({
+          companyId: notifyCompanyId,
+          type: "TRIP_DROPOFF_ADDRESS_CHANGED",
+          title: "Drop-off address changed",
+          body: `Job ${existing.tripNumber}: drop-off address was updated`,
+          entityId: tripId,
+          entityType: "trip",
+          metadata: { tripNumber: existing.tripNumber, oldValue: existing.dropoffAddress, newValue: data.dropoffAddress },
+        })
+      }
+      if (data.notes !== undefined && data.notes !== existing.notes) {
+        await createNotification({
+          companyId: notifyCompanyId,
+          type: "TRIP_NOTES_CHANGED",
+          title: "Trip notes updated",
+          body: `Job ${existing.tripNumber}: trip notes were modified`,
+          entityId: tripId,
+          entityType: "trip",
+          metadata: { tripNumber: existing.tripNumber },
+        })
+      }
+      if (data.status === "CANCELLED") {
+        await createNotification({
+          companyId: notifyCompanyId,
+          type: "TRIP_CANCELLED",
+          title: "Trip cancelled",
+          body: `Job ${existing.tripNumber} has been cancelled by the sending company`,
+          entityId: tripId,
+          entityType: "trip",
+          metadata: { tripNumber: existing.tripNumber },
+        })
+      }
+    }
+    // ────────────────────────────────────────────────────────────────────
 
     return NextResponse.json(trip)
   } catch (error) {
