@@ -39,11 +39,24 @@ interface FarmOutModalProps {
   onClose: () => void
 }
 
+const VEHICLE_TYPE_LABELS: Record<string, string> = {
+  SEDAN: "Sedan",
+  SUV: "SUV",
+  STRETCH_LIMO: "Stretch Limo",
+  SPRINTER: "Sprinter",
+  PARTY_BUS: "Party Bus",
+  COACH: "Coach",
+  OTHER: "Other",
+}
+
+const VEHICLE_TYPE_OPTIONS = Object.entries(VEHICLE_TYPE_LABELS)
+
 export function FarmOutModal({ trip, open, onClose }: FarmOutModalProps) {
   const [search, setSearch] = useState("")
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [message, setMessage] = useState("")
   const [agreedPrice, setAgreedPrice] = useState<string>("")
+  const [vehicleType, setVehicleType] = useState<string>(trip.vehicle?.type || "")
   const [step, setStep] = useState<"select" | "confirm">("select")
   const [successId, setSuccessId] = useState<string | null>(null)
 
@@ -80,6 +93,7 @@ export function FarmOutModal({ trip, open, onClose }: FarmOutModalProps) {
         toCompanyId: selectedId,
         message: message.trim() || undefined,
         agreedPrice: agreedPrice ? parseFloat(agreedPrice) : undefined,
+        vehicleType: vehicleType || undefined,
       })
       setSuccessId(result.id)
     } catch {
@@ -96,6 +110,7 @@ export function FarmOutModal({ trip, open, onClose }: FarmOutModalProps) {
       setSearch("")
       setMessage("")
       setAgreedPrice("")
+      setVehicleType(trip.vehicle?.type || "")
       setSuccessId(null)
     }, 300)
   }
@@ -275,6 +290,26 @@ export function FarmOutModal({ trip, open, onClose }: FarmOutModalProps) {
                     <span className="text-gray-900 font-medium">{formatCurrency(trip.totalPrice)}</span>
                   </>
                 )}
+              </div>
+            </div>
+
+            {/* Vehicle type */}
+            <div>
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1.5">
+                Vehicle Type Required
+              </label>
+              <div className="relative">
+                <select
+                  value={vehicleType}
+                  onChange={(e) => setVehicleType(e.target.value)}
+                  className="w-full px-3 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300 focus:bg-white transition-all appearance-none pr-9"
+                >
+                  <option value="">— Not specified —</option>
+                  {VEHICLE_TYPE_OPTIONS.map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
+                <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
               </div>
             </div>
 

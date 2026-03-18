@@ -435,6 +435,7 @@ model FarmOut {
   status          FarmOutStatus @default(PENDING)
   message         String?
   agreedPrice     Decimal?      @db.Decimal(10, 2)
+  vehicleType     VehicleType?
   parentFarmOutId String?
   parentFarmOut   FarmOut?      @relation("FarmOutChain", fields: [parentFarmOutId], references: [id])
   childFarmOuts   FarmOut[]     @relation("FarmOutChain")

@@ -3,10 +3,13 @@ import { prisma } from "@/lib/db"
 import { requireAuth } from "@/lib/auth-context"
 import { z } from "zod"
 
+const VEHICLE_TYPES = ["SEDAN","SUV","STRETCH_LIMO","SPRINTER","PARTY_BUS","COACH","OTHER"] as const
+
 const farmOutSchema = z.object({
   toCompanyId: z.string().min(1),
   message: z.string().optional(),
   agreedPrice: z.number().positive().optional(),
+  vehicleType: z.enum(VEHICLE_TYPES).optional(),
 })
 
 // POST /api/trips/[tripId]/farm-out — create a farm-out request
@@ -71,6 +74,7 @@ export async function POST(
         toCompanyId: data.toCompanyId,
         message: data.message || null,
         agreedPrice: data.agreedPrice ?? null,
+        vehicleType: data.vehicleType ?? null,
         parentFarmOutId: parentFarmOut?.id ?? null,
       },
       include: {

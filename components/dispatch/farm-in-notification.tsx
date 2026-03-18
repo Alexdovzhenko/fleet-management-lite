@@ -7,6 +7,7 @@ import {
   MapPin,
   Clock,
   Users,
+  Car,
   ChevronDown,
   ChevronUp,
   CheckCircle2,
@@ -85,6 +86,12 @@ function FarmInCard({ farmOut, onRespond }: { farmOut: FarmOut; onRespond: (id: 
             <Users className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
             <span className="text-xs text-gray-600">{trip.passengerCount} passenger{trip.passengerCount !== 1 ? "s" : ""}</span>
           </div>
+          {farmOut.vehicleType && (
+            <div className="flex items-center gap-1.5">
+              <Car className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+              <span className="text-xs text-gray-600 font-medium">{farmOut.vehicleType.replace(/_/g, " ")}</span>
+            </div>
+          )}
         </div>
       )}
 

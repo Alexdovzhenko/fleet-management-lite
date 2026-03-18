@@ -41,6 +41,7 @@ export function useCreateFarmOut(tripId: string) {
       toCompanyId: string
       message?: string
       agreedPrice?: number
+      vehicleType?: string
     }) => {
       const res = await fetch(`/api/trips/${tripId}/farm-out`, {
         method: "POST",

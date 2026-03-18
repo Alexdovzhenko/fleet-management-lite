@@ -295,6 +295,7 @@ export interface FarmOut {
   status: FarmOutStatus
   message?: string
   agreedPrice?: string
+  vehicleType?: VehicleType
   parentFarmOutId?: string
   respondedAt?: string
   createdAt: string
