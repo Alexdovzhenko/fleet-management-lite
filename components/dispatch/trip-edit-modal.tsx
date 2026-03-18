@@ -1362,7 +1362,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                   </div>
                 </section>
 
-                <div className="flex-1" />
+                <div className="border-t border-gray-100" />
 
                 {/* Farm-Out */}
                 {!["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
