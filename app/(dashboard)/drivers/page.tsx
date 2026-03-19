@@ -3,12 +3,11 @@
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  Plus, Phone, Mail, Car, UserCheck, Search, X, Upload,
-  FileText, Camera, CreditCard, ChevronDown, Pencil,
+  Plus, Phone, Car, UserCheck, Search, X, Upload,
+  FileText, Camera, CreditCard, Pencil,
   Shield, Briefcase, IdCard, CheckCircle2, AlertCircle,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -16,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useDrivers, useCreateDriver, useUpdateDriver, useDeleteDriver } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
 import { useDebounce } from "@/lib/hooks/use-debounce"
-import { getInitials, formatPhone, getDriverStatusLabel } from "@/lib/utils"
+import { getInitials, formatPhone } from "@/lib/utils"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -185,7 +184,7 @@ function FileUploadZone({
                   <img src={value.url} alt={label} className="w-full h-full object-cover" />
                 </div>
               ) : (
-                <FileText className="w-4.5 h-4.5 text-blue-500" style={{ width: 18, height: 18 }} />
+                <FileText style={{ width: 18, height: 18 }} className="text-blue-500" />
               )
             ) : (
               <Icon className="w-4 h-4 text-gray-400 group-hover:text-blue-400 transition-colors" />
@@ -262,7 +261,7 @@ function FileUploadZone({
               <p className="text-xs font-semibold text-gray-600 group-hover:text-blue-600 transition-colors">{label}</p>
               {sublabel && <p className="text-[11px] text-gray-400 mt-0.5">{sublabel}</p>}
             </div>
-            <p className="text-[10px] text-gray-300">Click or drag & drop</p>
+            <p className="text-[10px] text-gray-300">Click or drag &amp; drop</p>
           </>
         )}
       </div>
@@ -294,10 +293,8 @@ function DriverCard({ driver, onEdit, index }: { driver: Driver; onEdit: (d: Dri
         background: cfg.accentBg,
       }}
     >
-      {/* Top section */}
       <div className="p-4 pb-3">
         <div className="flex items-start gap-3">
-          {/* Avatar */}
           <div className="relative flex-shrink-0">
             {driver.avatarUrl ? (
               <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-sm">
@@ -312,35 +309,22 @@ function DriverCard({ driver, onEdit, index }: { driver: Driver; onEdit: (d: Dri
                 {getInitials(driver.name)}
               </div>
             )}
-            {/* Status dot */}
-            <div className={cn(
-              "absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-white",
-              cfg.dot
-            )} />
+            <div className={cn("absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-white", cfg.dot)} />
           </div>
-
-          {/* Name + status */}
           <div className="flex-1 min-w-0 pt-0.5">
             <div className="flex items-start justify-between gap-2">
               <h3 className="font-bold text-gray-900 text-sm leading-tight truncate">{driver.name}</h3>
-              <span className={cn(
-                "text-[10.5px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0",
-                cfg.chip
-              )}>
+              <span className={cn("text-[10.5px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0", cfg.chip)}>
                 {cfg.label}
               </span>
             </div>
-            {driver.email && (
-              <p className="text-[11.5px] text-gray-400 truncate mt-0.5">{driver.email}</p>
-            )}
+            {driver.email && <p className="text-[11.5px] text-gray-400 truncate mt-0.5">{driver.email}</p>}
           </div>
         </div>
       </div>
 
-      {/* Divider */}
       <div className="h-px bg-gradient-to-r from-transparent via-gray-100 to-transparent mx-4" />
 
-      {/* Info section */}
       <div className="px-4 py-3 space-y-1.5">
         <div className="flex items-center gap-2 text-[12px] text-gray-500">
           <Phone className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
@@ -360,7 +344,6 @@ function DriverCard({ driver, onEdit, index }: { driver: Driver; onEdit: (d: Dri
         )}
       </div>
 
-      {/* Footer */}
       {(driver._count?.trips !== undefined || driver.licensePhotoFront || driver.licensePhotoBack) && (
         <>
           <div className="h-px bg-gradient-to-r from-transparent via-gray-100 to-transparent mx-4" />
@@ -390,7 +373,6 @@ function DriverCard({ driver, onEdit, index }: { driver: Driver; onEdit: (d: Dri
         </>
       )}
 
-      {/* Hover edit hint */}
       <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
         <div className="w-7 h-7 rounded-lg bg-white border border-gray-100 shadow-sm flex items-center justify-center">
           <Pencil className="w-3 h-3 text-gray-400" />
@@ -400,20 +382,29 @@ function DriverCard({ driver, onEdit, index }: { driver: Driver; onEdit: (d: Dri
   )
 }
 
-// ── Section header ─────────────────────────────────────────────────────────────
+// ── Status filter tabs ─────────────────────────────────────────────────────────
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
+const FILTER_TABS = [
+  { id: "", label: "All" },
+  { id: "ACTIVE", label: "Active" },
+  { id: "INACTIVE", label: "Inactive" },
+  { id: "ON_LEAVE", label: "On Leave" },
+] as const
+
+// ── Divider label ──────────────────────────────────────────────────────────────
+
+function FieldDivider({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-2 mb-3">
-      <span className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.08em] whitespace-nowrap">{children}</span>
+    <div className="flex items-center gap-2.5 pt-1">
+      <span className="text-[10.5px] font-bold text-gray-400 uppercase tracking-[0.07em] whitespace-nowrap">{children}</span>
       <div className="flex-1 h-px bg-gray-100" />
     </div>
   )
 }
 
-// ── Driver form sheet ──────────────────────────────────────────────────────────
+// ── Driver Modal ───────────────────────────────────────────────────────────────
 
-function DriverSheet({
+function DriverModal({
   open,
   onClose,
   editing,
@@ -427,21 +418,44 @@ function DriverSheet({
   const deleteDriver = useDeleteDriver()
   const { data: vehicles } = useVehicles()
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [activeTab, setActiveTab] = useState<"info" | "documents">("info")
 
-  // File state
   const [avatar, setAvatar] = useState<UploadedFile | null>(null)
   const [licenseFront, setLicenseFront] = useState<UploadedFile | null>(null)
   const [licenseBack, setLicenseBack] = useState<UploadedFile | null>(null)
   const [doc1, setDoc1] = useState<UploadedFile | null>(null)
   const [doc2, setDoc2] = useState<UploadedFile | null>(null)
 
-  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<DriverFormData>({
+  const { register, handleSubmit, reset, control, watch, formState: { errors } } = useForm<DriverFormData>({
     resolver: zodResolver(driverSchema) as never,
   })
 
-  // Populate form when editing changes
+  const watchedName = watch("name") ?? ""
+  const watchedStatus = (watch("status") ?? editing?.status ?? "ACTIVE") as keyof typeof STATUS_CFG
+  const statusCfg = STATUS_CFG[watchedStatus] || STATUS_CFG.ACTIVE
+  const displayName = watchedName || editing?.name || ""
+
+  // Lock body scroll when open
+  useEffect(() => {
+    if (open) document.body.style.overflow = "hidden"
+    else document.body.style.overflow = ""
+    return () => { document.body.style.overflow = "" }
+  }, [open])
+
+  // Escape to close
   useEffect(() => {
     if (!open) return
+    function onKey(e: KeyboardEvent) { if (e.key === "Escape") handleClose() }
+    document.addEventListener("keydown", onKey)
+    return () => document.removeEventListener("keydown", onKey)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
+
+  // Populate form
+  useEffect(() => {
+    if (!open) return
+    setActiveTab("info")
+    setConfirmDelete(false)
     if (editing) {
       const d = editing.phone.replace(/\D/g, "").slice(0, 10)
       const fmtPhone = d.length >= 7
@@ -466,7 +480,7 @@ function DriverSheet({
       reset({ name: "", phone: "", email: "", licenseNumber: "", licenseExpiry: "", notes: "", defaultVehicleId: "", status: "ACTIVE" })
       setAvatar(null); setLicenseFront(null); setLicenseBack(null); setDoc1(null); setDoc2(null)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, editing?.id])
 
   function handleClose() {
@@ -487,7 +501,6 @@ function DriverSheet({
       document2Url: doc2?.url || null,
       document2Name: doc2?.name || null,
     }
-
     if (editing) {
       updateDriver.mutate({ id: editing.id, ...payload } as never, { onSuccess: handleClose })
     } else {
@@ -498,261 +511,421 @@ function DriverSheet({
   const isPending = createDriver.isPending || updateDriver.isPending
 
   return (
-    <Sheet open={open} onOpenChange={(v) => !v && handleClose()}>
-      <SheetContent side="right" className="w-full sm:max-w-[520px] p-0 flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="px-6 pt-6 pb-4 border-b border-gray-100 flex-shrink-0">
-          <SheetHeader>
-            <SheetTitle className="flex items-center gap-3 text-base font-bold text-gray-900">
-              <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)" }}
-              >
-                <UserCheck className="w-4.5 h-4.5 text-white" style={{ width: 18, height: 18 }} />
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          key="modal-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+          style={{ backdropFilter: "blur(10px)", backgroundColor: "rgba(10,15,30,0.55)" }}
+          onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
+        >
+          <motion.div
+            key="modal-panel"
+            initial={{ opacity: 0, scale: 0.96, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 12 }}
+            transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+            className="bg-white rounded-[28px] w-full max-w-[640px] max-h-[92vh] flex flex-col overflow-hidden"
+            style={{ boxShadow: "0 48px 140px rgba(0,0,0,0.28), 0 0 0 1px rgba(0,0,0,0.06)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+
+            {/* ── Modal Header ───────────────────────────────────────────── */}
+            <div className="flex-shrink-0 px-7 pt-6 pb-0">
+
+              {/* Top row: title + close */}
+              <div className="flex items-start justify-between mb-5">
+                <div>
+                  <h2 className="text-[18px] font-bold text-gray-900 tracking-tight leading-tight">
+                    {editing ? "Edit Driver" : "Add New Driver"}
+                  </h2>
+                  <p className="text-[12.5px] text-gray-400 mt-0.5 leading-snug">
+                    {editing
+                      ? "Update profile, contact info, and documents"
+                      : "Fill in the details to register a new driver"}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all duration-150 flex-shrink-0 -mr-1.5 mt-0.5"
+                >
+                  <X style={{ width: 17, height: 17 }} />
+                </button>
               </div>
-              {editing ? "Edit Driver" : "Add New Driver"}
-            </SheetTitle>
-          </SheetHeader>
-        </div>
 
-        {/* Scrollable body */}
-        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
-          <form id="driver-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {/* Driver identity strip */}
+              <div className="flex items-center gap-4 px-4 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/60 mb-5">
+                {/* Live avatar preview */}
+                <div className="flex-shrink-0">
+                  {avatar?.url ? (
+                    <div className="w-[54px] h-[54px] rounded-2xl overflow-hidden ring-2 ring-white shadow-md">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={avatar.url} alt={displayName} className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div
+                      className="w-[54px] h-[54px] rounded-2xl flex items-center justify-center text-white text-[15px] font-bold shadow-md"
+                      style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)" }}
+                    >
+                      {getInitials(displayName || "?")}
+                    </div>
+                  )}
+                </div>
 
-            {/* ── Profile Photo ── */}
-            <div>
-              <SectionLabel>Profile Photo</SectionLabel>
-              <div className="flex justify-center py-2">
-                <FileUploadZone
-                  slot="avatar"
-                  label="Profile Photo"
-                  sublabel="Used as driver avatar"
-                  icon={Camera}
-                  value={avatar}
-                  onChange={setAvatar}
-                  accept="image/*"
-                  circular
-                />
+                <div className="flex-1 min-w-0">
+                  <p className={cn(
+                    "font-bold text-[14px] leading-tight truncate",
+                    displayName ? "text-gray-900" : "text-gray-300"
+                  )}>
+                    {displayName || "Driver name"}
+                  </p>
+                  <span className={cn(
+                    "inline-flex items-center gap-1.5 mt-1.5 text-[11px] font-semibold px-2.5 py-[3px] rounded-full",
+                    statusCfg.chip
+                  )}>
+                    <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", statusCfg.dot)} />
+                    {statusCfg.label}
+                  </span>
+                </div>
+
+                {editing && editing._count?.trips !== undefined && (
+                  <div className="flex-shrink-0 text-right pr-0.5">
+                    <p className="text-[20px] font-bold text-gray-800 leading-none">{editing._count.trips}</p>
+                    <p className="text-[10.5px] text-gray-400 mt-0.5 font-medium">
+                      trip{editing._count.trips !== 1 ? "s" : ""}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Tab bar */}
+              <div className="flex items-center gap-1 border-b border-gray-100 -mx-7 px-7">
+                {([
+                  { id: "info" as const, label: "Basic Info" },
+                  { id: "documents" as const, label: "Documents" },
+                ]).map(tab => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      "relative px-1 pb-3 text-[13px] font-semibold transition-colors duration-150 mr-4",
+                      activeTab === tab.id ? "text-blue-600" : "text-gray-400 hover:text-gray-600"
+                    )}
+                  >
+                    {tab.label}
+                    {activeTab === tab.id && (
+                      <motion.div
+                        layoutId="tab-underline"
+                        className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-blue-600"
+                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                      />
+                    )}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* ── Basic Information ── */}
-            <div>
-              <SectionLabel>Basic Information</SectionLabel>
-              <div className="space-y-3.5">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-gray-600">Full Name <span className="text-red-400">*</span></Label>
-                  <Input {...register("name")} placeholder="e.g. Michael Rodriguez" className="h-10 text-sm" />
-                  {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-gray-600">Phone <span className="text-red-400">*</span></Label>
-                    <Input
-                      {...register("phone")}
-                      placeholder="(305) 555-9876"
-                      type="tel"
-                      className="h-10 text-sm"
-                      onChange={(e) => {
-                        const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
-                        let formatted = digits
-                        if (digits.length >= 7) {
-                          formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
-                        } else if (digits.length >= 4) {
-                          formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
-                        } else if (digits.length >= 1) {
-                          formatted = `(${digits}`
-                        }
-                        e.target.value = formatted
-                        register("phone").onChange(e)
-                      }}
-                    />
-                    {errors.phone && <p className="text-xs text-red-500">{errors.phone.message}</p>}
+            {/* ── Scrollable Form Body ────────────────────────────────────── */}
+            <div className="flex-1 overflow-y-auto px-7 py-5 overscroll-contain">
+              <form id="driver-form" onSubmit={handleSubmit(onSubmit)}>
+
+                {/* ── TAB: Basic Info ── */}
+                {activeTab === "info" && (
+                  <div className="space-y-5">
+
+                    {/* Profile photo – centered */}
+                    <div className="flex justify-center py-1">
+                      <FileUploadZone
+                        slot="avatar"
+                        label="Profile Photo"
+                        sublabel="Used as driver avatar"
+                        icon={Camera}
+                        value={avatar}
+                        onChange={setAvatar}
+                        accept="image/*"
+                        circular
+                      />
+                    </div>
+
+                    <FieldDivider>Contact</FieldDivider>
+
+                    {/* Name */}
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600">
+                        Full Name <span className="text-red-400">*</span>
+                      </Label>
+                      <Input
+                        {...register("name")}
+                        placeholder="e.g. Michael Rodriguez"
+                        className="h-10 text-sm"
+                        autoFocus
+                      />
+                      {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
+                    </div>
+
+                    {/* Phone + Email */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-gray-600">
+                          Phone <span className="text-red-400">*</span>
+                        </Label>
+                        <Input
+                          {...register("phone")}
+                          placeholder="(305) 555-9876"
+                          type="tel"
+                          className="h-10 text-sm"
+                          onChange={(e) => {
+                            const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
+                            let formatted = digits
+                            if (digits.length >= 7) formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
+                            else if (digits.length >= 4) formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
+                            else if (digits.length >= 1) formatted = `(${digits}`
+                            e.target.value = formatted
+                            register("phone").onChange(e)
+                          }}
+                        />
+                        {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>}
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-gray-600">Email</Label>
+                        <Input {...register("email")} placeholder="mike@email.com" type="email" className="h-10 text-sm" />
+                        {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
+                      </div>
+                    </div>
+
+                    <FieldDivider>Assignment</FieldDivider>
+
+                    {/* Status + Default Vehicle */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-gray-600">Status</Label>
+                        <Controller
+                          name="status"
+                          control={control}
+                          render={({ field }) => (
+                            <Select value={field.value} onValueChange={(v) => { if (typeof v === "string") field.onChange(v) }}>
+                              <SelectTrigger className="h-10 text-sm">
+                                <SelectValue placeholder="Select status" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="ACTIVE">Active</SelectItem>
+                                <SelectItem value="INACTIVE">Inactive</SelectItem>
+                                <SelectItem value="ON_LEAVE">On Leave</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold text-gray-600">Default Vehicle</Label>
+                        <Controller
+                          name="defaultVehicleId"
+                          control={control}
+                          render={({ field }) => {
+                            const selectedVehicle = vehicles?.find(v => v.id === field.value)
+                            return (
+                              <Select value={field.value || ""} onValueChange={(v) => { if (typeof v === "string") field.onChange(v) }}>
+                                <SelectTrigger className="h-10 text-sm">
+                                  <span className={selectedVehicle ? "text-gray-900" : "text-gray-400"}>
+                                    {selectedVehicle ? selectedVehicle.name : "None"}
+                                  </span>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="">None</SelectItem>
+                                  {vehicles?.map(v => (
+                                    <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            )
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Notes */}
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600">Notes</Label>
+                      <Textarea
+                        {...register("notes")}
+                        placeholder="Any relevant notes about this driver..."
+                        className="text-sm resize-none"
+                        rows={3}
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-gray-600">Email</Label>
-                    <Input {...register("email")} placeholder="mike@email.com" type="email" className="h-10 text-sm" />
-                    {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
+                )}
+
+                {/* ── TAB: Documents ── */}
+                {activeTab === "documents" && (
+                  <div className="space-y-6">
+
+                    {/* License info */}
+                    <div className="space-y-3">
+                      <FieldDivider>Driver&apos;s License</FieldDivider>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-semibold text-gray-600">License Number</Label>
+                          <Input
+                            {...register("licenseNumber")}
+                            placeholder="D12345678"
+                            className="h-10 text-sm font-mono"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-semibold text-gray-600">Expiry Date</Label>
+                          <Input {...register("licenseExpiry")} type="date" className="h-10 text-sm" />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <FileUploadZone
+                          slot="license-front"
+                          label="Front of License"
+                          sublabel="Photo or scan"
+                          icon={CreditCard}
+                          value={licenseFront}
+                          onChange={setLicenseFront}
+                          accept="image/*,application/pdf"
+                        />
+                        <FileUploadZone
+                          slot="license-back"
+                          label="Back of License"
+                          sublabel="Photo or scan"
+                          icon={CreditCard}
+                          value={licenseBack}
+                          onChange={setLicenseBack}
+                          accept="image/*,application/pdf"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Additional docs */}
+                    <div className="space-y-3">
+                      <FieldDivider>Additional Documents</FieldDivider>
+                      <div className="space-y-2.5">
+                        <FileUploadZone
+                          slot="doc1"
+                          label="Document 1"
+                          sublabel="Insurance, certification, or other"
+                          icon={Briefcase}
+                          value={doc1}
+                          onChange={setDoc1}
+                          accept="image/*,application/pdf"
+                          compact
+                        />
+                        <FileUploadZone
+                          slot="doc2"
+                          label="Document 2"
+                          sublabel="Insurance, certification, or other"
+                          icon={Shield}
+                          value={doc2}
+                          onChange={setDoc2}
+                          accept="image/*,application/pdf"
+                          compact
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-gray-600">Status</Label>
-                    <Controller
-                      name="status"
-                      control={control}
-                      render={({ field }) => (
-                        <Select value={field.value} onValueChange={(v) => { if (typeof v === "string") field.onChange(v) }}>
-                          <SelectTrigger className="h-10 text-sm">
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="ACTIVE">Active</SelectItem>
-                            <SelectItem value="INACTIVE">Inactive</SelectItem>
-                            <SelectItem value="ON_LEAVE">On Leave</SelectItem>
-                          </SelectContent>
-                        </Select>
+                )}
+
+              </form>
+            </div>
+
+            {/* ── Footer ─────────────────────────────────────────────────── */}
+            <div className="flex-shrink-0 px-7 py-4 border-t border-gray-100/80 bg-gray-50/40">
+              <AnimatePresence mode="wait" initial={false}>
+                {confirmDelete ? (
+                  <motion.div
+                    key="confirm"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.16 }}
+                    className="flex items-center justify-between bg-red-50 border border-red-100 rounded-2xl px-4 py-3"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                      <span className="text-[13px] text-red-700 font-semibold">Delete this driver permanently?</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setConfirmDelete(false)}
+                        className="text-[12px] font-medium text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-xl hover:bg-white transition-all"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => deleteDriver.mutate(editing!.id, { onSuccess: handleClose })}
+                        className="text-[12px] font-semibold text-white bg-red-500 hover:bg-red-600 active:bg-red-700 px-3.5 py-1.5 rounded-xl transition-all shadow-sm"
+                      >
+                        {deleteDriver.isPending ? "Deleting..." : "Yes, delete"}
+                      </button>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="actions"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.12 }}
+                    className="flex items-center justify-between"
+                  >
+                    <div>
+                      {editing && (
+                        <button
+                          type="button"
+                          onClick={() => setConfirmDelete(true)}
+                          className="text-[12px] text-gray-300 hover:text-red-400 transition-colors font-medium py-1"
+                        >
+                          Delete driver
+                        </button>
                       )}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-gray-600">Default Vehicle</Label>
-                    <Controller
-                      name="defaultVehicleId"
-                      control={control}
-                      render={({ field }) => {
-                        const selectedVehicle = vehicles?.find(v => v.id === field.value)
-                        return (
-                          <Select value={field.value || ""} onValueChange={(v) => { if (typeof v === "string") field.onChange(v) }}>
-                            <SelectTrigger className="h-10 text-sm">
-                              <span className={selectedVehicle ? "text-gray-900" : "text-gray-400"}>
-                                {selectedVehicle ? selectedVehicle.name : "None"}
-                              </span>
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="">None</SelectItem>
-                              {vehicles?.map(v => (
-                                <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-gray-600">Notes</Label>
-                  <Textarea {...register("notes")} placeholder="Any relevant notes about this driver..." className="text-sm resize-none" rows={2} />
-                </div>
-              </div>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleClose}
+                        className="h-10 px-5 text-sm rounded-xl border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="submit"
+                        form="driver-form"
+                        disabled={isPending}
+                        className="h-10 px-7 text-sm font-semibold text-white rounded-xl min-w-[130px]"
+                        style={{
+                          background: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)",
+                          boxShadow: "0 2px 14px rgba(37,99,235,0.32)",
+                        }}
+                      >
+                        {isPending ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                            Saving...
+                          </div>
+                        ) : (editing ? "Save Changes" : "Add Driver")}
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* ── License ── */}
-            <div>
-              <SectionLabel>Driver&apos;s License</SectionLabel>
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-gray-600">License Number</Label>
-                    <Input {...register("licenseNumber")} placeholder="D12345678" className="h-10 text-sm font-mono" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-gray-600">Expiry Date</Label>
-                    <Input {...register("licenseExpiry")} type="date" className="h-10 text-sm" />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <FileUploadZone
-                    slot="license-front"
-                    label="Front of License"
-                    sublabel="Photo or scan"
-                    icon={CreditCard}
-                    value={licenseFront}
-                    onChange={setLicenseFront}
-                    accept="image/*,application/pdf"
-                  />
-                  <FileUploadZone
-                    slot="license-back"
-                    label="Back of License"
-                    sublabel="Photo or scan"
-                    icon={CreditCard}
-                    value={licenseBack}
-                    onChange={setLicenseBack}
-                    accept="image/*,application/pdf"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* ── Additional Documents ── */}
-            <div>
-              <SectionLabel>Additional Documents</SectionLabel>
-              <div className="space-y-2.5">
-                <FileUploadZone
-                  slot="doc1"
-                  label="Document 1"
-                  sublabel="Insurance, certification, or other"
-                  icon={Briefcase}
-                  value={doc1}
-                  onChange={setDoc1}
-                  accept="image/*,application/pdf"
-                  compact
-                />
-                <FileUploadZone
-                  slot="doc2"
-                  label="Document 2"
-                  sublabel="Insurance, certification, or other"
-                  icon={Shield}
-                  value={doc2}
-                  onChange={setDoc2}
-                  accept="image/*,application/pdf"
-                  compact
-                />
-              </div>
-            </div>
-
-          </form>
-        </div>
-
-        {/* Footer */}
-        <div className="border-t border-gray-100 px-6 py-4 flex-shrink-0 space-y-2">
-          <div className="flex gap-2.5">
-            <Button
-              type="submit"
-              form="driver-form"
-              disabled={isPending}
-              className="flex-1 h-10 text-sm font-semibold text-white"
-              style={{ background: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)" }}
-            >
-              {isPending ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                  Saving...
-                </div>
-              ) : (editing ? "Save Changes" : "Add Driver")}
-            </Button>
-            <Button type="button" variant="outline" onClick={handleClose} className="h-10 px-4 text-sm">
-              Cancel
-            </Button>
-          </div>
-          {editing && (
-            !confirmDelete ? (
-              <button
-                type="button"
-                onClick={() => setConfirmDelete(true)}
-                className="w-full text-[12px] text-gray-400 hover:text-red-500 transition-colors py-1"
-              >
-                Delete this driver
-              </button>
-            ) : (
-              <div className="flex items-center justify-between bg-red-50 border border-red-100 rounded-xl px-3 py-2">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                  <span className="text-xs text-red-600 font-medium">Permanently delete?</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => deleteDriver.mutate(editing.id, { onSuccess: handleClose })}
-                    className="text-xs font-semibold text-white bg-red-500 hover:bg-red-600 px-2.5 py-1 rounded-lg transition-colors"
-                  >
-                    {deleteDriver.isPending ? "Deleting..." : "Yes, delete"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setConfirmDelete(false)}
-                    className="text-xs font-medium text-gray-500 hover:text-gray-700 px-2 py-1 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )
-          )}
-        </div>
-      </SheetContent>
-    </Sheet>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }
 
@@ -780,21 +953,12 @@ function DriverSkeleton() {
   )
 }
 
-// ── Status filter tabs ─────────────────────────────────────────────────────────
-
-const FILTER_TABS = [
-  { id: "", label: "All" },
-  { id: "ACTIVE", label: "Active" },
-  { id: "INACTIVE", label: "Inactive" },
-  { id: "ON_LEAVE", label: "On Leave" },
-] as const
-
 // ── Main page ──────────────────────────────────────────────────────────────────
 
 export default function DriversPage() {
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("")
-  const [sheetOpen, setSheetOpen] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<Driver | null>(null)
 
   const debouncedSearch = useDebounce(search, 300)
@@ -804,8 +968,8 @@ export default function DriversPage() {
   const onLeaveCount = drivers?.filter(d => d.status === "ON_LEAVE").length ?? 0
   const totalCount = drivers?.length ?? 0
 
-  function openAdd() { setEditing(null); setSheetOpen(true) }
-  function openEdit(d: Driver) { setEditing(d); setSheetOpen(true) }
+  function openAdd() { setEditing(null); setModalOpen(true) }
+  function openEdit(d: Driver) { setEditing(d); setModalOpen(true) }
 
   return (
     <div className="space-y-4 max-w-6xl mx-auto">
@@ -813,9 +977,7 @@ export default function DriversPage() {
       {/* ── Header card ── */}
       <div className="bg-white border border-gray-100 rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
 
-        {/* Title row */}
         <div className="flex items-center justify-between gap-4 px-6 pt-5 pb-5">
-          {/* Left: icon + title */}
           <div className="flex items-center gap-3.5 min-w-0">
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
@@ -831,7 +993,6 @@ export default function DriversPage() {
             </div>
           </div>
 
-          {/* Right: metric strip */}
           <div className="flex items-stretch divide-x divide-gray-100 rounded-xl border border-gray-100 bg-gray-50/50 overflow-hidden shrink-0">
             {([
               { label: "Total",    value: totalCount,   dot: "bg-blue-500" },
@@ -849,12 +1010,9 @@ export default function DriversPage() {
           </div>
         </div>
 
-        {/* Gradient divider */}
         <div className="h-px bg-gradient-to-r from-transparent via-gray-100 to-transparent mx-6" />
 
-        {/* Search + filter + add button row */}
         <div className="flex items-center gap-3 px-6 py-4">
-          {/* Search */}
           <div className="relative flex-1 max-w-xs">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-300" />
             <input
@@ -870,7 +1028,6 @@ export default function DriversPage() {
             )}
           </div>
 
-          {/* Status filter pills */}
           <div className="flex items-center gap-1 p-1 bg-gray-50 rounded-xl border border-gray-100">
             {FILTER_TABS.map(tab => (
               <button
@@ -890,7 +1047,6 @@ export default function DriversPage() {
 
           <div className="flex-1" />
 
-          {/* Add button */}
           <Button
             onClick={openAdd}
             className="h-9 text-sm font-semibold text-white gap-1.5 px-4"
@@ -944,8 +1100,8 @@ export default function DriversPage() {
         </div>
       )}
 
-      {/* ── Sheet ── */}
-      <DriverSheet open={sheetOpen} onClose={() => setSheetOpen(false)} editing={editing} />
+      {/* ── Modal ── */}
+      <DriverModal open={modalOpen} onClose={() => setModalOpen(false)} editing={editing} />
     </div>
   )
 }
