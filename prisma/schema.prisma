@@ -77,9 +77,15 @@ model Driver {
   phone           String
   licenseNumber   String?
   licenseExpiry   DateTime?
-  avatarUrl       String?
-  status          DriverStatus @default(ACTIVE)
-  notes           String?
+  avatarUrl           String?
+  licensePhotoFront   String?
+  licensePhotoBack    String?
+  document1Url        String?
+  document1Name       String?
+  document2Url        String?
+  document2Name       String?
+  status              DriverStatus @default(ACTIVE)
+  notes               String?
   companyId       String
   company         Company      @relation(fields: [companyId], references: [id])
   createdAt       DateTime     @default(now())

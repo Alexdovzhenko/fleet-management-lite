@@ -57,11 +57,18 @@ export interface Driver {
   licenseNumber?: string
   licenseExpiry?: string
   avatarUrl?: string
+  licensePhotoFront?: string
+  licensePhotoBack?: string
+  document1Url?: string
+  document1Name?: string
+  document2Url?: string
+  document2Name?: string
   status: DriverStatus
   notes?: string
   companyId: string
   defaultVehicleId?: string
   defaultVehicle?: Vehicle
+  _count?: { trips: number }
   createdAt: string
   updatedAt: string
 }

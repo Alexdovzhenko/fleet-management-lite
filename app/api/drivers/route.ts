@@ -11,6 +11,13 @@ const createDriverSchema = z.object({
   licenseExpiry: z.string().optional(),
   notes: z.string().optional(),
   defaultVehicleId: z.string().optional(),
+  avatarUrl: z.string().optional(),
+  licensePhotoFront: z.string().optional(),
+  licensePhotoBack: z.string().optional(),
+  document1Url: z.string().optional(),
+  document1Name: z.string().optional(),
+  document2Url: z.string().optional(),
+  document2Name: z.string().optional(),
 })
 
 export async function GET(request: NextRequest) {
@@ -67,6 +74,13 @@ export async function POST(request: NextRequest) {
         licenseExpiry: data.licenseExpiry ? new Date(data.licenseExpiry) : null,
         notes: data.notes || null,
         defaultVehicleId: data.defaultVehicleId || null,
+        avatarUrl: data.avatarUrl || null,
+        licensePhotoFront: data.licensePhotoFront || null,
+        licensePhotoBack: data.licensePhotoBack || null,
+        document1Url: data.document1Url || null,
+        document1Name: data.document1Name || null,
+        document2Url: data.document2Url || null,
+        document2Name: data.document2Name || null,
         companyId,
       },
     })

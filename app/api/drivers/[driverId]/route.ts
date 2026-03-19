@@ -12,6 +12,13 @@ const updateDriverSchema = z.object({
   notes: z.string().optional(),
   status: z.enum(["ACTIVE", "INACTIVE", "ON_LEAVE"]).optional(),
   defaultVehicleId: z.string().optional().nullable(),
+  avatarUrl: z.string().optional().nullable(),
+  licensePhotoFront: z.string().optional().nullable(),
+  licensePhotoBack: z.string().optional().nullable(),
+  document1Url: z.string().optional().nullable(),
+  document1Name: z.string().optional().nullable(),
+  document2Url: z.string().optional().nullable(),
+  document2Name: z.string().optional().nullable(),
 })
 
 export async function GET(
