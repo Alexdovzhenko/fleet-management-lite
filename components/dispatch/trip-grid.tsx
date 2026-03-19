@@ -275,11 +275,14 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
           <td key={key} className="px-3 py-2.5 whitespace-nowrap">
             {trip.driver ? (
               <div className="flex items-center gap-2">
-                <Avatar className="w-6 h-6 flex-shrink-0">
-                  <AvatarFallback className="text-[9px] font-bold text-white bg-[#2E4369]">
-                    {getInitials(trip.driver.name)}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="w-6 h-6 rounded-full flex-shrink-0 overflow-hidden bg-[#2E4369] flex items-center justify-center">
+                  {trip.driver.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={trip.driver.avatarUrl} alt={trip.driver.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-[9px] font-bold text-white">{getInitials(trip.driver.name)}</span>
+                  )}
+                </div>
                 <span className="text-xs text-gray-700 truncate max-w-[90px]">{trip.driver.name}</span>
               </div>
             ) : (

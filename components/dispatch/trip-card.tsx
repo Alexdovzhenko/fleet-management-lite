@@ -65,11 +65,14 @@ export function TripCard({ trip, isSelected, onClick }: TripCardProps) {
         <div className="flex items-center gap-2">
           {trip.driver ? (
             <>
-              <Avatar className="w-6 h-6">
-                <AvatarFallback className="text-[10px] font-bold text-white bg-primary-700">
-                  {getInitials(trip.driver.name)}
-                </AvatarFallback>
-              </Avatar>
+              <div className="w-6 h-6 rounded-full overflow-hidden bg-primary-700 flex items-center justify-center flex-shrink-0">
+                {trip.driver.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={trip.driver.avatarUrl} alt={trip.driver.name} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-[10px] font-bold text-white">{getInitials(trip.driver.name)}</span>
+                )}
+              </div>
               <span className="text-xs text-gray-600">{trip.driver.name}</span>
               {trip.vehicle && (
                 <span className="text-xs text-gray-400">· {trip.vehicle.name}</span>
