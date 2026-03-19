@@ -225,8 +225,10 @@ function RouteBuilder({ stops, setStops, stopsError }: {
   const [arrivingDepartingTo, setArrivingDepartingTo] = useState("")
   const [seaportInstructions, setSeaportInstructions] = useState("")
   const [addError, setAddError] = useState("")
+  const [isEditing, setIsEditing] = useState(false)
 
   function resetForm() {
+    setIsEditing(false)
     setLocationName(""); setAddress1(""); setAddress2(""); setCity("")
     setStateVal(""); setZip(""); setCountry(""); setPhone(""); setTimeIn(""); setNotes("")
     setAirportCode(""); setAirportName(""); setAirlineCode(""); setAirlineName("")
@@ -237,6 +239,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
   }
 
   function editStop(stop: StopEntry) {
+    setIsEditing(true)
     setStops(prev => prev.filter(s => s.id !== stop.id))
     setLocType(stop.locType)
     setRole(stop.role)
@@ -289,6 +292,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
       formattedAddress = [portName || seaportCode, seaportCode && portName ? `(${seaportCode})` : ""].filter(Boolean).join(" ") || seaportCode || portName
     }
 
+    setIsEditing(false)
     setStops(prev => [...prev, {
       id: `s${Date.now()}`, locType, role,
       address: formattedAddress, notes: notes.trim(), flightNumber: flightNumber.trim(),
@@ -577,8 +581,8 @@ function RouteBuilder({ stops, setStops, stopsError }: {
           </div>
           {stops.map((stop) => (
             <div key={stop.id}
-              onClick={() => editStop(stop)}
-              className={`group flex items-start gap-3 px-3 py-2.5 border-b last:border-b-0 border-gray-100 cursor-pointer hover:brightness-95 transition-all ${ROLE_ROW_BG[stop.role]}`}>
+              onClick={() => { if (!isEditing) editStop(stop) }}
+              className={`group flex items-start gap-3 px-3 py-2.5 border-b last:border-b-0 border-gray-100 transition-all ${ROLE_ROW_BG[stop.role]} ${isEditing ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:brightness-95"}`}>
               <span className="text-[11px] font-bold font-mono flex-shrink-0 mt-0.5 w-6">{ROLE_PREFIX[stop.role]}:</span>
               <div className="flex-1 min-w-0">
                 {stop.locationName && <div className="text-xs font-semibold truncate">{stop.locationName}</div>}
@@ -597,11 +601,14 @@ function RouteBuilder({ stops, setStops, stopsError }: {
                 )}
               </div>
               <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
-                <span className="opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Pencil className="w-3 h-3 text-gray-400" />
-                </span>
-                <button type="button" onClick={(e) => { e.stopPropagation(); setStops(prev => prev.filter(s => s.id !== stop.id)) }}
-                  className="text-gray-300 hover:text-red-400 transition-colors">
+                {!isEditing && (
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Pencil className="w-3 h-3 text-gray-400" />
+                  </span>
+                )}
+                <button type="button" onClick={(e) => { e.stopPropagation(); if (!isEditing) setStops(prev => prev.filter(s => s.id !== stop.id)) }}
+                  disabled={isEditing}
+                  className="text-gray-300 hover:text-red-400 transition-colors disabled:pointer-events-none">
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
