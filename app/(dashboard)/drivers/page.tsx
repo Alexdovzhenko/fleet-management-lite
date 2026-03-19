@@ -541,7 +541,25 @@ function DriverSheet({
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <Label className="text-xs font-semibold text-gray-600">Phone <span className="text-red-400">*</span></Label>
-                    <Input {...register("phone")} placeholder="(305) 555-9876" type="tel" className="h-10 text-sm" />
+                    <Input
+                      {...register("phone")}
+                      placeholder="(305) 555-9876"
+                      type="tel"
+                      className="h-10 text-sm"
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
+                        let formatted = digits
+                        if (digits.length >= 7) {
+                          formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
+                        } else if (digits.length >= 4) {
+                          formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
+                        } else if (digits.length >= 1) {
+                          formatted = `(${digits}`
+                        }
+                        e.target.value = formatted
+                        register("phone").onChange(e)
+                      }}
+                    />
                     {errors.phone && <p className="text-xs text-red-500">{errors.phone.message}</p>}
                   </div>
                   <div className="space-y-1.5">
