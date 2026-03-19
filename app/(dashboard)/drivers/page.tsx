@@ -7,7 +7,6 @@ import {
   FileText, Camera, CreditCard, ChevronDown, Pencil,
   Shield, Briefcase, IdCard, CheckCircle2, AlertCircle,
 } from "lucide-react"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Input } from "@/components/ui/input"
@@ -122,7 +121,8 @@ function FileUploadZone({
         >
           {value?.isImage ? (
             <>
-              <Image src={value.url} alt="Avatar" fill className="object-cover" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={value.url} alt="Avatar" className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <Camera className="w-5 h-5 text-white" />
               </div>
@@ -181,7 +181,8 @@ function FileUploadZone({
             ) : value ? (
               value.isImage ? (
                 <div className="relative w-9 h-9 rounded-lg overflow-hidden">
-                  <Image src={value.url} alt={label} fill className="object-cover" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={value.url} alt={label} className="w-full h-full object-cover" />
                 </div>
               ) : (
                 <FileText className="w-4.5 h-4.5 text-blue-500" style={{ width: 18, height: 18 }} />
@@ -238,7 +239,8 @@ function FileUploadZone({
           <>
             {value.isImage ? (
               <div className="relative w-full h-24 rounded-lg overflow-hidden">
-                <Image src={value.url} alt={label} fill className="object-cover" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={value.url} alt={label} className="w-full h-full object-cover" />
               </div>
             ) : (
               <div className="flex items-center gap-2">
@@ -298,8 +300,9 @@ function DriverCard({ driver, onEdit, index }: { driver: Driver; onEdit: (d: Dri
           {/* Avatar */}
           <div className="relative flex-shrink-0">
             {driver.avatarUrl ? (
-              <div className="relative w-12 h-12 rounded-2xl overflow-hidden shadow-sm">
-                <Image src={driver.avatarUrl} alt={driver.name} fill className="object-cover" />
+              <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-sm">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={driver.avatarUrl} alt={driver.name} className="w-full h-full object-cover" />
               </div>
             ) : (
               <div
