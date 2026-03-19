@@ -440,9 +440,13 @@ function DriverSheet({
   useEffect(() => {
     if (!open) return
     if (editing) {
+      const d = editing.phone.replace(/\D/g, "").slice(0, 10)
+      const fmtPhone = d.length >= 7
+        ? `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`
+        : d.length >= 4 ? `(${d.slice(0,3)}) ${d.slice(3)}` : d
       reset({
         name: editing.name,
-        phone: editing.phone,
+        phone: fmtPhone,
         email: editing.email || "",
         licenseNumber: editing.licenseNumber || "",
         licenseExpiry: editing.licenseExpiry ? editing.licenseExpiry.split("T")[0] : "",
