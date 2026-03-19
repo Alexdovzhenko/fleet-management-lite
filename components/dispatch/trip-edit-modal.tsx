@@ -8,7 +8,7 @@ import { z } from "zod"
 import {
   X, Plane, Phone, Copy, Check, User, Car, UserCheck,
   ChevronDown, MapPin, Building2, Ship, Plus, Star,
-  AlertTriangle, Baby, ArrowRightLeft,
+  AlertTriangle, Baby, ArrowRightLeft, Pencil,
 } from "lucide-react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -234,6 +234,40 @@ function RouteBuilder({ stops, setStops, stopsError }: {
     setEtaEtd(""); setMeetOption(""); setTailNumber("")
     setSeaportCode(""); setPortName(""); setCruiseShipName(""); setCruiseLineName("")
     setArrivingDepartingTo(""); setSeaportInstructions("")
+  }
+
+  function editStop(stop: StopEntry) {
+    setStops(prev => prev.filter(s => s.id !== stop.id))
+    setLocType(stop.locType)
+    setRole(stop.role)
+    setLocationName(stop.locationName ?? "")
+    setAddress1(stop.address ?? "")
+    setAddress2(stop.address2 ?? "")
+    setCity(stop.city ?? "")
+    setStateVal(stop.state ?? "")
+    setZip(stop.zip ?? "")
+    setCountry(stop.country ?? "")
+    setPhone(stop.phone ?? "")
+    setTimeIn(stop.timeIn ?? "")
+    setNotes(stop.notes ?? "")
+    setAirportCode(stop.airportCode ?? "")
+    setAirportName(stop.airportName ?? "")
+    setAirlineCode(stop.airlineCode ?? "")
+    setAirlineName(stop.airlineName ?? "")
+    setFlightNumber(stop.flightNumber ?? "")
+    setArrDep(stop.arrDep ?? "")
+    setTerminalGate(stop.terminalGate ?? "")
+    setAirportInstructions(stop.airportInstructions ?? "")
+    setEtaEtd(stop.etaEtd ?? "")
+    setMeetOption(stop.meetOption ?? "")
+    setTailNumber(stop.tailNumber ?? "")
+    setSeaportCode(stop.seaportCode ?? "")
+    setPortName(stop.portName ?? "")
+    setCruiseShipName(stop.cruiseShipName ?? "")
+    setCruiseLineName(stop.cruiseLineName ?? "")
+    setArrivingDepartingTo(stop.arrivingDepartingTo ?? "")
+    setSeaportInstructions(stop.seaportInstructions ?? "")
+    setAddError("")
   }
 
   function handleAdd() {
@@ -542,7 +576,9 @@ function RouteBuilder({ stops, setStops, stopsError }: {
             <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Routing Information</p>
           </div>
           {stops.map((stop) => (
-            <div key={stop.id} className={`flex items-start gap-3 px-3 py-2.5 border-b last:border-b-0 border-gray-100 ${ROLE_ROW_BG[stop.role]}`}>
+            <div key={stop.id}
+              onClick={() => editStop(stop)}
+              className={`group flex items-start gap-3 px-3 py-2.5 border-b last:border-b-0 border-gray-100 cursor-pointer hover:brightness-95 transition-all ${ROLE_ROW_BG[stop.role]}`}>
               <span className="text-[11px] font-bold font-mono flex-shrink-0 mt-0.5 w-6">{ROLE_PREFIX[stop.role]}:</span>
               <div className="flex-1 min-w-0">
                 {stop.locationName && <div className="text-xs font-semibold truncate">{stop.locationName}</div>}
@@ -560,10 +596,15 @@ function RouteBuilder({ stops, setStops, stopsError }: {
                   </div>
                 )}
               </div>
-              <button type="button" onClick={() => setStops(prev => prev.filter(s => s.id !== stop.id))}
-                className="text-gray-300 hover:text-red-400 transition-colors flex-shrink-0 mt-0.5">
-                <X className="w-3.5 h-3.5" />
-              </button>
+              <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
+                <span className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Pencil className="w-3 h-3 text-gray-400" />
+                </span>
+                <button type="button" onClick={(e) => { e.stopPropagation(); setStops(prev => prev.filter(s => s.id !== stop.id)) }}
+                  className="text-gray-300 hover:text-red-400 transition-colors">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           ))}
         </div>
