@@ -36,6 +36,13 @@ export async function POST(request: NextRequest) {
     const path = `${companyId}/${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
 
     const supabase = getAdminClient()
+
+    // Auto-create bucket if it doesn't exist
+    const { data: buckets } = await supabase.storage.listBuckets()
+    if (!buckets?.find(b => b.name === BUCKET)) {
+      await supabase.storage.createBucket(BUCKET, { public: true })
+    }
+
     const bytes = await file.arrayBuffer()
     const { error } = await supabase.storage
       .from(BUCKET)
