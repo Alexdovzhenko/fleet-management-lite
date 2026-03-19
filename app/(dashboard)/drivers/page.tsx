@@ -418,6 +418,7 @@ function DriverModal({
   const deleteDriver = useDeleteDriver()
   const { data: vehicles } = useVehicles()
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [activeTab, setActiveTab] = useState<"info" | "documents">("info")
 
   const [avatar, setAvatar] = useState<UploadedFile | null>(null)
   const [licenseFront, setLicenseFront] = useState<UploadedFile | null>(null)
@@ -453,6 +454,7 @@ function DriverModal({
   // Populate form
   useEffect(() => {
     if (!open) return
+    setActiveTab("info")
     setConfirmDelete(false)
     if (editing) {
       const d = editing.phone.replace(/\D/g, "").slice(0, 10)
@@ -527,100 +529,129 @@ function DriverModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 12 }}
             transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
-            className="bg-white rounded-[24px] w-full max-w-[800px] max-h-[90vh] flex flex-col overflow-hidden"
-            style={{ boxShadow: "0 48px 140px rgba(0,0,0,0.26), 0 0 0 1px rgba(0,0,0,0.06)" }}
+            className="bg-white rounded-[28px] w-full max-w-[640px] max-h-[92vh] flex flex-col overflow-hidden"
+            style={{ boxShadow: "0 48px 140px rgba(0,0,0,0.28), 0 0 0 1px rgba(0,0,0,0.06)" }}
             onClick={(e) => e.stopPropagation()}
           >
 
-            {/* ── Thin top header ── */}
-            <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <h2 className="text-[15px] font-bold text-gray-900 tracking-tight">
-                {editing ? "Edit Driver" : "Add New Driver"}
-              </h2>
-              <button
-                type="button"
-                onClick={handleClose}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all duration-150"
-              >
-                <X style={{ width: 17, height: 17 }} />
-              </button>
-            </div>
+            {/* ── Modal Header ───────────────────────────────────────────── */}
+            <div className="flex-shrink-0 px-7 pt-6 pb-0">
 
-            {/* ── Two-panel body ── */}
-            <div className="flex flex-1 overflow-hidden">
+              {/* Top row: title + close */}
+              <div className="flex items-start justify-between mb-5">
+                <div>
+                  <h2 className="text-[18px] font-bold text-gray-900 tracking-tight leading-tight">
+                    {editing ? "Edit Driver" : "Add New Driver"}
+                  </h2>
+                  <p className="text-[12.5px] text-gray-400 mt-0.5 leading-snug">
+                    {editing
+                      ? "Update profile, contact info, and documents"
+                      : "Fill in the details to register a new driver"}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all duration-150 flex-shrink-0 -mr-1.5 mt-0.5"
+                >
+                  <X style={{ width: 17, height: 17 }} />
+                </button>
+              </div>
 
-              {/* ── LEFT PANEL: identity + avatar ── */}
-              <div
-                className="w-[220px] flex-shrink-0 flex flex-col items-center px-6 pt-8 pb-6 border-r border-gray-100 overflow-y-auto"
-                style={{ background: "linear-gradient(180deg, #f8faff 0%, #f1f5fb 100%)" }}
-              >
-                {/* Avatar upload */}
-                <FileUploadZone
-                  slot="avatar"
-                  label="Profile Photo"
-                  sublabel="Click to upload"
-                  icon={Camera}
-                  value={avatar}
-                  onChange={setAvatar}
-                  accept="image/*"
-                  circular
-                />
-
-                <div className="w-full h-px bg-gray-200/60 my-5" />
-
-                {/* Live name preview */}
-                <p className={cn(
-                  "font-bold text-[14px] text-center leading-snug w-full truncate px-1",
-                  displayName ? "text-gray-800" : "text-gray-300"
-                )}>
-                  {displayName || "Driver name"}
-                </p>
-
-                {/* Live status chip */}
-                <span className={cn(
-                  "mt-2.5 inline-flex items-center gap-1.5 text-[11.5px] font-semibold px-2.5 py-1 rounded-full",
-                  statusCfg.chip
-                )}>
-                  <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", statusCfg.dot)} />
-                  {statusCfg.label}
-                </span>
-
-                {/* Stats (editing only) */}
-                {editing && (
-                  <>
-                    <div className="w-full h-px bg-gray-200/60 mt-5 mb-4" />
-                    <div className="w-full space-y-3">
-                      {editing._count?.trips !== undefined && (
-                        <div className="flex items-center justify-between">
-                          <span className="text-[11.5px] text-gray-400 font-medium">Trips</span>
-                          <span className="text-[13px] font-bold text-gray-700">{editing._count.trips}</span>
-                        </div>
-                      )}
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11.5px] text-gray-400 font-medium">License</span>
-                        {licenseFront ? (
-                          <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
-                            <CheckCircle2 className="w-3 h-3" /> Uploaded
-                          </span>
-                        ) : (
-                          <span className="text-[11px] text-gray-300 font-medium">None</span>
-                        )}
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11.5px] text-gray-400 font-medium">Docs</span>
-                        <span className="text-[13px] font-bold text-gray-700">
-                          {[doc1, doc2].filter(Boolean).length}
-                        </span>
-                      </div>
+              {/* Driver identity strip */}
+              <div className="flex items-center gap-4 px-4 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/60 mb-5">
+                {/* Live avatar preview */}
+                <div className="flex-shrink-0">
+                  {avatar?.url ? (
+                    <div className="w-[54px] h-[54px] rounded-2xl overflow-hidden ring-2 ring-white shadow-md">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={avatar.url} alt={displayName} className="w-full h-full object-cover" />
                     </div>
-                  </>
+                  ) : (
+                    <div
+                      className="w-[54px] h-[54px] rounded-2xl flex items-center justify-center text-white text-[15px] font-bold shadow-md"
+                      style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)" }}
+                    >
+                      {getInitials(displayName || "?")}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <p className={cn(
+                    "font-bold text-[14px] leading-tight truncate",
+                    displayName ? "text-gray-900" : "text-gray-300"
+                  )}>
+                    {displayName || "Driver name"}
+                  </p>
+                  <span className={cn(
+                    "inline-flex items-center gap-1.5 mt-1.5 text-[11px] font-semibold px-2.5 py-[3px] rounded-full",
+                    statusCfg.chip
+                  )}>
+                    <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", statusCfg.dot)} />
+                    {statusCfg.label}
+                  </span>
+                </div>
+
+                {editing && editing._count?.trips !== undefined && (
+                  <div className="flex-shrink-0 text-right pr-0.5">
+                    <p className="text-[20px] font-bold text-gray-800 leading-none">{editing._count.trips}</p>
+                    <p className="text-[10.5px] text-gray-400 mt-0.5 font-medium">
+                      trip{editing._count.trips !== 1 ? "s" : ""}
+                    </p>
+                  </div>
                 )}
               </div>
 
-              {/* ── RIGHT PANEL: all form fields ── */}
-              <div className="flex-1 overflow-y-auto overscroll-contain">
-                <form id="driver-form" onSubmit={handleSubmit(onSubmit)}>
-                  <div className="px-7 py-6 space-y-4">
+              {/* Tab bar */}
+              <div className="flex items-center gap-1 border-b border-gray-100 -mx-7 px-7">
+                {([
+                  { id: "info" as const, label: "Basic Info" },
+                  { id: "documents" as const, label: "Documents" },
+                ]).map(tab => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      "relative px-1 pb-3 text-[13px] font-semibold transition-colors duration-150 mr-4",
+                      activeTab === tab.id ? "text-blue-600" : "text-gray-400 hover:text-gray-600"
+                    )}
+                  >
+                    {tab.label}
+                    {activeTab === tab.id && (
+                      <motion.div
+                        layoutId="tab-underline"
+                        className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-blue-600"
+                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ── Scrollable Form Body ────────────────────────────────────── */}
+            <div className="flex-1 overflow-y-auto px-7 py-5 overscroll-contain">
+              <form id="driver-form" onSubmit={handleSubmit(onSubmit)}>
+
+                {/* ── TAB: Basic Info ── */}
+                {activeTab === "info" && (
+                  <div className="space-y-5">
+
+                    {/* Profile photo – centered */}
+                    <div className="flex justify-center py-1">
+                      <FileUploadZone
+                        slot="avatar"
+                        label="Profile Photo"
+                        sublabel="Used as driver avatar"
+                        icon={Camera}
+                        value={avatar}
+                        onChange={setAvatar}
+                        accept="image/*"
+                        circular
+                      />
+                    </div>
 
                     <FieldDivider>Contact</FieldDivider>
 
@@ -725,85 +756,97 @@ function DriverModal({
                         {...register("notes")}
                         placeholder="Any relevant notes about this driver..."
                         className="text-sm resize-none"
-                        rows={2}
+                        rows={3}
                       />
                     </div>
-
-                    <FieldDivider>Driver&apos;s License</FieldDivider>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold text-gray-600">License Number</Label>
-                        <Input {...register("licenseNumber")} placeholder="D12345678" className="h-10 text-sm font-mono" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold text-gray-600">Expiry Date</Label>
-                        <Input {...register("licenseExpiry")} type="date" className="h-10 text-sm" />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <FileUploadZone
-                        slot="license-front"
-                        label="Front of License"
-                        sublabel="Photo or scan"
-                        icon={CreditCard}
-                        value={licenseFront}
-                        onChange={setLicenseFront}
-                        accept="image/*,application/pdf"
-                      />
-                      <FileUploadZone
-                        slot="license-back"
-                        label="Back of License"
-                        sublabel="Photo or scan"
-                        icon={CreditCard}
-                        value={licenseBack}
-                        onChange={setLicenseBack}
-                        accept="image/*,application/pdf"
-                      />
-                    </div>
-
-                    <FieldDivider>Additional Documents</FieldDivider>
-
-                    <div className="space-y-2.5 pb-2">
-                      <FileUploadZone
-                        slot="doc1"
-                        label="Document 1"
-                        sublabel="Insurance, certification, or other"
-                        icon={Briefcase}
-                        value={doc1}
-                        onChange={setDoc1}
-                        accept="image/*,application/pdf"
-                        compact
-                      />
-                      <FileUploadZone
-                        slot="doc2"
-                        label="Document 2"
-                        sublabel="Insurance, certification, or other"
-                        icon={Shield}
-                        value={doc2}
-                        onChange={setDoc2}
-                        accept="image/*,application/pdf"
-                        compact
-                      />
-                    </div>
-
                   </div>
-                </form>
-              </div>
+                )}
 
+                {/* ── TAB: Documents ── */}
+                {activeTab === "documents" && (
+                  <div className="space-y-6">
+
+                    {/* License info */}
+                    <div className="space-y-3">
+                      <FieldDivider>Driver&apos;s License</FieldDivider>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-semibold text-gray-600">License Number</Label>
+                          <Input
+                            {...register("licenseNumber")}
+                            placeholder="D12345678"
+                            className="h-10 text-sm font-mono"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-semibold text-gray-600">Expiry Date</Label>
+                          <Input {...register("licenseExpiry")} type="date" className="h-10 text-sm" />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <FileUploadZone
+                          slot="license-front"
+                          label="Front of License"
+                          sublabel="Photo or scan"
+                          icon={CreditCard}
+                          value={licenseFront}
+                          onChange={setLicenseFront}
+                          accept="image/*,application/pdf"
+                        />
+                        <FileUploadZone
+                          slot="license-back"
+                          label="Back of License"
+                          sublabel="Photo or scan"
+                          icon={CreditCard}
+                          value={licenseBack}
+                          onChange={setLicenseBack}
+                          accept="image/*,application/pdf"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Additional docs */}
+                    <div className="space-y-3">
+                      <FieldDivider>Additional Documents</FieldDivider>
+                      <div className="space-y-2.5">
+                        <FileUploadZone
+                          slot="doc1"
+                          label="Document 1"
+                          sublabel="Insurance, certification, or other"
+                          icon={Briefcase}
+                          value={doc1}
+                          onChange={setDoc1}
+                          accept="image/*,application/pdf"
+                          compact
+                        />
+                        <FileUploadZone
+                          slot="doc2"
+                          label="Document 2"
+                          sublabel="Insurance, certification, or other"
+                          icon={Shield}
+                          value={doc2}
+                          onChange={setDoc2}
+                          accept="image/*,application/pdf"
+                          compact
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+              </form>
             </div>
 
-            {/* ── Footer ── */}
-            <div className="flex-shrink-0 px-6 py-4 border-t border-gray-100 bg-gray-50/30">
+            {/* ── Footer ─────────────────────────────────────────────────── */}
+            <div className="flex-shrink-0 px-7 py-4 border-t border-gray-100/80 bg-gray-50/40">
               <AnimatePresence mode="wait" initial={false}>
                 {confirmDelete ? (
                   <motion.div
                     key="confirm"
-                    initial={{ opacity: 0, y: 5 }}
+                    initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
-                    transition={{ duration: 0.15 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.16 }}
                     className="flex items-center justify-between bg-red-50 border border-red-100 rounded-2xl px-4 py-3"
                   >
                     <div className="flex items-center gap-2.5">
@@ -863,7 +906,7 @@ function DriverModal({
                         className="h-10 px-7 text-sm font-semibold text-white rounded-xl min-w-[130px]"
                         style={{
                           background: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)",
-                          boxShadow: "0 2px 14px rgba(37,99,235,0.30)",
+                          boxShadow: "0 2px 14px rgba(37,99,235,0.32)",
                         }}
                       >
                         {isPending ? (
