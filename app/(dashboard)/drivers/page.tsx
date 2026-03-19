@@ -600,19 +600,24 @@ function DriverSheet({
                     <Controller
                       name="defaultVehicleId"
                       control={control}
-                      render={({ field }) => (
-                        <Select value={field.value || ""} onValueChange={(v) => { if (typeof v === "string") field.onChange(v) }}>
-                          <SelectTrigger className="h-10 text-sm">
-                            <SelectValue placeholder="None" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="">None</SelectItem>
-                            {vehicles?.map(v => (
-                              <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      )}
+                      render={({ field }) => {
+                        const selectedVehicle = vehicles?.find(v => v.id === field.value)
+                        return (
+                          <Select value={field.value || ""} onValueChange={(v) => { if (typeof v === "string") field.onChange(v) }}>
+                            <SelectTrigger className="h-10 text-sm">
+                              <span className={selectedVehicle ? "text-gray-900" : "text-gray-400"}>
+                                {selectedVehicle ? selectedVehicle.name : "None"}
+                              </span>
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="">None</SelectItem>
+                              {vehicles?.map(v => (
+                                <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )
+                      }}
                     />
                   </div>
                 </div>
