@@ -778,7 +778,7 @@ export default function DriversPage() {
   function openEdit(d: Driver) { setEditing(d); setSheetOpen(true) }
 
   return (
-    <div className="space-y-4 max-w-6xl">
+    <div className="space-y-4 max-w-6xl mx-auto">
 
       {/* ── Header card ── */}
       <div className="bg-white border border-gray-100 rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
