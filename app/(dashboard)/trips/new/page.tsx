@@ -403,8 +403,11 @@ function DriverPickerCard({
       <Label className="text-xs font-medium text-gray-900">Driver</Label>
       {selected ? (
         <div className="flex items-center gap-2.5 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2.5">
-          <div className="w-8 h-8 rounded-full bg-indigo-200 flex items-center justify-center text-xs font-bold text-indigo-700 flex-shrink-0">
-            {getInitials(selected.name)}
+          <div className="w-8 h-8 rounded-full bg-indigo-200 flex items-center justify-center text-xs font-bold text-indigo-700 flex-shrink-0 overflow-hidden">
+            {selected.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={selected.avatarUrl} alt={selected.name} className="w-full h-full object-cover" />
+            ) : getInitials(selected.name)}
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-semibold text-gray-900 truncate">{selected.name}</div>
@@ -449,8 +452,11 @@ function DriverPickerCard({
                   onClick={() => { onChange(d.id); setOpen(false) }}
                   className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-indigo-50/60 transition-colors"
                 >
-                  <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-[11px] font-bold text-indigo-600 flex-shrink-0">
-                    {getInitials(d.name)}
+                  <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-[11px] font-bold text-indigo-600 flex-shrink-0 overflow-hidden">
+                    {d.avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={d.avatarUrl} alt={d.name} className="w-full h-full object-cover" />
+                    ) : getInitials(d.name)}
                   </div>
                   <div className="flex-1 min-w-0 text-left">
                     <div className="text-sm font-medium text-gray-800">{d.name}</div>
