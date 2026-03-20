@@ -418,7 +418,6 @@ function DriverModal({
   const deleteDriver = useDeleteDriver()
   const { data: vehicles } = useVehicles()
   const [confirmDelete, setConfirmDelete] = useState(false)
-  const [activeTab, setActiveTab] = useState<"info" | "documents">("info")
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const [avatarUploading, setAvatarUploading] = useState(false)
 
@@ -457,7 +456,6 @@ function DriverModal({
   useEffect(() => {
     if (!open) return
     setConfirmDelete(false)
-    setActiveTab("info")
     if (editing) {
       const d = editing.phone.replace(/\D/g, "").slice(0, 10)
       const fmtPhone = d.length >= 7
@@ -546,7 +544,7 @@ function DriverModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 10 }}
             transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
-            className="bg-white rounded-[20px] w-full max-w-[860px] max-h-[90vh] flex flex-col overflow-hidden"
+            className="bg-white rounded-[20px] w-full max-w-[740px] max-h-[90vh] flex flex-col overflow-hidden"
             style={{ boxShadow: "0 32px 100px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06)" }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -573,218 +571,181 @@ function DriverModal({
             {/* ── Body: two-column ── */}
             <div className="flex-1 min-h-0 flex mx-5 mb-0 border border-gray-200 rounded-xl overflow-hidden">
 
-              {/* Left: tab bar + scrollable form */}
-              <div className="flex-1 min-w-0 flex flex-col">
+              {/* Left: scrollable form */}
+              <div className="flex-1 min-w-0 overflow-y-auto overscroll-contain">
+                <form id="driver-form" onSubmit={handleSubmit(onSubmit)} className="px-5 py-5 space-y-4">
 
-                {/* Tab bar */}
-                <div className="flex items-center gap-1 border-b border-gray-100 px-5 flex-shrink-0">
-                  {([
-                    { id: "info" as const, label: "Basic Info" },
-                    { id: "documents" as const, label: "Documents" },
-                  ]).map(tab => (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={() => setActiveTab(tab.id)}
-                      className={cn(
-                        "relative px-1 py-3 text-[13px] font-semibold transition-colors duration-150 mr-4",
-                        activeTab === tab.id ? "text-blue-600" : "text-gray-400 hover:text-gray-600"
-                      )}
-                    >
-                      {tab.label}
-                      {activeTab === tab.id && (
-                        <motion.div
-                          layoutId="tab-underline"
-                          className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-blue-600"
-                          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                        />
-                      )}
-                    </button>
-                  ))}
-                </div>
+                  <FieldDivider>Contact</FieldDivider>
 
-                {/* Scrollable form body */}
-                <div className="flex-1 overflow-y-auto overscroll-contain">
-                  <form id="driver-form" onSubmit={handleSubmit(onSubmit)} className="px-5 py-5">
+                  {/* Full name */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-gray-600">
+                      Full Name <span className="text-red-400">*</span>
+                    </Label>
+                    <Input
+                      {...register("name")}
+                      placeholder="e.g. Michael Rodriguez"
+                      className="h-10 text-sm"
+                      autoFocus
+                    />
+                    {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
+                  </div>
 
-                    {/* ── Basic Info tab ── */}
-                    {activeTab === "info" && (
-                      <div className="space-y-4">
-                        <FieldDivider>Contact</FieldDivider>
+                  {/* Phone + Email */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600">
+                        Phone <span className="text-red-400">*</span>
+                      </Label>
+                      <Input
+                        {...register("phone")}
+                        placeholder="(305) 555-9876"
+                        type="tel"
+                        className="h-10 text-sm"
+                        onChange={(e) => {
+                          const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
+                          let formatted = digits
+                          if (digits.length >= 7) formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
+                          else if (digits.length >= 4) formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
+                          else if (digits.length >= 1) formatted = `(${digits}`
+                          e.target.value = formatted
+                          register("phone").onChange(e)
+                        }}
+                      />
+                      {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>}
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600">Email</Label>
+                      <Input {...register("email")} placeholder="mike@email.com" type="email" className="h-10 text-sm" />
+                      {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
+                    </div>
+                  </div>
 
-                        <div className="space-y-1.5">
-                          <Label className="text-xs font-semibold text-gray-600">
-                            Full Name <span className="text-red-400">*</span>
-                          </Label>
-                          <Input
-                            {...register("name")}
-                            placeholder="e.g. Michael Rodriguez"
-                            className="h-10 text-sm"
-                            autoFocus
-                          />
-                          {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
-                        </div>
+                  <FieldDivider>Assignment</FieldDivider>
 
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="space-y-1.5">
-                            <Label className="text-xs font-semibold text-gray-600">
-                              Phone <span className="text-red-400">*</span>
-                            </Label>
-                            <Input
-                              {...register("phone")}
-                              placeholder="(305) 555-9876"
-                              type="tel"
-                              className="h-10 text-sm"
-                              onChange={(e) => {
-                                const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
-                                let formatted = digits
-                                if (digits.length >= 7) formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
-                                else if (digits.length >= 4) formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
-                                else if (digits.length >= 1) formatted = `(${digits}`
-                                e.target.value = formatted
-                                register("phone").onChange(e)
-                              }}
-                            />
-                            {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>}
-                          </div>
-                          <div className="space-y-1.5">
-                            <Label className="text-xs font-semibold text-gray-600">Email</Label>
-                            <Input {...register("email")} placeholder="mike@email.com" type="email" className="h-10 text-sm" />
-                            {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
-                          </div>
-                        </div>
+                  {/* Status + Vehicle */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600">Status</Label>
+                      <Controller
+                        name="status"
+                        control={control}
+                        render={({ field }) => (
+                          <Select value={field.value} onValueChange={(v) => { if (typeof v === "string") field.onChange(v) }}>
+                            <SelectTrigger className="h-10 text-sm">
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="ACTIVE">Active</SelectItem>
+                              <SelectItem value="INACTIVE">Inactive</SelectItem>
+                              <SelectItem value="ON_LEAVE">On Leave</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600">Default Vehicle</Label>
+                      <Controller
+                        name="defaultVehicleId"
+                        control={control}
+                        render={({ field }) => {
+                          const selectedVehicle = vehicles?.find(v => v.id === field.value)
+                          return (
+                            <Select value={field.value || ""} onValueChange={(v) => { if (typeof v === "string") field.onChange(v) }}>
+                              <SelectTrigger className="h-10 text-sm">
+                                <span className={selectedVehicle ? "text-gray-900 text-sm" : "text-gray-400 text-sm"}>
+                                  {selectedVehicle ? selectedVehicle.name : "None"}
+                                </span>
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="">None</SelectItem>
+                                {vehicles?.map(v => (
+                                  <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )
+                        }}
+                      />
+                    </div>
+                  </div>
 
-                        <FieldDivider>Assignment</FieldDivider>
+                  {/* Notes */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-gray-600">Notes</Label>
+                    <Textarea
+                      {...register("notes")}
+                      placeholder="Any relevant notes about this driver..."
+                      className="text-sm resize-none"
+                      rows={2}
+                    />
+                  </div>
 
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="space-y-1.5">
-                            <Label className="text-xs font-semibold text-gray-600">Status</Label>
-                            <Controller
-                              name="status"
-                              control={control}
-                              render={({ field }) => (
-                                <Select value={field.value} onValueChange={(v) => { if (typeof v === "string") field.onChange(v) }}>
-                                  <SelectTrigger className="h-10 text-sm">
-                                    <SelectValue placeholder="Select status" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="ACTIVE">Active</SelectItem>
-                                    <SelectItem value="INACTIVE">Inactive</SelectItem>
-                                    <SelectItem value="ON_LEAVE">On Leave</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              )}
-                            />
-                          </div>
-                          <div className="space-y-1.5">
-                            <Label className="text-xs font-semibold text-gray-600">Default Vehicle</Label>
-                            <Controller
-                              name="defaultVehicleId"
-                              control={control}
-                              render={({ field }) => {
-                                const selectedVehicle = vehicles?.find(v => v.id === field.value)
-                                return (
-                                  <Select value={field.value || ""} onValueChange={(v) => { if (typeof v === "string") field.onChange(v) }}>
-                                    <SelectTrigger className="h-10 text-sm">
-                                      <span className={selectedVehicle ? "text-gray-900 text-sm" : "text-gray-400 text-sm"}>
-                                        {selectedVehicle ? selectedVehicle.name : "None"}
-                                      </span>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="">None</SelectItem>
-                                      {vehicles?.map(v => (
-                                        <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                )
-                              }}
-                            />
-                          </div>
-                        </div>
+                  <FieldDivider>Driver&apos;s License</FieldDivider>
 
-                        <div className="space-y-1.5">
-                          <Label className="text-xs font-semibold text-gray-600">Notes</Label>
-                          <Textarea
-                            {...register("notes")}
-                            placeholder="Any relevant notes about this driver..."
-                            className="text-sm resize-none"
-                            rows={3}
-                          />
-                        </div>
-                      </div>
-                    )}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600">License Number</Label>
+                      <Input
+                        {...register("licenseNumber")}
+                        placeholder="D12345678"
+                        className="h-10 text-sm font-mono"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600">Expiry Date</Label>
+                      <Input {...register("licenseExpiry")} type="date" className="h-10 text-sm" />
+                    </div>
+                  </div>
 
-                    {/* ── Documents tab ── */}
-                    {activeTab === "documents" && (
-                      <div className="space-y-5">
-                        <FieldDivider>Driver&apos;s License</FieldDivider>
+                  <div className="grid grid-cols-2 gap-3">
+                    <FileUploadZone
+                      slot="license-front"
+                      label="Front of License"
+                      sublabel="Photo or scan"
+                      icon={CreditCard}
+                      value={licenseFront}
+                      onChange={setLicenseFront}
+                      accept="image/*,application/pdf"
+                    />
+                    <FileUploadZone
+                      slot="license-back"
+                      label="Back of License"
+                      sublabel="Photo or scan"
+                      icon={CreditCard}
+                      value={licenseBack}
+                      onChange={setLicenseBack}
+                      accept="image/*,application/pdf"
+                    />
+                  </div>
 
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="space-y-1.5">
-                            <Label className="text-xs font-semibold text-gray-600">License Number</Label>
-                            <Input
-                              {...register("licenseNumber")}
-                              placeholder="D12345678"
-                              className="h-10 text-sm font-mono"
-                            />
-                          </div>
-                          <div className="space-y-1.5">
-                            <Label className="text-xs font-semibold text-gray-600">Expiry Date</Label>
-                            <Input {...register("licenseExpiry")} type="date" className="h-10 text-sm" />
-                          </div>
-                        </div>
+                  <FieldDivider>Additional Documents</FieldDivider>
 
-                        <div className="grid grid-cols-2 gap-3">
-                          <FileUploadZone
-                            slot="license-front"
-                            label="Front of License"
-                            sublabel="Photo or scan"
-                            icon={CreditCard}
-                            value={licenseFront}
-                            onChange={setLicenseFront}
-                            accept="image/*,application/pdf"
-                          />
-                          <FileUploadZone
-                            slot="license-back"
-                            label="Back of License"
-                            sublabel="Photo or scan"
-                            icon={CreditCard}
-                            value={licenseBack}
-                            onChange={setLicenseBack}
-                            accept="image/*,application/pdf"
-                          />
-                        </div>
+                  <div className="space-y-2.5 pb-1">
+                    <FileUploadZone
+                      slot="doc1"
+                      label="Document 1"
+                      sublabel="Insurance, certification, or other"
+                      icon={Briefcase}
+                      value={doc1}
+                      onChange={setDoc1}
+                      accept="image/*,application/pdf"
+                      compact
+                    />
+                    <FileUploadZone
+                      slot="doc2"
+                      label="Document 2"
+                      sublabel="Insurance, certification, or other"
+                      icon={Shield}
+                      value={doc2}
+                      onChange={setDoc2}
+                      accept="image/*,application/pdf"
+                      compact
+                    />
+                  </div>
 
-                        <FieldDivider>Additional Documents</FieldDivider>
-
-                        <div className="space-y-2.5 pb-1">
-                          <FileUploadZone
-                            slot="doc1"
-                            label="Document 1"
-                            sublabel="Insurance, certification, or other"
-                            icon={Briefcase}
-                            value={doc1}
-                            onChange={setDoc1}
-                            accept="image/*,application/pdf"
-                            compact
-                          />
-                          <FileUploadZone
-                            slot="doc2"
-                            label="Document 2"
-                            sublabel="Insurance, certification, or other"
-                            icon={Shield}
-                            value={doc2}
-                            onChange={setDoc2}
-                            accept="image/*,application/pdf"
-                            compact
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                  </form>
-                </div>
+                </form>
               </div>
 
               {/* Dashed divider */}
