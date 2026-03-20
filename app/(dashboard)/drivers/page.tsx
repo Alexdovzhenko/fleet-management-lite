@@ -419,7 +419,7 @@ function DriverModal({
   const { data: vehicles } = useVehicles()
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [activeTab, setActiveTab] = useState<"info" | "documents">("info")
-  const [tabDirection, setTabDirection] = useState(0)
+  const [tabFading, setTabFading] = useState(false)
   const formScrollRef = useRef<HTMLDivElement>(null)
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const [avatarUploading, setAvatarUploading] = useState(false)
@@ -589,9 +589,12 @@ function DriverModal({
                       type="button"
                       onClick={() => {
                         if (tab.id === activeTab) return
-                        setTabDirection(tab.id === "documents" ? 1 : -1)
-                        setActiveTab(tab.id)
-                        formScrollRef.current?.scrollTo({ top: 0 })
+                        setTabFading(true)
+                        setTimeout(() => {
+                          setActiveTab(tab.id)
+                          formScrollRef.current?.scrollTo({ top: 0 })
+                          setTabFading(false)
+                        }, 120)
                       }}
                       className={cn(
                         "relative px-1 py-3 text-[13px] font-semibold transition-colors duration-150 mr-4",
@@ -613,20 +616,12 @@ function DriverModal({
                 {/* Scrollable form body */}
                 <div ref={formScrollRef} className="flex-1 overflow-y-auto overscroll-contain">
                   <form id="driver-form" onSubmit={handleSubmit(onSubmit)}>
-                    {/* min-h prevents height collapse between tab exit and enter */}
-                    <div className="relative" style={{ minHeight: 420 }}>
-                    <AnimatePresence mode="wait" initial={false}>
+                    {/* CSS fade — no framer-motion here so fixed-position Select popups work */}
+                    <div style={{ opacity: tabFading ? 0 : 1, transition: "opacity 0.12s ease", minHeight: 420 }}>
 
                     {/* ── Basic Info tab ── */}
                     {activeTab === "info" && (
-                      <motion.div
-                        key="info"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.14 }}
-                        className="space-y-4 px-5 py-5"
-                      >
+                      <div className="space-y-4 px-5 py-5">
                         <FieldDivider>Contact</FieldDivider>
 
                         <div className="space-y-1.5">
@@ -731,19 +726,12 @@ function DriverModal({
                             rows={3}
                           />
                         </div>
-                      </motion.div>
+                      </div>
                     )}
 
                     {/* ── Documents tab ── */}
                     {activeTab === "documents" && (
-                      <motion.div
-                        key="documents"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.14 }}
-                        className="space-y-5 px-5 py-5"
-                      >
+                      <div className="space-y-5 px-5 py-5">
                         <FieldDivider>Driver&apos;s License</FieldDivider>
 
                         <div className="grid grid-cols-2 gap-3">
@@ -806,11 +794,10 @@ function DriverModal({
                             compact
                           />
                         </div>
-                      </motion.div>
+                      </div>
                     )}
 
-                    </AnimatePresence>
-                    </div>{/* end relative wrapper */}
+                    </div>{/* end fade wrapper */}
                   </form>
                 </div>
               </div>
