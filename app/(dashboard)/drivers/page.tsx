@@ -952,8 +952,9 @@ function DriverModal({
                         <button
                           type="button"
                           onClick={() => setConfirmDelete(true)}
-                          className="text-[12px] text-gray-300 hover:text-red-400 transition-colors font-medium"
+                          className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl border border-red-200 bg-red-50 text-[12.5px] font-semibold text-red-500 hover:bg-red-100 hover:border-red-300 hover:text-red-600 transition-all duration-150"
                         >
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                           Delete driver
                         </button>
                       )}
