@@ -612,8 +612,10 @@ function DriverModal({
 
                 {/* Scrollable form body */}
                 <div ref={formScrollRef} className="flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
-                  <form id="driver-form" onSubmit={handleSubmit(onSubmit)} className="px-5 py-5">
-                    <AnimatePresence mode="wait" initial={false} custom={tabDirection}>
+                  <form id="driver-form" onSubmit={handleSubmit(onSubmit)}>
+                    {/* relative wrapper so absolute-exiting panels stay contained */}
+                    <div className="relative">
+                    <AnimatePresence mode="sync" initial={false} custom={tabDirection}>
 
                     {/* ── Basic Info tab ── */}
                     {activeTab === "info" && (
@@ -621,15 +623,20 @@ function DriverModal({
                         key="info"
                         custom={tabDirection}
                         variants={{
-                          enter: (dir: number) => ({ x: dir * 32, opacity: 0 }),
-                          center: { x: 0, opacity: 1 },
-                          exit: (dir: number) => ({ x: dir * -32, opacity: 0 }),
+                          enter: (dir: number) => ({ x: dir > 0 ? "100%" : "-100%", opacity: 0 }),
+                          center: { x: 0, opacity: 1, position: "relative" as const },
+                          exit: (dir: number) => ({
+                            x: dir > 0 ? "-40%" : "40%",
+                            opacity: 0,
+                            position: "absolute" as const,
+                            top: 0, left: 0, right: 0,
+                          }),
                         }}
                         initial="enter"
                         animate="center"
                         exit="exit"
-                        transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
-                        className="space-y-4"
+                        transition={{ duration: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        className="space-y-4 px-5 py-5 w-full"
                       >
                         <FieldDivider>Contact</FieldDivider>
 
@@ -742,15 +749,20 @@ function DriverModal({
                         key="documents"
                         custom={tabDirection}
                         variants={{
-                          enter: (dir: number) => ({ x: dir * 32, opacity: 0 }),
-                          center: { x: 0, opacity: 1 },
-                          exit: (dir: number) => ({ x: dir * -32, opacity: 0 }),
+                          enter: (dir: number) => ({ x: dir > 0 ? "100%" : "-100%", opacity: 0 }),
+                          center: { x: 0, opacity: 1, position: "relative" as const },
+                          exit: (dir: number) => ({
+                            x: dir > 0 ? "-40%" : "40%",
+                            opacity: 0,
+                            position: "absolute" as const,
+                            top: 0, left: 0, right: 0,
+                          }),
                         }}
                         initial="enter"
                         animate="center"
                         exit="exit"
-                        transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
-                        className="space-y-5"
+                        transition={{ duration: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        className="space-y-5 px-5 py-5 w-full"
                       >
                         <FieldDivider>Driver&apos;s License</FieldDivider>
 
@@ -818,6 +830,7 @@ function DriverModal({
                     )}
 
                     </AnimatePresence>
+                    </div>{/* end relative wrapper */}
                   </form>
                 </div>
               </div>
