@@ -419,6 +419,8 @@ function DriverModal({
   const { data: vehicles } = useVehicles()
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [activeTab, setActiveTab] = useState<"info" | "documents">("info")
+  const [tabDirection, setTabDirection] = useState(0)
+  const formScrollRef = useRef<HTMLDivElement>(null)
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const [avatarUploading, setAvatarUploading] = useState(false)
 
@@ -585,7 +587,12 @@ function DriverModal({
                     <button
                       key={tab.id}
                       type="button"
-                      onClick={() => setActiveTab(tab.id)}
+                      onClick={() => {
+                        if (tab.id === activeTab) return
+                        setTabDirection(tab.id === "documents" ? 1 : -1)
+                        setActiveTab(tab.id)
+                        formScrollRef.current?.scrollTo({ top: 0 })
+                      }}
                       className={cn(
                         "relative px-1 py-3 text-[13px] font-semibold transition-colors duration-150 mr-4",
                         activeTab === tab.id ? "text-blue-600" : "text-gray-400 hover:text-gray-600"
@@ -604,18 +611,24 @@ function DriverModal({
                 </div>
 
                 {/* Scrollable form body */}
-                <div className="flex-1 overflow-y-auto overscroll-contain">
+                <div ref={formScrollRef} className="flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
                   <form id="driver-form" onSubmit={handleSubmit(onSubmit)} className="px-5 py-5">
-                    <AnimatePresence mode="wait" initial={false}>
+                    <AnimatePresence mode="wait" initial={false} custom={tabDirection}>
 
                     {/* ── Basic Info tab ── */}
                     {activeTab === "info" && (
                       <motion.div
                         key="info"
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -6 }}
-                        transition={{ duration: 0.18, ease: "easeOut" }}
+                        custom={tabDirection}
+                        variants={{
+                          enter: (dir: number) => ({ x: dir * 32, opacity: 0 }),
+                          center: { x: 0, opacity: 1 },
+                          exit: (dir: number) => ({ x: dir * -32, opacity: 0 }),
+                        }}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
                         className="space-y-4"
                       >
                         <FieldDivider>Contact</FieldDivider>
@@ -727,10 +740,16 @@ function DriverModal({
                     {activeTab === "documents" && (
                       <motion.div
                         key="documents"
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -6 }}
-                        transition={{ duration: 0.18, ease: "easeOut" }}
+                        custom={tabDirection}
+                        variants={{
+                          enter: (dir: number) => ({ x: dir * 32, opacity: 0 }),
+                          center: { x: 0, opacity: 1 },
+                          exit: (dir: number) => ({ x: dir * -32, opacity: 0 }),
+                        }}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
                         className="space-y-5"
                       >
                         <FieldDivider>Driver&apos;s License</FieldDivider>
