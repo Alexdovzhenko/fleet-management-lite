@@ -611,9 +611,10 @@ function DriverModal({
                 </div>
 
                 {/* Scrollable form body */}
-                <div ref={formScrollRef} className="flex-1 overflow-x-hidden overflow-y-auto overscroll-contain">
+                <div ref={formScrollRef} className="flex-1 overflow-y-auto overscroll-contain">
                   <form id="driver-form" onSubmit={handleSubmit(onSubmit)}>
-                    {/* relative wrapper so absolute-exiting panels stay contained */}
+                    {/* overflow-x clip only here so dropdowns above can escape */}
+                    <div className="overflow-x-hidden">
                     <div className="relative">
                     <AnimatePresence mode="sync" initial={false} custom={tabDirection}>
 
@@ -693,7 +694,9 @@ function DriverModal({
                               render={({ field }) => (
                                 <Select value={field.value} onValueChange={(v) => { if (typeof v === "string") field.onChange(v) }}>
                                   <SelectTrigger className="h-10 text-sm">
-                                    <SelectValue placeholder="Select status" />
+                                    <span className={field.value ? "text-gray-900 text-sm" : "text-gray-400 text-sm"}>
+                                      {field.value ? STATUS_CFG[field.value as keyof typeof STATUS_CFG]?.label : "Select status"}
+                                    </span>
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectItem value="ACTIVE">Active</SelectItem>
@@ -831,6 +834,7 @@ function DriverModal({
 
                     </AnimatePresence>
                     </div>{/* end relative wrapper */}
+                    </div>{/* end overflow-x-hidden */}
                   </form>
                 </div>
               </div>
