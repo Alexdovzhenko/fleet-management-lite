@@ -418,7 +418,8 @@ function DriverModal({
   const deleteDriver = useDeleteDriver()
   const { data: vehicles } = useVehicles()
   const [confirmDelete, setConfirmDelete] = useState(false)
-  const [activeTab, setActiveTab] = useState<"info" | "documents">("info")
+  const avatarInputRef = useRef<HTMLInputElement>(null)
+  const [avatarUploading, setAvatarUploading] = useState(false)
 
   const [avatar, setAvatar] = useState<UploadedFile | null>(null)
   const [licenseFront, setLicenseFront] = useState<UploadedFile | null>(null)
@@ -454,7 +455,6 @@ function DriverModal({
   // Populate form
   useEffect(() => {
     if (!open) return
-    setActiveTab("info")
     setConfirmDelete(false)
     if (editing) {
       const d = editing.phone.replace(/\D/g, "").slice(0, 10)
@@ -486,6 +486,21 @@ function DriverModal({
   function handleClose() {
     setConfirmDelete(false)
     onClose()
+  }
+
+  async function handleAvatarFile(file: File) {
+    setAvatarUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append("file", file)
+      fd.append("slot", "avatar")
+      const res = await fetch("/api/drivers/upload", { method: "POST", body: fd })
+      if (!res.ok) throw new Error("Upload failed")
+      const { url, name } = await res.json()
+      setAvatar({ url, name, isImage: true })
+    } finally {
+      setAvatarUploading(false)
+    }
   }
 
   function onSubmit(data: DriverFormData) {
@@ -525,320 +540,299 @@ function DriverModal({
         >
           <motion.div
             key="modal-panel"
-            initial={{ opacity: 0, scale: 0.96, y: 20 }}
+            initial={{ opacity: 0, scale: 0.97, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 12 }}
+            exit={{ opacity: 0, scale: 0.97, y: 10 }}
             transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
-            className="bg-white rounded-[28px] w-full max-w-[640px] max-h-[92vh] flex flex-col overflow-hidden"
-            style={{ boxShadow: "0 48px 140px rgba(0,0,0,0.28), 0 0 0 1px rgba(0,0,0,0.06)" }}
+            className="bg-white rounded-[20px] w-full max-w-[740px] max-h-[90vh] flex flex-col overflow-hidden"
+            style={{ boxShadow: "0 32px 100px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06)" }}
             onClick={(e) => e.stopPropagation()}
           >
 
-            {/* ── Modal Header ───────────────────────────────────────────── */}
-            <div className="flex-shrink-0 px-7 pt-6 pb-0">
-
-              {/* Top row: title + close */}
-              <div className="flex items-start justify-between mb-5">
-                <div>
-                  <h2 className="text-[18px] font-bold text-gray-900 tracking-tight leading-tight">
-                    {editing ? "Edit Driver" : "Add New Driver"}
-                  </h2>
-                  <p className="text-[12.5px] text-gray-400 mt-0.5 leading-snug">
-                    {editing
-                      ? "Update profile, contact info, and documents"
-                      : "Fill in the details to register a new driver"}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all duration-150 flex-shrink-0 -mr-1.5 mt-0.5"
-                >
-                  <X style={{ width: 17, height: 17 }} />
-                </button>
+            {/* ── Header ── */}
+            <div className="flex items-center justify-between px-6 pt-5 pb-4">
+              <div>
+                <h2 className="text-[17px] font-bold text-gray-900 tracking-tight">
+                  {editing ? "Edit Driver" : "Add Driver"}
+                </h2>
+                <p className="text-[12px] text-gray-400 mt-0.5">
+                  {editing ? "Update driver profile and documents" : "Fill in the details to register a new driver"}
+                </p>
               </div>
-
-              {/* Driver identity strip */}
-              <div className="flex items-center gap-4 px-4 py-3.5 rounded-2xl border border-gray-100 bg-gray-50/60 mb-5">
-                {/* Live avatar preview */}
-                <div className="flex-shrink-0">
-                  {avatar?.url ? (
-                    <div className="w-[54px] h-[54px] rounded-2xl overflow-hidden ring-2 ring-white shadow-md">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={avatar.url} alt={displayName} className="w-full h-full object-cover" />
-                    </div>
-                  ) : (
-                    <div
-                      className="w-[54px] h-[54px] rounded-2xl flex items-center justify-center text-white text-[15px] font-bold shadow-md"
-                      style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)" }}
-                    >
-                      {getInitials(displayName || "?")}
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <p className={cn(
-                    "font-bold text-[14px] leading-tight truncate",
-                    displayName ? "text-gray-900" : "text-gray-300"
-                  )}>
-                    {displayName || "Driver name"}
-                  </p>
-                  <span className={cn(
-                    "inline-flex items-center gap-1.5 mt-1.5 text-[11px] font-semibold px-2.5 py-[3px] rounded-full",
-                    statusCfg.chip
-                  )}>
-                    <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", statusCfg.dot)} />
-                    {statusCfg.label}
-                  </span>
-                </div>
-
-                {editing && editing._count?.trips !== undefined && (
-                  <div className="flex-shrink-0 text-right pr-0.5">
-                    <p className="text-[20px] font-bold text-gray-800 leading-none">{editing._count.trips}</p>
-                    <p className="text-[10.5px] text-gray-400 mt-0.5 font-medium">
-                      trip{editing._count.trips !== 1 ? "s" : ""}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Tab bar */}
-              <div className="flex items-center gap-1 border-b border-gray-100 -mx-7 px-7">
-                {([
-                  { id: "info" as const, label: "Basic Info" },
-                  { id: "documents" as const, label: "Documents" },
-                ]).map(tab => (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setActiveTab(tab.id)}
-                    className={cn(
-                      "relative px-1 pb-3 text-[13px] font-semibold transition-colors duration-150 mr-4",
-                      activeTab === tab.id ? "text-blue-600" : "text-gray-400 hover:text-gray-600"
-                    )}
-                  >
-                    {tab.label}
-                    {activeTab === tab.id && (
-                      <motion.div
-                        layoutId="tab-underline"
-                        className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-blue-600"
-                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                      />
-                    )}
-                  </button>
-                ))}
-              </div>
+              <button
+                type="button"
+                onClick={handleClose}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-all"
+              >
+                <X style={{ width: 16, height: 16 }} />
+              </button>
             </div>
 
-            {/* ── Scrollable Form Body ────────────────────────────────────── */}
-            <div className="flex-1 overflow-y-auto px-7 py-5 overscroll-contain">
-              <form id="driver-form" onSubmit={handleSubmit(onSubmit)}>
+            {/* ── Body: two-column ── */}
+            <div className="flex-1 min-h-0 flex mx-5 mb-0 border border-gray-200 rounded-xl overflow-hidden">
 
-                {/* ── TAB: Basic Info ── */}
-                {activeTab === "info" && (
-                  <div className="space-y-5">
+              {/* Left: scrollable form */}
+              <div className="flex-1 min-w-0 overflow-y-auto overscroll-contain">
+                <form id="driver-form" onSubmit={handleSubmit(onSubmit)} className="px-5 py-5 space-y-4">
 
-                    {/* Profile photo – centered */}
-                    <div className="flex justify-center py-1">
-                      <FileUploadZone
-                        slot="avatar"
-                        label="Profile Photo"
-                        sublabel="Used as driver avatar"
-                        icon={Camera}
-                        value={avatar}
-                        onChange={setAvatar}
-                        accept="image/*"
-                        circular
-                      />
-                    </div>
+                  <FieldDivider>Contact</FieldDivider>
 
-                    <FieldDivider>Contact</FieldDivider>
+                  {/* Full name */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-gray-600">
+                      Full Name <span className="text-red-400">*</span>
+                    </Label>
+                    <Input
+                      {...register("name")}
+                      placeholder="e.g. Michael Rodriguez"
+                      className="h-10 text-sm"
+                      autoFocus
+                    />
+                    {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
+                  </div>
 
-                    {/* Name */}
+                  {/* Phone + Email */}
+                  <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-gray-600">
-                        Full Name <span className="text-red-400">*</span>
+                        Phone <span className="text-red-400">*</span>
                       </Label>
                       <Input
-                        {...register("name")}
-                        placeholder="e.g. Michael Rodriguez"
+                        {...register("phone")}
+                        placeholder="(305) 555-9876"
+                        type="tel"
                         className="h-10 text-sm"
-                        autoFocus
+                        onChange={(e) => {
+                          const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
+                          let formatted = digits
+                          if (digits.length >= 7) formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
+                          else if (digits.length >= 4) formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
+                          else if (digits.length >= 1) formatted = `(${digits}`
+                          e.target.value = formatted
+                          register("phone").onChange(e)
+                        }}
                       />
-                      {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
+                      {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>}
                     </div>
-
-                    {/* Phone + Email */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold text-gray-600">
-                          Phone <span className="text-red-400">*</span>
-                        </Label>
-                        <Input
-                          {...register("phone")}
-                          placeholder="(305) 555-9876"
-                          type="tel"
-                          className="h-10 text-sm"
-                          onChange={(e) => {
-                            const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
-                            let formatted = digits
-                            if (digits.length >= 7) formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
-                            else if (digits.length >= 4) formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
-                            else if (digits.length >= 1) formatted = `(${digits}`
-                            e.target.value = formatted
-                            register("phone").onChange(e)
-                          }}
-                        />
-                        {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>}
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold text-gray-600">Email</Label>
-                        <Input {...register("email")} placeholder="mike@email.com" type="email" className="h-10 text-sm" />
-                        {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
-                      </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600">Email</Label>
+                      <Input {...register("email")} placeholder="mike@email.com" type="email" className="h-10 text-sm" />
+                      {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
                     </div>
+                  </div>
 
-                    <FieldDivider>Assignment</FieldDivider>
+                  <FieldDivider>Assignment</FieldDivider>
 
-                    {/* Status + Default Vehicle */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold text-gray-600">Status</Label>
-                        <Controller
-                          name="status"
-                          control={control}
-                          render={({ field }) => (
-                            <Select value={field.value} onValueChange={(v) => { if (typeof v === "string") field.onChange(v) }}>
+                  {/* Status + Vehicle */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600">Status</Label>
+                      <Controller
+                        name="status"
+                        control={control}
+                        render={({ field }) => (
+                          <Select value={field.value} onValueChange={(v) => { if (typeof v === "string") field.onChange(v) }}>
+                            <SelectTrigger className="h-10 text-sm">
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="ACTIVE">Active</SelectItem>
+                              <SelectItem value="INACTIVE">Inactive</SelectItem>
+                              <SelectItem value="ON_LEAVE">On Leave</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600">Default Vehicle</Label>
+                      <Controller
+                        name="defaultVehicleId"
+                        control={control}
+                        render={({ field }) => {
+                          const selectedVehicle = vehicles?.find(v => v.id === field.value)
+                          return (
+                            <Select value={field.value || ""} onValueChange={(v) => { if (typeof v === "string") field.onChange(v) }}>
                               <SelectTrigger className="h-10 text-sm">
-                                <SelectValue placeholder="Select status" />
+                                <span className={selectedVehicle ? "text-gray-900 text-sm" : "text-gray-400 text-sm"}>
+                                  {selectedVehicle ? selectedVehicle.name : "None"}
+                                </span>
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="ACTIVE">Active</SelectItem>
-                                <SelectItem value="INACTIVE">Inactive</SelectItem>
-                                <SelectItem value="ON_LEAVE">On Leave</SelectItem>
+                                <SelectItem value="">None</SelectItem>
+                                {vehicles?.map(v => (
+                                  <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
-                          )}
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label className="text-xs font-semibold text-gray-600">Default Vehicle</Label>
-                        <Controller
-                          name="defaultVehicleId"
-                          control={control}
-                          render={({ field }) => {
-                            const selectedVehicle = vehicles?.find(v => v.id === field.value)
-                            return (
-                              <Select value={field.value || ""} onValueChange={(v) => { if (typeof v === "string") field.onChange(v) }}>
-                                <SelectTrigger className="h-10 text-sm">
-                                  <span className={selectedVehicle ? "text-gray-900" : "text-gray-400"}>
-                                    {selectedVehicle ? selectedVehicle.name : "None"}
-                                  </span>
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="">None</SelectItem>
-                                  {vehicles?.map(v => (
-                                    <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            )
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Notes */}
-                    <div className="space-y-1.5">
-                      <Label className="text-xs font-semibold text-gray-600">Notes</Label>
-                      <Textarea
-                        {...register("notes")}
-                        placeholder="Any relevant notes about this driver..."
-                        className="text-sm resize-none"
-                        rows={3}
+                          )
+                        }}
                       />
                     </div>
                   </div>
-                )}
 
-                {/* ── TAB: Documents ── */}
-                {activeTab === "documents" && (
-                  <div className="space-y-6">
+                  {/* Notes */}
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-gray-600">Notes</Label>
+                    <Textarea
+                      {...register("notes")}
+                      placeholder="Any relevant notes about this driver..."
+                      className="text-sm resize-none"
+                      rows={2}
+                    />
+                  </div>
 
-                    {/* License info */}
-                    <div className="space-y-3">
-                      <FieldDivider>Driver&apos;s License</FieldDivider>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
-                          <Label className="text-xs font-semibold text-gray-600">License Number</Label>
-                          <Input
-                            {...register("licenseNumber")}
-                            placeholder="D12345678"
-                            className="h-10 text-sm font-mono"
-                          />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label className="text-xs font-semibold text-gray-600">Expiry Date</Label>
-                          <Input {...register("licenseExpiry")} type="date" className="h-10 text-sm" />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <FileUploadZone
-                          slot="license-front"
-                          label="Front of License"
-                          sublabel="Photo or scan"
-                          icon={CreditCard}
-                          value={licenseFront}
-                          onChange={setLicenseFront}
-                          accept="image/*,application/pdf"
-                        />
-                        <FileUploadZone
-                          slot="license-back"
-                          label="Back of License"
-                          sublabel="Photo or scan"
-                          icon={CreditCard}
-                          value={licenseBack}
-                          onChange={setLicenseBack}
-                          accept="image/*,application/pdf"
-                        />
-                      </div>
+                  <FieldDivider>Driver&apos;s License</FieldDivider>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600">License Number</Label>
+                      <Input
+                        {...register("licenseNumber")}
+                        placeholder="D12345678"
+                        className="h-10 text-sm font-mono"
+                      />
                     </div>
-
-                    {/* Additional docs */}
-                    <div className="space-y-3">
-                      <FieldDivider>Additional Documents</FieldDivider>
-                      <div className="space-y-2.5">
-                        <FileUploadZone
-                          slot="doc1"
-                          label="Document 1"
-                          sublabel="Insurance, certification, or other"
-                          icon={Briefcase}
-                          value={doc1}
-                          onChange={setDoc1}
-                          accept="image/*,application/pdf"
-                          compact
-                        />
-                        <FileUploadZone
-                          slot="doc2"
-                          label="Document 2"
-                          sublabel="Insurance, certification, or other"
-                          icon={Shield}
-                          value={doc2}
-                          onChange={setDoc2}
-                          accept="image/*,application/pdf"
-                          compact
-                        />
-                      </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-600">Expiry Date</Label>
+                      <Input {...register("licenseExpiry")} type="date" className="h-10 text-sm" />
                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <FileUploadZone
+                      slot="license-front"
+                      label="Front of License"
+                      sublabel="Photo or scan"
+                      icon={CreditCard}
+                      value={licenseFront}
+                      onChange={setLicenseFront}
+                      accept="image/*,application/pdf"
+                    />
+                    <FileUploadZone
+                      slot="license-back"
+                      label="Back of License"
+                      sublabel="Photo or scan"
+                      icon={CreditCard}
+                      value={licenseBack}
+                      onChange={setLicenseBack}
+                      accept="image/*,application/pdf"
+                    />
+                  </div>
+
+                  <FieldDivider>Additional Documents</FieldDivider>
+
+                  <div className="space-y-2.5 pb-1">
+                    <FileUploadZone
+                      slot="doc1"
+                      label="Document 1"
+                      sublabel="Insurance, certification, or other"
+                      icon={Briefcase}
+                      value={doc1}
+                      onChange={setDoc1}
+                      accept="image/*,application/pdf"
+                      compact
+                    />
+                    <FileUploadZone
+                      slot="doc2"
+                      label="Document 2"
+                      sublabel="Insurance, certification, or other"
+                      icon={Shield}
+                      value={doc2}
+                      onChange={setDoc2}
+                      accept="image/*,application/pdf"
+                      compact
+                    />
+                  </div>
+
+                </form>
+              </div>
+
+              {/* Dashed divider */}
+              <div className="w-px flex-shrink-0 border-l border-dashed border-gray-200" />
+
+              {/* Right: Preview panel */}
+              <div className="w-[210px] flex-shrink-0 flex flex-col items-center px-5 py-6 bg-gray-50/40">
+                <p className="text-[10.5px] font-bold text-gray-400 uppercase tracking-[0.08em] mb-5">Preview</p>
+
+                {/* Circular avatar with pencil button */}
+                <div className="relative mb-4">
+                  <div
+                    className="w-[96px] h-[96px] rounded-full overflow-hidden cursor-pointer ring-4 ring-white shadow-md"
+                    onClick={() => avatarInputRef.current?.click()}
+                  >
+                    {avatarUploading ? (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                        <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                      </div>
+                    ) : avatar?.isImage ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={avatar.url} alt={displayName} className="w-full h-full object-cover" />
+                    ) : (
+                      <div
+                        className="w-full h-full flex items-center justify-center text-white text-[22px] font-bold"
+                        style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)" }}
+                      >
+                        {getInitials(displayName || "?")}
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => avatarInputRef.current?.click()}
+                    className="absolute bottom-0 right-0 w-[30px] h-[30px] bg-white border border-gray-200 rounded-full shadow-sm flex items-center justify-center hover:bg-gray-50 transition-colors"
+                  >
+                    <Pencil className="w-3.5 h-3.5 text-gray-500" />
+                  </button>
+                  <input
+                    ref={avatarInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleAvatarFile(f); e.target.value = "" }}
+                  />
+                </div>
+
+                {/* Live name */}
+                <p className={cn(
+                  "text-[15px] font-bold text-center leading-snug px-2",
+                  displayName ? "text-gray-900" : "text-gray-300"
+                )}>
+                  {displayName || "Driver name"}
+                </p>
+
+                {/* Status chip */}
+                <span className={cn(
+                  "inline-flex items-center gap-1.5 mt-2.5 text-[11px] font-semibold px-3 py-[5px] rounded-full",
+                  statusCfg.chip
+                )}>
+                  <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", statusCfg.dot)} />
+                  {statusCfg.label}
+                </span>
+
+                {/* Trip count pill */}
+                {editing && editing._count?.trips !== undefined && (
+                  <div className="mt-3 flex items-center gap-1.5 bg-white border border-gray-100 rounded-full px-3 py-1.5 shadow-sm">
+                    <Car className="w-3.5 h-3.5 text-blue-400" />
+                    <span className="text-[12px] text-gray-600 font-medium">
+                      {editing._count.trips} trip{editing._count.trips !== 1 ? "s" : ""}
+                    </span>
                   </div>
                 )}
 
-              </form>
+                {/* License badge */}
+                {(licenseFront || licenseBack) && (
+                  <div className="mt-2 flex items-center gap-1.5 bg-white border border-gray-100 rounded-full px-3 py-1.5 shadow-sm">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                    <span className="text-[12px] text-gray-600 font-medium">License</span>
+                  </div>
+                )}
+              </div>
+
             </div>
 
-            {/* ── Footer ─────────────────────────────────────────────────── */}
-            <div className="flex-shrink-0 px-7 py-4 border-t border-gray-100/80 bg-gray-50/40">
+            {/* ── Footer ── */}
+            <div className="flex-shrink-0 px-6 py-4">
               <AnimatePresence mode="wait" initial={false}>
                 {confirmDelete ? (
                   <motion.div
@@ -847,7 +841,7 @@ function DriverModal({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.16 }}
-                    className="flex items-center justify-between bg-red-50 border border-red-100 rounded-2xl px-4 py-3"
+                    className="flex items-center justify-between bg-red-50 border border-red-100 rounded-xl px-4 py-3"
                   >
                     <div className="flex items-center gap-2.5">
                       <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
@@ -857,14 +851,14 @@ function DriverModal({
                       <button
                         type="button"
                         onClick={() => setConfirmDelete(false)}
-                        className="text-[12px] font-medium text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-xl hover:bg-white transition-all"
+                        className="text-[12px] font-medium text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-lg hover:bg-white transition-all"
                       >
                         Cancel
                       </button>
                       <button
                         type="button"
                         onClick={() => deleteDriver.mutate(editing!.id, { onSuccess: handleClose })}
-                        className="text-[12px] font-semibold text-white bg-red-500 hover:bg-red-600 active:bg-red-700 px-3.5 py-1.5 rounded-xl transition-all shadow-sm"
+                        className="text-[12px] font-semibold text-white bg-red-500 hover:bg-red-600 px-3.5 py-1.5 rounded-lg transition-all shadow-sm"
                       >
                         {deleteDriver.isPending ? "Deleting..." : "Yes, delete"}
                       </button>
@@ -884,7 +878,7 @@ function DriverModal({
                         <button
                           type="button"
                           onClick={() => setConfirmDelete(true)}
-                          className="text-[12px] text-gray-300 hover:text-red-400 transition-colors font-medium py-1"
+                          className="text-[12px] text-gray-300 hover:text-red-400 transition-colors font-medium"
                         >
                           Delete driver
                         </button>
@@ -895,7 +889,7 @@ function DriverModal({
                         type="button"
                         variant="outline"
                         onClick={handleClose}
-                        className="h-10 px-5 text-sm rounded-xl border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300"
+                        className="h-10 px-5 text-sm rounded-xl border-gray-200 text-gray-600 hover:bg-gray-50"
                       >
                         Cancel
                       </Button>
@@ -906,7 +900,7 @@ function DriverModal({
                         className="h-10 px-7 text-sm font-semibold text-white rounded-xl min-w-[130px]"
                         style={{
                           background: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)",
-                          boxShadow: "0 2px 14px rgba(37,99,235,0.32)",
+                          boxShadow: "0 2px 12px rgba(37,99,235,0.30)",
                         }}
                       >
                         {isPending ? (
