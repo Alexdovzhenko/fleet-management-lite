@@ -536,7 +536,7 @@ function DriverModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6"
           style={{ backdropFilter: "blur(10px)", backgroundColor: "rgba(10,15,30,0.55)" }}
           onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
         >
