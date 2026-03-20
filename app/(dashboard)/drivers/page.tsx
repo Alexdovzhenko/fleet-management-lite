@@ -615,22 +615,16 @@ function DriverModal({
                   <form id="driver-form" onSubmit={handleSubmit(onSubmit)}>
                     {/* min-h prevents height collapse between tab exit and enter */}
                     <div className="relative" style={{ minHeight: 420 }}>
-                    <AnimatePresence mode="wait" initial={false} custom={tabDirection}>
+                    <AnimatePresence mode="wait" initial={false}>
 
                     {/* ── Basic Info tab ── */}
                     {activeTab === "info" && (
                       <motion.div
                         key="info"
-                        custom={tabDirection}
-                        variants={{
-                          enter: (dir: number) => ({ x: dir > 0 ? 24 : -24, opacity: 0 }),
-                          center: { x: 0, opacity: 1 },
-                          exit: (dir: number) => ({ x: dir > 0 ? -24 : 24, opacity: 0 }),
-                        }}
-                        initial="enter"
-                        animate="center"
-                        exit="exit"
-                        transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.14 }}
                         className="space-y-4 px-5 py-5"
                       >
                         <FieldDivider>Contact</FieldDivider>
@@ -744,16 +738,10 @@ function DriverModal({
                     {activeTab === "documents" && (
                       <motion.div
                         key="documents"
-                        custom={tabDirection}
-                        variants={{
-                          enter: (dir: number) => ({ x: dir > 0 ? 24 : -24, opacity: 0 }),
-                          center: { x: 0, opacity: 1 },
-                          exit: (dir: number) => ({ x: dir > 0 ? -24 : 24, opacity: 0 }),
-                        }}
-                        initial="enter"
-                        animate="center"
-                        exit="exit"
-                        transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.14 }}
                         className="space-y-5 px-5 py-5"
                       >
                         <FieldDivider>Driver&apos;s License</FieldDivider>
