@@ -606,10 +606,18 @@ function DriverModal({
                 {/* Scrollable form body */}
                 <div className="flex-1 overflow-y-auto overscroll-contain">
                   <form id="driver-form" onSubmit={handleSubmit(onSubmit)} className="px-5 py-5">
+                    <AnimatePresence mode="wait" initial={false}>
 
                     {/* ── Basic Info tab ── */}
                     {activeTab === "info" && (
-                      <div className="space-y-4">
+                      <motion.div
+                        key="info"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.18, ease: "easeOut" }}
+                        className="space-y-4"
+                      >
                         <FieldDivider>Contact</FieldDivider>
 
                         <div className="space-y-1.5">
@@ -712,12 +720,19 @@ function DriverModal({
                             rows={3}
                           />
                         </div>
-                      </div>
+                      </motion.div>
                     )}
 
                     {/* ── Documents tab ── */}
                     {activeTab === "documents" && (
-                      <div className="space-y-5">
+                      <motion.div
+                        key="documents"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -6 }}
+                        transition={{ duration: 0.18, ease: "easeOut" }}
+                        className="space-y-5"
+                      >
                         <FieldDivider>Driver&apos;s License</FieldDivider>
 
                         <div className="grid grid-cols-2 gap-3">
@@ -780,9 +795,10 @@ function DriverModal({
                             compact
                           />
                         </div>
-                      </div>
+                      </motion.div>
                     )}
 
+                    </AnimatePresence>
                   </form>
                 </div>
               </div>
