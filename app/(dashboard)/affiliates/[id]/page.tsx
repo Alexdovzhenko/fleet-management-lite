@@ -197,12 +197,12 @@ function ContactRow({
   href?: string
 }) {
   return (
-    <div className="flex items-center gap-3 px-5 py-3.5">
-      <div className="w-7 h-7 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0">
+    <div className="flex items-center gap-3 py-3">
+      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
         <Icon className="w-3.5 h-3.5 text-gray-400" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{label}</p>
+        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{label}</p>
         {href ? (
           <a
             href={href}
@@ -292,7 +292,7 @@ export default function AffiliateProfilePage({
   const vehicles = affiliate.vehicles ?? []
 
   return (
-    <div className="max-w-4xl mx-auto pb-12">
+    <div className="max-w-5xl mx-auto pb-12">
       {/* Back nav */}
       <Link
         href="/affiliates"
@@ -307,33 +307,33 @@ export default function AffiliateProfilePage({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        {/* ── HERO CARD ─────────────────────────────────────────────────────── */}
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mb-5">
+        {/* ── PROFILE CARD ─────────────────────────────────────────────────── */}
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+
           {/* Banner */}
           <div
-            className="h-52 md:h-64 w-full"
+            className="h-44 w-full"
             style={{
               background: affiliate.banner
                 ? `url(${affiliate.banner}) center/cover no-repeat`
-                : "linear-gradient(135deg, #dbeafe 0%, #ede9fe 60%, #fce7f3 100%)",
+                : "linear-gradient(135deg, #dbeafe 0%, #ede9fe 55%, #fce7f3 100%)",
             }}
           />
 
-          {/* Hero content */}
-          <div className="px-6 md:px-8 pb-7 md:pb-8">
-            {/* Logo + CTA row */}
-            <div className="flex items-end justify-between gap-4 -mt-12">
+          {/* Hero: logo + actions */}
+          <div className="px-8 pt-4 pb-6">
+            <div className="flex items-center justify-between gap-4 -mt-14 mb-4">
               {/* Logo */}
               {affiliate.logo ? (
                 <div
-                  className="w-24 h-24 rounded-2xl bg-white overflow-hidden flex-shrink-0"
+                  className="w-20 h-20 rounded-2xl bg-white overflow-hidden flex-shrink-0"
                   style={{ border: "4px solid white", boxShadow: "0 4px 20px rgba(0,0,0,0.12)" }}
                 >
                   <img src={affiliate.logo} alt={affiliate.name} className="w-full h-full object-cover" />
                 </div>
               ) : (
                 <div
-                  className="w-24 h-24 rounded-2xl flex-shrink-0 flex items-center justify-center text-2xl font-bold text-white"
+                  className="w-20 h-20 rounded-2xl flex-shrink-0 flex items-center justify-center text-xl font-bold text-white"
                   style={{
                     background: "linear-gradient(135deg, rgb(37,99,235) 0%, rgb(79,70,229) 100%)",
                     border: "4px solid white",
@@ -344,47 +344,45 @@ export default function AffiliateProfilePage({
                 </div>
               )}
 
-              {/* Connection CTA */}
-              <div className="pb-1 flex-shrink-0">
+              {/* Connection actions */}
+              <div className="flex-shrink-0">
                 <ConnectionPanel affiliate={affiliate} />
               </div>
             </div>
 
-            {/* Company name + meta */}
-            <div className="mt-4">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight leading-tight">
-                {affiliate.name}
-              </h1>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
-                {location && (
-                  <span className="text-sm text-gray-400 flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5" />
-                    {location}
-                  </span>
-                )}
-                {location && <span className="text-gray-200 text-sm">·</span>}
-                <span className="text-xs text-gray-400 flex items-center gap-1.5">
-                  <Calendar className="w-3 h-3" />
-                  Member since {formatMemberSince(affiliate.createdAt)}
+            {/* Company name */}
+            <h1 className="text-2xl font-bold text-gray-900 tracking-tight leading-tight">
+              {affiliate.name}
+            </h1>
+
+            {/* Location + Member since */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
+              {location && (
+                <span className="text-sm text-gray-400 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5" />{location}
                 </span>
-              </div>
+              )}
+              <span className="text-sm text-gray-400 flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5" />
+                Member since {formatMemberSince(affiliate.createdAt)}
+              </span>
             </div>
 
-            {/* Affiliate code badge (when connected) */}
+            {/* Affiliate ID badge */}
             {affiliate.affiliateCode && (
               <div
                 className={cn(
-                  "mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl cursor-pointer group transition-all",
+                  "mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border cursor-pointer group transition-all",
                   copied
-                    ? "bg-emerald-50 border border-emerald-100"
-                    : "bg-blue-50 border border-blue-100 hover:bg-blue-100/60"
+                    ? "bg-emerald-50 border-emerald-200"
+                    : "bg-white border-gray-200 hover:border-blue-200 hover:bg-blue-50/40"
                 )}
                 onClick={copyCode}
                 title="Click to copy"
               >
-                <Hash className="w-3 h-3 text-blue-400 flex-shrink-0" />
-                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Affiliate ID</span>
-                <span className="font-mono text-sm font-bold text-blue-700 tracking-wider">
+                <Hash className="w-3 h-3 text-blue-600 flex-shrink-0" />
+                <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400">Affiliate ID</span>
+                <span className="text-sm font-bold text-blue-600 font-mono tracking-wider">
                   {affiliate.affiliateCode}
                 </span>
                 {copied ? (
@@ -397,79 +395,39 @@ export default function AffiliateProfilePage({
               </div>
             )}
           </div>
-        </div>
 
-        {/* ── BODY — two column ────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Divider */}
+          <div className="border-t border-gray-100" />
 
-          {/* LEFT: About + Fleet */}
-          <div className="md:col-span-2 space-y-5">
-
-            {/* About */}
-            {affiliate.about && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 }}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
-              >
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">About</p>
-                <p className="text-sm text-gray-600 leading-relaxed">{affiliate.about}</p>
-              </motion.div>
-            )}
-
-            {/* Fleet showcase */}
-            {vehicles.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
-              >
-                {/* Fleet header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50">
-                  <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Fleet</p>
-                    <p className="text-sm font-semibold text-gray-800 mt-0.5">
-                      {vehicles.length} {vehicles.length === 1 ? "vehicle" : "vehicles"}
-                    </p>
-                  </div>
-                </div>
-                {/* Vehicle grid */}
-                <div className="p-5 grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {/* Two-column body: Fleet + Contact */}
+          <div className="flex">
+            {/* Fleet */}
+            <div className="flex-1 p-8 pr-6 min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Fleet</p>
+              <p className="text-sm font-semibold text-gray-800 mb-4">
+                {vehicles.length} {vehicles.length === 1 ? "vehicle" : "vehicles"}
+              </p>
+              {vehicles.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {vehicles.map((v) => (
                     <VehicleCard key={v.id} vehicle={v} />
                   ))}
                 </div>
-              </motion.div>
-            )}
-          </div>
+              ) : (
+                <p className="text-sm text-gray-300">No vehicles listed</p>
+              )}
+            </div>
 
-          {/* RIGHT: Contact sidebar */}
-          <div>
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.08 }}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
-            >
-              <div className="px-5 py-4 border-b border-gray-50">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Contact</p>
-              </div>
-              <div className="divide-y divide-gray-50">
-                <ContactRow
-                  icon={Mail}
-                  label="Email"
-                  value={affiliate.email}
-                  href={`mailto:${affiliate.email}`}
-                />
+            {/* Vertical divider */}
+            <div className="w-px bg-gray-100 self-stretch" />
+
+            {/* Contact */}
+            <div className="w-80 flex-shrink-0 p-8 pl-6">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Contact</p>
+              <div className="divide-y divide-gray-100">
+                <ContactRow icon={Mail} label="Email" value={affiliate.email} href={`mailto:${affiliate.email}`} />
                 {affiliate.phone && (
-                  <ContactRow
-                    icon={Phone}
-                    label="Phone"
-                    value={formatPhone(affiliate.phone)}
-                    href={`tel:${affiliate.phone}`}
-                  />
+                  <ContactRow icon={Phone} label="Phone" value={formatPhone(affiliate.phone)} href={`tel:${affiliate.phone}`} />
                 )}
                 {location && (
                   <ContactRow icon={MapPin} label="Location" value={location} />
@@ -479,34 +437,41 @@ export default function AffiliateProfilePage({
                     icon={Globe}
                     label="Website"
                     value={affiliate.website.replace(/^https?:\/\//, "")}
-                    href={
-                      affiliate.website.startsWith("http")
-                        ? affiliate.website
-                        : `https://${affiliate.website}`
-                    }
+                    href={affiliate.website.startsWith("http") ? affiliate.website : `https://${affiliate.website}`}
                   />
                 )}
               </div>
-            </motion.div>
+            </div>
           </div>
-        </div>
-      </motion.div>
 
-      {/* Connected note */}
-      <AnimatePresence>
-        {affiliate.connectionStatus === "CONNECTED" && (
-          <motion.p
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-xs text-emerald-500 text-center mt-6 flex items-center justify-center gap-1.5"
-          >
-            <CheckCircle2 className="w-3 h-3" />
-            You and {affiliate.name} are connected
-          </motion.p>
-        )}
-      </AnimatePresence>
+          {/* About (below two columns) */}
+          {affiliate.about && (
+            <>
+              <div className="border-t border-gray-100" />
+              <div className="px-8 py-6">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">About</p>
+                <p className="text-sm text-gray-600 leading-relaxed">{affiliate.about}</p>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Connected note */}
+        <AnimatePresence>
+          {affiliate.connectionStatus === "CONNECTED" && (
+            <motion.p
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-xs text-emerald-500 text-center mt-5 flex items-center justify-center gap-1.5"
+            >
+              <CheckCircle2 className="w-3 h-3" />
+              You and {affiliate.name} are connected
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   )
 }
