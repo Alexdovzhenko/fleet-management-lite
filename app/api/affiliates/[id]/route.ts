@@ -30,7 +30,13 @@ export async function GET(
         city: true,
         state: true,
         website: true,
+        about: true,
         createdAt: true,
+        vehicles: {
+          where: { hideFromProfile: false, status: "ACTIVE" },
+          select: { id: true, name: true, type: true, year: true, make: true, model: true, photoUrl: true, photos: true },
+          orderBy: { createdAt: "asc" },
+        },
         sentConnections: {
           where: { receiverId: companyId },
           select: { id: true, status: true, affiliateCode: true },
@@ -79,6 +85,8 @@ export async function GET(
       city: company.city,
       state: company.state,
       website: company.website,
+      about: company.about,
+      vehicles: company.vehicles,
       createdAt: company.createdAt,
       connectionId,
       connectionStatus,

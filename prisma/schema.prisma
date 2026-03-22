@@ -20,6 +20,7 @@ model Company {
   logo      String?
   banner    String?
   website   String?
+  about     String?
   timezone  String   @default("America/New_York")
   onboardingCompleted Boolean @default(false)
   createdAt DateTime @default(now())
@@ -45,6 +46,31 @@ model Company {
   farmOutsReceived FarmOut[] @relation("FarmOutsReceived")
 
   appNotifications AppNotification[]
+  addresses        CompanyAddress[]
+}
+
+model CompanyAddress {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  name     String?   // Optional venue/location label (hotel, venue, etc.)
+  address1 String    // Primary street address
+  address2 String?
+  city     String?
+  state    String?
+  zip      String?
+  country  String?
+  phone    String?
+  notes    String?
+
+  useCount   Int      @default(1)
+  lastUsedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([companyId, address1])
 }
 
 model User {
@@ -127,10 +153,11 @@ model Vehicle {
   year         Int?
   make         String?
   model        String?
-  photoUrl     String?
-  photos       String[]
-  status       VehicleStatus @default(ACTIVE)
-  notes        String?
+  photoUrl        String?
+  photos          String[]
+  status          VehicleStatus @default(ACTIVE)
+  notes           String?
+  hideFromProfile Boolean       @default(false)
   companyId    String
   company      Company       @relation(fields: [companyId], references: [id])
   createdAt    DateTime      @default(now())

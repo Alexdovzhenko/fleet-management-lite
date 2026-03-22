@@ -44,6 +44,7 @@ export interface Company {
   logo?: string
   banner?: string
   website?: string
+  about?: string
   timezone: string
   createdAt: string
   updatedAt: string
@@ -87,6 +88,7 @@ export interface Vehicle {
   photos?: string[]
   status: VehicleStatus
   notes?: string
+  hideFromProfile?: boolean
   companyId: string
   createdAt: string
   updatedAt: string
@@ -247,6 +249,17 @@ export type ConnectionView =
   | 'DECLINED_BY_ME'
   | 'DECLINED_BY_THEM'
 
+export interface AffiliateVehicle {
+  id: string
+  name: string
+  type: string
+  year?: number | null
+  make?: string | null
+  model?: string | null
+  photoUrl?: string | null
+  photos?: string[]
+}
+
 export interface AffiliateProfile {
   id: string
   name: string
@@ -257,6 +270,8 @@ export interface AffiliateProfile {
   city?: string | null
   state?: string | null
   website?: string | null
+  about?: string | null
+  vehicles?: AffiliateVehicle[]
   createdAt: string
   connectionId?: string
   connectionStatus: ConnectionView

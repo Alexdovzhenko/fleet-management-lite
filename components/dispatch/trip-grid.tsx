@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { formatTime, formatCurrency, formatPhone, getInitials, getTripStatusLabel, cn } from "@/lib/utils"
 import { format, parseISO } from "date-fns"
 import type { Trip, TripStatus, TripType } from "@/types"
-import { useColumnOrderStore, DEFAULT_COLUMN_ORDER } from "@/lib/stores/column-order-store"
+import { useColumnOrderStore } from "@/lib/stores/column-order-store"
 
 interface TripGridProps {
   trips: Trip[]
@@ -93,7 +93,7 @@ const ALL_COLUMNS = [
 
 export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showDate }: TripGridProps) {
   const clickRef = useRef<{ timer: ReturnType<typeof setTimeout>; trip: Trip } | null>(null)
-  const { columnOrder, setColumnOrder } = useColumnOrderStore()
+  const { columnOrder, hiddenColumns, setColumnOrder } = useColumnOrderStore()
 
   // Drag-and-drop state
   // dragKeyRef holds the active drag key without causing re-renders (prevents drag cancellation)
@@ -103,12 +103,13 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
   const [dropSide, setDropSide] = useState<"left" | "right">("left")
 
   // Merge stored order with ALL_COLUMNS — ensures new columns always appear
+  // Then filter out hidden columns
   const orderedColumns = [
     ...columnOrder
       .map((key) => ALL_COLUMNS.find((c) => c.key === key))
       .filter(Boolean),
     ...ALL_COLUMNS.filter((c) => !columnOrder.includes(c.key)),
-  ] as typeof ALL_COLUMNS
+  ].filter((c) => c && !hiddenColumns.includes(c.key)) as typeof ALL_COLUMNS
 
   // ── Click / double-click handlers ──────────────────────────────────────────
 

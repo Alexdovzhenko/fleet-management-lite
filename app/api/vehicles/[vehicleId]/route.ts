@@ -15,6 +15,7 @@ const updateSchema = z.object({
   notes: z.string().optional().nullable(),
   photos: z.array(z.string()).optional(),
   status: z.enum(["ACTIVE", "MAINTENANCE", "OUT_OF_SERVICE"]).optional(),
+  hideFromProfile: z.boolean().optional(),
 })
 
 export async function PUT(
@@ -40,7 +41,8 @@ export async function PUT(
         ...(data.type       !== undefined && { type: data.type }),
         ...(data.capacity   !== undefined && { capacity: data.capacity }),
         ...(data.status     !== undefined && { status: data.status }),
-        ...(data.photos     !== undefined && { photos: data.photos }),
+        ...(data.photos          !== undefined && { photos: data.photos }),
+        ...(data.hideFromProfile !== undefined && { hideFromProfile: data.hideFromProfile }),
         licensePlate: data.licensePlate ?? existing.licensePlate,
         color:        data.color        ?? existing.color,
         year:         data.year         ?? existing.year,

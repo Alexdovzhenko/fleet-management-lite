@@ -4,18 +4,26 @@ import { use, useState, useCallback } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  ArrowLeft, Globe, Phone, MapPin, Mail, Building2,
-  Calendar, CheckCircle2, Clock, UserPlus, X, Check,
-  Network, ExternalLink, Trash2, Hash, Copy,
+  ArrowLeft, Globe, Phone, MapPin, Mail, Calendar,
+  CheckCircle2, Clock, UserPlus, X, Check, Network,
+  ExternalLink, Trash2, Hash, Copy, Car,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import {
   useAffiliate,
   useSendConnectionRequest,
   useRespondToConnection,
   useRemoveConnection,
 } from "@/lib/hooks/use-affiliates"
-import type { AffiliateProfile, ConnectionView } from "@/types"
+import type { AffiliateProfile, AffiliateVehicle, ConnectionView } from "@/types"
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const VEHICLE_TYPE_LABELS: Record<string, string> = {
+  SEDAN: "Sedan", SUV: "SUV", STRETCH_LIMO: "Stretch Limo",
+  SPRINTER: "Sprinter", PARTY_BUS: "Party Bus", COACH: "Coach", OTHER: "Other",
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -29,8 +37,8 @@ function formatMemberSince(dateStr: string) {
 
 function formatPhone(phone: string) {
   const digits = phone.replace(/\D/g, "")
-  if (digits.length === 10) return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
-  if (digits.length === 11 && digits[0] === "1") return `(${digits.slice(1,4)}) ${digits.slice(4,7)}-${digits.slice(7)}`
+  if (digits.length === 10) return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`
+  if (digits.length === 11 && digits[0] === "1") return `(${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`
   return phone
 }
 
@@ -40,23 +48,15 @@ function ConnectionPanel({ affiliate }: { affiliate: AffiliateProfile }) {
   const send = useSendConnectionRequest()
   const respond = useRespondToConnection()
   const remove = useRemoveConnection()
-  // optimistic "just sent" flag so the button turns green immediately on click
   const [justSent, setJustSent] = useState(false)
 
   const status: ConnectionView = affiliate.connectionStatus
   const connectionId = affiliate.connectionId
 
-  // ── Connected ──
   if (status === "CONNECTED") {
     return (
-      <div className="flex items-center gap-2.5">
-        <div
-          className="flex items-center gap-2 px-4 py-2 rounded-xl"
-          style={{
-            background: "rgba(16,185,129,0.08)",
-            border: "1px solid rgba(16,185,129,0.20)",
-          }}
-        >
+      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-100">
           <CheckCircle2 className="w-4 h-4 text-emerald-500" />
           <span className="text-sm font-semibold text-emerald-600">Connected</span>
         </div>
@@ -76,7 +76,6 @@ function ConnectionPanel({ affiliate }: { affiliate: AffiliateProfile }) {
     )
   }
 
-  // ── Sent (or just clicked Connect) ──
   if (status === "SENT" || justSent) {
     return (
       <AnimatePresence mode="wait">
@@ -84,15 +83,9 @@ function ConnectionPanel({ affiliate }: { affiliate: AffiliateProfile }) {
           key="sent"
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="flex items-center gap-2.5"
+          className="flex items-center gap-2"
         >
-          <div
-            className="flex items-center gap-2 px-4 py-2 rounded-xl"
-            style={{
-              background: "rgba(16,185,129,0.08)",
-              border: "1px solid rgba(16,185,129,0.20)",
-            }}
-          >
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-100">
             <Check className="w-4 h-4 text-emerald-500" />
             <span className="text-sm font-semibold text-emerald-600">Request sent</span>
           </div>
@@ -102,9 +95,7 @@ function ConnectionPanel({ affiliate }: { affiliate: AffiliateProfile }) {
               size="sm"
               className="h-9 px-3 text-xs text-gray-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 gap-1.5 transition-all"
               onClick={() => {
-                if (connectionId) {
-                  respond.mutate({ connectionId, action: "cancel" })
-                }
+                if (connectionId) respond.mutate({ connectionId, action: "cancel" })
                 setJustSent(false)
               }}
               disabled={respond.isPending}
@@ -118,17 +109,10 @@ function ConnectionPanel({ affiliate }: { affiliate: AffiliateProfile }) {
     )
   }
 
-  // ── Received (they sent to us) ──
   if (status === "RECEIVED") {
     return (
       <div className="flex items-center gap-2">
-        <div
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl mr-1"
-          style={{
-            background: "rgba(245,158,11,0.08)",
-            border: "1px solid rgba(245,158,11,0.20)",
-          }}
-        >
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-100">
           <Clock className="w-3.5 h-3.5 text-amber-500" />
           <span className="text-xs font-semibold text-amber-600">Wants to connect</span>
         </div>
@@ -137,8 +121,7 @@ function ConnectionPanel({ affiliate }: { affiliate: AffiliateProfile }) {
           onClick={() => connectionId && respond.mutate({ connectionId, action: "accept" })}
           disabled={respond.isPending}
         >
-          <Check className="w-4 h-4" />
-          Accept
+          <Check className="w-4 h-4" /> Accept
         </Button>
         <Button
           variant="outline"
@@ -146,24 +129,20 @@ function ConnectionPanel({ affiliate }: { affiliate: AffiliateProfile }) {
           onClick={() => connectionId && respond.mutate({ connectionId, action: "decline" })}
           disabled={respond.isPending}
         >
-          <X className="w-4 h-4" />
-          Decline
+          <X className="w-4 h-4" /> Decline
         </Button>
       </div>
     )
   }
 
-  // ── NONE / DECLINED — show Connect ──
   return (
     <AnimatePresence mode="wait">
       <motion.div key="connect" initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
         <Button
-          className="gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+          className="gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm px-6 h-10 font-semibold"
           onClick={() => {
             setJustSent(true)
-            send.mutate(affiliate.id, {
-              onError: () => setJustSent(false),
-            })
+            send.mutate(affiliate.id, { onError: () => setJustSent(false) })
           }}
           disabled={send.isPending}
         >
@@ -175,13 +154,42 @@ function ConnectionPanel({ affiliate }: { affiliate: AffiliateProfile }) {
   )
 }
 
-// ─── Profile info row ─────────────────────────────────────────────────────────
+// ─── Vehicle showcase card ────────────────────────────────────────────────────
 
-function InfoRow({
-  icon: Icon,
-  label,
-  value,
-  href,
+function VehicleCard({ vehicle }: { vehicle: AffiliateVehicle }) {
+  const photo = vehicle.photoUrl || vehicle.photos?.[0]
+  return (
+    <div className="group rounded-2xl overflow-hidden bg-white border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all duration-200 cursor-default">
+      <div className="aspect-[4/3] bg-gray-50 overflow-hidden">
+        {photo ? (
+          <img
+            src={photo}
+            alt={vehicle.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div
+            className="w-full h-full flex items-center justify-center"
+            style={{ background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)" }}
+          >
+            <Car className="w-8 h-8 text-gray-200" />
+          </div>
+        )}
+      </div>
+      <div className="px-3.5 py-3 bg-white">
+        <p className="text-sm font-semibold text-gray-900 truncate leading-tight">{vehicle.name}</p>
+        <p className="text-xs text-gray-400 mt-0.5 truncate">
+          {[vehicle.year, VEHICLE_TYPE_LABELS[vehicle.type] || vehicle.type].filter(Boolean).join(" · ")}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+// ─── Contact row ──────────────────────────────────────────────────────────────
+
+function ContactRow({
+  icon: Icon, label, value, href,
 }: {
   icon: React.ElementType
   label: string
@@ -189,8 +197,8 @@ function InfoRow({
   href?: string
 }) {
   return (
-    <div className="flex items-start gap-3 py-3.5 border-b border-gray-50 last:border-0">
-      <div className="w-7 h-7 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+    <div className="flex items-center gap-3 px-5 py-3.5">
+      <div className="w-7 h-7 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0">
         <Icon className="w-3.5 h-3.5 text-gray-400" />
       </div>
       <div className="flex-1 min-w-0">
@@ -203,7 +211,7 @@ function InfoRow({
             className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1 mt-0.5 font-medium"
           >
             <span className="truncate">{value}</span>
-            <ExternalLink className="w-3 h-3 flex-shrink-0" />
+            <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-60" />
           </a>
         ) : (
           <p className="text-sm text-gray-900 mt-0.5 font-medium truncate">{value}</p>
@@ -213,27 +221,29 @@ function InfoRow({
   )
 }
 
-// ─── Profile skeleton ─────────────────────────────────────────────────────────
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 function ProfileSkeleton() {
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-4xl mx-auto">
       <div className="h-5 w-28 bg-gray-100 rounded-lg animate-pulse mb-5" />
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
-        <div className="h-40 rounded-t-2xl bg-gray-100 animate-pulse" />
-        <div className="px-6 pt-4 pb-6">
-          <div className="flex items-start justify-between mb-5">
-            <div className="w-20 h-20 rounded-2xl bg-gray-200 animate-pulse -mt-12 border-4 border-white" />
-            <div className="h-10 w-32 rounded-xl bg-gray-100 animate-pulse mt-2" />
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mb-5">
+        <div className="h-56 bg-gray-100 animate-pulse" />
+        <div className="px-8 pb-8">
+          <div className="flex items-end justify-between -mt-12 mb-6">
+            <div className="w-24 h-24 rounded-2xl bg-gray-200 animate-pulse border-4 border-white" />
+            <div className="h-10 w-32 rounded-xl bg-gray-100 animate-pulse" />
           </div>
-          <div className="h-6 w-48 bg-gray-100 rounded animate-pulse mb-2" />
-          <div className="h-4 w-24 bg-gray-100 rounded animate-pulse mb-5" />
-          <div className="space-y-3">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-14 bg-gray-50 rounded-xl animate-pulse" />
-            ))}
-          </div>
+          <div className="h-8 w-56 bg-gray-100 rounded-lg animate-pulse mb-2" />
+          <div className="h-4 w-36 bg-gray-100 rounded animate-pulse" />
         </div>
+      </div>
+      <div className="grid grid-cols-3 gap-5">
+        <div className="col-span-2 space-y-4">
+          <div className="h-32 bg-white rounded-2xl border border-gray-100 shadow-sm animate-pulse" />
+          <div className="h-64 bg-white rounded-2xl border border-gray-100 shadow-sm animate-pulse" />
+        </div>
+        <div className="h-48 bg-white rounded-2xl border border-gray-100 shadow-sm animate-pulse" />
       </div>
     </div>
   )
@@ -257,21 +267,20 @@ export default function AffiliateProfilePage({
     setTimeout(() => setCopied(false), 2000)
   }, [affiliate?.affiliateCode])
 
-  if (isLoading) return (
-    <div className="max-w-2xl mx-auto">
-      <ProfileSkeleton />
-    </div>
-  )
+  if (isLoading) return <ProfileSkeleton />
 
   if (error || !affiliate) {
     return (
-      <div className="max-w-2xl mx-auto text-center py-16">
+      <div className="max-w-4xl mx-auto text-center py-20">
         <div className="w-14 h-14 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center mx-auto mb-4">
           <Network className="w-6 h-6 text-gray-300" />
         </div>
         <p className="font-medium text-gray-500">Affiliate not found</p>
         <p className="text-sm text-gray-400 mt-1">This profile may have been removed.</p>
-        <Link href="/affiliates" className="mt-4 inline-flex items-center gap-1.5 text-sm text-blue-600 hover:underline">
+        <Link
+          href="/affiliates"
+          className="mt-4 inline-flex items-center gap-1.5 text-sm text-blue-600 hover:underline"
+        >
           <ArrowLeft className="w-3.5 h-3.5" />
           Back to Affiliates
         </Link>
@@ -280,10 +289,11 @@ export default function AffiliateProfilePage({
   }
 
   const location = [affiliate.city, affiliate.state].filter(Boolean).join(", ")
+  const vehicles = affiliate.vehicles ?? []
 
   return (
-    <div className="max-w-2xl mx-auto">
-      {/* Back navigation */}
+    <div className="max-w-4xl mx-auto pb-12">
+      {/* Back nav */}
       <Link
         href="/affiliates"
         className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 transition-colors mb-5"
@@ -292,92 +302,91 @@ export default function AffiliateProfilePage({
         Affiliates Network
       </Link>
 
-      {/* Profile card — no overflow-hidden so logo isn't clipped */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl border border-gray-100 shadow-sm"
+        transition={{ duration: 0.3 }}
       >
-        {/* Banner — clipped separately so border-radius applies */}
-        <div
-          className="h-40 md:h-48 rounded-t-2xl"
-          style={{
-            background: affiliate.banner
-              ? `url(${affiliate.banner}) center/cover no-repeat`
-              : "linear-gradient(135deg, #dbeafe 0%, #ede9fe 50%, #fce7f3 100%)",
-          }}
-        />
+        {/* ── HERO CARD ─────────────────────────────────────────────────────── */}
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mb-5">
+          {/* Banner */}
+          <div
+            className="h-52 md:h-64 w-full"
+            style={{
+              background: affiliate.banner
+                ? `url(${affiliate.banner}) center/cover no-repeat`
+                : "linear-gradient(135deg, #dbeafe 0%, #ede9fe 60%, #fce7f3 100%)",
+            }}
+          />
 
-        {/* Logo + action row — sits below banner, logo floats up via negative margin */}
-        <div className="px-5 md:px-7">
-          <div className="flex items-start justify-between gap-4 -mt-10">
-            {/* Logo — pulled up to overlap banner, white border creates floating effect */}
-            {affiliate.logo ? (
-              <div
-                className="w-20 h-20 md:w-[88px] md:h-[88px] rounded-2xl bg-white flex-shrink-0"
-                style={{
-                  border: "3px solid white",
-                  boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
-                  overflow: "hidden",
-                }}
-              >
-                <img
-                  src={affiliate.logo}
-                  alt={affiliate.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ) : (
-              <div
-                className="w-20 h-20 md:w-[88px] md:h-[88px] rounded-2xl flex items-center justify-center text-2xl font-bold text-white flex-shrink-0"
-                style={{
-                  background: "linear-gradient(135deg, rgb(37,99,235) 0%, rgb(79,70,229) 100%)",
-                  border: "3px solid white",
-                  boxShadow: "0 4px 16px rgba(37,99,235,0.25)",
-                }}
-              >
-                {getInitials(affiliate.name)}
-              </div>
-            )}
-
-            {/* Connection button — right side, vertically centered in its column */}
-            <div className="mt-12 md:mt-14">
-              <ConnectionPanel affiliate={affiliate} />
-            </div>
-          </div>
-
-          {/* Name + meta */}
-          <div className="mt-4 mb-5">
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900">{affiliate.name}</h1>
-            <div className="flex flex-col gap-1 mt-1.5">
-              {location && (
-                <p className="text-sm text-gray-400 flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5" />
-                  {location}
-                </p>
+          {/* Hero content */}
+          <div className="px-6 md:px-8 pb-7 md:pb-8">
+            {/* Logo + CTA row */}
+            <div className="flex items-end justify-between gap-4 -mt-12">
+              {/* Logo */}
+              {affiliate.logo ? (
+                <div
+                  className="w-24 h-24 rounded-2xl bg-white overflow-hidden flex-shrink-0"
+                  style={{ border: "4px solid white", boxShadow: "0 4px 20px rgba(0,0,0,0.12)" }}
+                >
+                  <img src={affiliate.logo} alt={affiliate.name} className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div
+                  className="w-24 h-24 rounded-2xl flex-shrink-0 flex items-center justify-center text-2xl font-bold text-white"
+                  style={{
+                    background: "linear-gradient(135deg, rgb(37,99,235) 0%, rgb(79,70,229) 100%)",
+                    border: "4px solid white",
+                    boxShadow: "0 4px 20px rgba(37,99,235,0.25)",
+                  }}
+                >
+                  {getInitials(affiliate.name)}
+                </div>
               )}
-              <p className="text-xs text-gray-400 flex items-center gap-1.5">
-                <Calendar className="w-3 h-3" />
-                Member since {formatMemberSince(affiliate.createdAt)}
-              </p>
-            </div>
-          </div>
 
-          {/* Affiliate ID — shown when connected */}
-          {affiliate.affiliateCode && (
-            <div className="mb-5">
+              {/* Connection CTA */}
+              <div className="pb-1 flex-shrink-0">
+                <ConnectionPanel affiliate={affiliate} />
+              </div>
+            </div>
+
+            {/* Company name + meta */}
+            <div className="mt-4">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight leading-tight">
+                {affiliate.name}
+              </h1>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2">
+                {location && (
+                  <span className="text-sm text-gray-400 flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5" />
+                    {location}
+                  </span>
+                )}
+                {location && <span className="text-gray-200 text-sm">·</span>}
+                <span className="text-xs text-gray-400 flex items-center gap-1.5">
+                  <Calendar className="w-3 h-3" />
+                  Member since {formatMemberSince(affiliate.createdAt)}
+                </span>
+              </div>
+            </div>
+
+            {/* Affiliate code badge (when connected) */}
+            {affiliate.affiliateCode && (
               <div
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer group transition-all"
-                style={{
-                  background: copied ? "rgba(16,185,129,0.07)" : "rgba(37,99,235,0.06)",
-                  border: copied ? "1px solid rgba(16,185,129,0.20)" : "1px solid rgba(37,99,235,0.14)",
-                }}
+                className={cn(
+                  "mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl cursor-pointer group transition-all",
+                  copied
+                    ? "bg-emerald-50 border border-emerald-100"
+                    : "bg-blue-50 border border-blue-100 hover:bg-blue-100/60"
+                )}
                 onClick={copyCode}
                 title="Click to copy"
               >
                 <Hash className="w-3 h-3 text-blue-400 flex-shrink-0" />
-                <span className="text-[11px] font-bold text-blue-400 uppercase tracking-widest">Affiliate ID</span>
-                <span className="font-mono text-sm font-bold text-blue-700 tracking-wider">{affiliate.affiliateCode}</span>
+                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Affiliate ID</span>
+                <span className="font-mono text-sm font-bold text-blue-700 tracking-wider">
+                  {affiliate.affiliateCode}
+                </span>
                 {copied ? (
                   <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
                     <Check className="w-3 h-3" /> Copied
@@ -386,37 +395,104 @@ export default function AffiliateProfilePage({
                   <Copy className="w-3 h-3 text-blue-300 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                 )}
               </div>
-            </div>
-          )}
-
-          {/* Divider */}
-          <div className="border-t border-gray-100" />
-
-          {/* Info rows */}
-          <div className="divide-y divide-gray-50 mb-2">
-            <InfoRow icon={Building2} label="Company" value={affiliate.name} />
-            <InfoRow icon={Mail} label="Email" value={affiliate.email} href={`mailto:${affiliate.email}`} />
-            {affiliate.phone && (
-              <InfoRow icon={Phone} label="Phone" value={formatPhone(affiliate.phone)} href={`tel:${affiliate.phone}`} />
             )}
-            {location && (
-              <InfoRow icon={MapPin} label="Location" value={location} />
+          </div>
+        </div>
+
+        {/* ── BODY — two column ────────────────────────────────────────────── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+          {/* LEFT: About + Fleet */}
+          <div className="md:col-span-2 space-y-5">
+
+            {/* About */}
+            {affiliate.about && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 }}
+                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+              >
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">About</p>
+                <p className="text-sm text-gray-600 leading-relaxed">{affiliate.about}</p>
+              </motion.div>
             )}
-            {affiliate.website && (
-              <InfoRow
-                icon={Globe}
-                label="Website"
-                value={affiliate.website.replace(/^https?:\/\//, "")}
-                href={affiliate.website.startsWith("http") ? affiliate.website : `https://${affiliate.website}`}
-              />
+
+            {/* Fleet showcase */}
+            {vehicles.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+              >
+                {/* Fleet header */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50">
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Fleet</p>
+                    <p className="text-sm font-semibold text-gray-800 mt-0.5">
+                      {vehicles.length} {vehicles.length === 1 ? "vehicle" : "vehicles"}
+                    </p>
+                  </div>
+                </div>
+                {/* Vehicle grid */}
+                <div className="p-5 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {vehicles.map((v) => (
+                    <VehicleCard key={v.id} vehicle={v} />
+                  ))}
+                </div>
+              </motion.div>
             )}
           </div>
 
-          <div className="h-4" />
+          {/* RIGHT: Contact sidebar */}
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.08 }}
+              className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+            >
+              <div className="px-5 py-4 border-b border-gray-50">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Contact</p>
+              </div>
+              <div className="divide-y divide-gray-50">
+                <ContactRow
+                  icon={Mail}
+                  label="Email"
+                  value={affiliate.email}
+                  href={`mailto:${affiliate.email}`}
+                />
+                {affiliate.phone && (
+                  <ContactRow
+                    icon={Phone}
+                    label="Phone"
+                    value={formatPhone(affiliate.phone)}
+                    href={`tel:${affiliate.phone}`}
+                  />
+                )}
+                {location && (
+                  <ContactRow icon={MapPin} label="Location" value={location} />
+                )}
+                {affiliate.website && (
+                  <ContactRow
+                    icon={Globe}
+                    label="Website"
+                    value={affiliate.website.replace(/^https?:\/\//, "")}
+                    href={
+                      affiliate.website.startsWith("http")
+                        ? affiliate.website
+                        : `https://${affiliate.website}`
+                    }
+                  />
+                )}
+              </div>
+            </motion.div>
+          </div>
         </div>
       </motion.div>
 
-      {/* Contextual note below card */}
+      {/* Connected note */}
       <AnimatePresence>
         {affiliate.connectionStatus === "CONNECTED" && (
           <motion.p
@@ -424,7 +500,7 @@ export default function AffiliateProfilePage({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-xs text-emerald-500 text-center mt-4 flex items-center justify-center gap-1.5"
+            className="text-xs text-emerald-500 text-center mt-6 flex items-center justify-center gap-1.5"
           >
             <CheckCircle2 className="w-3 h-3" />
             You and {affiliate.name} are connected

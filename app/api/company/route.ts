@@ -14,6 +14,7 @@ const updateSchema = z.object({
   logo:     z.string().optional(),
   banner:   z.string().optional(),
   website:  z.string().optional(),
+  about:    z.string().optional(),
   timezone: z.string().optional(),
   onboardingCompleted: z.boolean().optional(),
 })

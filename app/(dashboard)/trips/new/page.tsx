@@ -25,6 +25,8 @@ import { useServiceTypes } from "@/lib/hooks/use-service-types"
 import { useDebounce } from "@/lib/hooks/use-debounce"
 import { formatCurrency, generateConfirmationNumber } from "@/lib/utils"
 import { DatePickerInput } from "@/components/ui/date-picker"
+import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
+import { useUpsertAddress } from "@/lib/hooks/use-addresses"
 import type { Customer, Driver, Vehicle, AffiliateSearchResult } from "@/types"
 
 const schema = z.object({
@@ -1754,6 +1756,7 @@ function RouteBuilder({
   stopsError: string
   pickupDate?: string
 }) {
+  const upsertAddress = useUpsertAddress()
   const [locType, setLocType] = useState<StopLocationType>("address")
   const [role, setRole] = useState<StopRole>("pickup")
   // Structured address fields
@@ -1858,6 +1861,17 @@ function RouteBuilder({
     setLocType(t); resetForm()
   }
 
+  function handleAddressBookSelect(addr: import("@/lib/hooks/use-addresses").CompanyAddress) {
+    if (addr.name)     setLocationName(addr.name)
+    if (addr.address1) { setAddress1(addr.address1); setAddError("") }
+    if (addr.address2) setAddress2(addr.address2)
+    if (addr.city)     setCity(addr.city)
+    if (addr.state)    setStateVal(addr.state)
+    if (addr.zip)      setZip(addr.zip)
+    if (addr.country)  setCountry(addr.country)
+    if (addr.phone)    setPhone(addr.phone)
+  }
+
   function handleAdd() {
     let primaryAddr = ""
     if (locType === "address" || locType === "fbo") primaryAddr = address1.trim()
@@ -1922,6 +1936,20 @@ function RouteBuilder({
     if (locType === "airport" && fullFlightNum) {
       setTimeout(() => fetchFlightData(newStopId, fullFlightNum), 50)
     }
+    // Auto-save address to company address book (fire-and-forget)
+    if ((locType === "address" || locType === "fbo") && address1.trim()) {
+      upsertAddress.mutate({
+        name:     locationName.trim() || undefined,
+        address1: address1.trim(),
+        address2: address2.trim() || undefined,
+        city:     city.trim()     || undefined,
+        state:    stateVal.trim() || undefined,
+        zip:      zip.trim()      || undefined,
+        country:  country.trim()  || undefined,
+        phone:    phone.trim()    || undefined,
+        notes:    notes.trim()    || undefined,
+      })
+    }
     resetForm()
     if (role === "pickup") setRole("drop")
   }
@@ -1955,8 +1983,13 @@ function RouteBuilder({
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Address 1 *</Label>
-                <Input value={address1} onChange={(e) => { setAddress1(e.target.value); setAddError("") }}
-                  className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" />
+                <AddressAutocomplete
+                  value={address1}
+                  onChange={(v) => { setAddress1(v); setAddError("") }}
+                  onSelect={handleAddressBookSelect}
+                  error={!!addError}
+                  placeholder="123 Main St"
+                />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Address 2</Label>
@@ -2175,8 +2208,12 @@ function RouteBuilder({
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Address 1</Label>
-                  <Input value={address1} onChange={(e) => setAddress1(e.target.value)}
-                    className="h-9 text-sm" autoComplete="off" />
+                  <AddressAutocomplete
+                    value={address1}
+                    onChange={(v) => setAddress1(v)}
+                    onSelect={handleAddressBookSelect}
+                    placeholder="123 Main St"
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Address 2</Label>
@@ -2713,7 +2750,20 @@ export default function NewTripPage() {
                     </div>
                     <div className="space-y-1.5">
                       <Label className="text-[11px] font-medium text-gray-900">Phone</Label>
-                      <Input {...register("passengerPhone")} type="tel" className="h-9 text-sm" />
+                      <Input
+                        {...register("passengerPhone")}
+                        type="tel"
+                        className="h-9 text-sm"
+                        onChange={(e) => {
+                          const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
+                          let formatted = digits
+                          if (digits.length >= 7) formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
+                          else if (digits.length >= 4) formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
+                          else if (digits.length >= 1) formatted = `(${digits}`
+                          e.target.value = formatted
+                          register("passengerPhone").onChange(e)
+                        }}
+                      />
                     </div>
                   </div>
                   <div className="grid grid-cols-[260px_1fr] gap-3">
@@ -2771,7 +2821,11 @@ export default function NewTripPage() {
                         }}
                       >
                         <SelectTrigger className={`h-9 text-sm w-full ${errors.tripType ? "border-red-400" : ""}`}>
-                          <SelectValue />
+                          <span className={tripTypeValue ? "text-gray-900 text-sm" : "text-gray-400 text-sm"}>
+                            {tripTypeValue
+                              ? (enabledTypes.find(t => t.value === tripTypeValue)?.label ?? tripTypeValue)
+                              : "Select type"}
+                          </span>
                         </SelectTrigger>
                         <SelectContent>
                           {enabledTypes.map((t) => (

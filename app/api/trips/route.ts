@@ -140,11 +140,22 @@ export async function GET(request: NextRequest) {
       }))
     }
 
+    function timeToMinutes(t: string): number {
+      const m = t?.match(/(\d+):(\d+)\s*(AM|PM)/i)
+      if (!m) return 0
+      let h = parseInt(m[1])
+      const min = parseInt(m[2])
+      const pm = m[3].toUpperCase() === "PM"
+      if (pm && h < 12) h += 12
+      if (!pm && h === 12) h = 0
+      return h * 60 + min
+    }
+
     // Merge and sort by date + time
     const allTrips = [...ownedTrips, ...(farmInTrips as typeof ownedTrips)]
       .sort((a, b) => {
         const d = new Date(a.pickupDate).getTime() - new Date(b.pickupDate).getTime()
-        return d !== 0 ? d : a.pickupTime.localeCompare(b.pickupTime)
+        return d !== 0 ? d : timeToMinutes(a.pickupTime) - timeToMinutes(b.pickupTime)
       })
 
     return NextResponse.json(allTrips)

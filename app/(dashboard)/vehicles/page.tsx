@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useRef, useCallback } from "react"
-import { Plus, Car, Users, Camera, X, Upload, Trash2, ChevronLeft, ChevronRight, Truck, Bus, CarFront, CircleDot, GripVertical, ImagePlus, Tag, Gauge, Palette, Info, ChevronDown } from "lucide-react"
+import { useState, useRef, useCallback, useEffect } from "react"
+import { Plus, Car, Users, Camera, X, Upload, Trash2, ChevronLeft, ChevronRight, Truck, Bus, CarFront, CircleDot, GripVertical, ImagePlus, Tag, Gauge, Palette, Info, ChevronDown, Pencil, Maximize2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useVehicles, useCreateVehicle, useUpdateVehicle } from "@/lib/hooks/use-vehicles"
@@ -57,9 +57,9 @@ const STATUS_DOT: Record<string, string> = {
 }
 
 const STATUS_CONFIG = {
-  ACTIVE:         { label: "Active",      dot: "bg-emerald-400", badge: "bg-emerald-600 text-white shadow-sm" },
-  MAINTENANCE:    { label: "Maintenance", dot: "bg-amber-400",   badge: "bg-amber-500 text-white shadow-sm" },
-  OUT_OF_SERVICE: { label: "Offline",     dot: "bg-red-500",     badge: "bg-red-600 text-white shadow-sm" },
+  ACTIVE:         { label: "Active",      dot: "bg-emerald-500", text: "text-emerald-700", badge: "bg-emerald-600 text-white shadow-sm" },
+  MAINTENANCE:    { label: "Maintenance", dot: "bg-amber-400",   text: "text-amber-600",   badge: "bg-amber-500 text-white shadow-sm" },
+  OUT_OF_SERVICE: { label: "Offline",     dot: "bg-red-500",     text: "text-red-600",     badge: "bg-red-600 text-white shadow-sm" },
 } as const
 
 type StatusKey = keyof typeof STATUS_CONFIG
@@ -104,26 +104,129 @@ async function uploadPhoto(file: File): Promise<string> {
   return url
 }
 
+// ── Skeleton ─────────────────────────────────────────────────────────────────
 function CardSkeleton() {
   return (
-    <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm animate-pulse">
-      <div className="h-56 bg-gray-200" />
-      <div className="p-4 space-y-3">
-        <div className="h-4 bg-gray-200 rounded-full w-2/3" />
-        <div className="h-3 bg-gray-100 rounded-full w-1/2" />
-        <div className="flex gap-2 pt-1">
-          <div className="h-6 bg-gray-100 rounded-full w-20" />
-          <div className="h-6 bg-gray-100 rounded-full w-16" />
+    <div className="bg-white rounded-3xl overflow-hidden ring-1 ring-black/5 shadow-sm animate-pulse">
+      <div className="aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-200" />
+      <div className="px-5 pt-4 pb-5 space-y-3">
+        <div>
+          <div className="h-5 bg-gray-200 rounded-full w-2/3" />
+          <div className="h-3.5 bg-gray-100 rounded-full w-1/2 mt-2" />
+        </div>
+        <div className="flex items-center justify-between pt-1">
+          <div className="flex gap-2">
+            <div className="h-7 bg-gray-100 rounded-xl w-16" />
+            <div className="h-7 bg-gray-100 rounded-xl w-20" />
+          </div>
+          <div className="h-9 bg-gray-100 rounded-xl w-16" />
         </div>
       </div>
     </div>
   )
 }
 
-// ── Vehicle Card with photo carousel ────────────────────────────────────────
+// ── Photo Lightbox ────────────────────────────────────────────────────────────
+function PhotoLightbox({
+  photos,
+  initialIdx,
+  vehicleName,
+  onClose,
+}: {
+  photos: string[]
+  initialIdx: number
+  vehicleName: string
+  onClose: () => void
+}) {
+  const [idx, setIdx] = useState(initialIdx)
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape")       onClose()
+      if (e.key === "ArrowRight")   setIdx(i => (i + 1) % photos.length)
+      if (e.key === "ArrowLeft")    setIdx(i => (i - 1 + photos.length) % photos.length)
+    }
+    document.addEventListener("keydown", onKey)
+    return () => document.removeEventListener("keydown", onKey)
+  }, [photos.length, onClose])
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center"
+      style={{ backgroundColor: "rgba(0,0,0,0.92)", backdropFilter: "blur(16px)" }}
+      onClick={onClose}
+    >
+      <button
+        onClick={onClose}
+        className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors z-10"
+      >
+        <X className="w-5 h-5" />
+      </button>
+
+      {photos.length > 1 && (
+        <div className="absolute top-5 left-1/2 -translate-x-1/2 text-white/50 text-sm font-medium tabular-nums tracking-tight">
+          {idx + 1} / {photos.length}
+        </div>
+      )}
+
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/60 text-sm font-medium tracking-tight">
+        {vehicleName}
+      </div>
+
+      <div
+        className="relative max-w-5xl w-full px-16 flex items-center justify-center"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          key={idx}
+          src={photos[idx]}
+          alt={vehicleName}
+          className="max-h-[80vh] w-full object-contain rounded-2xl shadow-2xl"
+          style={{ animation: "fadeIn 0.2s ease" }}
+        />
+      </div>
+
+      {photos.length > 1 && (
+        <>
+          <button
+            onClick={e => { e.stopPropagation(); setIdx(i => (i - 1 + photos.length) % photos.length) }}
+            className="absolute left-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            onClick={e => { e.stopPropagation(); setIdx(i => (i + 1) % photos.length) }}
+            className="absolute right-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+
+          <div className="absolute bottom-14 left-1/2 -translate-x-1/2 flex items-center gap-2">
+            {photos.map((_, i) => (
+              <button
+                key={i}
+                onClick={e => { e.stopPropagation(); setIdx(i) }}
+                className={cn(
+                  "rounded-full transition-all",
+                  i === idx ? "w-5 h-1.5 bg-white" : "w-1.5 h-1.5 bg-white/35 hover:bg-white/60"
+                )}
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      <style>{`@keyframes fadeIn { from { opacity: 0; transform: scale(0.97) } to { opacity: 1; transform: scale(1) } }`}</style>
+    </div>
+  )
+}
+
+// ── Vehicle Card ──────────────────────────────────────────────────────────────
 function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void }) {
   const photos = vehicle.photos?.length ? vehicle.photos : vehicle.photoUrl ? [vehicle.photoUrl] : []
   const [idx, setIdx] = useState(0)
+  const [lightbox, setLightbox] = useState(false)
   const thumb = photos[idx] ?? null
   const status = vehicle.status as StatusKey
   const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.ACTIVE
@@ -140,112 +243,165 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
   }
 
   return (
-    <div
-      onClick={onEdit}
-      className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-    >
-      {/* Image Hero */}
-      <div className="relative h-72 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-        {thumb ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            key={thumb}
-            src={thumb}
-            alt={vehicle.name}
-            className="w-full h-full object-cover transition-opacity duration-300"
-          />
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-            <Car className="w-10 h-10 text-gray-300" />
-            <span className="text-xs text-gray-400 font-medium">No photo</span>
-          </div>
-        )}
+    <>
+      <div className="group bg-white rounded-3xl overflow-hidden ring-1 ring-black/[0.06] shadow-md hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1 transition-all duration-300 ease-out">
 
-        {thumb && (
-          <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/5 to-transparent" />
-        )}
+        {/* ── Image Hero ── */}
+        <div
+          className={cn(
+            "relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200",
+            thumb && "cursor-zoom-in"
+          )}
+          onClick={() => thumb && setLightbox(true)}
+        >
+          {thumb ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={thumb}
+              src={thumb}
+              alt={vehicle.name}
+              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center gap-3">
+              <div className="w-14 h-14 rounded-2xl bg-gray-200/80 flex items-center justify-center">
+                <Car className="w-7 h-7 text-gray-400" />
+              </div>
+              <span className="text-xs text-gray-400 font-medium tracking-wide">No photo added</span>
+            </div>
+          )}
 
-        {/* Status badge */}
-        <div className="absolute top-3 right-3">
-          <span className={cn(
-            "inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full",
-            cfg.badge
-          )}>
-            <span className={cn("w-1.5 h-1.5 rounded-full", cfg.dot)} />
-            {cfg.label}
-          </span>
-        </div>
+          {/* Bottom gradient */}
+          {thumb && (
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent pointer-events-none" />
+          )}
 
-        {/* Dot indicators (multiple photos) */}
-        {photos.length > 1 && (
-          <div className="absolute top-3 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
-            {photos.map((_, i) => (
-              <span
-                key={i}
-                className={cn(
-                  "w-1.5 h-1.5 rounded-full transition-all",
-                  i === idx ? "bg-white scale-110" : "bg-white/50"
-                )}
-              />
-            ))}
-          </div>
-        )}
+          {/* Top gradient for badge legibility */}
+          {thumb && (
+            <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-transparent pointer-events-none" />
+          )}
 
-        {/* Prev / Next arrows — visible on hover when multiple photos */}
-        {photos.length > 1 && (
-          <>
-            <button
-              onClick={prev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={next}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/60"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </>
-        )}
-
-        {/* Vehicle name overlay */}
-        {thumb && (
-          <div className="absolute bottom-0 left-0 right-0 p-4">
-            <h3 className="text-white font-semibold text-[15px] leading-snug">{vehicle.name}</h3>
-            {subtitle && <p className="text-white/60 text-xs mt-0.5">{subtitle}</p>}
-          </div>
-        )}
-      </div>
-
-      {/* Card Body */}
-      <div className="px-4 py-3.5">
-        {!thumb && (
-          <div className="mb-3">
-            <h3 className="font-semibold text-gray-900 text-sm leading-snug">{vehicle.name}</h3>
-            {subtitle && <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>}
-          </div>
-        )}
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full">
-            <Users className="w-3 h-3 text-gray-400" />
-            {vehicle.capacity} pax
-          </span>
-          {vehicle.licensePlate && (
-            <span className="inline-flex items-center text-xs font-mono font-medium text-gray-700 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full tracking-wider">
-              {vehicle.licensePlate}
+          {/* Glass status badge — top right */}
+          <div className="absolute top-3.5 right-3.5" onClick={e => e.stopPropagation()}>
+            <span className={cn(
+              "inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full",
+              "bg-white/90 shadow-sm backdrop-blur-md",
+              cfg.text
+            )}>
+              <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", cfg.dot)} />
+              {cfg.label}
             </span>
+          </div>
+
+          {/* Expand hint — top left on hover */}
+          {thumb && (
+            <div className="absolute top-3.5 left-3.5 w-8 h-8 rounded-xl bg-black/30 backdrop-blur-sm flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+              <Maximize2 className="w-3.5 h-3.5" />
+            </div>
           )}
-          {vehicle.color && (
-            <span className="text-xs text-gray-400">{vehicle.color}</span>
+
+          {/* Photo nav dots — bottom center */}
+          {photos.length > 1 && (
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-1.5 pointer-events-none">
+              {photos.map((_, i) => (
+                <span
+                  key={i}
+                  className={cn(
+                    "rounded-full transition-all duration-200",
+                    i === idx ? "w-4 h-1.5 bg-white" : "w-1.5 h-1.5 bg-white/45"
+                  )}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Prev / Next arrows */}
+          {photos.length > 1 && (
+            <>
+              <button
+                onClick={prev}
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/35 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/55"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={next}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/35 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/55"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </>
+          )}
+
+          {/* Name overlay — bottom of image */}
+          {thumb && (
+            <div className="absolute bottom-0 left-0 right-0 px-5 pb-4 pointer-events-none">
+              <h3 className="text-white font-bold text-base leading-snug tracking-tight drop-shadow-sm">{vehicle.name}</h3>
+              {subtitle && (
+                <p className="text-white/65 text-[13px] font-medium mt-0.5 drop-shadow-sm">{subtitle}</p>
+              )}
+            </div>
           )}
         </div>
+
+        {/* ── Card Body ── */}
+        <div className="px-5 pt-4 pb-5">
+          {/* Show name here only when there's no photo */}
+          {!thumb && (
+            <div className="mb-3.5">
+              <h3 className="text-[15px] font-bold text-gray-900 leading-snug tracking-tight">{vehicle.name}</h3>
+              {subtitle && <p className="text-[13px] text-gray-500 mt-0.5 font-medium">{subtitle}</p>}
+            </div>
+          )}
+
+          {/* Specs row + Edit */}
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 flex-wrap min-w-0">
+
+              {/* Capacity */}
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 bg-gray-100 px-2.5 py-1.5 rounded-xl">
+                <Users className="w-3 h-3 text-gray-400" />
+                {vehicle.capacity} pax
+              </span>
+
+              {/* License plate */}
+              {vehicle.licensePlate && (
+                <span className="inline-flex items-center text-[11px] font-mono font-bold text-gray-600 bg-gray-100 px-2.5 py-1.5 rounded-xl tracking-widest uppercase">
+                  {vehicle.licensePlate}
+                </span>
+              )}
+
+              {/* Color */}
+              {vehicle.color && (
+                <span className="text-[12px] text-gray-400 font-medium">{vehicle.color}</span>
+              )}
+            </div>
+
+            {/* Edit button */}
+            <button
+              onClick={onEdit}
+              className="flex-shrink-0 inline-flex items-center gap-1.5 h-9 px-4 rounded-xl text-xs font-bold text-gray-600 bg-gray-100 hover:bg-blue-600 hover:text-white transition-all duration-200"
+            >
+              <Pencil className="w-3 h-3" />
+              Edit
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+
+      {lightbox && photos.length > 0 && (
+        <PhotoLightbox
+          photos={photos}
+          initialIdx={idx}
+          vehicleName={vehicle.name}
+          onClose={() => setLightbox(false)}
+        />
+      )}
+    </>
   )
 }
 
-// ── Shared form used for both Add and Edit ──────────────────────────────────
+// ── Shared Vehicle Form ───────────────────────────────────────────────────────
 function VehicleForm({
   defaultValues,
   existingPhotos = [],
@@ -269,7 +425,6 @@ function VehicleForm({
   const selectedType = watch("type")
   const selectedStatus = watch("status")
 
-  // Unified ordered photo list for drag-and-drop reordering
   type PhotoItem = { kind: "kept"; url: string } | { kind: "new"; file: File; preview: string }
   const [photos, setPhotos] = useState<PhotoItem[]>(
     existingPhotos.map(url => ({ kind: "kept" as const, url }))
@@ -353,7 +508,6 @@ function VehicleForm({
       setIsUploading(false)
       return
     } finally {
-      // Failsafe: always unblock the button even if something unexpected throws
       setIsUploading(false)
     }
     const allPhotos = photos.map((p, i) =>
@@ -370,13 +524,11 @@ function VehicleForm({
       })}
       className="mt-2"
     >
-      {/* ── Two-column layout ──────────────────────────────────────── */}
       <div className="grid grid-cols-[5fr_6fr] gap-7">
 
-        {/* ── LEFT: Identity + Type ──────────────────────────────────── */}
+        {/* LEFT: Identity + Type + Photos */}
         <div className="flex flex-col gap-5">
 
-          {/* Vehicle Name */}
           <div className="space-y-1.5">
             <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Vehicle Name <span className="text-red-400">*</span></label>
             <Input
@@ -394,7 +546,6 @@ function VehicleForm({
             }
           </div>
 
-          {/* Vehicle Type */}
           <div className="space-y-2.5 flex-1">
             <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">
               Vehicle Type <span className="text-red-400">*</span>
@@ -424,7 +575,6 @@ function VehicleForm({
             {errors.type && <p className="text-xs text-red-500 flex items-center gap-1"><Info className="w-3 h-3" />Please select a type.</p>}
           </div>
 
-          {/* Photos */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
               <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Photos</label>
@@ -436,7 +586,6 @@ function VehicleForm({
               </span>
             </div>
 
-            {/* Photo slots */}
             <div className="grid grid-cols-3 gap-2">
               {photos.map((item, idx) => {
                 const src = item.kind === "kept" ? item.url : item.preview
@@ -477,7 +626,6 @@ function VehicleForm({
                 )
               })}
 
-              {/* Add slot(s) */}
               {canAddMore && Array.from({ length: MAX_PHOTOS - totalPhotos }).map((_, i) => (
                 <div
                   key={`slot-${i}`}
@@ -526,10 +674,9 @@ function VehicleForm({
           </div>
         </div>
 
-        {/* ── RIGHT: Specs + Operations ──────────────────────────────── */}
+        {/* RIGHT: Specs + Operations */}
         <div className="flex flex-col gap-5">
 
-          {/* Specifications */}
           <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 space-y-3.5">
             <div className="flex items-center gap-2">
               <Gauge className="w-3.5 h-3.5 text-gray-400" />
@@ -573,7 +720,6 @@ function VehicleForm({
             </div>
           </div>
 
-          {/* Operations */}
           <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 space-y-3.5">
             <div className="flex items-center gap-2">
               <Tag className="w-3.5 h-3.5 text-gray-400" />
@@ -618,7 +764,6 @@ function VehicleForm({
             )}
           </div>
 
-          {/* Spacer + Actions flush to bottom */}
           <div className="flex-1" />
 
           {saveError && (
@@ -651,7 +796,7 @@ function VehicleForm({
   )
 }
 
-// ── Main Page ───────────────────────────────────────────────────────────────
+// ── Main Page ─────────────────────────────────────────────────────────────────
 export default function VehiclesPage() {
   const [showAdd, setShowAdd]         = useState(false)
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
@@ -690,90 +835,88 @@ export default function VehiclesPage() {
     : []
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
 
-      {/* ── Toolbar ── */}
-      <div className="flex items-center justify-between gap-4">
+      {/* ── Header card ── */}
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
 
-        {/* Left: title + stat pills */}
-        <div className="flex items-center gap-4 min-w-0">
-          <h1 className="text-xl font-semibold text-gray-900 shrink-0">Fleet</h1>
-
-          {!isLoading && totalCount > 0 && (
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
-                {totalCount} total
-              </span>
-              {activeCount > 0 && (
-                <span className="text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                  {activeCount} active
-                </span>
-              )}
-              {maintenanceCount > 0 && (
-                <span className="text-xs font-medium text-amber-700 bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
-                  {maintenanceCount} maintenance
-                </span>
-              )}
-              {offlineCount > 0 && (
-                <span className="text-xs font-medium text-red-600 bg-red-50 border border-red-100 px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
-                  {offlineCount} offline
-                </span>
-              )}
+        {/* Top row: icon + title + stat boxes */}
+        <div className="flex items-center justify-between gap-4 px-6 pt-5 pb-5">
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+              style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)", boxShadow: "0 4px 12px rgba(37,99,235,0.20)" }}
+            >
+              <Car className="w-[18px] h-[18px] text-white" />
             </div>
-          )}
+            <div className="min-w-0">
+              <h1 className="text-[15px] font-bold text-gray-900 leading-tight">Fleet</h1>
+              <p className="text-[12px] text-gray-400 mt-0.5 leading-tight">
+                {isLoading ? "Loading..." : totalCount === 0 ? "No vehicles yet" : `${totalCount} vehicle${totalCount !== 1 ? "s" : ""} in your fleet`}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-stretch divide-x divide-gray-100 rounded-xl border border-gray-100 bg-gray-50/50 overflow-hidden shrink-0">
+            {([
+              { label: "Total",       value: totalCount,       dot: "bg-blue-500" },
+              { label: "Active",      value: activeCount,      dot: "bg-emerald-500" },
+              { label: "Maintenance", value: maintenanceCount, dot: "bg-amber-400" },
+              { label: "Offline",     value: offlineCount,     dot: "bg-red-500" },
+            ]).map((stat) => (
+              <div key={stat.label} className="flex flex-col items-center justify-center px-5 py-3 min-w-[80px]">
+                <span className="text-[22px] font-bold leading-none tracking-tight text-gray-800">{stat.value}</span>
+                <span className="flex items-center gap-1.5 mt-1.5">
+                  <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", stat.dot)} />
+                  <span className="text-[11px] text-gray-400 font-medium leading-none whitespace-nowrap">{stat.label}</span>
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Right: filters + CTA */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-100 to-transparent mx-6" />
 
-          {/* Status segmented control */}
-          {!isLoading && totalCount > 0 && (
-            <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
-              {FILTERS.map(({ key, label }) => {
-                const count =
-                  key === "ALL"         ? totalCount :
-                  key === "ACTIVE"      ? activeCount :
-                  key === "MAINTENANCE" ? maintenanceCount :
-                  offlineCount
-                if (key !== "ALL" && count === 0) return null
-                return (
-                  <button
-                    key={key}
-                    onClick={() => setFilter(key as typeof filter)}
-                    className={cn(
-                      "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all",
-                      filter === key
-                        ? "bg-white text-gray-900 shadow-sm"
-                        : "text-gray-500 hover:text-gray-700 hover:bg-white/60"
-                    )}
-                  >
-                    {label}
-                    <span className={cn(
-                      "text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none",
-                      filter === key ? "bg-gray-100 text-gray-600" : "text-gray-400"
-                    )}>
-                      {count}
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-          )}
+        {/* Bottom row: filters + CTA */}
+        <div className="flex items-center gap-3 px-6 py-4">
 
-          {/* Type dropdown */}
-          {!isLoading && typesInFleet.length > 1 && (
+          {/* Status filter tabs */}
+          <div className="flex items-center gap-1 p-1 bg-gray-50 rounded-xl border border-gray-100">
+            {FILTERS.map(({ key, label }) => {
+              const count =
+                key === "ALL"         ? totalCount :
+                key === "ACTIVE"      ? activeCount :
+                key === "MAINTENANCE" ? maintenanceCount :
+                offlineCount
+              if (key !== "ALL" && count === 0) return null
+              return (
+                <button
+                  key={key}
+                  onClick={() => setFilter(key as typeof filter)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150 whitespace-nowrap",
+                    filter === key
+                      ? "bg-white text-gray-800 shadow-sm border border-gray-100"
+                      : "text-gray-400 hover:text-gray-600"
+                  )}
+                >
+                  {label}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Type filter */}
+          {typesInFleet.length > 1 && (
             <div className="relative">
               <select
                 value={typeFilter}
                 onChange={e => setTypeFilter(e.target.value as typeof typeFilter)}
                 className={cn(
-                  "appearance-none h-8 pl-3 pr-7 rounded-lg border text-xs font-semibold cursor-pointer transition-all outline-none",
+                  "appearance-none h-9 pl-3 pr-7 rounded-xl border text-xs font-semibold cursor-pointer transition-all outline-none",
                   typeFilter !== "ALL"
                     ? "bg-blue-600 border-blue-600 text-white"
-                    : "bg-white border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+                    : "bg-gray-50 border-gray-100 text-gray-600 hover:border-gray-200"
                 )}
               >
                 <option value="ALL">All types</option>
@@ -790,39 +933,36 @@ export default function VehiclesPage() {
             </div>
           )}
 
-          {/* Divider */}
-          {!isLoading && totalCount > 0 && (
-            <div className="w-px h-5 bg-gray-200" />
-          )}
+          <div className="flex-1" />
 
           <Button
             onClick={() => setShowAdd(true)}
-            className="h-8 text-white text-xs font-semibold gap-1.5 px-3.5 rounded-lg shrink-0"
-            style={{ backgroundColor: "#2563EB" }}
+            className="h-9 text-sm font-semibold text-white gap-1.5 px-4"
+            style={{ background: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)", boxShadow: "0 2px 8px rgba(37,99,235,0.25)" }}
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4" />
             Add Vehicle
           </Button>
         </div>
       </div>
 
-      {/* ── Grid ── */}
+      {/* ── Gallery Grid ── */}
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)}
         </div>
       ) : !vehicles?.length ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
-            <Car className="w-8 h-8 text-gray-400" />
+        <div className="flex flex-col items-center justify-center py-28 text-center">
+          <div className="w-20 h-20 rounded-3xl bg-gray-100 flex items-center justify-center mb-5 shadow-sm">
+            <Car className="w-9 h-9 text-gray-300" />
           </div>
-          <h3 className="text-base font-semibold text-gray-900">No vehicles yet</h3>
-          <p className="text-sm text-gray-500 mt-1 mb-5 max-w-xs">
-            Add your first vehicle to start assigning trips and tracking your fleet.
+          <h3 className="text-lg font-bold text-gray-900 tracking-tight">No vehicles yet</h3>
+          <p className="text-sm text-gray-500 mt-1.5 mb-6 max-w-xs leading-relaxed">
+            Add your first vehicle to start assigning trips and managing your fleet.
           </p>
           <Button
             onClick={() => setShowAdd(true)}
-            className="text-white gap-2"
+            className="text-white gap-2 px-5 h-10 rounded-xl font-semibold"
             style={{ backgroundColor: "#2563EB" }}
           >
             <Plus className="w-4 h-4" />
@@ -831,13 +971,16 @@ export default function VehiclesPage() {
         </div>
       ) : !filtered?.length ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <p className="text-sm text-gray-500">No vehicles with this status.</p>
-          <button onClick={() => setFilter("ALL")} className="text-sm text-blue-600 hover:underline mt-1">
-            View all vehicles
+          <p className="text-sm text-gray-500">No vehicles match this filter.</p>
+          <button
+            onClick={() => { setFilter("ALL"); setTypeFilter("ALL") }}
+            className="text-sm text-blue-600 hover:underline mt-1.5 font-medium"
+          >
+            Clear filters
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
           {filtered.map((vehicle) => (
             <VehicleCard
               key={vehicle.id}
