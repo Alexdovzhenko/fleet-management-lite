@@ -700,7 +700,7 @@ function ProfilePreviewModal({ form, createdAt, onClose }: {
       style={{ backdropFilter: "blur(12px)", backgroundColor: "rgba(10,15,30,0.75)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div className="w-full max-w-2xl mb-8">
+      <div className="w-full max-w-4xl mb-8">
         {/* Modal chrome bar */}
         <div className="flex items-center justify-between px-4 py-3 mb-3">
           <div className="flex items-center gap-2">
