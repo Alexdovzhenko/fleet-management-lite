@@ -352,7 +352,7 @@ export default function AffiliateProfilePage({
 
           {/* Hero: logo + name + meta */}
           <div className="px-8 pt-4 pb-6">
-            <div className="-mt-14 mb-4">
+            <div className="-mt-8 mb-4">
               {affiliate.logo ? (
                 <div
                   className="w-20 h-20 rounded-2xl bg-white overflow-hidden"

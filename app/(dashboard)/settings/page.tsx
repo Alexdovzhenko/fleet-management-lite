@@ -741,7 +741,7 @@ function ProfilePreviewModal({ form, createdAt, onClose }: {
 
           {/* Hero: logo + name + meta */}
           <div className="px-6 pt-4 pb-5">
-            <div className="-mt-14 mb-4">
+            <div className="-mt-8 mb-4">
               {form.logo ? (
                 <div className="w-20 h-20 rounded-2xl bg-white overflow-hidden"
                   style={{ border: "4px solid white", boxShadow: "0 4px 20px rgba(0,0,0,0.12)" }}>
