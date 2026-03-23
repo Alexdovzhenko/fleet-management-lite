@@ -716,35 +716,18 @@ function ProfilePreviewModal({ form, createdAt, onClose }: {
         </div>
 
         {/* ── Hero card ─────────────────────────────────────────────────────── */}
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_40px_rgba(0,0,0,0.18)] overflow-hidden mb-4">
-          {/* Banner */}
+        {/* No overflow-hidden — logo must break out of banner boundary */}
+        <div className="relative bg-white rounded-3xl border border-gray-100 shadow-[0_8px_40px_rgba(0,0,0,0.18)] mb-4">
+
+          {/* Banner — self-clips at its own rounded top corners */}
           <div
-            className="relative h-60"
+            className="relative h-60 w-full overflow-hidden rounded-tl-3xl rounded-tr-3xl"
             style={{
               background: form.banner
                 ? `url(${form.banner}) center/cover no-repeat`
                 : "linear-gradient(135deg, #dbeafe 0%, #ede9fe 55%, #fce7f3 100%)",
             }}
           >
-            {/* Logo — exactly 50% in banner, 50% below */}
-            <div className="absolute bottom-0 left-8" style={{ transform: "translateY(50%)", zIndex: 10 }}>
-              {form.logo ? (
-                <div className="w-24 h-24 rounded-2xl bg-white overflow-hidden"
-                  style={{ border: "5px solid white", boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}>
-                  <img src={form.logo} alt={form.name} className="w-full h-full object-cover" />
-                </div>
-              ) : (
-                <div className="w-24 h-24 rounded-2xl flex items-center justify-center text-2xl font-bold text-white"
-                  style={{
-                    background: "linear-gradient(135deg, rgb(37,99,235) 0%, rgb(79,70,229) 100%)",
-                    border: "5px solid white",
-                    boxShadow: "0 8px 32px rgba(37,99,235,0.30)",
-                  }}>
-                  {initials}
-                </div>
-              )}
-            </div>
-
             {/* Action buttons — bottom-right of banner */}
             <div className="absolute bottom-4 right-5 flex items-center gap-2 pointer-events-none select-none">
               <div className="flex items-center gap-1.5 px-4 h-9 rounded-xl border border-emerald-300 bg-white shadow-sm">
@@ -758,7 +741,26 @@ function ProfilePreviewModal({ form, createdAt, onClose }: {
             </div>
           </div>
 
-          {/* Content — pt-16 clears 48px logo + 16px breathing room */}
+          {/* Logo — anchored to card, top-48 = 192px = banner(240px) - half-logo(48px) */}
+          <div className="absolute top-48 left-8 z-20">
+            {form.logo ? (
+              <div className="w-24 h-24 rounded-2xl bg-white overflow-hidden"
+                style={{ border: "5px solid white", boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}>
+                <img src={form.logo} alt={form.name} className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <div className="w-24 h-24 rounded-2xl flex items-center justify-center text-2xl font-bold text-white"
+                style={{
+                  background: "linear-gradient(135deg, rgb(37,99,235) 0%, rgb(79,70,229) 100%)",
+                  border: "5px solid white",
+                  boxShadow: "0 8px 32px rgba(37,99,235,0.30)",
+                }}>
+                {initials}
+              </div>
+            )}
+          </div>
+
+          {/* Content — pt-16 (64px) = 48px logo overlap + 16px gap before text */}
           <div className="px-6 pt-16 pb-5">
 
             <h1 className="text-2xl font-bold text-gray-900 tracking-tight leading-tight">
