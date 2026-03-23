@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import Cropper from "react-easy-crop"
 import type { Area, Point } from "react-easy-crop"
@@ -935,8 +936,8 @@ function ProfilePreviewModal({ form, createdAt, onClose }: {
 
       </div>
 
-      {/* Photo lightbox */}
-      {lightboxIdx !== null && allPhotos.length > 0 && (() => {
+      {/* Photo lightbox — rendered via portal to escape backdrop-filter stacking context */}
+      {lightboxIdx !== null && allPhotos.length > 0 && createPortal((() => {
         const photo = allPhotos[lightboxIdx]
         return (
           <div
@@ -998,7 +999,7 @@ function ProfilePreviewModal({ form, createdAt, onClose }: {
             )}
           </div>
         )
-      })()}
+      })(), document.body)}
     </div>
   )
 }
