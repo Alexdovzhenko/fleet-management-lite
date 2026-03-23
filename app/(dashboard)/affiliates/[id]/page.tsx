@@ -344,29 +344,22 @@ export default function AffiliateProfilePage({
                 : "linear-gradient(135deg, #dbeafe 0%, #ede9fe 55%, #fce7f3 100%)",
             }}
           >
-            {/* Action buttons — bottom-right of banner */}
-            <div className="absolute bottom-4 right-6 flex items-center gap-2">
-              <ConnectionPanel affiliate={affiliate} />
-            </div>
-          </div>
-
-          {/* Hero: logo + name + meta */}
-          <div className="px-8 pt-4 pb-6">
-            <div className="-mt-8 mb-4">
+            {/* Logo — exactly 50% in banner, 50% below */}
+            <div className="absolute bottom-0 left-8" style={{ transform: "translateY(50%)", zIndex: 10 }}>
               {affiliate.logo ? (
                 <div
-                  className="w-20 h-20 rounded-2xl bg-white overflow-hidden"
-                  style={{ border: "4px solid white", boxShadow: "0 4px 20px rgba(0,0,0,0.12)" }}
+                  className="w-24 h-24 rounded-2xl bg-white overflow-hidden"
+                  style={{ border: "5px solid white", boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}
                 >
                   <img src={affiliate.logo} alt={affiliate.name} className="w-full h-full object-cover" />
                 </div>
               ) : (
                 <div
-                  className="w-20 h-20 rounded-2xl flex items-center justify-center text-xl font-bold text-white"
+                  className="w-24 h-24 rounded-2xl flex items-center justify-center text-2xl font-bold text-white"
                   style={{
                     background: "linear-gradient(135deg, rgb(37,99,235) 0%, rgb(79,70,229) 100%)",
-                    border: "4px solid white",
-                    boxShadow: "0 4px 20px rgba(37,99,235,0.25)",
+                    border: "5px solid white",
+                    boxShadow: "0 8px 32px rgba(37,99,235,0.30)",
                   }}
                 >
                   {getInitials(affiliate.name)}
@@ -374,6 +367,14 @@ export default function AffiliateProfilePage({
               )}
             </div>
 
+            {/* Action buttons — bottom-right of banner */}
+            <div className="absolute bottom-4 right-6 flex items-center gap-2">
+              <ConnectionPanel affiliate={affiliate} />
+            </div>
+          </div>
+
+          {/* Content — pt-16 clears 48px logo + 16px breathing room */}
+          <div className="px-8 pt-16 pb-6">
             <h1 className="text-2xl font-bold text-gray-900 tracking-tight leading-tight">
               {affiliate.name}
             </h1>
