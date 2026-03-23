@@ -958,8 +958,8 @@ function DriverModal({
                         Cancel
                       </Button>
                       <Button
-                        type="submit"
-                        form="driver-form"
+                        type="button"
+                        onClick={handleSubmit(onSubmit)}
                         disabled={isPending}
                         className="h-10 px-7 text-sm font-semibold text-white rounded-xl min-w-[130px]"
                         style={{
