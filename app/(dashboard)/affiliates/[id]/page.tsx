@@ -160,19 +160,19 @@ function VehicleCard({ vehicle }: { vehicle: AffiliateVehicle }) {
   const photo = vehicle.photoUrl || vehicle.photos?.[0]
   const typeLabel = VEHICLE_TYPE_LABELS[vehicle.type] || vehicle.type
   return (
-    <div className="rounded-xl overflow-hidden bg-white border border-gray-100 shadow-sm cursor-default">
-      <div className="aspect-[4/3] overflow-hidden" style={{ background: "linear-gradient(145deg, #f8fafc 0%, #eef2f7 100%)" }}>
+    <div className="rounded-2xl overflow-hidden cursor-default" style={{ background: "#f8fafc", border: "1px solid rgba(0,0,0,0.06)" }}>
+      <div className="aspect-[4/3] overflow-hidden relative">
         {photo ? (
           <img src={photo} alt={vehicle.name} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Car className="w-8 h-8 text-slate-200" />
+          <div className="w-full h-full flex items-center justify-center" style={{ background: "linear-gradient(160deg, #f1f5f9 0%, #e2e8f0 100%)" }}>
+            <Car className="w-8 h-8 text-slate-300" />
           </div>
         )}
       </div>
-      <div className="px-3 py-2.5">
-        <p className="text-xs font-semibold text-gray-900 truncate leading-tight">{vehicle.name}</p>
-        <p className="text-[10px] text-gray-400 mt-0.5 truncate">
+      <div className="px-3.5 pt-3 pb-3.5">
+        <p className="text-[13px] font-semibold text-gray-900 truncate leading-snug">{vehicle.name}</p>
+        <p className="text-[11px] text-gray-400 mt-0.5 truncate font-medium">
           {[vehicle.year, typeLabel].filter(Boolean).join(" · ")}
         </p>
       </div>
@@ -184,25 +184,25 @@ function FeaturedVehicleCard({ vehicle }: { vehicle: AffiliateVehicle }) {
   const photo = vehicle.photoUrl || vehicle.photos?.[0]
   const typeLabel = VEHICLE_TYPE_LABELS[vehicle.type] || vehicle.type
   return (
-    <div className="rounded-xl overflow-hidden bg-white border border-gray-100 shadow-sm cursor-default">
-      <div className="aspect-video overflow-hidden" style={{ background: "linear-gradient(145deg, #f8fafc 0%, #eef2f7 100%)" }}>
+    <div className="rounded-2xl overflow-hidden cursor-default" style={{ background: "#f8fafc", border: "1px solid rgba(0,0,0,0.06)" }}>
+      <div className="overflow-hidden relative" style={{ aspectRatio: "16/8" }}>
         {photo ? (
           <img src={photo} alt={vehicle.name} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <Car className="w-12 h-12 text-slate-200" />
+          <div className="w-full h-full flex items-center justify-center" style={{ background: "linear-gradient(160deg, #f1f5f9 0%, #e2e8f0 100%)" }}>
+            <Car className="w-14 h-14 text-slate-300" />
           </div>
         )}
       </div>
       <div className="flex items-center justify-between gap-3 px-4 py-3.5">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-gray-900 truncate">{vehicle.name}</p>
-          <p className="text-xs text-gray-400 mt-0.5 truncate">
+          <p className="text-sm font-semibold text-gray-900 truncate leading-snug">{vehicle.name}</p>
+          <p className="text-[11px] font-medium text-gray-400 mt-0.5 truncate">
             {[vehicle.year, typeLabel].filter(Boolean).join(" · ")}
           </p>
         </div>
         {typeLabel && (
-          <span className="text-[10px] font-semibold text-gray-500 bg-gray-50 border border-gray-100 px-2.5 py-1 rounded-lg flex-shrink-0 uppercase tracking-wide">
+          <span className="text-[10px] font-bold text-slate-500 bg-white border border-gray-200 px-2.5 py-1 rounded-lg flex-shrink-0 uppercase tracking-wider">
             {typeLabel}
           </span>
         )}
@@ -222,21 +222,22 @@ function ContactRow({
   href?: string
 }) {
   return (
-    <div className="flex items-center gap-4 py-4">
-      <div className="w-9 h-9 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0">
-        <Icon className="w-4 h-4 text-gray-400" />
+    <div className="flex items-center gap-3.5 py-3.5">
+      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+        style={{ background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.06)" }}>
+        <Icon className="w-3.5 h-3.5 text-gray-400" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">{label}</p>
+        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">{label}</p>
         {href ? (
           <a
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[13px] font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1.5 transition-colors group"
+            className="text-[13px] font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors group"
           >
             <span className="truncate">{value}</span>
-            <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-40 group-hover:opacity-70 transition-opacity" />
+            <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-30 group-hover:opacity-60 transition-opacity" />
           </a>
         ) : (
           <p className="text-[13px] font-medium text-gray-800 truncate">{value}</p>
@@ -412,24 +413,23 @@ export default function AffiliateProfilePage({
           </div>
         </div>
 
-        {/* ── FLEET + CONTACT CARDS ──────────────────────────────────────────── */}
-        <div className="grid grid-cols-5 gap-4 mb-4">
+        {/* ── FLEET + CONTACT ───────────────────────────────────────────────── */}
+        {/* Slate wrapper acts as the "groove" — makes both white cards visually distinct */}
+        <div className="rounded-3xl mb-4 grid grid-cols-5 gap-2 p-2" style={{ background: "rgba(226,232,240,0.55)" }}>
 
           {/* Fleet card */}
-          <div className="col-span-3 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-6 pt-5 pb-4 border-b border-gray-50">
-              <div className="flex items-baseline justify-between">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Fleet</p>
-                <span className="text-xs font-medium text-gray-400">
-                  {vehicles.length} {vehicles.length === 1 ? "vehicle" : "vehicles"}
-                </span>
-              </div>
+          <div className="col-span-3 bg-white rounded-[20px] overflow-hidden">
+            <div className="px-6 pt-6 pb-2">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Fleet</p>
+              <p className="text-[22px] font-bold text-gray-900 leading-tight tracking-tight">
+                {vehicles.length} <span className="text-gray-400 font-semibold text-lg">{vehicles.length === 1 ? "vehicle" : "vehicles"}</span>
+              </p>
             </div>
-            <div className="p-6">
+            <div className="p-6 pt-4">
               {vehicles.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <div className="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center mb-3">
-                    <Car className="w-5 h-5 text-gray-200" />
+                <div className="flex flex-col items-center justify-center py-10 text-center rounded-2xl" style={{ background: "linear-gradient(160deg, #f8fafc 0%, #f1f5f9 100%)" }}>
+                  <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center mb-3">
+                    <Car className="w-5 h-5 text-gray-300" />
                   </div>
                   <p className="text-sm font-medium text-gray-300">No vehicles listed</p>
                 </div>
@@ -447,11 +447,11 @@ export default function AffiliateProfilePage({
           </div>
 
           {/* Contact card */}
-          <div className="col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-6 pt-5 pb-4 border-b border-gray-50">
+          <div className="col-span-2 bg-white rounded-[20px] overflow-hidden">
+            <div className="px-6 pt-6 pb-2">
               <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Contact</p>
             </div>
-            <div className="px-6 pb-4 divide-y divide-gray-50">
+            <div className="px-6 pb-6 divide-y" style={{ borderColor: "rgba(0,0,0,0.05)" }}>
               <ContactRow icon={Mail} label="Email" value={affiliate.email} href={`mailto:${affiliate.email}`} />
               {affiliate.phone && (
                 <ContactRow icon={Phone} label="Phone" value={formatPhone(affiliate.phone)} href={`tel:${affiliate.phone}`} />
@@ -471,13 +471,13 @@ export default function AffiliateProfilePage({
           </div>
         </div>
 
-        {/* ── ABOUT CARD ────────────────────────────────────────────────────── */}
+        {/* ── ABOUT ─────────────────────────────────────────────────────────── */}
         {affiliate.about && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-4">
-            <div className="px-6 pt-5 pb-4 border-b border-gray-50">
+            <div className="px-6 pt-5 pb-1">
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">About</p>
             </div>
-            <div className="px-6 py-5">
+            <div className="px-6 py-5 pt-3">
               <p className="text-sm text-gray-600 leading-relaxed">{affiliate.about}</p>
             </div>
           </div>
