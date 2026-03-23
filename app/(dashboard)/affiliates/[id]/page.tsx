@@ -549,6 +549,18 @@ export default function AffiliateProfilePage({
           </div>
         </div>
 
+        {/* ── ABOUT ─────────────────────────────────────────────────────────── */}
+        {affiliate.about && (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-4">
+            <div className="px-6 pt-5 pb-1">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">About</p>
+            </div>
+            <div className="px-6 py-5 pt-3">
+              <p className="text-sm text-gray-600 leading-relaxed">{affiliate.about}</p>
+            </div>
+          </div>
+        )}
+
         {/* ── FLEET + CONTACT ───────────────────────────────────────────────── */}
         {/* Slate wrapper acts as the "groove" — makes both white cards visually distinct */}
         <div className="rounded-3xl mb-4 grid grid-cols-5 gap-2 p-2" style={{ background: "rgba(226,232,240,0.55)" }}>
@@ -617,18 +629,6 @@ export default function AffiliateProfilePage({
             </div>
           </div>
         </div>
-
-        {/* ── ABOUT ─────────────────────────────────────────────────────────── */}
-        {affiliate.about && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-4">
-            <div className="px-6 pt-5 pb-1">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">About</p>
-            </div>
-            <div className="px-6 py-5 pt-3">
-              <p className="text-sm text-gray-600 leading-relaxed">{affiliate.about}</p>
-            </div>
-          </div>
-        )}
 
         {/* Connected note */}
         <AnimatePresence>
