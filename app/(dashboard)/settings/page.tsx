@@ -786,6 +786,18 @@ function ProfilePreviewModal({ form, createdAt, onClose }: {
           </div>
         </div>
 
+        {/* ── About ─────────────────────────────────────────────────────────── */}
+        {form.about && (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-4">
+            <div className="px-6 pt-5 pb-1">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">About</p>
+            </div>
+            <div className="px-6 pt-3 pb-5">
+              <p className="text-sm text-gray-600 leading-relaxed">{form.about}</p>
+            </div>
+          </div>
+        )}
+
         {/* ── Fleet + Contact ────────────────────────────────────────────────── */}
         <div className="rounded-3xl mb-4 grid grid-cols-5 gap-2 p-2" style={{ background: "rgba(226,232,240,0.55)" }}>
 
@@ -888,17 +900,6 @@ function ProfilePreviewModal({ form, createdAt, onClose }: {
           </div>
         </div>
 
-        {/* ── About ─────────────────────────────────────────────────────────── */}
-        {form.about && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div className="px-6 pt-5 pb-1">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">About</p>
-            </div>
-            <div className="px-6 pt-3 pb-5">
-              <p className="text-sm text-gray-600 leading-relaxed">{form.about}</p>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )
