@@ -45,6 +45,9 @@ export interface Company {
   banner?: string
   website?: string
   about?: string
+  affiliateAbout?: string
+  clientAbout?: string
+  clientVehicleIds?: string[]
   timezone: string
   createdAt: string
   updatedAt: string

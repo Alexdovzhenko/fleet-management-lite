@@ -21,6 +21,9 @@ model Company {
   banner    String?
   website   String?
   about     String?
+  affiliateAbout    String?
+  clientAbout       String?
+  clientVehicleIds  String[]
   timezone  String   @default("America/New_York")
   onboardingCompleted Boolean @default(false)
   createdAt DateTime @default(now())

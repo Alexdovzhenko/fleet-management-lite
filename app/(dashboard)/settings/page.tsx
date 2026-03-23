@@ -1,7 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { createPortal } from "react-dom"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import Cropper from "react-easy-crop"
 import type { Area, Point } from "react-easy-crop"
@@ -632,377 +631,46 @@ function FleetVehicleCard({ vehicle }: { vehicle: import("@/types").Vehicle }) {
   )
 }
 
-// ─── Profile Preview Modal ────────────────────────────────────────────────────
+// ─── Client Fleet Vehicle Card ────────────────────────────────────────────────
 
-type ProfileForm = {
-  name: string; email: string; phone: string; website: string; about: string
-  address: string; city: string; state: string; zip: string
-  logo: string; banner: string
-}
-
-function generateAffiliateId(name: string, createdAt?: string): string {
-  const seed = name + (createdAt || "")
-  let hash = 0
-  for (let i = 0; i < seed.length; i++) {
-    hash = ((hash << 5) - hash) + seed.charCodeAt(i)
-    hash |= 0
-  }
-  const num = Math.abs(hash) % 90000 + 10000
-  return `LC-${num}`
-}
-
-function PreviewContactRow({ icon: Icon, label, value, href }: {
-  icon: React.ElementType; label: string; value: string; href?: string
-}) {
-  return (
-    <div className="flex items-center gap-3.5 py-3.5">
-      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-        style={{ background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.06)" }}>
-        <Icon className="w-3.5 h-3.5 text-gray-400" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">{label}</p>
-        {href ? (
-          <a href={href} target="_blank" rel="noopener noreferrer"
-            className="text-[13px] font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors group">
-            <span className="truncate">{value}</span>
-            <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-30 group-hover:opacity-60 transition-opacity" />
-          </a>
-        ) : (
-          <p className="text-[13px] font-medium text-gray-800 truncate">{value}</p>
-        )}
-      </div>
-    </div>
-  )
-}
-
-function ProfilePreviewModal({ form, createdAt, onClose }: {
-  form: ProfileForm; createdAt?: string; onClose: () => void
-}) {
-  const { data: vehicles = [] } = useVehicles()
-  const visibleVehicles = vehicles.filter(v => !v.hideFromProfile)
-  const location = [form.city, form.state].filter(Boolean).join(", ")
-  const memberSince = createdAt
-    ? new Date(createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })
-    : null
-  const affiliateId = generateAffiliateId(form.name, createdAt)
-  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
-
-  const { allPhotos, vehiclePhotoStart } = useMemo(() => {
-    const allPhotos: { url: string; vehicleName: string; vehicleType: string }[] = []
-    const vehiclePhotoStart: Record<string, number> = {}
-    for (const v of visibleVehicles) {
-      vehiclePhotoStart[v.id] = allPhotos.length
-      const seen = new Set<string>()
-      for (const url of [v.photoUrl, ...(v.photos ?? [])]) {
-        if (url && !seen.has(url)) {
-          allPhotos.push({ url, vehicleName: v.name, vehicleType: VEHICLE_TYPE_LABELS[v.type] || v.type })
-          seen.add(url)
-        }
-      }
-    }
-    return { allPhotos, vehiclePhotoStart }
-  }, [visibleVehicles])
-
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (lightboxIdx !== null) {
-        if (e.key === "Escape") { setLightboxIdx(null); return }
-        if (e.key === "ArrowLeft") { setLightboxIdx(i => i !== null ? (i - 1 + allPhotos.length) % allPhotos.length : null); return }
-        if (e.key === "ArrowRight") { setLightboxIdx(i => i !== null ? (i + 1) % allPhotos.length : null); return }
-      } else {
-        if (e.key === "Escape") onClose()
-      }
-    }
-    document.addEventListener("keydown", onKey)
-    return () => document.removeEventListener("keydown", onKey)
-  }, [onClose, lightboxIdx, allPhotos.length])
-
-  const initials = form.name
-    ? form.name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase()
-    : "?"
-
+function ClientFleetVehicleCard({
+  vehicle, selected, onToggle,
+}: { vehicle: import("@/types").Vehicle; selected: boolean; onToggle: () => void }) {
+  const photo = vehicle.photoUrl || vehicle.photos?.[0]
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-start justify-center p-4 pt-8 overflow-y-auto"
-      style={{ backdropFilter: "blur(12px)", backgroundColor: "rgba(10,15,30,0.75)" }}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+      className={cn(
+        "relative rounded-xl overflow-hidden border-2 cursor-pointer transition-all select-none",
+        selected ? "border-blue-500 shadow-sm" : "border-gray-100 opacity-55 hover:opacity-80 hover:border-gray-200"
+      )}
+      onClick={onToggle}
     >
-      <div className="w-full max-w-4xl mb-8">
-        {/* Modal chrome bar */}
-        <div className="flex items-center justify-between px-4 py-3 mb-3">
-          <div className="flex items-center gap-2">
-            <ExternalLink className="w-3.5 h-3.5 text-white/40" />
-            <span className="text-xs font-semibold text-white/60 tracking-wide">Affiliate Preview</span>
-            <span className="text-[11px] text-white/30">— how partners see your company</span>
-          </div>
-          <button onClick={onClose}
-            className="w-7 h-7 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-
-        {/* ── Hero card ─────────────────────────────────────────────────────── */}
-        {/* No overflow-hidden — logo must break out of banner boundary */}
-        <div className="relative bg-white rounded-3xl border border-gray-100 shadow-[0_8px_40px_rgba(0,0,0,0.18)] mb-4">
-
-          {/* Banner — self-clips at its own rounded top corners */}
-          <div
-            className="relative h-60 w-full overflow-hidden rounded-tl-3xl rounded-tr-3xl"
-            style={{
-              background: form.banner
-                ? `url(${form.banner}) center/cover no-repeat`
-                : "linear-gradient(135deg, #dbeafe 0%, #ede9fe 55%, #fce7f3 100%)",
-            }}
-          >
-            {/* Action buttons — bottom-right of banner */}
-            <div className="absolute bottom-4 right-5 flex items-center gap-2 pointer-events-none select-none">
-              <div className="flex items-center gap-1.5 px-4 h-9 rounded-xl border border-emerald-300 bg-white shadow-sm">
-                <Check className="w-3.5 h-3.5 text-emerald-500" />
-                <span className="text-sm font-semibold text-emerald-600">Connected</span>
-              </div>
-              <div className="flex items-center gap-1.5 px-4 h-9 rounded-xl border border-gray-200 bg-white shadow-sm">
-                <Trash2 className="w-3.5 h-3.5 text-gray-400" />
-                <span className="text-sm font-medium text-gray-500">Remove</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Logo — anchored to card, top-48 = 192px = banner(240px) - half-logo(48px) */}
-          <div className="absolute top-48 left-8 z-20">
-            {form.logo ? (
-              <div className="w-24 h-24 rounded-2xl bg-white overflow-hidden"
-                style={{ border: "5px solid white", boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}>
-                <img src={form.logo} alt={form.name} className="w-full h-full object-cover" />
-              </div>
-            ) : (
-              <div className="w-24 h-24 rounded-2xl flex items-center justify-center text-2xl font-bold text-white"
-                style={{
-                  background: "linear-gradient(135deg, rgb(37,99,235) 0%, rgb(79,70,229) 100%)",
-                  border: "5px solid white",
-                  boxShadow: "0 8px 32px rgba(37,99,235,0.30)",
-                }}>
-                {initials}
-              </div>
-            )}
-          </div>
-
-          {/* Content — pt-16 (64px) = 48px logo overlap + 16px gap before text */}
-          <div className="px-6 pt-16 pb-5">
-
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight leading-tight">
-              {form.name || <span className="text-gray-300">Your Company Name</span>}
-            </h1>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
-              {location && (
-                <span className="text-sm text-gray-400 flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5" />{location}
-                </span>
-              )}
-              {memberSince && (
-                <span className="text-sm text-gray-400 flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5" />Member since {memberSince}
-                </span>
-              )}
-            </div>
-            <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 bg-white">
-              <Hash className="w-3 h-3 text-blue-600" />
-              <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400">Affiliate ID</span>
-              <span className="text-sm font-bold text-blue-600">{affiliateId}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* ── About ─────────────────────────────────────────────────────────── */}
-        {form.about && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-4">
-            <div className="px-6 pt-5 pb-1">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">About</p>
-            </div>
-            <div className="px-6 pt-3 pb-5">
-              <p className="text-sm text-gray-600 leading-relaxed">{form.about}</p>
-            </div>
+      <div className="aspect-[4/3] bg-gray-50 relative">
+        {photo ? (
+          <img src={photo} alt={vehicle.name} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center"
+            style={{ background: "linear-gradient(135deg,#f1f5f9,#e2e8f0)" }}>
+            <Car className="w-8 h-8 text-gray-300" />
           </div>
         )}
-
-        {/* ── Fleet + Contact ────────────────────────────────────────────────── */}
-        <div className="rounded-3xl mb-4 grid grid-cols-5 gap-2 p-2" style={{ background: "rgba(226,232,240,0.55)" }}>
-
-          {/* Fleet card */}
-          <div className="col-span-3 bg-white rounded-[20px] overflow-hidden">
-            <div className="px-6 pt-6 pb-2">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Fleet</p>
-              <p className="text-[22px] font-bold text-gray-900 leading-tight tracking-tight">
-                {visibleVehicles.length} <span className="text-gray-400 font-semibold text-lg">{visibleVehicles.length === 1 ? "vehicle" : "vehicles"}</span>
-              </p>
-            </div>
-            <div className="p-6 pt-4">
-              {visibleVehicles.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-10 text-center rounded-2xl" style={{ background: "linear-gradient(160deg, #f8fafc 0%, #f1f5f9 100%)" }}>
-                  <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center mb-3">
-                    <Car className="w-5 h-5 text-gray-300" />
-                  </div>
-                  <p className="text-sm font-medium text-gray-300">No vehicles listed</p>
-                </div>
-              ) : visibleVehicles.length === 1 ? (() => {
-                const v = visibleVehicles[0]
-                const photo = v.photoUrl || v.photos?.[0]
-                const typeLabel = VEHICLE_TYPE_LABELS[v.type]
-                return (
-                  <div className="rounded-2xl overflow-hidden" style={{ background: "#f8fafc", border: "1px solid rgba(0,0,0,0.06)" }}>
-                    <div
-                      className={cn("overflow-hidden", photo ? "cursor-zoom-in" : "")}
-                      style={{ aspectRatio: "16/8" }}
-                      onClick={photo ? () => setLightboxIdx(vehiclePhotoStart[v.id] ?? 0) : undefined}
-                    >
-                      {photo
-                        ? <img src={photo} alt={v.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
-                        : <div className="w-full h-full flex items-center justify-center" style={{ background: "linear-gradient(160deg, #f1f5f9 0%, #e2e8f0 100%)" }}>
-                            <Car className="w-14 h-14 text-slate-300" />
-                          </div>
-                      }
-                    </div>
-                    <div className="flex items-center justify-between gap-3 px-4 py-3.5">
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-gray-900 truncate leading-snug">{v.name}</p>
-                        <p className="text-[11px] font-medium text-gray-400 mt-0.5 truncate">{[v.year, typeLabel].filter(Boolean).join(" · ")}</p>
-                      </div>
-                      {typeLabel && (
-                        <span className="text-[10px] font-bold text-slate-500 bg-white border border-gray-200 px-2.5 py-1 rounded-lg flex-shrink-0 uppercase tracking-wider">
-                          {typeLabel}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )
-              })() : (
-                <div className={cn("grid gap-3", visibleVehicles.length === 2 ? "grid-cols-2" : "grid-cols-3")}>
-                  {visibleVehicles.map(v => {
-                    const photo = v.photoUrl || v.photos?.[0]
-                    const typeLabel = VEHICLE_TYPE_LABELS[v.type]
-                    return (
-                      <div key={v.id} className="rounded-2xl overflow-hidden" style={{ background: "#f8fafc", border: "1px solid rgba(0,0,0,0.06)" }}>
-                        <div
-                          className={cn("aspect-[4/3] overflow-hidden", photo ? "cursor-zoom-in" : "")}
-                          onClick={photo ? () => setLightboxIdx(vehiclePhotoStart[v.id] ?? 0) : undefined}
-                        >
-                          {photo
-                            ? <img src={photo} alt={v.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
-                            : <div className="w-full h-full flex items-center justify-center" style={{ background: "linear-gradient(160deg, #f1f5f9 0%, #e2e8f0 100%)" }}>
-                                <Car className="w-8 h-8 text-slate-300" />
-                              </div>
-                          }
-                        </div>
-                        <div className="px-3.5 pt-3 pb-3.5">
-                          <p className="text-[13px] font-semibold text-gray-900 truncate leading-snug">{v.name}</p>
-                          <p className="text-[11px] font-medium text-gray-400 mt-0.5 truncate">
-                            {[v.year, typeLabel].filter(Boolean).join(" · ")}
-                          </p>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Contact card */}
-          <div className="col-span-2 bg-white rounded-[20px] overflow-hidden">
-            <div className="px-6 pt-6 pb-2">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Contact</p>
-            </div>
-            <div className="px-6 pb-6 divide-y" style={{ borderColor: "rgba(0,0,0,0.05)" }}>
-              {form.email && (
-                <PreviewContactRow icon={Mail} label="Email" value={form.email} href={`mailto:${form.email}`} />
-              )}
-              {form.phone && (
-                <PreviewContactRow icon={Phone} label="Phone" value={formatPhone(form.phone)} href={`tel:${form.phone}`} />
-              )}
-              {location && (
-                <PreviewContactRow icon={MapPin} label="Location" value={location} />
-              )}
-              {form.website && (
-                <PreviewContactRow
-                  icon={Globe}
-                  label="Website"
-                  value={form.website.replace(/^https?:\/\//, "")}
-                  href={form.website.startsWith("http") ? form.website : `https://${form.website}`}
-                />
-              )}
-            </div>
-          </div>
+        <div className={cn(
+          "absolute top-1.5 right-1.5 w-5 h-5 rounded-full flex items-center justify-center transition-all shadow",
+          selected ? "bg-blue-600" : "bg-white/90 border border-gray-200"
+        )}>
+          {selected && <Check className="w-2.5 h-2.5 text-white" />}
         </div>
-
       </div>
-
-      {/* Photo lightbox — rendered via portal to escape backdrop-filter stacking context */}
-      {lightboxIdx !== null && allPhotos.length > 0 && createPortal((() => {
-        const photo = allPhotos[lightboxIdx]
-        return (
-          <div
-            className="fixed inset-0 flex items-center justify-center"
-            style={{ zIndex: 9999, background: "rgba(0,0,0,0.92)" }}
-            onClick={() => setLightboxIdx(null)}
-          >
-            {/* Close */}
-            <button
-              className="absolute top-5 right-5 w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-              style={{ background: "rgba(255,255,255,0.12)" }}
-              onClick={() => setLightboxIdx(null)}
-            >
-              <X className="w-5 h-5 text-white" />
-            </button>
-
-            {/* Counter */}
-            {allPhotos.length > 1 && (
-              <div className="absolute top-5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-white text-xs font-medium"
-                style={{ background: "rgba(255,255,255,0.12)" }}>
-                {lightboxIdx + 1} / {allPhotos.length}
-              </div>
-            )}
-
-            {/* Image */}
-            <div className="flex flex-col items-center mx-16 max-w-4xl" onClick={e => e.stopPropagation()}>
-              <img
-                src={photo.url}
-                alt={photo.vehicleName}
-                className="max-h-[75vh] max-w-full object-contain rounded-2xl"
-                style={{ boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}
-              />
-              <div className="mt-4 text-center">
-                <p className="text-white font-semibold text-sm">{photo.vehicleName}</p>
-                {photo.vehicleType && (
-                  <p className="text-white/40 text-xs mt-0.5 uppercase tracking-wider font-medium">{photo.vehicleType}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Arrows */}
-            {allPhotos.length > 1 && (
-              <>
-                <button
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center transition-colors"
-                  style={{ background: "rgba(255,255,255,0.12)" }}
-                  onClick={e => { e.stopPropagation(); setLightboxIdx((lightboxIdx - 1 + allPhotos.length) % allPhotos.length) }}
-                >
-                  <ChevronLeft className="w-6 h-6 text-white" />
-                </button>
-                <button
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center transition-colors"
-                  style={{ background: "rgba(255,255,255,0.12)" }}
-                  onClick={e => { e.stopPropagation(); setLightboxIdx((lightboxIdx + 1) % allPhotos.length) }}
-                >
-                  <ChevronRight className="w-6 h-6 text-white" />
-                </button>
-              </>
-            )}
-          </div>
-        )
-      })(), document.body)}
+      <div className="px-2.5 py-2">
+        <p className="text-xs font-semibold text-gray-800 truncate">{vehicle.name}</p>
+        <p className="text-[10px] text-gray-400 mt-0.5 truncate">
+          {[vehicle.year, VEHICLE_TYPE_LABELS[vehicle.type]].filter(Boolean).join(" · ")}
+        </p>
+      </div>
     </div>
   )
 }
+
 
 // ─── Section: Profile ─────────────────────────────────────────────────────────
 
@@ -1012,11 +680,15 @@ function ProfileSection() {
   const { data: vehicles = [], isLoading: vehiclesLoading } = useVehicles()
   const logoRef = useRef<HTMLInputElement>(null)
   const bannerRef = useRef<HTMLInputElement>(null)
+  const [profileType, setProfileType] = useState<'affiliate' | 'client'>('affiliate')
   const [form, setFormState] = useState({
-    name: "", email: "", phone: "", website: "", about: "", address: "", city: "", state: "", zip: "", logo: "", banner: "",
+    name: '', email: '', phone: '', website: '',
+    affiliateAbout: '', clientAbout: '',
+    clientVehicleIds: [] as string[],
+    address: '', city: '', state: '', zip: '', logo: '', banner: '',
   })
   const [saved, setSaved] = useState(false)
-  const [previewOpen, setPreviewOpen] = useState(false)
+  const [shareCopied, setShareCopied] = useState(false)
   const [rawBanner, setRawBanner] = useState<string | null>(null)
   const [cropOpen, setCropOpen] = useState(false)
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
@@ -1026,19 +698,40 @@ function ProfileSection() {
   useEffect(() => {
     if (!company) return
     setFormState({
-      name: company.name ?? "", email: company.email ?? "", phone: company.phone ?? "",
-      website: company.website ?? "", about: company.about ?? "",
-      address: company.address ?? "", city: company.city ?? "", state: company.state ?? "",
-      zip: company.zip ?? "", logo: company.logo ?? "", banner: company.banner ?? "",
+      name: company.name ?? '',
+      email: company.email ?? '',
+      phone: company.phone ?? '',
+      website: company.website ?? '',
+      affiliateAbout: company.affiliateAbout ?? company.about ?? '',
+      clientAbout: company.clientAbout ?? '',
+      clientVehicleIds: company.clientVehicleIds ?? [],
+      address: company.address ?? '',
+      city: company.city ?? '',
+      state: company.state ?? '',
+      zip: company.zip ?? '',
+      logo: company.logo ?? '',
+      banner: company.banner ?? '',
     })
   }, [company])
 
-  function set(field: string, value: string) { setFormState(f => ({ ...f, [field]: value })); setSaved(false) }
+  function set(field: string, value: string | string[]) {
+    setFormState(f => ({ ...f, [field]: value }))
+    setSaved(false)
+  }
+
+  function toggleClientVehicle(id: string) {
+    setFormState(f => {
+      const ids = f.clientVehicleIds
+      const next = ids.includes(id) ? ids.filter(x => x !== id) : [...ids, id]
+      return { ...f, clientVehicleIds: next }
+    })
+    setSaved(false)
+  }
 
   function handleLogoFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]; if (!file) return
     const reader = new FileReader()
-    reader.onload = (ev) => set("logo", ev.target?.result as string)
+    reader.onload = (ev) => set('logo', ev.target?.result as string)
     reader.readAsDataURL(file)
   }
 
@@ -1046,20 +739,43 @@ function ProfileSection() {
     const file = e.target.files?.[0]; if (!file) return
     const reader = new FileReader()
     reader.onload = (ev) => { setRawBanner(ev.target?.result as string); setCrop({ x: 0, y: 0 }); setZoom(1); setCropOpen(true) }
-    reader.readAsDataURL(file); e.target.value = ""
+    reader.readAsDataURL(file); e.target.value = ''
   }
 
   const onCropComplete = useCallback((_: Area, pixels: Area) => { setCroppedAreaPixels(pixels) }, [])
 
   async function handleCropApply() {
     if (!rawBanner || !croppedAreaPixels) return
-    try { const cropped = await getCroppedImg(rawBanner, croppedAreaPixels); set("banner", cropped) }
+    try { const cropped = await getCroppedImg(rawBanner, croppedAreaPixels); set('banner', cropped) }
     finally { setCropOpen(false); setRawBanner(null) }
   }
 
   function handleSave() {
-    updateCompany.mutate(form as Partial<Company>, {
+    updateCompany.mutate({
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      website: form.website,
+      affiliateAbout: form.affiliateAbout,
+      clientAbout: form.clientAbout,
+      clientVehicleIds: form.clientVehicleIds,
+      address: form.address,
+      city: form.city,
+      state: form.state,
+      zip: form.zip,
+      logo: form.logo,
+      banner: form.banner,
+    } as Partial<Company>, {
       onSuccess: () => { setSaved(true); setTimeout(() => setSaved(false), 3000) },
+    })
+  }
+
+  function handleShare() {
+    if (!company?.id) return
+    const url = `${window.location.origin}/p/${company.id}?type=${profileType}`
+    navigator.clipboard.writeText(url).then(() => {
+      setShareCopied(true)
+      setTimeout(() => setShareCopied(false), 2500)
     })
   }
 
@@ -1074,7 +790,8 @@ function ProfileSection() {
     )
   }
 
-  const location = [form.city, form.state].filter(Boolean).join(", ")
+  const location = [form.city, form.state].filter(Boolean).join(', ')
+  const isClient = profileType === 'client'
 
   return (
     <>
@@ -1096,32 +813,92 @@ function ProfileSection() {
           <div className="relative flex-1">
             <Cropper image={rawBanner} crop={crop} zoom={zoom} aspect={16 / 4}
               onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete}
-              style={{ containerStyle: { background: "transparent" }, cropAreaStyle: { border: "2px solid rgba(255,255,255,0.6)", borderRadius: 8 } }} />
+              style={{ containerStyle: { background: 'transparent' }, cropAreaStyle: { border: '2px solid rgba(255,255,255,0.6)', borderRadius: 8 } }} />
           </div>
           <div className="px-8 py-6 flex items-center gap-4 border-t border-white/10">
             <button onClick={() => setZoom(z => Math.max(1, z - 0.1))}><ZoomOut className="w-4 h-4 text-white/50 hover:text-white transition-colors" /></button>
             <input type="range" min={1} max={3} step={0.01} value={zoom} onChange={(e) => setZoom(Number(e.target.value))} className="flex-1 accent-blue-500" />
             <button onClick={() => setZoom(z => Math.min(3, z + 0.1))}><ZoomIn className="w-4 h-4 text-white/50 hover:text-white transition-colors" /></button>
-            <span className="text-xs text-white/30 w-8 text-right">{zoom.toFixed(1)}×</span>
+            <span className="text-xs text-white/30 w-8 text-right">{zoom.toFixed(1)}x</span>
           </div>
         </div>
       )}
 
-      {previewOpen && <ProfilePreviewModal form={form} createdAt={company?.createdAt} onClose={() => setPreviewOpen(false)} />}
-
       <div className="p-8 space-y-6 max-w-2xl mx-auto">
-        <div className="flex items-start justify-between gap-4">
-          <SectionHeader title="Company Profile" description="Your company's public identity, contact details, and address." />
-          <button
-            onClick={() => setPreviewOpen(true)}
-            className="flex items-center gap-1.5 h-8 px-3 rounded-xl border border-gray-200 text-xs font-semibold text-gray-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-all flex-shrink-0 mt-0.5"
-          >
-            <ExternalLink className="w-3.5 h-3.5" />
-            Preview
-          </button>
+
+        {/* ── Header ─────────────────────────────────────────────────────────── */}
+        <div>
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Company Profile</h2>
+              <p className="text-sm text-gray-400 mt-0.5">Manage your public presence for partners and clients.</p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0 mt-0.5">
+              <button
+                onClick={handleShare}
+                className={cn(
+                  'flex items-center gap-1.5 h-8 px-3.5 rounded-xl text-xs font-semibold transition-all duration-200',
+                  shareCopied
+                    ? 'bg-emerald-500 text-white shadow-sm'
+                    : 'border border-gray-200 bg-white text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-50'
+                )}
+              >
+                {shareCopied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                {shareCopied ? 'Copied!' : 'Share'}
+              </button>
+              <button
+                onClick={() => company?.id && window.open(`/p/${company.id}?type=${profileType}`, '_blank')}
+                className="flex items-center gap-1.5 h-8 px-3.5 rounded-xl border border-gray-200 bg-white text-xs font-semibold text-gray-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-all"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                Preview
+              </button>
+            </div>
+          </div>
+
+          {/* Profile type toggle */}
+          <div className="flex items-center gap-1 p-1 bg-gray-100/80 rounded-xl w-fit">
+            <button
+              onClick={() => setProfileType('affiliate')}
+              className={cn(
+                'flex items-center gap-2 px-4 h-8 rounded-lg text-sm font-semibold transition-all',
+                !isClient
+                  ? 'bg-white text-blue-700 shadow-sm ring-1 ring-black/5'
+                  : 'text-gray-500 hover:text-gray-700'
+              )}
+            >
+              <Users className="w-3.5 h-3.5" />
+              Affiliate Profile
+            </button>
+            <button
+              onClick={() => setProfileType('client')}
+              className={cn(
+                'flex items-center gap-2 px-4 h-8 rounded-lg text-sm font-semibold transition-all',
+                isClient
+                  ? 'bg-white text-amber-700 shadow-sm ring-1 ring-black/5'
+                  : 'text-gray-500 hover:text-gray-700'
+              )}
+            >
+              <User className="w-3.5 h-3.5" />
+              Private Client
+            </button>
+          </div>
+
+          {/* Active profile indicator */}
+          <div className={cn(
+            'flex items-center gap-2 mt-3 px-3.5 py-2.5 rounded-xl text-xs font-medium',
+            !isClient
+              ? 'bg-blue-50 text-blue-700 border border-blue-100'
+              : 'bg-amber-50 text-amber-700 border border-amber-100'
+          )}>
+            <div className={cn('w-1.5 h-1.5 rounded-full flex-shrink-0', !isClient ? 'bg-blue-500' : 'bg-amber-500')} />
+            {!isClient
+              ? 'Editing Affiliate Profile — this version is shared with partner companies'
+              : 'Editing Private Client Profile — this version is shared with end clients'}
+          </div>
         </div>
 
-        {/* Banner + Logo hero */}
+        {/* ── Banner + Logo (shared) ──────────────────────────────────────────── */}
         <div className="rounded-2xl border border-gray-200/80 bg-white overflow-hidden shadow-sm">
           <div className="relative h-[180px] cursor-pointer group overflow-hidden" onClick={() => bannerRef.current?.click()}>
             {form.banner
@@ -1133,16 +910,15 @@ function ProfileSection() {
             }
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-all">
               <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 bg-black/50 text-white text-xs font-semibold px-3 py-1.5 rounded-full backdrop-blur-sm">
-                <Camera className="w-3.5 h-3.5" />{form.banner ? "Change banner" : "Upload banner"}
+                <Camera className="w-3.5 h-3.5" />{form.banner ? 'Change banner' : 'Upload banner'}
               </div>
             </div>
             <input ref={bannerRef} type="file" accept="image/*" className="hidden" onChange={handleBannerFile} />
           </div>
           <div className="px-6 pb-5">
-            {/* Logo — overlaps banner */}
             <div className="-mt-9 mb-2">
               <div className="relative w-[72px] h-[72px] rounded-2xl bg-white shadow-lg flex items-center justify-center overflow-hidden cursor-pointer group flex-shrink-0"
-                style={{ border: "3px solid white", boxShadow: "0 4px 16px rgba(0,0,0,0.12)" }}
+                style={{ border: '3px solid white', boxShadow: '0 4px 16px rgba(0,0,0,0.12)' }}
                 onClick={() => logoRef.current?.click()}>
                 {form.logo ? <img src={form.logo} alt="logo" className="w-full h-full object-cover" /> : <Building2 className="w-7 h-7 text-gray-200" />}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/35 flex items-center justify-center transition-all rounded-2xl">
@@ -1151,7 +927,6 @@ function ProfileSection() {
                 <input ref={logoRef} type="file" accept="image/*" className="hidden" onChange={handleLogoFile} />
               </div>
             </div>
-            {/* Name + contact — fully below banner */}
             <p className="text-sm font-bold text-gray-900 leading-tight">
               {form.name || <span className="text-gray-300">Your Company Name</span>}
             </p>
@@ -1163,76 +938,104 @@ function ProfileSection() {
           </div>
         </div>
 
-        {/* Company info */}
+        {/* ── Company Information (shared) ────────────────────────────────────── */}
         <div className="rounded-2xl border border-gray-200/80 bg-white shadow-sm overflow-hidden">
           <div className="flex items-center gap-2.5 px-6 py-4 border-b border-gray-100">
             <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center"><Building2 className="w-3.5 h-3.5 text-blue-600" /></div>
-            <span className="text-sm font-semibold text-gray-800">Company Information</span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-gray-800">Company Information</span>
+              <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full uppercase tracking-wide">Shared</span>
+            </div>
           </div>
           <div className="p-6 grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <Label className="text-xs font-medium text-gray-400 mb-1.5 block">Company Name</Label>
-              <Input value={form.name} onChange={(e) => set("name", e.target.value)} className="h-10 text-sm" placeholder="Apex Limousine Service" />
+              <Input value={form.name} onChange={(e) => set('name', e.target.value)} className="h-10 text-sm" placeholder="Apex Limousine Service" />
             </div>
             <div>
               <Label className="text-xs font-medium text-gray-400 mb-1.5 block">Email</Label>
-              <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} className="h-10 text-sm" placeholder="info@company.com" />
+              <Input type="email" value={form.email} onChange={(e) => set('email', e.target.value)} className="h-10 text-sm" placeholder="info@company.com" />
             </div>
             <div>
               <Label className="text-xs font-medium text-gray-400 mb-1.5 block">Phone</Label>
-              <Input type="tel" value={formatPhone(form.phone)} onChange={(e) => set("phone", e.target.value.replace(/\D/g, ""))} className="h-10 text-sm" placeholder="(305) 555-0100" />
+              <Input type="tel" value={formatPhone(form.phone)} onChange={(e) => set('phone', e.target.value.replace(/D/g, ''))} className="h-10 text-sm" placeholder="(305) 555-0100" />
             </div>
             <div className="col-span-2">
               <Label className="text-xs font-medium text-gray-400 mb-1.5 flex items-center gap-1.5"><Globe className="w-3 h-3" /> Website</Label>
-              <Input type="url" value={form.website} onChange={(e) => set("website", e.target.value)} className="h-10 text-sm" placeholder="https://company.com" />
+              <Input type="url" value={form.website} onChange={(e) => set('website', e.target.value)} className="h-10 text-sm" placeholder="https://company.com" />
             </div>
           </div>
         </div>
 
-        {/* About */}
+        {/* ── About (profile-specific) ────────────────────────────────────────── */}
         <div className="rounded-2xl border border-gray-200/80 bg-white shadow-sm overflow-hidden">
           <div className="flex items-center gap-2.5 px-6 py-4 border-b border-gray-100">
-            <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center"><Briefcase className="w-3.5 h-3.5 text-amber-500" /></div>
+            <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center', !isClient ? 'bg-blue-50' : 'bg-amber-50')}>
+              <Briefcase className={cn('w-3.5 h-3.5', !isClient ? 'text-blue-500' : 'text-amber-500')} />
+            </div>
             <div className="flex-1 min-w-0">
-              <span className="text-sm font-semibold text-gray-800">About</span>
-              <p className="text-xs text-gray-400 mt-0.5">Tell partners and customers about your company and values</p>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-gray-800">About</span>
+                <span className={cn('text-[10px] font-semibold px-1.5 py-0.5 rounded-full uppercase tracking-wide',
+                  !isClient ? 'text-blue-600 bg-blue-50' : 'text-amber-600 bg-amber-50')}>
+                  {!isClient ? 'Affiliate Profile' : 'Client Profile'}
+                </span>
+              </div>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {!isClient ? 'Tell partner companies about your business' : 'Tell private clients about your services'}
+              </p>
             </div>
           </div>
           <div className="p-6">
             <textarea
-              value={form.about}
-              onChange={(e) => set("about", e.target.value)}
-              placeholder="Write about your company, mission, and values…"
+              key={profileType}
+              value={isClient ? form.clientAbout : form.affiliateAbout}
+              onChange={(e) => set(isClient ? 'clientAbout' : 'affiliateAbout', e.target.value)}
+              placeholder={isClient
+                ? 'Write about your premium service, experience, and what clients can expect…'
+                : 'Write about your company, fleet, and what partners can expect when working with you…'
+              }
               rows={5}
               maxLength={1000}
               className="w-full text-sm text-gray-900 placeholder:text-gray-300 border border-gray-200 rounded-xl px-4 py-3 resize-none outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-500/10 transition-all leading-relaxed"
             />
             <div className="flex items-center justify-between mt-2">
-              <p className="text-xs text-gray-400">Shown on your public affiliate profile</p>
-              <span className="text-xs text-gray-300">{form.about.length}/1000</span>
+              <p className="text-xs text-gray-400">
+                {!isClient ? 'Visible on your affiliate profile' : 'Visible on your client profile'}
+              </p>
+              <span className="text-xs text-gray-300">
+                {(isClient ? form.clientAbout : form.affiliateAbout).length}/1000
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Fleet */}
+        {/* ── Fleet (profile-specific) ────────────────────────────────────────── */}
         <div className="rounded-2xl border border-gray-200/80 bg-white shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-sky-50 flex items-center justify-center">
-                <Car className="w-3.5 h-3.5 text-sky-500" />
+              <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center', !isClient ? 'bg-sky-50' : 'bg-amber-50')}>
+                <Car className={cn('w-3.5 h-3.5', !isClient ? 'text-sky-500' : 'text-amber-500')} />
               </div>
               <div>
-                <span className="text-sm font-semibold text-gray-800">Fleet</span>
-                <p className="text-xs text-gray-400 mt-0.5">Select which vehicles appear on your affiliate profile</p>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-gray-800">Fleet</span>
+                  <span className={cn('text-[10px] font-semibold px-1.5 py-0.5 rounded-full uppercase tracking-wide',
+                    !isClient ? 'text-blue-600 bg-blue-50' : 'text-amber-600 bg-amber-50')}>
+                    {!isClient ? 'Affiliate Profile' : 'Client Profile'}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {!isClient ? 'Toggle which vehicles appear on your affiliate profile' : 'Select which vehicles to show private clients'}
+                </p>
               </div>
             </div>
             {!vehiclesLoading && vehicles.length > 0 && (
               <span className="text-xs font-semibold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">
-                {vehicles.filter(v => !v.hideFromProfile).length} visible
+                {isClient ? `${form.clientVehicleIds.length} selected` : `${vehicles.filter(v => !v.hideFromProfile).length} visible`}
               </span>
             )}
           </div>
-
           {vehiclesLoading ? (
             <div className="p-5 grid grid-cols-3 gap-3">
               {[...Array(3)].map((_, i) => (
@@ -1253,6 +1056,17 @@ function ProfileSection() {
               <p className="text-sm font-semibold text-gray-400">No vehicles added yet</p>
               <p className="text-xs text-gray-300 mt-1">Add vehicles in the Fleet section to showcase your fleet</p>
             </div>
+          ) : isClient ? (
+            <div className="p-5 grid grid-cols-3 gap-3">
+              {vehicles.map(vehicle => (
+                <ClientFleetVehicleCard
+                  key={vehicle.id}
+                  vehicle={vehicle}
+                  selected={form.clientVehicleIds.includes(vehicle.id)}
+                  onToggle={() => toggleClientVehicle(vehicle.id)}
+                />
+              ))}
+            </div>
           ) : (
             <div className="p-5 grid grid-cols-3 gap-3">
               {vehicles.map(vehicle => (
@@ -1262,29 +1076,32 @@ function ProfileSection() {
           )}
         </div>
 
-        {/* Address */}
+        {/* ── Address (shared) ────────────────────────────────────────────────── */}
         <div className="rounded-2xl border border-gray-200/80 bg-white shadow-sm overflow-hidden">
           <div className="flex items-center gap-2.5 px-6 py-4 border-b border-gray-100">
             <div className="w-7 h-7 rounded-lg bg-rose-50 flex items-center justify-center"><MapPin className="w-3.5 h-3.5 text-rose-500" /></div>
-            <span className="text-sm font-semibold text-gray-800">Address</span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-gray-800">Address</span>
+              <span className="text-[10px] font-semibold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full uppercase tracking-wide">Shared</span>
+            </div>
           </div>
           <div className="p-6 space-y-4">
             <div>
               <Label className="text-xs font-medium text-gray-400 mb-1.5 block">Street Address</Label>
-              <Input value={form.address} onChange={(e) => set("address", e.target.value)} className="h-10 text-sm" placeholder="123 Main Street" />
+              <Input value={form.address} onChange={(e) => set('address', e.target.value)} className="h-10 text-sm" placeholder="123 Main Street" />
             </div>
             <div className="grid grid-cols-[1fr_100px_80px] gap-3">
               <div>
                 <Label className="text-xs font-medium text-gray-400 mb-1.5 block">City</Label>
-                <Input value={form.city} onChange={(e) => set("city", e.target.value)} className="h-10 text-sm" placeholder="Miami" />
+                <Input value={form.city} onChange={(e) => set('city', e.target.value)} className="h-10 text-sm" placeholder="Miami" />
               </div>
               <div>
                 <Label className="text-xs font-medium text-gray-400 mb-1.5 block">State</Label>
-                <Input value={form.state} onChange={(e) => set("state", e.target.value)} className="h-10 text-sm" placeholder="FL" />
+                <Input value={form.state} onChange={(e) => set('state', e.target.value)} className="h-10 text-sm" placeholder="FL" />
               </div>
               <div>
                 <Label className="text-xs font-medium text-gray-400 mb-1.5 block">ZIP</Label>
-                <Input value={form.zip} onChange={(e) => set("zip", e.target.value)} className="h-10 text-sm" placeholder="33101" />
+                <Input value={form.zip} onChange={(e) => set('zip', e.target.value)} className="h-10 text-sm" placeholder="33101" />
               </div>
             </div>
           </div>
@@ -1292,16 +1109,17 @@ function ProfileSection() {
 
         <div className="flex justify-end">
           <Button onClick={handleSave} disabled={updateCompany.isPending}
-            className={cn("h-10 px-6 text-sm font-semibold gap-2 rounded-xl transition-all",
-              saved ? "bg-emerald-500 hover:bg-emerald-500 text-white" : "bg-blue-600 hover:bg-blue-700 text-white"
+            className={cn('h-10 px-6 text-sm font-semibold gap-2 rounded-xl transition-all',
+              saved ? 'bg-emerald-500 hover:bg-emerald-500 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'
             )}>
-            {saved ? <><Check className="w-4 h-4" /> Saved</> : updateCompany.isPending ? "Saving…" : "Save Changes"}
+            {saved ? <><Check className="w-4 h-4" /> Saved</> : updateCompany.isPending ? 'Saving…' : 'Save Changes'}
           </Button>
         </div>
       </div>
     </>
   )
 }
+
 
 // ─── Section: Service Types ───────────────────────────────────────────────────
 
