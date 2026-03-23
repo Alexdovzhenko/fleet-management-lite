@@ -1,12 +1,12 @@
 "use client"
 
-import { use, useState, useCallback } from "react"
+import { use, useState, useCallback, useEffect, useMemo } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ArrowLeft, Globe, Phone, MapPin, Mail, Calendar,
   CheckCircle2, Clock, UserPlus, X, Check, Network,
-  ExternalLink, Trash2, Hash, Copy, Car,
+  ExternalLink, Trash2, Hash, Copy, Car, ChevronLeft, ChevronRight,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -156,14 +156,17 @@ function ConnectionPanel({ affiliate }: { affiliate: AffiliateProfile }) {
 
 // ─── Vehicle cards ────────────────────────────────────────────────────────────
 
-function VehicleCard({ vehicle }: { vehicle: AffiliateVehicle }) {
+function VehicleCard({ vehicle, onPhotoClick }: { vehicle: AffiliateVehicle; onPhotoClick?: () => void }) {
   const photo = vehicle.photoUrl || vehicle.photos?.[0]
   const typeLabel = VEHICLE_TYPE_LABELS[vehicle.type] || vehicle.type
   return (
     <div className="rounded-2xl overflow-hidden cursor-default" style={{ background: "#f8fafc", border: "1px solid rgba(0,0,0,0.06)" }}>
-      <div className="aspect-[4/3] overflow-hidden relative">
+      <div
+        className={cn("aspect-[4/3] overflow-hidden relative", photo && onPhotoClick ? "cursor-zoom-in" : "")}
+        onClick={photo && onPhotoClick ? onPhotoClick : undefined}
+      >
         {photo ? (
-          <img src={photo} alt={vehicle.name} className="w-full h-full object-cover" />
+          <img src={photo} alt={vehicle.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
         ) : (
           <div className="w-full h-full flex items-center justify-center" style={{ background: "linear-gradient(160deg, #f1f5f9 0%, #e2e8f0 100%)" }}>
             <Car className="w-8 h-8 text-slate-300" />
@@ -180,14 +183,18 @@ function VehicleCard({ vehicle }: { vehicle: AffiliateVehicle }) {
   )
 }
 
-function FeaturedVehicleCard({ vehicle }: { vehicle: AffiliateVehicle }) {
+function FeaturedVehicleCard({ vehicle, onPhotoClick }: { vehicle: AffiliateVehicle; onPhotoClick?: () => void }) {
   const photo = vehicle.photoUrl || vehicle.photos?.[0]
   const typeLabel = VEHICLE_TYPE_LABELS[vehicle.type] || vehicle.type
   return (
     <div className="rounded-2xl overflow-hidden cursor-default" style={{ background: "#f8fafc", border: "1px solid rgba(0,0,0,0.06)" }}>
-      <div className="overflow-hidden relative" style={{ aspectRatio: "16/8" }}>
+      <div
+        className={cn("overflow-hidden relative", photo && onPhotoClick ? "cursor-zoom-in" : "")}
+        style={{ aspectRatio: "16/8" }}
+        onClick={photo && onPhotoClick ? onPhotoClick : undefined}
+      >
         {photo ? (
-          <img src={photo} alt={vehicle.name} className="w-full h-full object-cover" />
+          <img src={photo} alt={vehicle.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
         ) : (
           <div className="w-full h-full flex items-center justify-center" style={{ background: "linear-gradient(160deg, #f1f5f9 0%, #e2e8f0 100%)" }}>
             <Car className="w-14 h-14 text-slate-300" />
@@ -247,6 +254,113 @@ function ContactRow({
   )
 }
 
+// ─── Photo Lightbox ───────────────────────────────────────────────────────────
+
+interface PhotoEntry {
+  url: string
+  vehicleName: string
+  vehicleType: string
+}
+
+function PhotoLightbox({
+  photos,
+  index,
+  onClose,
+  onChange,
+}: {
+  photos: PhotoEntry[]
+  index: number
+  onClose: () => void
+  onChange: (i: number) => void
+}) {
+  const photo = photos[index]
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose()
+      if (e.key === "ArrowLeft") onChange((index - 1 + photos.length) % photos.length)
+      if (e.key === "ArrowRight") onChange((index + 1) % photos.length)
+    }
+    window.addEventListener("keydown", handleKey)
+    return () => window.removeEventListener("keydown", handleKey)
+  }, [index, photos.length, onClose, onChange])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: "rgba(0,0,0,0.90)" }}
+      onClick={onClose}
+    >
+      {/* Close */}
+      <button
+        className="absolute top-5 right-5 w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+        style={{ background: "rgba(255,255,255,0.12)" }}
+        onClick={onClose}
+      >
+        <X className="w-5 h-5 text-white" />
+      </button>
+
+      {/* Counter */}
+      {photos.length > 1 && (
+        <div className="absolute top-5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-white text-xs font-medium"
+          style={{ background: "rgba(255,255,255,0.12)" }}>
+          {index + 1} / {photos.length}
+        </div>
+      )}
+
+      {/* Image */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={index}
+          initial={{ scale: 0.96, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.96, opacity: 0 }}
+          transition={{ duration: 0.15 }}
+          className="flex flex-col items-center mx-16 max-w-4xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <img
+            src={photo.url}
+            alt={photo.vehicleName}
+            className="max-h-[75vh] max-w-full object-contain rounded-2xl"
+            style={{ boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}
+          />
+          <div className="mt-4 text-center">
+            <p className="text-white font-semibold text-sm">{photo.vehicleName}</p>
+            {photo.vehicleType && (
+              <p className="text-white/40 text-xs mt-0.5 uppercase tracking-wider font-medium">{photo.vehicleType}</p>
+            )}
+          </div>
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Arrows */}
+      {photos.length > 1 && (
+        <>
+          <button
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center transition-colors"
+            style={{ background: "rgba(255,255,255,0.12)" }}
+            onClick={(e) => { e.stopPropagation(); onChange((index - 1 + photos.length) % photos.length) }}
+          >
+            <ChevronLeft className="w-6 h-6 text-white" />
+          </button>
+          <button
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center transition-colors"
+            style={{ background: "rgba(255,255,255,0.12)" }}
+            onClick={(e) => { e.stopPropagation(); onChange((index + 1) % photos.length) }}
+          >
+            <ChevronRight className="w-6 h-6 text-white" />
+          </button>
+        </>
+      )}
+    </motion.div>
+  )
+}
+
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 function ProfileSkeleton() {
@@ -285,6 +399,23 @@ export default function AffiliateProfilePage({
   const { id } = use(params)
   const { data: affiliate, isLoading, error } = useAffiliate(id)
   const [copied, setCopied] = useState(false)
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
+
+  const { allPhotos, vehiclePhotoStart } = useMemo(() => {
+    const allPhotos: PhotoEntry[] = []
+    const vehiclePhotoStart: Record<string, number> = {}
+    for (const v of (affiliate?.vehicles ?? [])) {
+      vehiclePhotoStart[v.id] = allPhotos.length
+      const seen = new Set<string>()
+      for (const url of [v.photoUrl, ...(v.photos ?? [])]) {
+        if (url && !seen.has(url)) {
+          allPhotos.push({ url, vehicleName: v.name, vehicleType: VEHICLE_TYPE_LABELS[v.type] || v.type })
+          seen.add(url)
+        }
+      }
+    }
+    return { allPhotos, vehiclePhotoStart }
+  }, [affiliate?.vehicles])
 
   const copyCode = useCallback(() => {
     if (!affiliate?.affiliateCode) return
@@ -439,13 +570,24 @@ export default function AffiliateProfilePage({
                   <p className="text-sm font-medium text-gray-300">No vehicles listed</p>
                 </div>
               ) : vehicles.length === 1 ? (
-                <FeaturedVehicleCard vehicle={vehicles[0]} />
+                <FeaturedVehicleCard
+                  vehicle={vehicles[0]}
+                  onPhotoClick={allPhotos.length > 0 ? () => setLightboxIdx(vehiclePhotoStart[vehicles[0].id] ?? 0) : undefined}
+                />
               ) : (
                 <div className={cn(
                   "grid gap-3",
                   vehicles.length === 2 ? "grid-cols-2" : "grid-cols-3"
                 )}>
-                  {vehicles.map((v) => <VehicleCard key={v.id} vehicle={v} />)}
+                  {vehicles.map((v) => (
+                    <VehicleCard
+                      key={v.id}
+                      vehicle={v}
+                      onPhotoClick={vehiclePhotoStart[v.id] !== undefined && (v.photoUrl || v.photos?.length)
+                        ? () => setLightboxIdx(vehiclePhotoStart[v.id])
+                        : undefined}
+                    />
+                  ))}
                 </div>
               )}
             </div>
@@ -504,6 +646,18 @@ export default function AffiliateProfilePage({
           )}
         </AnimatePresence>
       </motion.div>
+
+      {/* Photo lightbox */}
+      <AnimatePresence>
+        {lightboxIdx !== null && allPhotos.length > 0 && (
+          <PhotoLightbox
+            photos={allPhotos}
+            index={lightboxIdx}
+            onClose={() => setLightboxIdx(null)}
+            onChange={setLightboxIdx}
+          />
+        )}
+      </AnimatePresence>
     </div>
   )
 }
