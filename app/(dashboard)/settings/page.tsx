@@ -772,7 +772,8 @@ function ProfileSection() {
 
   function handleShare() {
     if (!company?.id) return
-    const url = `${window.location.origin}/p/${company.id}?type=${profileType}`
+    const identifier = company.slug || company.id
+    const url = `${window.location.origin}/${identifier}?type=${profileType}`
     navigator.clipboard.writeText(url).then(() => {
       setShareCopied(true)
       setTimeout(() => setShareCopied(false), 2500)
@@ -847,7 +848,7 @@ function ProfileSection() {
                 {shareCopied ? 'Copied!' : 'Share'}
               </button>
               <button
-                onClick={() => company?.id && window.open(`/p/${company.id}?type=${profileType}`, '_blank')}
+                onClick={() => { if (company?.id) { const id = company.slug || company.id; window.open(`/${id}?type=${profileType}`, '_blank') } }}
                 className="flex items-center gap-1.5 h-8 px-3.5 rounded-xl border border-gray-200 bg-white text-xs font-semibold text-gray-500 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-all"
               >
                 <ExternalLink className="w-3.5 h-3.5" />

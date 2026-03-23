@@ -44,6 +44,7 @@ export interface Company {
   logo?: string
   banner?: string
   website?: string
+  slug?: string
   about?: string
   affiliateAbout?: string
   clientAbout?: string

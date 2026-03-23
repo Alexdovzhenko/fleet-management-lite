@@ -9,8 +9,10 @@ export async function GET(
   const type = request.nextUrl.searchParams.get("type") ?? "affiliate"
 
   try {
-    const company = await prisma.company.findUnique({
-      where: { id: companyId },
+    // Accept either a company ID (cuid) or a slug
+    const isId = /^c[a-z0-9]{20,}$/i.test(companyId)
+    const company = await prisma.company.findFirst({
+      where: isId ? { id: companyId } : { slug: companyId },
       select: {
         id: true,
         name: true,

@@ -20,6 +20,7 @@ model Company {
   logo      String?
   banner    String?
   website   String?
+  slug      String?  @unique
   about     String?
   affiliateAbout    String?
   clientAbout       String?
