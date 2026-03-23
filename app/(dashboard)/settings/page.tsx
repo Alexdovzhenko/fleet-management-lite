@@ -1180,7 +1180,7 @@ function ProfileSection() {
             </div>
             <div>
               <Label className="text-xs font-medium text-gray-400 mb-1.5 block">Phone</Label>
-              <Input type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} className="h-10 text-sm" placeholder="(305) 555-0100" />
+              <Input type="tel" value={formatPhone(form.phone)} onChange={(e) => set("phone", e.target.value.replace(/\D/g, ""))} className="h-10 text-sm" placeholder="(305) 555-0100" />
             </div>
             <div className="col-span-2">
               <Label className="text-xs font-medium text-gray-400 mb-1.5 flex items-center gap-1.5"><Globe className="w-3 h-3" /> Website</Label>
