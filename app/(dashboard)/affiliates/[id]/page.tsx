@@ -337,27 +337,32 @@ export default function AffiliateProfilePage({
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mb-4">
           {/* Banner */}
           <div
-            className="h-44 w-full"
+            className="relative h-60 w-full"
             style={{
               background: affiliate.banner
                 ? `url(${affiliate.banner}) center/cover no-repeat`
                 : "linear-gradient(135deg, #dbeafe 0%, #ede9fe 55%, #fce7f3 100%)",
             }}
-          />
+          >
+            {/* Action buttons — bottom-right of banner */}
+            <div className="absolute bottom-4 right-6 flex items-center gap-2">
+              <ConnectionPanel affiliate={affiliate} />
+            </div>
+          </div>
 
-          {/* Hero: logo + actions */}
+          {/* Hero: logo + name + meta */}
           <div className="px-8 pt-4 pb-6">
-            <div className="flex items-center justify-between gap-4 -mt-14 mb-4">
+            <div className="-mt-14 mb-4">
               {affiliate.logo ? (
                 <div
-                  className="w-20 h-20 rounded-2xl bg-white overflow-hidden flex-shrink-0"
+                  className="w-20 h-20 rounded-2xl bg-white overflow-hidden"
                   style={{ border: "4px solid white", boxShadow: "0 4px 20px rgba(0,0,0,0.12)" }}
                 >
                   <img src={affiliate.logo} alt={affiliate.name} className="w-full h-full object-cover" />
                 </div>
               ) : (
                 <div
-                  className="w-20 h-20 rounded-2xl flex-shrink-0 flex items-center justify-center text-xl font-bold text-white"
+                  className="w-20 h-20 rounded-2xl flex items-center justify-center text-xl font-bold text-white"
                   style={{
                     background: "linear-gradient(135deg, rgb(37,99,235) 0%, rgb(79,70,229) 100%)",
                     border: "4px solid white",
@@ -367,9 +372,6 @@ export default function AffiliateProfilePage({
                   {getInitials(affiliate.name)}
                 </div>
               )}
-              <div className="flex-shrink-0">
-                <ConnectionPanel affiliate={affiliate} />
-              </div>
             </div>
 
             <h1 className="text-2xl font-bold text-gray-900 tracking-tight leading-tight">

@@ -719,24 +719,36 @@ function ProfilePreviewModal({ form, createdAt, onClose }: {
         <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_40px_rgba(0,0,0,0.18)] overflow-hidden mb-4">
           {/* Banner */}
           <div
-            className="h-36"
+            className="relative h-56"
             style={{
               background: form.banner
                 ? `url(${form.banner}) center/cover no-repeat`
                 : "linear-gradient(135deg, #dbeafe 0%, #ede9fe 55%, #fce7f3 100%)",
             }}
-          />
+          >
+            {/* Action buttons — bottom-right of banner */}
+            <div className="absolute bottom-4 right-5 flex items-center gap-2 pointer-events-none select-none">
+              <div className="flex items-center gap-1.5 px-4 h-9 rounded-xl border border-emerald-300 bg-white shadow-sm">
+                <Check className="w-3.5 h-3.5 text-emerald-500" />
+                <span className="text-sm font-semibold text-emerald-600">Connected</span>
+              </div>
+              <div className="flex items-center gap-1.5 px-4 h-9 rounded-xl border border-gray-200 bg-white shadow-sm">
+                <Trash2 className="w-3.5 h-3.5 text-gray-400" />
+                <span className="text-sm font-medium text-gray-500">Remove</span>
+              </div>
+            </div>
+          </div>
 
-          {/* Hero: logo + actions */}
+          {/* Hero: logo + name + meta */}
           <div className="px-6 pt-4 pb-5">
-            <div className="flex items-center justify-between gap-4 -mt-14 mb-4">
+            <div className="-mt-14 mb-4">
               {form.logo ? (
-                <div className="w-20 h-20 rounded-2xl bg-white flex-shrink-0 overflow-hidden"
+                <div className="w-20 h-20 rounded-2xl bg-white overflow-hidden"
                   style={{ border: "4px solid white", boxShadow: "0 4px 20px rgba(0,0,0,0.12)" }}>
                   <img src={form.logo} alt={form.name} className="w-full h-full object-cover" />
                 </div>
               ) : (
-                <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-xl font-bold text-white flex-shrink-0"
+                <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-xl font-bold text-white"
                   style={{
                     background: "linear-gradient(135deg, rgb(37,99,235) 0%, rgb(79,70,229) 100%)",
                     border: "4px solid white",
@@ -745,16 +757,6 @@ function ProfilePreviewModal({ form, createdAt, onClose }: {
                   {initials}
                 </div>
               )}
-              <div className="flex items-center gap-2 pointer-events-none select-none">
-                <div className="flex items-center gap-1.5 px-4 h-9 rounded-xl border border-emerald-300 bg-white">
-                  <Check className="w-3.5 h-3.5 text-emerald-500" />
-                  <span className="text-sm font-semibold text-emerald-600">Connected</span>
-                </div>
-                <div className="flex items-center gap-1.5 px-4 h-9 rounded-xl border border-gray-200 bg-white">
-                  <Trash2 className="w-3.5 h-3.5 text-gray-400" />
-                  <span className="text-sm font-medium text-gray-500">Remove</span>
-                </div>
-              </div>
             </div>
 
             <h1 className="text-2xl font-bold text-gray-900 tracking-tight leading-tight">
