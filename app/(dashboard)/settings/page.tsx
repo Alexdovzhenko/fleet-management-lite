@@ -719,7 +719,7 @@ function ProfilePreviewModal({ form, createdAt, onClose }: {
         <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_40px_rgba(0,0,0,0.18)] overflow-hidden mb-4">
           {/* Banner */}
           <div
-            className="relative h-56"
+            className="relative h-60"
             style={{
               background: form.banner
                 ? `url(${form.banner}) center/cover no-repeat`
