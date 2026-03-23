@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import Cropper from "react-easy-crop"
 import type { Area, Point } from "react-easy-crop"
@@ -11,6 +11,7 @@ import {
   Crown, Briefcase, Package, UserPlus, Copy, Clock, Calendar, Hash,
   Car, Bus, Plane, Train, Ship, Anchor,
   Route, Layers, MapPin as NavPin, Navigation, RefreshCw, ExternalLink,
+  ChevronLeft, ChevronRight,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -684,12 +685,37 @@ function ProfilePreviewModal({ form, createdAt, onClose }: {
     ? new Date(createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })
     : null
   const affiliateId = generateAffiliateId(form.name, createdAt)
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
+
+  const { allPhotos, vehiclePhotoStart } = useMemo(() => {
+    const allPhotos: { url: string; vehicleName: string; vehicleType: string }[] = []
+    const vehiclePhotoStart: Record<string, number> = {}
+    for (const v of visibleVehicles) {
+      vehiclePhotoStart[v.id] = allPhotos.length
+      const seen = new Set<string>()
+      for (const url of [v.photoUrl, ...(v.photos ?? [])]) {
+        if (url && !seen.has(url)) {
+          allPhotos.push({ url, vehicleName: v.name, vehicleType: VEHICLE_TYPE_LABELS[v.type] || v.type })
+          seen.add(url)
+        }
+      }
+    }
+    return { allPhotos, vehiclePhotoStart }
+  }, [visibleVehicles])
 
   useEffect(() => {
-    function onKey(e: KeyboardEvent) { if (e.key === "Escape") onClose() }
+    function onKey(e: KeyboardEvent) {
+      if (lightboxIdx !== null) {
+        if (e.key === "Escape") { setLightboxIdx(null); return }
+        if (e.key === "ArrowLeft") { setLightboxIdx(i => i !== null ? (i - 1 + allPhotos.length) % allPhotos.length : null); return }
+        if (e.key === "ArrowRight") { setLightboxIdx(i => i !== null ? (i + 1) % allPhotos.length : null); return }
+      } else {
+        if (e.key === "Escape") onClose()
+      }
+    }
     document.addEventListener("keydown", onKey)
     return () => document.removeEventListener("keydown", onKey)
-  }, [onClose])
+  }, [onClose, lightboxIdx, allPhotos.length])
 
   const initials = form.name
     ? form.name.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase()
@@ -823,9 +849,13 @@ function ProfilePreviewModal({ form, createdAt, onClose }: {
                 const typeLabel = VEHICLE_TYPE_LABELS[v.type]
                 return (
                   <div className="rounded-2xl overflow-hidden" style={{ background: "#f8fafc", border: "1px solid rgba(0,0,0,0.06)" }}>
-                    <div className="overflow-hidden" style={{ aspectRatio: "16/8" }}>
+                    <div
+                      className={cn("overflow-hidden", photo ? "cursor-zoom-in" : "")}
+                      style={{ aspectRatio: "16/8" }}
+                      onClick={photo ? () => setLightboxIdx(vehiclePhotoStart[v.id] ?? 0) : undefined}
+                    >
                       {photo
-                        ? <img src={photo} alt={v.name} className="w-full h-full object-cover" />
+                        ? <img src={photo} alt={v.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                         : <div className="w-full h-full flex items-center justify-center" style={{ background: "linear-gradient(160deg, #f1f5f9 0%, #e2e8f0 100%)" }}>
                             <Car className="w-14 h-14 text-slate-300" />
                           </div>
@@ -851,9 +881,12 @@ function ProfilePreviewModal({ form, createdAt, onClose }: {
                     const typeLabel = VEHICLE_TYPE_LABELS[v.type]
                     return (
                       <div key={v.id} className="rounded-2xl overflow-hidden" style={{ background: "#f8fafc", border: "1px solid rgba(0,0,0,0.06)" }}>
-                        <div className="aspect-[4/3] overflow-hidden">
+                        <div
+                          className={cn("aspect-[4/3] overflow-hidden", photo ? "cursor-zoom-in" : "")}
+                          onClick={photo ? () => setLightboxIdx(vehiclePhotoStart[v.id] ?? 0) : undefined}
+                        >
                           {photo
-                            ? <img src={photo} alt={v.name} className="w-full h-full object-cover" />
+                            ? <img src={photo} alt={v.name} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                             : <div className="w-full h-full flex items-center justify-center" style={{ background: "linear-gradient(160deg, #f1f5f9 0%, #e2e8f0 100%)" }}>
                                 <Car className="w-8 h-8 text-slate-300" />
                               </div>
@@ -901,6 +934,71 @@ function ProfilePreviewModal({ form, createdAt, onClose }: {
         </div>
 
       </div>
+
+      {/* Photo lightbox */}
+      {lightboxIdx !== null && allPhotos.length > 0 && (() => {
+        const photo = allPhotos[lightboxIdx]
+        return (
+          <div
+            className="fixed inset-0 flex items-center justify-center"
+            style={{ zIndex: 9999, background: "rgba(0,0,0,0.92)" }}
+            onClick={() => setLightboxIdx(null)}
+          >
+            {/* Close */}
+            <button
+              className="absolute top-5 right-5 w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+              style={{ background: "rgba(255,255,255,0.12)" }}
+              onClick={() => setLightboxIdx(null)}
+            >
+              <X className="w-5 h-5 text-white" />
+            </button>
+
+            {/* Counter */}
+            {allPhotos.length > 1 && (
+              <div className="absolute top-5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-white text-xs font-medium"
+                style={{ background: "rgba(255,255,255,0.12)" }}>
+                {lightboxIdx + 1} / {allPhotos.length}
+              </div>
+            )}
+
+            {/* Image */}
+            <div className="flex flex-col items-center mx-16 max-w-4xl" onClick={e => e.stopPropagation()}>
+              <img
+                src={photo.url}
+                alt={photo.vehicleName}
+                className="max-h-[75vh] max-w-full object-contain rounded-2xl"
+                style={{ boxShadow: "0 24px 64px rgba(0,0,0,0.5)" }}
+              />
+              <div className="mt-4 text-center">
+                <p className="text-white font-semibold text-sm">{photo.vehicleName}</p>
+                {photo.vehicleType && (
+                  <p className="text-white/40 text-xs mt-0.5 uppercase tracking-wider font-medium">{photo.vehicleType}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Arrows */}
+            {allPhotos.length > 1 && (
+              <>
+                <button
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center transition-colors"
+                  style={{ background: "rgba(255,255,255,0.12)" }}
+                  onClick={e => { e.stopPropagation(); setLightboxIdx((lightboxIdx - 1 + allPhotos.length) % allPhotos.length) }}
+                >
+                  <ChevronLeft className="w-6 h-6 text-white" />
+                </button>
+                <button
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center transition-colors"
+                  style={{ background: "rgba(255,255,255,0.12)" }}
+                  onClick={e => { e.stopPropagation(); setLightboxIdx((lightboxIdx + 1) % allPhotos.length) }}
+                >
+                  <ChevronRight className="w-6 h-6 text-white" />
+                </button>
+              </>
+            )}
+          </div>
+        )
+      })()}
     </div>
   )
 }
