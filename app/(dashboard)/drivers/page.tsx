@@ -528,6 +528,7 @@ function DriverModal({
   }
 
   const isPending = createDriver.isPending || updateDriver.isPending
+  const mutationError = createDriver.error || updateDriver.error
 
   return (
     <AnimatePresence>
@@ -887,6 +888,14 @@ function DriverModal({
 
             {/* ── Footer ── */}
             <div className="flex-shrink-0 px-6 py-4">
+              {mutationError && (
+                <div className="flex items-center gap-2 mb-3 px-3.5 py-2.5 rounded-xl bg-red-50 border border-red-100">
+                  <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                  <p className="text-[13px] text-red-700 font-medium">
+                    {mutationError instanceof Error ? mutationError.message : "Something went wrong. Please try again."}
+                  </p>
+                </div>
+              )}
               <AnimatePresence mode="wait" initial={false}>
                 {confirmDelete ? (
                   <motion.div
