@@ -49,6 +49,11 @@ export interface Company {
   affiliateAbout?: string
   clientAbout?: string
   clientVehicleIds?: string[]
+  instagramUrl?: string
+  facebookUrl?: string
+  tiktokUrl?: string
+  xUrl?: string
+  linkedinUrl?: string
   timezone: string
   createdAt: string
   updatedAt: string

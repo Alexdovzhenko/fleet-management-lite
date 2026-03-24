@@ -25,6 +25,11 @@ model Company {
   affiliateAbout    String?
   clientAbout       String?
   clientVehicleIds  String[]
+  instagramUrl      String?
+  facebookUrl       String?
+  tiktokUrl         String?
+  xUrl              String?
+  linkedinUrl       String?
   timezone  String   @default("America/New_York")
   onboardingCompleted Boolean @default(false)
   createdAt DateTime @default(now())

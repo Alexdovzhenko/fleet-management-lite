@@ -27,6 +27,11 @@ export async function GET(
         affiliateAbout: true,
         clientAbout: true,
         clientVehicleIds: true,
+        instagramUrl: true,
+        facebookUrl: true,
+        tiktokUrl: true,
+        xUrl: true,
+        linkedinUrl: true,
         createdAt: true,
         vehicles: {
           where: { status: { not: "OUT_OF_SERVICE" } },
@@ -77,6 +82,11 @@ export async function GET(
       logo: company.logo,
       banner: company.banner,
       about,
+      instagramUrl: company.instagramUrl,
+      facebookUrl: company.facebookUrl,
+      tiktokUrl: company.tiktokUrl,
+      xUrl: company.xUrl,
+      linkedinUrl: company.linkedinUrl,
       createdAt: company.createdAt,
       vehicles,
     })

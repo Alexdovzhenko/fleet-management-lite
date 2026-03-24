@@ -50,6 +50,11 @@ const updateSchema = z.object({
   affiliateAbout:     z.string().optional(),
   clientAbout:        z.string().optional(),
   clientVehicleIds:   z.array(z.string()).optional(),
+  instagramUrl:       z.string().optional(),
+  facebookUrl:        z.string().optional(),
+  tiktokUrl:          z.string().optional(),
+  xUrl:               z.string().optional(),
+  linkedinUrl:        z.string().optional(),
   timezone:           z.string().optional(),
   onboardingCompleted: z.boolean().optional(),
 })
