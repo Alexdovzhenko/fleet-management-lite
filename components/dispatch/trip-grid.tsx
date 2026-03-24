@@ -324,9 +324,20 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
       case "price":
         return (
           <td key={key} className="px-3 py-2.5 whitespace-nowrap">
-            <span className="text-sm font-semibold text-gray-900">
-              {trip.totalPrice ? formatCurrency(trip.totalPrice) : trip.price ? formatCurrency(trip.price) : <span className="text-gray-300 font-normal text-xs">—</span>}
-            </span>
+            {trip.farmedIn ? (
+              trip.agreedPrice ? (
+                <div>
+                  <span className="text-sm font-semibold text-gray-900">{formatCurrency(trip.agreedPrice)}</span>
+                  <span className="block text-[10px] text-indigo-500 font-medium">Agreed Rate</span>
+                </div>
+              ) : (
+                <span className="text-gray-300 font-normal text-xs">—</span>
+              )
+            ) : (
+              <span className="text-sm font-semibold text-gray-900">
+                {trip.totalPrice ? formatCurrency(trip.totalPrice) : trip.price ? formatCurrency(trip.price) : <span className="text-gray-300 font-normal text-xs">—</span>}
+              </span>
+            )}
           </td>
         )
       case "flags": {

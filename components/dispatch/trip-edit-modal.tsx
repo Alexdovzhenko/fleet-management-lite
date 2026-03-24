@@ -1324,10 +1324,16 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                 {isFarmedIn && trip.farmedIn && (
                   <div className="flex items-center gap-2.5 px-3 py-2.5 bg-indigo-50 border border-indigo-100 rounded-xl">
                     <ArrowRightLeft className="w-4 h-4 text-indigo-500 flex-shrink-0" />
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-indigo-800">Farm-In</p>
                       <p className="text-xs text-indigo-600 truncate">{trip.farmedIn.name}</p>
                     </div>
+                    {trip.agreedPrice && (
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-[10px] text-indigo-500 font-medium">Agreed Rate</p>
+                        <p className="text-sm font-bold text-indigo-800">{formatCurrency(trip.agreedPrice)}</p>
+                      </div>
+                    )}
                   </div>
                 )}
 

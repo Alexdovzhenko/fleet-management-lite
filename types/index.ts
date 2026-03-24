@@ -196,6 +196,7 @@ export interface Trip {
     fromCompany?: { id: string; name: string }
   }>
   farmedIn?: { id: string; name: string } | null
+  agreedPrice?: string | null
   createdAt: string
   updatedAt: string
 }

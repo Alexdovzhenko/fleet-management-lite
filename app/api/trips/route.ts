@@ -105,12 +105,13 @@ export async function GET(request: NextRequest) {
     // Query 2: accepted farm-ins for this company
     const acceptedFarmIns = await prisma.farmOut.findMany({
       where: { toCompanyId: companyId, status: "ACCEPTED" },
-      select: { tripId: true, fromCompany: { select: { id: true, name: true } } },
+      select: { tripId: true, fromCompany: { select: { id: true, name: true } }, agreedPrice: true },
     })
 
     let farmInTrips: unknown[] = []
     if (acceptedFarmIns.length > 0) {
       const fromCompanyByTripId = new Map(acceptedFarmIns.map((f) => [f.tripId, f.fromCompany]))
+      const agreedPriceByTripId = new Map(acceptedFarmIns.map((f) => [f.tripId, f.agreedPrice]))
       const farmInSearchFilter = search ? {
         OR: [
           { tripNumber: { contains: search, mode: "insensitive" as const } },
@@ -136,7 +137,11 @@ export async function GET(request: NextRequest) {
         ...trip,
         customer: null,
         internalNotes: null,
+        price: null,
+        gratuity: null,
+        totalPrice: null,
         farmedIn: fromCompanyByTripId.get(trip.id) ?? null,
+        agreedPrice: agreedPriceByTripId.get(trip.id)?.toString() ?? null,
       }))
     }
 

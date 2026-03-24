@@ -249,18 +249,32 @@ export function TripDrawer({ trip, open, onClose }: TripDrawerProps) {
           </div>
 
           {/* Pricing */}
-          {trip.price && (
-            <div className="space-y-2">
-              <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Pricing</h4>
-              <div className="flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-gray-400" />
-                <div className="text-sm space-y-0.5">
-                  <div className="text-gray-600">Base: {formatCurrency(trip.price)}</div>
-                  {trip.gratuity && <div className="text-gray-600">Gratuity: {formatCurrency(trip.gratuity)}</div>}
-                  <div className="font-semibold text-gray-900">Total: {formatCurrency(trip.totalPrice || trip.price)}</div>
+          {trip.farmedIn ? (
+            trip.agreedPrice && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Pricing</h4>
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-gray-400" />
+                  <div className="text-sm space-y-0.5">
+                    <div className="font-semibold text-gray-900">Agreed Rate: {formatCurrency(trip.agreedPrice)}</div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )
+          ) : (
+            trip.price && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Pricing</h4>
+                <div className="flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-gray-400" />
+                  <div className="text-sm space-y-0.5">
+                    <div className="text-gray-600">Base: {formatCurrency(trip.price)}</div>
+                    {trip.gratuity && <div className="text-gray-600">Gratuity: {formatCurrency(trip.gratuity)}</div>}
+                    <div className="font-semibold text-gray-900">Total: {formatCurrency(trip.totalPrice || trip.price)}</div>
+                  </div>
+                </div>
+              </div>
+            )
           )}
 
           {/* Internal Notes */}

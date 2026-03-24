@@ -23,8 +23,6 @@ const SANITIZED_TRIP_SELECT = {
   childSeat: true,
   childSeatDetails: true,
   wheelchairAccess: true,
-  price: true,
-  totalPrice: true,
   tripType: true,
   stops: { orderBy: { order: "asc" as const } },
   // NEVER: customer, internalNotes, customerId
