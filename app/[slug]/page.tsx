@@ -435,8 +435,8 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
   const [pickupCity,   setPickupCity]   = useState("")
   const [pickupState,  setPickupState]  = useState("")
   const [pickupZip,    setPickupZip]    = useState("")
-  const [stops, setStops] = useState<{ type: "address" | "airport"; street: string; city: string; state: string; zip: string; airportCode: string; airportName: string }[]>([])
-  const [newStop, setNewStop] = useState({ type: "" as "" | "address" | "airport", street: "", city: "", state: "", zip: "", airportCode: "", airportName: "" })
+  const [stops, setStops] = useState<{ type: "address" | "airport"; street: string; city: string; state: string; zip: string; airportCode: string; airportName: string; airlineCode: string; airlineName: string; flightNumber: string }[]>([])
+  const [newStop, setNewStop] = useState({ type: "" as "" | "address" | "airport", street: "", city: "", state: "", zip: "", airportCode: "", airportName: "", airlineCode: "", airlineName: "", flightNumber: "" })
   const [showStopInput, setShowStopInput] = useState(false)
   const [dropoffStreet, setDropoffStreet] = useState("")
   const [dropoffCity,   setDropoffCity]   = useState("")
@@ -461,12 +461,12 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
     if (newStop.type === "airport" && !newStop.airportCode) return
     if (!newStop.type) return
     setStops(prev => [...prev, { ...newStop, type: newStop.type as "address" | "airport" }])
-    setNewStop({ type: "", street: "", city: "", state: "", zip: "", airportCode: "", airportName: "" })
+    setNewStop({ type: "", street: "", city: "", state: "", zip: "", airportCode: "", airportName: "", airlineCode: "", airlineName: "", flightNumber: "" })
     setShowStopInput(false)
   }
 
   function resetNewStop() {
-    setNewStop({ type: "", street: "", city: "", state: "", zip: "", airportCode: "", airportName: "" })
+    setNewStop({ type: "", street: "", city: "", state: "", zip: "", airportCode: "", airportName: "", airlineCode: "", airlineName: "", flightNumber: "" })
     setShowStopInput(false)
   }
 
@@ -515,7 +515,13 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
       noteParts.push(`Flight: ${flightNumber}`)
     }
     if (stops.length > 0) {
-      noteParts.push(`Stops: ${stops.map(s => s.type === "airport" ? `${s.airportCode} — ${s.airportName}` : composeAddress(s.street, s.city, s.state, s.zip)).join(" → ")}`)
+      noteParts.push(`Stops: ${stops.map(s => {
+        if (s.type === "airport") {
+          const airline = s.airlineName || s.airlineCode ? ` [${s.airlineName || s.airlineCode}${s.flightNumber ? " " + s.flightNumber : ""}]` : ""
+          return `${s.airportCode} — ${s.airportName}${airline}`
+        }
+        return composeAddress(s.street, s.city, s.state, s.zip)
+      }).join(" → ")}`)
     }
     if (notes.trim()) noteParts.push(notes.trim())
 
@@ -692,7 +698,10 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
                       </button>
                     </div>
                     {stop.type === "airport"
-                      ? <p className="text-sm text-gray-700 font-medium flex items-center gap-1.5"><Plane className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />{stop.airportCode} — {stop.airportName}</p>
+                      ? <div className="space-y-0.5">
+                          <p className="text-sm text-gray-700 font-medium flex items-center gap-1.5"><Plane className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />{stop.airportCode} — {stop.airportName}</p>
+                          {(stop.airlineName || stop.airlineCode) && <p className="text-xs text-gray-500 pl-5">{stop.airlineName || stop.airlineCode}{stop.flightNumber ? ` · ${stop.flightNumber}` : ""}</p>}
+                        </div>
                       : <p className="text-sm text-gray-700 font-medium">{composeAddress(stop.street, stop.city, stop.state, stop.zip)}</p>
                     }
                   </div>
@@ -738,10 +747,20 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
 
                     {/* Airport field */}
                     {newStop.type === "airport" && (
-                      <QuoteAirportPicker
-                        value={newStop.airportCode}
-                        onSelect={(iata, name) => setNewStop(s => ({ ...s, airportCode: iata, airportName: name }))}
-                      />
+                      <div className="space-y-2">
+                        <QuoteAirportPicker
+                          value={newStop.airportCode}
+                          onSelect={(iata, name) => setNewStop(s => ({ ...s, airportCode: iata, airportName: name }))}
+                        />
+                        <QuoteAirlinePicker
+                          value={newStop.airlineCode}
+                          onSelect={(iata, name) => setNewStop(s => ({ ...s, airlineCode: iata, airlineName: name }))}
+                        />
+                        <input value={newStop.flightNumber}
+                          onChange={e => setNewStop(s => ({ ...s, flightNumber: e.target.value.toUpperCase() }))}
+                          placeholder="Flight number (e.g. AA 1234)"
+                          className={fieldCls} autoComplete="off" />
+                      </div>
                     )}
 
                     {newStop.type && (
@@ -751,7 +770,7 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
                           style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)" }}>
                           Add Stop
                         </button>
-                        <button type="button" onClick={() => setNewStop(s => ({ ...s, type: "" }))}
+                        <button type="button" onClick={() => setNewStop(s => ({ ...s, type: "", street: "", city: "", state: "", zip: "", airportCode: "", airportName: "", airlineCode: "", airlineName: "", flightNumber: "" }))}
                           className="h-10 px-4 rounded-xl text-sm font-medium text-gray-500 bg-white border border-gray-200 hover:bg-gray-50 transition-colors">
                           Back
                         </button>
