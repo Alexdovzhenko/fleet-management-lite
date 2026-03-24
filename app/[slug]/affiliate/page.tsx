@@ -145,7 +145,7 @@ function SocialIcons({ instagram, facebook, tiktok, x, linkedin }: {
 
   if (links.length === 0) return null
   return (
-    <div className="flex items-center gap-2 mt-3">
+    <div className="flex items-center gap-2 flex-shrink-0">
       {links.map(({ href, label, icon, color }) => (
         <a key={label} href={href!} target="_blank" rel="noopener noreferrer" aria-label={label}
           className={`w-8 h-8 rounded-xl flex items-center justify-center text-gray-400 transition-colors ${color}`}
@@ -271,11 +271,13 @@ export default function AffiliateProfilePage() {
               </div>
             )}
           </div>
-          <div className="px-6 sm:px-8 pt-16 pb-6">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">{profile.name}</h1>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
-              {location && <span className="text-sm text-gray-400 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />{location}</span>}
-              {memberSince && <span className="text-sm text-gray-400 flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />Member since {memberSince}</span>}
+          <div className="px-6 sm:px-8 pt-16 pb-6 flex items-end justify-between gap-4">
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">{profile.name}</h1>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
+                {location && <span className="text-sm text-gray-400 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />{location}</span>}
+                {memberSince && <span className="text-sm text-gray-400 flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />Member since {memberSince}</span>}
+              </div>
             </div>
             <SocialIcons instagram={profile.instagramUrl} facebook={profile.facebookUrl} tiktok={profile.tiktokUrl} x={profile.xUrl} linkedin={profile.linkedinUrl} />
           </div>
