@@ -126,9 +126,9 @@ function ContactRow({ icon: Icon, label, value, href }: {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export default function SlugProfilePage() {
+export default function AffiliateProfilePage() {
   const params = useParams<{ slug: string }>()
-  const profileType = "client"
+  const profileType = "affiliate"
 
   const [profile, setProfile] = useState<PublicProfile | null>(null)
   const [loading, setLoading] = useState(true)
@@ -144,7 +144,7 @@ export default function SlugProfilePage() {
       })
       .then(data => { if (data) setProfile(data) })
       .finally(() => setLoading(false))
-  }, [params.slug, profileType])
+  }, [params.slug])
 
   const { allPhotos, vehiclePhotoStart } = useMemo(() => {
     const allPhotos: PhotoEntry[] = []
@@ -214,11 +214,8 @@ export default function SlugProfilePage() {
             <span className="text-sm font-bold text-gray-900">Livery Connect</span>
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold"
-            style={{
-              background: profileType === "client" ? "linear-gradient(135deg,#fef3c7,#fde68a)" : "linear-gradient(135deg,#dbeafe,#bfdbfe)",
-              color: profileType === "client" ? "#92400e" : "#1e40af",
-            }}>
-            {profileType === "client" ? "Client Profile" : "Affiliate Profile"}
+            style={{ background: "linear-gradient(135deg,#dbeafe,#bfdbfe)", color: "#1e40af" }}>
+            Affiliate Profile
           </div>
         </div>
       </div>
