@@ -5,7 +5,8 @@ import { useParams } from "next/navigation"
 import {
   Mail, Phone, MapPin, Globe, Car, ChevronLeft, ChevronRight, X,
   Calendar, ExternalLink, MessageSquare, CheckCircle2, ChevronDown,
-  User, Clock, ArrowRight, Users,
+  User, Clock, ArrowRight, Users, Plus, Trash2, Plane, PlaneLanding,
+  Timer, Route,
 } from "lucide-react"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -171,6 +172,13 @@ const VEHICLE_OPTIONS = [
   { value: "OTHER",       label: "Other" },
 ]
 
+const SERVICE_OPTIONS = [
+  { value: "AIRPORT_PICKUP",  label: "Airport Pickup",  Icon: PlaneLanding },
+  { value: "AIRPORT_DROPOFF", label: "Airport Drop-off", Icon: Plane },
+  { value: "HOURLY",          label: "Hourly",           Icon: Timer },
+  { value: "POINT_TO_POINT",  label: "Point to Point",  Icon: Route },
+]
+
 interface QuoteFormProps { companyId: string; companyName: string; onClose: () => void }
 
 function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
@@ -179,41 +187,70 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  const [name, setName]           = useState("")
-  const [phone, setPhone]         = useState("")
-  const [email, setEmail]         = useState("")
+  const [name, setName]             = useState("")
+  const [phone, setPhone]           = useState("")
+  const [email, setEmail]           = useState("")
   const [pickupDate, setPickupDate] = useState("")
   const [pickupTime, setPickupTime] = useState("")
-  const [pickup, setPickup]       = useState("")
-  const [dropoff, setDropoff]     = useState("")
-  const [vehicle, setVehicle]     = useState("")
-  const [pax, setPax]             = useState(1)
-  const [notes, setNotes]         = useState("")
+  const [serviceType, setServiceType] = useState("")
+  const [pickup, setPickup]         = useState("")
+  const [stops, setStops]           = useState<string[]>([])
+  const [newStop, setNewStop]       = useState("")
+  const [showStopInput, setShowStopInput] = useState(false)
+  const [dropoff, setDropoff]       = useState("")
+  const [vehicle, setVehicle]       = useState("")
+  const [pax, setPax]               = useState(1)
+  const [notes, setNotes]           = useState("")
+
+  function addStop() {
+    const val = newStop.trim()
+    if (!val) return
+    setStops(prev => [...prev, val])
+    setNewStop("")
+    setShowStopInput(false)
+  }
+
+  function removeStop(i: number) {
+    setStops(prev => prev.filter((_, idx) => idx !== i))
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!name || !phone || !pickupDate || !pickup || !dropoff) {
+    const isHourly = serviceType === "HOURLY"
+    if (!name || !phone || !pickupDate || !pickup || (!isHourly && !dropoff)) {
       setError("Please fill in all required fields.")
       return
     }
     setError("")
     setLoading(true)
+
+    // Compose structured notes
+    const noteParts: string[] = []
+    if (serviceType) {
+      const svc = SERVICE_OPTIONS.find(s => s.value === serviceType)
+      noteParts.push(`Service: ${svc?.label ?? serviceType}`)
+    }
+    if (stops.length > 0) {
+      noteParts.push(`Stops: ${stops.join(" → ")}`)
+    }
+    if (notes.trim()) noteParts.push(notes.trim())
+
     try {
       const res = await fetch("/api/public/quote-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           companyId,
-          clientName:    name,
-          clientPhone:   phone,
-          clientEmail:   email || undefined,
+          clientName:     name,
+          clientPhone:    phone,
+          clientEmail:    email || undefined,
           pickupDate,
-          pickupTime:    pickupTime || undefined,
-          pickupAddress: pickup,
-          dropoffAddress:dropoff,
-          vehicleType:   vehicle || undefined,
-          passengerCount:pax,
-          notes:         notes || undefined,
+          pickupTime:     pickupTime || undefined,
+          pickupAddress:  pickup,
+          dropoffAddress: dropoff || (isHourly ? "Hourly — return TBD" : ""),
+          vehicleType:    vehicle || undefined,
+          passengerCount: pax,
+          notes:          noteParts.length > 0 ? noteParts.join("\n") : undefined,
         }),
       })
       if (!res.ok) throw new Error("Failed to submit")
@@ -227,6 +264,7 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
 
   const fieldCls = "w-full h-11 px-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
   const labelCls = "block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
+  const isHourly = serviceType === "HOURLY"
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}>
@@ -290,6 +328,27 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
                   <Calendar className="w-3 h-3" />Trip Details
                 </p>
+
+                {/* Service type */}
+                <div>
+                  <label className={labelCls}>Service Type</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {SERVICE_OPTIONS.map(({ value, label, Icon }) => {
+                      const active = serviceType === value
+                      return (
+                        <button key={value} type="button" onClick={() => setServiceType(active ? "" : value)}
+                          className="flex items-center gap-2 h-10 px-3 rounded-xl border text-sm font-medium transition-all"
+                          style={active
+                            ? { background: "linear-gradient(135deg,#eff6ff,#eef2ff)", borderColor: "#6366f1", color: "#4338ca" }
+                            : { background: "#fff", borderColor: "#e5e7eb", color: "#6b7280" }}>
+                          <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+                          <span className="truncate">{label}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className={labelCls}>Date *</label>
@@ -300,19 +359,69 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
                     <input value={pickupTime} onChange={e => setPickupTime(e.target.value)} type="time" className={fieldCls} />
                   </div>
                 </div>
+
                 <div>
                   <label className={labelCls}><MapPin className="w-3 h-3 inline mr-1 text-green-500" />Pickup Address *</label>
                   <input value={pickup} onChange={e => setPickup(e.target.value)} placeholder="Hotel, address, or landmark" className={fieldCls} />
                 </div>
-                <div className="flex items-center gap-2 py-0.5">
-                  <div className="flex-1 h-px bg-gray-200" />
-                  <ArrowRight className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
-                  <div className="flex-1 h-px bg-gray-200" />
-                </div>
-                <div>
-                  <label className={labelCls}><MapPin className="w-3 h-3 inline mr-1 text-red-400" />Drop-off Address *</label>
-                  <input value={dropoff} onChange={e => setDropoff(e.target.value)} placeholder="Destination address" className={fieldCls} />
-                </div>
+
+                {/* Stops */}
+                {stops.map((stop, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-1 h-11 px-3.5 rounded-xl border border-gray-200 bg-white">
+                      <MapPin className="w-3 h-3 text-blue-400 flex-shrink-0" />
+                      <span className="text-sm text-gray-700 truncate flex-1">{stop}</span>
+                    </div>
+                    <button type="button" onClick={() => removeStop(i)}
+                      className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 border border-gray-200 transition-colors flex-shrink-0">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+
+                {showStopInput ? (
+                  <div className="flex items-center gap-2">
+                    <input value={newStop} onChange={e => setNewStop(e.target.value)}
+                      onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); addStop() } if (e.key === "Escape") { setShowStopInput(false); setNewStop("") } }}
+                      placeholder="Enter stop address" autoFocus
+                      className={`${fieldCls} flex-1`} />
+                    <button type="button" onClick={addStop}
+                      className="h-11 px-4 rounded-xl text-sm font-medium text-white flex-shrink-0 transition-opacity hover:opacity-90"
+                      style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)" }}>
+                      Add
+                    </button>
+                    <button type="button" onClick={() => { setShowStopInput(false); setNewStop("") }}
+                      className="w-11 h-11 rounded-xl flex items-center justify-center text-gray-400 hover:bg-gray-100 border border-gray-200 flex-shrink-0">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => setShowStopInput(true)}
+                    className="flex items-center gap-2 h-9 px-3 rounded-xl border border-dashed border-gray-300 text-xs font-medium text-gray-400 hover:border-blue-300 hover:text-blue-500 hover:bg-blue-50/50 transition-all w-full justify-center">
+                    <Plus className="w-3.5 h-3.5" />Add Stop
+                  </button>
+                )}
+
+                {!isHourly && (
+                  <>
+                    <div className="flex items-center gap-2 py-0.5">
+                      <div className="flex-1 h-px bg-gray-200" />
+                      <ArrowRight className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
+                      <div className="flex-1 h-px bg-gray-200" />
+                    </div>
+                    <div>
+                      <label className={labelCls}><MapPin className="w-3 h-3 inline mr-1 text-red-400" />Drop-off Address *</label>
+                      <input value={dropoff} onChange={e => setDropoff(e.target.value)} placeholder="Destination address" className={fieldCls} />
+                    </div>
+                  </>
+                )}
+
+                {isHourly && (
+                  <div>
+                    <label className={labelCls}><Clock className="w-3 h-3 inline mr-1 text-amber-500" />Duration / Return Area</label>
+                    <input value={dropoff} onChange={e => setDropoff(e.target.value)} placeholder="e.g. 4 hours, return to pickup area" className={fieldCls} />
+                  </div>
+                )}
               </div>
 
               {/* Preferences */}
