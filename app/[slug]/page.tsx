@@ -1,12 +1,13 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { useParams } from "next/navigation"
 import {
   Mail, Phone, MapPin, Globe, Car, ChevronLeft, ChevronRight, X,
   Calendar, ExternalLink, MessageSquare, CheckCircle2, ChevronDown,
   User, Clock, ArrowRight, Users, Plus, Trash2, Plane, PlaneLanding,
-  Timer, Route,
+  Timer, Route, Check,
 } from "lucide-react"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -159,6 +160,243 @@ function SocialIcons({ instagram, facebook, tiktok, x, linkedin }: {
   )
 }
 
+// ─── Airport / Airline Data ───────────────────────────────────────────────────
+
+const AIRPORT_OPTIONS: { iata: string; name: string; city: string }[] = [
+  { iata: "ATL", name: "Hartsfield-Jackson Atlanta International", city: "Atlanta" },
+  { iata: "LAX", name: "Los Angeles International", city: "Los Angeles" },
+  { iata: "ORD", name: "Chicago O'Hare International", city: "Chicago" },
+  { iata: "DFW", name: "Dallas/Fort Worth International", city: "Dallas" },
+  { iata: "DEN", name: "Denver International", city: "Denver" },
+  { iata: "JFK", name: "John F. Kennedy International", city: "New York" },
+  { iata: "SFO", name: "San Francisco International", city: "San Francisco" },
+  { iata: "SEA", name: "Seattle-Tacoma International", city: "Seattle" },
+  { iata: "LAS", name: "Harry Reid International", city: "Las Vegas" },
+  { iata: "MCO", name: "Orlando International", city: "Orlando" },
+  { iata: "EWR", name: "Newark Liberty International", city: "Newark" },
+  { iata: "MIA", name: "Miami International", city: "Miami" },
+  { iata: "PHX", name: "Phoenix Sky Harbor International", city: "Phoenix" },
+  { iata: "IAH", name: "George Bush Intercontinental", city: "Houston" },
+  { iata: "BOS", name: "Boston Logan International", city: "Boston" },
+  { iata: "MSP", name: "Minneapolis-Saint Paul International", city: "Minneapolis" },
+  { iata: "DTW", name: "Detroit Metropolitan Wayne County", city: "Detroit" },
+  { iata: "FLL", name: "Fort Lauderdale-Hollywood International", city: "Fort Lauderdale" },
+  { iata: "PHL", name: "Philadelphia International", city: "Philadelphia" },
+  { iata: "LGA", name: "LaGuardia Airport", city: "New York" },
+  { iata: "BWI", name: "Baltimore/Washington International", city: "Baltimore" },
+  { iata: "DCA", name: "Ronald Reagan Washington National", city: "Washington DC" },
+  { iata: "IAD", name: "Washington Dulles International", city: "Washington DC" },
+  { iata: "MDW", name: "Chicago Midway International", city: "Chicago" },
+  { iata: "SAN", name: "San Diego International", city: "San Diego" },
+  { iata: "TPA", name: "Tampa International", city: "Tampa" },
+  { iata: "BNA", name: "Nashville International", city: "Nashville" },
+  { iata: "AUS", name: "Austin-Bergstrom International", city: "Austin" },
+  { iata: "CLT", name: "Charlotte Douglas International", city: "Charlotte" },
+  { iata: "RSW", name: "Southwest Florida International", city: "Fort Myers" },
+  { iata: "PBI", name: "Palm Beach International", city: "West Palm Beach" },
+  { iata: "MCI", name: "Kansas City International", city: "Kansas City" },
+  { iata: "PDX", name: "Portland International", city: "Portland" },
+  { iata: "SLC", name: "Salt Lake City International", city: "Salt Lake City" },
+  { iata: "MSY", name: "Louis Armstrong New Orleans International", city: "New Orleans" },
+  { iata: "HNL", name: "Daniel K. Inouye International", city: "Honolulu" },
+  { iata: "SJU", name: "Luis Muñoz Marín International", city: "San Juan" },
+  { iata: "JAX", name: "Jacksonville International", city: "Jacksonville" },
+  { iata: "SAV", name: "Savannah/Hilton Head International", city: "Savannah" },
+  { iata: "RDU", name: "Raleigh-Durham International", city: "Raleigh" },
+  { iata: "SRQ", name: "Sarasota Bradenton International", city: "Sarasota" },
+  { iata: "PIE", name: "St. Pete-Clearwater International", city: "St. Petersburg" },
+  { iata: "YYZ", name: "Toronto Pearson International", city: "Toronto" },
+  { iata: "YUL", name: "Montréal-Pierre Elliott Trudeau International", city: "Montreal" },
+  { iata: "YVR", name: "Vancouver International", city: "Vancouver" },
+]
+
+const AIRLINE_OPTIONS: { iata: string; name: string }[] = [
+  { iata: "AA", name: "American Airlines" },
+  { iata: "DL", name: "Delta Air Lines" },
+  { iata: "UA", name: "United Airlines" },
+  { iata: "WN", name: "Southwest Airlines" },
+  { iata: "B6", name: "JetBlue Airways" },
+  { iata: "AS", name: "Alaska Airlines" },
+  { iata: "NK", name: "Spirit Airlines" },
+  { iata: "F9", name: "Frontier Airlines" },
+  { iata: "G4", name: "Allegiant Air" },
+  { iata: "HA", name: "Hawaiian Airlines" },
+  { iata: "AC", name: "Air Canada" },
+  { iata: "WS", name: "WestJet" },
+  { iata: "AM", name: "Aeromexico" },
+  { iata: "BA", name: "British Airways" },
+  { iata: "VS", name: "Virgin Atlantic" },
+  { iata: "AF", name: "Air France" },
+  { iata: "LH", name: "Lufthansa" },
+  { iata: "KL", name: "KLM Royal Dutch Airlines" },
+  { iata: "IB", name: "Iberia" },
+  { iata: "AZ", name: "ITA Airways" },
+  { iata: "EK", name: "Emirates" },
+  { iata: "EY", name: "Etihad Airways" },
+  { iata: "QR", name: "Qatar Airways" },
+  { iata: "TK", name: "Turkish Airlines" },
+  { iata: "ET", name: "Ethiopian Airlines" },
+  { iata: "JL", name: "Japan Airlines" },
+  { iata: "NH", name: "All Nippon Airways" },
+  { iata: "KE", name: "Korean Air" },
+  { iata: "SQ", name: "Singapore Airlines" },
+  { iata: "CX", name: "Cathay Pacific" },
+  { iata: "QF", name: "Qantas" },
+  { iata: "LA", name: "LATAM Airlines" },
+]
+
+function QuoteAirportPicker({ value, onSelect }: {
+  value: string
+  onSelect: (iata: string, name: string) => void
+}) {
+  const [query, setQuery] = useState(value)
+  const [open, setOpen]   = useState(false)
+  const [style, setStyle] = useState<React.CSSProperties>({})
+  const ref     = useRef<HTMLDivElement>(null)
+  const dropRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => { setQuery(value) }, [value])
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      const t = e.target as Node
+      if (ref.current && !ref.current.contains(t) && dropRef.current && !dropRef.current.contains(t)) setOpen(false)
+    }
+    document.addEventListener("mousedown", handle)
+    return () => document.removeEventListener("mousedown", handle)
+  }, [])
+
+  const filtered = query.trim()
+    ? AIRPORT_OPTIONS.filter(a =>
+        a.iata.toLowerCase().includes(query.toLowerCase()) ||
+        a.city.toLowerCase().includes(query.toLowerCase()) ||
+        a.name.toLowerCase().includes(query.toLowerCase())
+      ).slice(0, 10)
+    : AIRPORT_OPTIONS.slice(0, 10)
+
+  function openDrop() {
+    if (ref.current) {
+      const r = ref.current.getBoundingClientRect()
+      const below = window.innerHeight - r.bottom
+      setStyle(below < 260
+        ? { position: "fixed", bottom: window.innerHeight - r.top + 4, left: r.left, minWidth: Math.max(r.width, 340), zIndex: 10000 }
+        : { position: "fixed", top: r.bottom + 4, left: r.left, minWidth: Math.max(r.width, 340), zIndex: 10000 }
+      )
+    }
+    setOpen(true)
+  }
+
+  const selected = AIRPORT_OPTIONS.find(a => a.iata === value)
+
+  return (
+    <div ref={ref} className="relative">
+      <input
+        value={query}
+        onChange={e => { setQuery(e.target.value); openDrop() }}
+        onFocus={openDrop}
+        placeholder="Search airport by name or code…"
+        autoComplete="off"
+        className="w-full h-11 px-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+      />
+      {selected && query === value && (
+        <div className="mt-1 px-3.5 py-1.5 rounded-lg bg-blue-50 border border-blue-100 text-xs text-blue-700 font-medium flex items-center gap-1.5">
+          <Check className="w-3 h-3 flex-shrink-0" />
+          <span className="font-bold">{selected.iata}</span> · {selected.name} · {selected.city}
+        </div>
+      )}
+      {open && filtered.length > 0 && createPortal(
+        <div ref={dropRef} style={style} className="bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-hidden">
+          <div className="max-h-64 overflow-y-auto">
+            {filtered.map(a => (
+              <button key={a.iata} type="button"
+                onMouseDown={e => { e.preventDefault(); onSelect(a.iata, a.name); setQuery(a.iata); setOpen(false) }}
+                className={`w-full text-left px-4 py-2.5 hover:bg-blue-50 transition-colors flex items-center gap-3 ${a.iata === value ? "bg-blue-50" : ""}`}>
+                <span className="text-xs font-mono font-bold text-indigo-600 w-9 flex-shrink-0">{a.iata}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm text-gray-800 font-medium truncate">{a.name}</div>
+                  <div className="text-xs text-gray-400">{a.city}</div>
+                </div>
+                {a.iata === value && <Check className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />}
+              </button>
+            ))}
+          </div>
+        </div>,
+        document.body
+      )}
+    </div>
+  )
+}
+
+function QuoteAirlinePicker({ value, onSelect }: {
+  value: string
+  onSelect: (iata: string, name: string) => void
+}) {
+  const [query, setQuery] = useState(value)
+  const [open, setOpen]   = useState(false)
+  const [style, setStyle] = useState<React.CSSProperties>({})
+  const ref     = useRef<HTMLDivElement>(null)
+  const dropRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => { setQuery(value) }, [value])
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      const t = e.target as Node
+      if (ref.current && !ref.current.contains(t) && dropRef.current && !dropRef.current.contains(t)) setOpen(false)
+    }
+    document.addEventListener("mousedown", handle)
+    return () => document.removeEventListener("mousedown", handle)
+  }, [])
+
+  const filtered = query.trim()
+    ? AIRLINE_OPTIONS.filter(a =>
+        a.iata.toLowerCase().includes(query.toLowerCase()) ||
+        a.name.toLowerCase().includes(query.toLowerCase())
+      ).slice(0, 10)
+    : AIRLINE_OPTIONS.slice(0, 10)
+
+  function openDrop() {
+    if (ref.current) {
+      const r = ref.current.getBoundingClientRect()
+      const below = window.innerHeight - r.bottom
+      setStyle(below < 260
+        ? { position: "fixed", bottom: window.innerHeight - r.top + 4, left: r.left, minWidth: Math.max(r.width, 300), zIndex: 10000 }
+        : { position: "fixed", top: r.bottom + 4, left: r.left, minWidth: Math.max(r.width, 300), zIndex: 10000 }
+      )
+    }
+    setOpen(true)
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <input
+        value={query}
+        onChange={e => { setQuery(e.target.value); openDrop() }}
+        onFocus={openDrop}
+        placeholder="Search airline…"
+        autoComplete="off"
+        className="w-full h-11 px-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+      />
+      {open && filtered.length > 0 && createPortal(
+        <div ref={dropRef} style={style} className="bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-hidden">
+          <div className="max-h-64 overflow-y-auto">
+            {filtered.map(a => (
+              <button key={a.iata} type="button"
+                onMouseDown={e => { e.preventDefault(); onSelect(a.iata, a.name); setQuery(a.name); setOpen(false) }}
+                className={`w-full text-left px-4 py-2.5 hover:bg-blue-50 transition-colors flex items-center gap-3 ${a.iata === value ? "bg-blue-50" : ""}`}>
+                <span className="text-xs font-mono font-bold text-indigo-600 w-6 flex-shrink-0">{a.iata}</span>
+                <span className="text-sm text-gray-800 font-medium flex-1 truncate">{a.name}</span>
+                {a.iata === value && <Check className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />}
+              </button>
+            ))}
+          </div>
+        </div>,
+        document.body
+      )}
+    </div>
+  )
+}
+
 // ─── Quote Request Form ────────────────────────────────────────────────────────
 
 const VEHICLE_OPTIONS = [
@@ -204,6 +442,11 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
   const [dropoffCity,   setDropoffCity]   = useState("")
   const [dropoffState,  setDropoffState]  = useState("")
   const [dropoffZip,    setDropoffZip]    = useState("")
+  const [airportCode, setAirportCode] = useState("")
+  const [airportName, setAirportName] = useState("")
+  const [airlineCode, setAirlineCode] = useState("")
+  const [airlineName, setAirlineName] = useState("")
+  const [flightNumber, setFlightNumber] = useState("")
   const [vehicle, setVehicle]       = useState("")
   const [pax, setPax]               = useState(1)
   const [notes, setNotes]           = useState("")
@@ -226,24 +469,43 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const isHourly = serviceType === "HOURLY"
-    if (!name || !phone || !pickupDate || !pickupStreet || (!isHourly && !dropoffStreet)) {
+    const isHourly    = serviceType === "HOURLY"
+    const isAirPickup = serviceType === "AIRPORT_PICKUP"
+    const isAirDrop   = serviceType === "AIRPORT_DROPOFF"
+
+    const needPickupAddr  = !isAirPickup  && !pickupStreet
+    const needDropoffAddr = !isHourly && !isAirDrop && !dropoffStreet
+    const needPickupAirport  = isAirPickup  && !airportCode
+    const needDropoffAirport = isAirDrop    && !airportCode
+
+    if (!name || !phone || !pickupDate || needPickupAddr || needDropoffAddr || needPickupAirport || needDropoffAirport) {
       setError("Please fill in all required fields.")
       return
     }
     setError("")
     setLoading(true)
 
-    const pickupAddress  = composeAddress(pickupStreet, pickupCity, pickupState, pickupZip)
-    const dropoffAddress = isHourly
-      ? composeAddress(dropoffStreet, dropoffCity, dropoffState, dropoffZip) || "Hourly — return TBD"
-      : composeAddress(dropoffStreet, dropoffCity, dropoffState, dropoffZip)
+    const pickupAddress = isAirPickup
+      ? `${airportCode} — ${airportName}`
+      : composeAddress(pickupStreet, pickupCity, pickupState, pickupZip)
+
+    const dropoffAddress = isAirDrop
+      ? `${airportCode} — ${airportName}`
+      : isHourly
+        ? composeAddress(dropoffStreet, dropoffCity, dropoffState, dropoffZip) || "Hourly — return TBD"
+        : composeAddress(dropoffStreet, dropoffCity, dropoffState, dropoffZip)
 
     // Compose structured notes
     const noteParts: string[] = []
     if (serviceType) {
       const svc = SERVICE_OPTIONS.find(s => s.value === serviceType)
       noteParts.push(`Service: ${svc?.label ?? serviceType}`)
+    }
+    if ((isAirPickup || isAirDrop) && (airlineName || airlineCode)) {
+      noteParts.push(`Airline: ${airlineName || airlineCode}${airlineCode && airlineName ? ` (${airlineCode})` : ""}`)
+    }
+    if ((isAirPickup || isAirDrop) && flightNumber) {
+      noteParts.push(`Flight: ${flightNumber}`)
     }
     if (stops.length > 0) {
       noteParts.push(`Stops: ${stops.map(s => composeAddress(s.street, s.city, s.state, s.zip)).join(" → ")}`)
@@ -279,7 +541,9 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
 
   const fieldCls = "w-full h-11 px-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
   const labelCls = "block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
-  const isHourly = serviceType === "HOURLY"
+  const isHourly    = serviceType === "HOURLY"
+  const isAirPickup = serviceType === "AIRPORT_PICKUP"
+  const isAirDrop   = serviceType === "AIRPORT_DROPOFF"
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}>
@@ -376,15 +640,37 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
                 </div>
 
                 {/* Pickup */}
-                <div className="space-y-2">
-                  <label className={labelCls}><MapPin className="w-3 h-3 inline mr-1 text-green-500" />Pickup Address *</label>
-                  <input value={pickupStreet} onChange={e => setPickupStreet(e.target.value)} placeholder="Street address" className={fieldCls} autoComplete="address-line1" />
-                  <div className="grid grid-cols-[1fr_80px_90px] gap-2">
-                    <input value={pickupCity}  onChange={e => setPickupCity(e.target.value)}  placeholder="City"  className={fieldCls} autoComplete="address-level2" />
-                    <input value={pickupState} onChange={e => setPickupState(e.target.value)} placeholder="State" className={fieldCls} autoComplete="address-level1" maxLength={2} />
-                    <input value={pickupZip}   onChange={e => setPickupZip(e.target.value)}   placeholder="ZIP"   className={fieldCls} autoComplete="postal-code" maxLength={10} />
+                {isAirPickup ? (
+                  <div className="space-y-2">
+                    <label className={labelCls}><Plane className="w-3 h-3 inline mr-1 text-blue-500" />Departure Airport *</label>
+                    <QuoteAirportPicker value={airportCode} onSelect={(iata, name) => { setAirportCode(iata); setAirportName(name) }} />
                   </div>
-                </div>
+                ) : (
+                  <div className="space-y-2">
+                    <label className={labelCls}><MapPin className="w-3 h-3 inline mr-1 text-green-500" />Pickup Address *</label>
+                    <input value={pickupStreet} onChange={e => setPickupStreet(e.target.value)} placeholder="Street address" className={fieldCls} autoComplete="address-line1" />
+                    <div className="grid grid-cols-[1fr_80px_90px] gap-2">
+                      <input value={pickupCity}  onChange={e => setPickupCity(e.target.value)}  placeholder="City"  className={fieldCls} autoComplete="address-level2" />
+                      <input value={pickupState} onChange={e => setPickupState(e.target.value)} placeholder="State" className={fieldCls} autoComplete="address-level1" maxLength={2} />
+                      <input value={pickupZip}   onChange={e => setPickupZip(e.target.value)}   placeholder="ZIP"   className={fieldCls} autoComplete="postal-code" maxLength={10} />
+                    </div>
+                  </div>
+                )}
+
+                {/* Airline + Flight for airport services */}
+                {(isAirPickup || isAirDrop) && (
+                  <div className="space-y-2">
+                    <div>
+                      <label className={labelCls}>Airline</label>
+                      <QuoteAirlinePicker value={airlineCode} onSelect={(iata, name) => { setAirlineCode(iata); setAirlineName(name) }} />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Flight Number</label>
+                      <input value={flightNumber} onChange={e => setFlightNumber(e.target.value.toUpperCase())}
+                        placeholder="e.g. AA 1234" className={fieldCls} autoComplete="off" />
+                    </div>
+                  </div>
+                )}
 
                 {/* Stops */}
                 {stops.map((stop, i) => (
@@ -433,7 +719,20 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
                   </button>
                 )}
 
-                {!isHourly && (
+                {/* Drop-off */}
+                {isAirDrop ? (
+                  <>
+                    <div className="flex items-center gap-2 py-0.5">
+                      <div className="flex-1 h-px bg-gray-200" />
+                      <ArrowRight className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
+                      <div className="flex-1 h-px bg-gray-200" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className={labelCls}><PlaneLanding className="w-3 h-3 inline mr-1 text-blue-500" />Arrival Airport *</label>
+                      <QuoteAirportPicker value={airportCode} onSelect={(iata, name) => { setAirportCode(iata); setAirportName(name) }} />
+                    </div>
+                  </>
+                ) : !isHourly ? (
                   <>
                     <div className="flex items-center gap-2 py-0.5">
                       <div className="flex-1 h-px bg-gray-200" />
@@ -450,9 +749,7 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
                       </div>
                     </div>
                   </>
-                )}
-
-                {isHourly && (
+                ) : (
                   <div>
                     <label className={labelCls}><Clock className="w-3 h-3 inline mr-1 text-amber-500" />Duration / Return Area</label>
                     <input value={dropoffStreet} onChange={e => setDropoffStreet(e.target.value)} placeholder="e.g. 4 hours, return to pickup area" className={fieldCls} />
