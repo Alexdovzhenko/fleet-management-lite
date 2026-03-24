@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useRef, useEffect, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Plus, Search, X, ChevronLeft, ChevronRight, Grid3X3, Settings2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-import { useTrips, useCreateTrip } from "@/lib/hooks/use-trips"
+import { useTrips, useTrip, useCreateTrip } from "@/lib/hooks/use-trips"
 import { useDrivers } from "@/lib/hooks/use-drivers"
 import { TripGrid } from "@/components/dispatch/trip-grid"
 import { TripEditModal } from "@/components/dispatch/trip-edit-modal"
@@ -40,8 +40,11 @@ const ALL_STATUS_OPTIONS: { label: string; value: string }[] = [
 const VALID_STATUS_VALUES = new Set(ALL_STATUS_OPTIONS.map(o => o.value))
 const DEFAULT_VISIBLE_STATUSES = ["CONFIRMED", "IN_PROGRESS", "COMPLETED", "FARMED_OUT"]
 
-export default function DispatchPage() {
+function DispatchPageInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const openTripId = searchParams.get("open")
+  const { data: openTrip } = useTrip(openTripId ?? "")
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null)
   const [quickTrip, setQuickTrip] = useState<Trip | null>(null)
@@ -120,6 +123,15 @@ export default function DispatchPage() {
     document.addEventListener("keydown", handleKey)
     return () => document.removeEventListener("keydown", handleKey)
   }, [])
+
+  // When navigated from a notification (?open=tripId), open that trip's modal
+  useEffect(() => {
+    if (!openTrip) return
+    const tripDate = new Date(openTrip.pickupDate)
+    setSelectedDate(tripDate)
+    setSelectedTrip(openTrip)
+    router.replace("/dispatch")
+  }, [openTrip]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const { data: trips, isLoading } = useTrips(
     isSearching ? { search: committed } : { date: selectedDate }
@@ -512,5 +524,13 @@ export default function DispatchPage() {
       </Sheet>
     </div>
     </>
+  )
+}
+
+export default function DispatchPage() {
+  return (
+    <Suspense>
+      <DispatchPageInner />
+    </Suspense>
   )
 }

@@ -218,7 +218,7 @@ function NotificationCard({
 
   function handleClick() {
     if (isUnread) onRead(notif.id)
-    if (notif.entityType === "trip") router.push("/dispatch")
+    if (notif.entityType === "trip") router.push(`/dispatch?open=${notif.entityId}`)
     else if (notif.entityType === "affiliate") router.push("/affiliates")
   }
 

@@ -53,7 +53,7 @@ export async function PATCH(
       await createNotification({
         companyId: farmOut.fromCompanyId,
         type: "FARM_OUT_ACCEPTED",
-        title: "Farm-out accepted",
+        title: `Farm-out accepted · ${farmOut.trip.tripNumber}`,
         body: `${farmOut.toCompany.name} accepted job ${farmOut.trip.tripNumber}`,
         entityId: farmOut.tripId,
         entityType: "trip",
