@@ -417,9 +417,9 @@ const SERVICE_OPTIONS = [
   { value: "POINT_TO_POINT",  label: "Point to Point",  Icon: Route },
 ]
 
-interface QuoteFormProps { companyId: string; companyName: string; onClose: () => void }
+interface QuoteFormProps { companyId: string; companyName: string; vehicles: PublicVehicle[]; onClose: () => void }
 
-function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
+function QuoteForm({ companyId, companyName, vehicles, onClose }: QuoteFormProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [step, setStep] = useState<"form" | "success">("form")
   const [loading, setLoading] = useState(false)
@@ -843,7 +843,10 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
                     <div className="relative">
                       <select value={vehicle} onChange={e => setVehicle(e.target.value)}
                         className={`${fieldCls} appearance-none pr-8 cursor-pointer`}>
-                        {VEHICLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                        <option value="">No preference</option>
+                        {Array.from(new Set(vehicles.map(v => v.type))).map(type => (
+                          <option key={type} value={type}>{VEHICLE_TYPE_LABELS[type] ?? type}</option>
+                        ))}
                       </select>
                       <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
@@ -964,7 +967,7 @@ export default function SlugProfilePage() {
       )}
 
       {quoteOpen && (
-        <QuoteForm companyId={profile.id} companyName={profile.name} onClose={() => setQuoteOpen(false)} />
+        <QuoteForm companyId={profile.id} companyName={profile.name} vehicles={profile.vehicles} onClose={() => setQuoteOpen(false)} />
       )}
 
       {/* Top bar */}
