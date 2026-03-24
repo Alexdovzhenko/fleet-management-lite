@@ -10,7 +10,7 @@ import {
   ArrowLeft, Plane, Search, UserPlus, X, Plus,
   User, Users, Calendar, MapPin, Car, Building2,
   Star, Baby, Accessibility, UserCheck, ChevronDown, Ship,
-  FileText, AlertTriangle, CheckCircle2, Copy, Check,
+  FileText, AlertTriangle, CheckCircle2, Copy, Check, Pencil,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -1791,6 +1791,7 @@ function RouteBuilder({
   const [arrivingDepartingTo, setArrivingDepartingTo] = useState("")
   const [seaportInstructions, setSeaportInstructions] = useState("")
   const [addError, setAddError] = useState("")
+  const [isEditing, setIsEditing] = useState(false)
 
   const fetchFlightData = useCallback(async (stopId: string, flightNum: string) => {
     if (!flightNum.trim()) return
@@ -1861,6 +1862,41 @@ function RouteBuilder({
     setLocType(t); resetForm()
   }
 
+  function editStop(stop: StopEntry) {
+    setIsEditing(true)
+    setStops(prev => prev.filter(s => s.id !== stop.id))
+    setLocType(stop.locType)
+    setRole(stop.role)
+    setLocationName(stop.locationName ?? "")
+    setAddress1(stop.address ?? "")
+    setAddress2(stop.address2 ?? "")
+    setCity(stop.city ?? "")
+    setStateVal(stop.state ?? "")
+    setZip(stop.zip ?? "")
+    setCountry(stop.country ?? "")
+    setPhone(stop.phone ?? "")
+    setTimeIn(stop.timeIn ?? "")
+    setNotes(stop.notes ?? "")
+    setAirportCode(stop.airportCode ?? "")
+    setAirportName(stop.airportName ?? "")
+    setAirlineCode(stop.airlineCode ?? "")
+    setAirlineName(stop.airlineName ?? "")
+    setFlightNumber(stop.flightNumber ?? "")
+    setArrDep(stop.arrDep ?? "")
+    setTerminalGate(stop.terminalGate ?? "")
+    setAirportInstructions(stop.airportInstructions ?? "")
+    setEtaEtd(stop.etaEtd ?? "")
+    setMeetOption(stop.meetOption ?? "")
+    setTailNumber(stop.tailNumber ?? "")
+    setSeaportCode(stop.seaportCode ?? "")
+    setPortName(stop.portName ?? "")
+    setCruiseShipName(stop.cruiseShipName ?? "")
+    setCruiseLineName(stop.cruiseLineName ?? "")
+    setArrivingDepartingTo(stop.arrivingDepartingTo ?? "")
+    setSeaportInstructions(stop.seaportInstructions ?? "")
+    setAddError("")
+  }
+
   function handleAddressBookSelect(addr: import("@/lib/hooks/use-addresses").CompanyAddress) {
     if (addr.name)     setLocationName(addr.name)
     if (addr.address1) { setAddress1(addr.address1); setAddError("") }
@@ -1893,6 +1929,7 @@ function RouteBuilder({
       formattedAddress = [portName || seaportCode, seaportCode && portName ? `(${seaportCode})` : ""].filter(Boolean).join(" ") || seaportCode || portName
     }
 
+    setIsEditing(false)
     const newStopId = `s${Date.now()}`
     const rawFlight = flightNumber.trim()
     const rawAirline = airlineCode.trim().toUpperCase()
@@ -2303,7 +2340,8 @@ function RouteBuilder({
           {stops.map((stop) => (
             <div
               key={stop.id}
-              className={`flex items-start gap-3 px-3 py-2.5 border-b last:border-b-0 border-gray-100 ${ROLE_ROW_BG[stop.role]}`}
+              onClick={() => { if (!isEditing) editStop(stop) }}
+              className={`group flex items-start gap-3 px-3 py-2.5 border-b last:border-b-0 border-gray-100 transition-all ${ROLE_ROW_BG[stop.role]} ${isEditing ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:brightness-95"}`}
             >
               <span className="text-[11px] font-bold font-mono flex-shrink-0 mt-0.5 w-6">{ROLE_PREFIX[stop.role]}:</span>
               <div className="flex-1 min-w-0">
@@ -2331,13 +2369,21 @@ function RouteBuilder({
                   </div>
                 )}
               </div>
-              <button
-                type="button"
-                onClick={() => setStops(prev => prev.filter(s => s.id !== stop.id))}
-                className="text-gray-300 hover:text-red-400 transition-colors flex-shrink-0 mt-0.5"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
+              <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
+                {!isEditing && (
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Pencil className="w-3 h-3 text-gray-400" />
+                  </span>
+                )}
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); if (!isEditing) setStops(prev => prev.filter(s => s.id !== stop.id)) }}
+                  disabled={isEditing}
+                  className="text-gray-300 hover:text-red-400 transition-colors disabled:pointer-events-none"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           ))}
         </div>
