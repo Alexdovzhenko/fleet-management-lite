@@ -193,20 +193,30 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
   const [pickupDate, setPickupDate] = useState("")
   const [pickupTime, setPickupTime] = useState("")
   const [serviceType, setServiceType] = useState("")
-  const [pickup, setPickup]         = useState("")
-  const [stops, setStops]           = useState<string[]>([])
-  const [newStop, setNewStop]       = useState("")
+  const [pickupStreet, setPickupStreet] = useState("")
+  const [pickupCity,   setPickupCity]   = useState("")
+  const [pickupState,  setPickupState]  = useState("")
+  const [pickupZip,    setPickupZip]    = useState("")
+  const [stops, setStops] = useState<{ street: string; city: string; state: string; zip: string }[]>([])
+  const [newStop, setNewStop] = useState({ street: "", city: "", state: "", zip: "" })
   const [showStopInput, setShowStopInput] = useState(false)
-  const [dropoff, setDropoff]       = useState("")
+  const [dropoffStreet, setDropoffStreet] = useState("")
+  const [dropoffCity,   setDropoffCity]   = useState("")
+  const [dropoffState,  setDropoffState]  = useState("")
+  const [dropoffZip,    setDropoffZip]    = useState("")
   const [vehicle, setVehicle]       = useState("")
   const [pax, setPax]               = useState(1)
   const [notes, setNotes]           = useState("")
 
+  function composeAddress(street: string, city: string, state: string, zip: string) {
+    const csz = [city.trim(), [state.trim(), zip.trim()].filter(Boolean).join(" ")].filter(Boolean).join(", ")
+    return [street.trim(), csz].filter(Boolean).join(", ")
+  }
+
   function addStop() {
-    const val = newStop.trim()
-    if (!val) return
-    setStops(prev => [...prev, val])
-    setNewStop("")
+    if (!newStop.street.trim()) return
+    setStops(prev => [...prev, { ...newStop }])
+    setNewStop({ street: "", city: "", state: "", zip: "" })
     setShowStopInput(false)
   }
 
@@ -217,12 +227,17 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const isHourly = serviceType === "HOURLY"
-    if (!name || !phone || !pickupDate || !pickup || (!isHourly && !dropoff)) {
+    if (!name || !phone || !pickupDate || !pickupStreet || (!isHourly && !dropoffStreet)) {
       setError("Please fill in all required fields.")
       return
     }
     setError("")
     setLoading(true)
+
+    const pickupAddress  = composeAddress(pickupStreet, pickupCity, pickupState, pickupZip)
+    const dropoffAddress = isHourly
+      ? composeAddress(dropoffStreet, dropoffCity, dropoffState, dropoffZip) || "Hourly — return TBD"
+      : composeAddress(dropoffStreet, dropoffCity, dropoffState, dropoffZip)
 
     // Compose structured notes
     const noteParts: string[] = []
@@ -231,7 +246,7 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
       noteParts.push(`Service: ${svc?.label ?? serviceType}`)
     }
     if (stops.length > 0) {
-      noteParts.push(`Stops: ${stops.join(" → ")}`)
+      noteParts.push(`Stops: ${stops.map(s => composeAddress(s.street, s.city, s.state, s.zip)).join(" → ")}`)
     }
     if (notes.trim()) noteParts.push(notes.trim())
 
@@ -246,8 +261,8 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
           clientEmail:    email || undefined,
           pickupDate,
           pickupTime:     pickupTime || undefined,
-          pickupAddress:  pickup,
-          dropoffAddress: dropoff || (isHourly ? "Hourly — return TBD" : ""),
+          pickupAddress,
+          dropoffAddress,
           vehicleType:    vehicle || undefined,
           passengerCount: pax,
           notes:          noteParts.length > 0 ? noteParts.join("\n") : undefined,
@@ -360,40 +375,56 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
                   </div>
                 </div>
 
-                <div>
+                {/* Pickup */}
+                <div className="space-y-2">
                   <label className={labelCls}><MapPin className="w-3 h-3 inline mr-1 text-green-500" />Pickup Address *</label>
-                  <input value={pickup} onChange={e => setPickup(e.target.value)} placeholder="Hotel, address, or landmark" className={fieldCls} />
+                  <input value={pickupStreet} onChange={e => setPickupStreet(e.target.value)} placeholder="Street address" className={fieldCls} autoComplete="address-line1" />
+                  <div className="grid grid-cols-[1fr_80px_90px] gap-2">
+                    <input value={pickupCity}  onChange={e => setPickupCity(e.target.value)}  placeholder="City"  className={fieldCls} autoComplete="address-level2" />
+                    <input value={pickupState} onChange={e => setPickupState(e.target.value)} placeholder="State" className={fieldCls} autoComplete="address-level1" maxLength={2} />
+                    <input value={pickupZip}   onChange={e => setPickupZip(e.target.value)}   placeholder="ZIP"   className={fieldCls} autoComplete="postal-code" maxLength={10} />
+                  </div>
                 </div>
 
                 {/* Stops */}
                 {stops.map((stop, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <div className="flex items-center gap-2 flex-1 h-11 px-3.5 rounded-xl border border-gray-200 bg-white">
-                      <MapPin className="w-3 h-3 text-blue-400 flex-shrink-0" />
-                      <span className="text-sm text-gray-700 truncate flex-1">{stop}</span>
+                  <div key={i} className="rounded-xl border border-blue-100 bg-blue-50/40 p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />Stop {i + 1}
+                      </span>
+                      <button type="button" onClick={() => removeStop(i)}
+                        className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
-                    <button type="button" onClick={() => removeStop(i)}
-                      className="w-9 h-9 rounded-xl flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 border border-gray-200 transition-colors flex-shrink-0">
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    <p className="text-sm text-gray-700 font-medium">{composeAddress(stop.street, stop.city, stop.state, stop.zip)}</p>
                   </div>
                 ))}
 
                 {showStopInput ? (
-                  <div className="flex items-center gap-2">
-                    <input value={newStop} onChange={e => setNewStop(e.target.value)}
-                      onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); addStop() } if (e.key === "Escape") { setShowStopInput(false); setNewStop("") } }}
-                      placeholder="Enter stop address" autoFocus
-                      className={`${fieldCls} flex-1`} />
-                    <button type="button" onClick={addStop}
-                      className="h-11 px-4 rounded-xl text-sm font-medium text-white flex-shrink-0 transition-opacity hover:opacity-90"
-                      style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)" }}>
-                      Add
-                    </button>
-                    <button type="button" onClick={() => { setShowStopInput(false); setNewStop("") }}
-                      className="w-11 h-11 rounded-xl flex items-center justify-center text-gray-400 hover:bg-gray-100 border border-gray-200 flex-shrink-0">
-                      <X className="w-4 h-4" />
-                    </button>
+                  <div className="rounded-xl border border-blue-200 bg-blue-50/40 p-3 space-y-2">
+                    <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />New Stop
+                    </p>
+                    <input value={newStop.street} onChange={e => setNewStop(s => ({ ...s, street: e.target.value }))}
+                      placeholder="Street address" autoFocus className={fieldCls} />
+                    <div className="grid grid-cols-[1fr_80px_90px] gap-2">
+                      <input value={newStop.city}  onChange={e => setNewStop(s => ({ ...s, city:  e.target.value }))} placeholder="City"  className={fieldCls} />
+                      <input value={newStop.state} onChange={e => setNewStop(s => ({ ...s, state: e.target.value }))} placeholder="State" className={fieldCls} maxLength={2} />
+                      <input value={newStop.zip}   onChange={e => setNewStop(s => ({ ...s, zip:   e.target.value }))} placeholder="ZIP"   className={fieldCls} maxLength={10} />
+                    </div>
+                    <div className="flex gap-2 pt-1">
+                      <button type="button" onClick={addStop}
+                        className="flex-1 h-10 rounded-xl text-sm font-medium text-white transition-opacity hover:opacity-90"
+                        style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)" }}>
+                        Add Stop
+                      </button>
+                      <button type="button" onClick={() => { setShowStopInput(false); setNewStop({ street: "", city: "", state: "", zip: "" }) }}
+                        className="h-10 px-4 rounded-xl text-sm font-medium text-gray-500 bg-white border border-gray-200 hover:bg-gray-50 transition-colors">
+                        Cancel
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <button type="button" onClick={() => setShowStopInput(true)}
@@ -409,9 +440,14 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
                       <ArrowRight className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
                       <div className="flex-1 h-px bg-gray-200" />
                     </div>
-                    <div>
+                    <div className="space-y-2">
                       <label className={labelCls}><MapPin className="w-3 h-3 inline mr-1 text-red-400" />Drop-off Address *</label>
-                      <input value={dropoff} onChange={e => setDropoff(e.target.value)} placeholder="Destination address" className={fieldCls} />
+                      <input value={dropoffStreet} onChange={e => setDropoffStreet(e.target.value)} placeholder="Street address" className={fieldCls} autoComplete="address-line1" />
+                      <div className="grid grid-cols-[1fr_80px_90px] gap-2">
+                        <input value={dropoffCity}  onChange={e => setDropoffCity(e.target.value)}  placeholder="City"  className={fieldCls} autoComplete="address-level2" />
+                        <input value={dropoffState} onChange={e => setDropoffState(e.target.value)} placeholder="State" className={fieldCls} autoComplete="address-level1" maxLength={2} />
+                        <input value={dropoffZip}   onChange={e => setDropoffZip(e.target.value)}   placeholder="ZIP"   className={fieldCls} autoComplete="postal-code" maxLength={10} />
+                      </div>
                     </div>
                   </>
                 )}
@@ -419,7 +455,7 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
                 {isHourly && (
                   <div>
                     <label className={labelCls}><Clock className="w-3 h-3 inline mr-1 text-amber-500" />Duration / Return Area</label>
-                    <input value={dropoff} onChange={e => setDropoff(e.target.value)} placeholder="e.g. 4 hours, return to pickup area" className={fieldCls} />
+                    <input value={dropoffStreet} onChange={e => setDropoffStreet(e.target.value)} placeholder="e.g. 4 hours, return to pickup area" className={fieldCls} />
                   </div>
                 )}
               </div>
