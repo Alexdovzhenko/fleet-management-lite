@@ -435,8 +435,8 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
   const [pickupCity,   setPickupCity]   = useState("")
   const [pickupState,  setPickupState]  = useState("")
   const [pickupZip,    setPickupZip]    = useState("")
-  const [stops, setStops] = useState<{ street: string; city: string; state: string; zip: string }[]>([])
-  const [newStop, setNewStop] = useState({ street: "", city: "", state: "", zip: "" })
+  const [stops, setStops] = useState<{ type: "address" | "airport"; street: string; city: string; state: string; zip: string; airportCode: string; airportName: string }[]>([])
+  const [newStop, setNewStop] = useState({ type: "" as "" | "address" | "airport", street: "", city: "", state: "", zip: "", airportCode: "", airportName: "" })
   const [showStopInput, setShowStopInput] = useState(false)
   const [dropoffStreet, setDropoffStreet] = useState("")
   const [dropoffCity,   setDropoffCity]   = useState("")
@@ -457,9 +457,16 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
   }
 
   function addStop() {
-    if (!newStop.street.trim()) return
-    setStops(prev => [...prev, { ...newStop }])
-    setNewStop({ street: "", city: "", state: "", zip: "" })
+    if (newStop.type === "address" && !newStop.street.trim()) return
+    if (newStop.type === "airport" && !newStop.airportCode) return
+    if (!newStop.type) return
+    setStops(prev => [...prev, { ...newStop, type: newStop.type as "address" | "airport" }])
+    setNewStop({ type: "", street: "", city: "", state: "", zip: "", airportCode: "", airportName: "" })
+    setShowStopInput(false)
+  }
+
+  function resetNewStop() {
+    setNewStop({ type: "", street: "", city: "", state: "", zip: "", airportCode: "", airportName: "" })
     setShowStopInput(false)
   }
 
@@ -508,7 +515,7 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
       noteParts.push(`Flight: ${flightNumber}`)
     }
     if (stops.length > 0) {
-      noteParts.push(`Stops: ${stops.map(s => composeAddress(s.street, s.city, s.state, s.zip)).join(" → ")}`)
+      noteParts.push(`Stops: ${stops.map(s => s.type === "airport" ? `${s.airportCode} — ${s.airportName}` : composeAddress(s.street, s.city, s.state, s.zip)).join(" → ")}`)
     }
     if (notes.trim()) noteParts.push(notes.trim())
 
@@ -684,33 +691,72 @@ function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
-                    <p className="text-sm text-gray-700 font-medium">{composeAddress(stop.street, stop.city, stop.state, stop.zip)}</p>
+                    {stop.type === "airport"
+                      ? <p className="text-sm text-gray-700 font-medium flex items-center gap-1.5"><Plane className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />{stop.airportCode} — {stop.airportName}</p>
+                      : <p className="text-sm text-gray-700 font-medium">{composeAddress(stop.street, stop.city, stop.state, stop.zip)}</p>
+                    }
                   </div>
                 ))}
 
                 {showStopInput ? (
-                  <div className="rounded-xl border border-blue-200 bg-blue-50/40 p-3 space-y-2">
-                    <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />New Stop
-                    </p>
-                    <input value={newStop.street} onChange={e => setNewStop(s => ({ ...s, street: e.target.value }))}
-                      placeholder="Street address" autoFocus className={fieldCls} />
-                    <div className="grid grid-cols-[1fr_80px_90px] gap-2">
-                      <input value={newStop.city}  onChange={e => setNewStop(s => ({ ...s, city:  e.target.value }))} placeholder="City"  className={fieldCls} />
-                      <input value={newStop.state} onChange={e => setNewStop(s => ({ ...s, state: e.target.value }))} placeholder="State" className={fieldCls} maxLength={2} />
-                      <input value={newStop.zip}   onChange={e => setNewStop(s => ({ ...s, zip:   e.target.value }))} placeholder="ZIP"   className={fieldCls} maxLength={10} />
-                    </div>
-                    <div className="flex gap-2 pt-1">
-                      <button type="button" onClick={addStop}
-                        className="flex-1 h-10 rounded-xl text-sm font-medium text-white transition-opacity hover:opacity-90"
-                        style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)" }}>
-                        Add Stop
-                      </button>
-                      <button type="button" onClick={() => { setShowStopInput(false); setNewStop({ street: "", city: "", state: "", zip: "" }) }}
-                        className="h-10 px-4 rounded-xl text-sm font-medium text-gray-500 bg-white border border-gray-200 hover:bg-gray-50 transition-colors">
-                        Cancel
+                  <div className="rounded-xl border border-blue-200 bg-blue-50/40 p-3 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />New Stop
+                      </p>
+                      <button type="button" onClick={resetNewStop} className="w-6 h-6 rounded-md flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-white transition-colors">
+                        <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
+
+                    {/* Step 1: choose type */}
+                    {!newStop.type && (
+                      <div className="grid grid-cols-2 gap-2">
+                        <button type="button" onClick={() => setNewStop(s => ({ ...s, type: "address" }))}
+                          className="flex items-center justify-center gap-2 h-10 rounded-xl border border-gray-200 bg-white text-sm font-medium text-gray-600 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50/50 transition-all">
+                          <MapPin className="w-3.5 h-3.5" />Address
+                        </button>
+                        <button type="button" onClick={() => setNewStop(s => ({ ...s, type: "airport" }))}
+                          className="flex items-center justify-center gap-2 h-10 rounded-xl border border-gray-200 bg-white text-sm font-medium text-gray-600 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50/50 transition-all">
+                          <Plane className="w-3.5 h-3.5" />Airport
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Address fields */}
+                    {newStop.type === "address" && (
+                      <>
+                        <input value={newStop.street} onChange={e => setNewStop(s => ({ ...s, street: e.target.value }))}
+                          placeholder="Street address" autoFocus className={fieldCls} />
+                        <div className="grid grid-cols-[1fr_80px_90px] gap-2">
+                          <input value={newStop.city}  onChange={e => setNewStop(s => ({ ...s, city:  e.target.value }))} placeholder="City"  className={fieldCls} />
+                          <input value={newStop.state} onChange={e => setNewStop(s => ({ ...s, state: e.target.value }))} placeholder="State" className={fieldCls} maxLength={2} />
+                          <input value={newStop.zip}   onChange={e => setNewStop(s => ({ ...s, zip:   e.target.value }))} placeholder="ZIP"   className={fieldCls} maxLength={10} />
+                        </div>
+                      </>
+                    )}
+
+                    {/* Airport field */}
+                    {newStop.type === "airport" && (
+                      <QuoteAirportPicker
+                        value={newStop.airportCode}
+                        onSelect={(iata, name) => setNewStop(s => ({ ...s, airportCode: iata, airportName: name }))}
+                      />
+                    )}
+
+                    {newStop.type && (
+                      <div className="flex gap-2 pt-1">
+                        <button type="button" onClick={addStop}
+                          className="flex-1 h-10 rounded-xl text-sm font-medium text-white transition-opacity hover:opacity-90"
+                          style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)" }}>
+                          Add Stop
+                        </button>
+                        <button type="button" onClick={() => setNewStop(s => ({ ...s, type: "" }))}
+                          className="h-10 px-4 rounded-xl text-sm font-medium text-gray-500 bg-white border border-gray-200 hover:bg-gray-50 transition-colors">
+                          Back
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <button type="button" onClick={() => setShowStopInput(true)}
