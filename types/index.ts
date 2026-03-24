@@ -334,3 +334,25 @@ export interface FarmOut {
   createdAt: string
   updatedAt: string
 }
+
+export type QuoteRequestStatus = 'NEW' | 'PENDING' | 'ACCEPTED' | 'DECLINED'
+
+export interface QuoteRequest {
+  id: string
+  companyId: string
+  clientName: string
+  clientPhone: string
+  clientEmail?: string | null
+  pickupDate: string
+  pickupTime?: string | null
+  pickupAddress: string
+  dropoffAddress: string
+  vehicleType?: VehicleType | null
+  passengerCount: number
+  notes?: string | null
+  status: QuoteRequestStatus
+  price?: string | null
+  tripId?: string | null
+  createdAt: string
+  updatedAt: string
+}

@@ -13,6 +13,7 @@ import {
   FileText,
   Settings,
   Zap,
+  MessageSquare,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -25,6 +26,7 @@ const navItems = [
   { href: "/drivers", icon: UserCheck, label: "Drivers" },
   { href: "/vehicles", icon: Car, label: "Vehicles" },
   { href: "/invoices", icon: FileText, label: "Invoices" },
+  { href: "/quote-requests", icon: MessageSquare, label: "Quotes" },
   { href: "/settings", icon: Settings, label: "Settings" },
 ]
 

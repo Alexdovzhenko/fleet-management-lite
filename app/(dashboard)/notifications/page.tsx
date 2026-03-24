@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   Bell, BellOff, CheckCheck, UserCheck, UserX, UserPlus,
   ArrowRightLeft, Clock, MapPin, FileText, Activity, XCircle,
-  Car, ArrowUpRight, Inbox,
+  Car, ArrowUpRight, Inbox, MessageSquare,
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import type { AppNotification, AppNotificationType } from "@prisma/client"
@@ -31,7 +31,7 @@ type TypeMeta = {
   label: string
 }
 
-const TYPE_META: Record<AppNotificationType, TypeMeta> = {
+const TYPE_META: Record<string, TypeMeta> = {
   AFFILIATE_INVITE_RECEIVED: {
     icon: UserPlus,
     gradient: "from-violet-500 to-purple-600",
@@ -144,6 +144,14 @@ const TYPE_META: Record<AppNotificationType, TypeMeta> = {
     chipBg: "bg-rose-50", chipText: "text-rose-700",
     label: "Reservations",
   },
+  QUOTE_REQUEST_RECEIVED: {
+    icon: MessageSquare,
+    gradient: "from-blue-500 to-indigo-600",
+    accent: "#2563eb",
+    accentBg: "rgba(37,99,235,0.03)",
+    chipBg: "bg-blue-50", chipText: "text-blue-700",
+    label: "Quote Requests",
+  },
 }
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
@@ -220,6 +228,7 @@ function NotificationCard({
     if (isUnread) onRead(notif.id)
     if (notif.entityType === "trip") router.push(`/dispatch?open=${notif.entityId}`)
     else if (notif.entityType === "affiliate") router.push("/affiliates")
+    else if (notif.entityType === "quote_request") router.push(`/quote-requests?open=${notif.entityId}`)
   }
 
   return (

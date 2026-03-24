@@ -1,10 +1,11 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useParams } from "next/navigation"
 import {
   Mail, Phone, MapPin, Globe, Car, ChevronLeft, ChevronRight, X,
-  Calendar, ExternalLink,
+  Calendar, ExternalLink, MessageSquare, CheckCircle2, ChevronDown,
+  User, Clock, ArrowRight, Users,
 } from "lucide-react"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -157,6 +158,223 @@ function SocialIcons({ instagram, facebook, tiktok, x, linkedin }: {
   )
 }
 
+// ─── Quote Request Form ────────────────────────────────────────────────────────
+
+const VEHICLE_OPTIONS = [
+  { value: "", label: "No preference" },
+  { value: "SEDAN",       label: "Sedan" },
+  { value: "SUV",         label: "SUV" },
+  { value: "STRETCH_LIMO",label: "Stretch Limo" },
+  { value: "SPRINTER",    label: "Sprinter Van" },
+  { value: "PARTY_BUS",   label: "Party Bus" },
+  { value: "COACH",       label: "Coach Bus" },
+  { value: "OTHER",       label: "Other" },
+]
+
+interface QuoteFormProps { companyId: string; companyName: string; onClose: () => void }
+
+function QuoteForm({ companyId, companyName, onClose }: QuoteFormProps) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [step, setStep] = useState<"form" | "success">("form")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+
+  const [name, setName]           = useState("")
+  const [phone, setPhone]         = useState("")
+  const [email, setEmail]         = useState("")
+  const [pickupDate, setPickupDate] = useState("")
+  const [pickupTime, setPickupTime] = useState("")
+  const [pickup, setPickup]       = useState("")
+  const [dropoff, setDropoff]     = useState("")
+  const [vehicle, setVehicle]     = useState("")
+  const [pax, setPax]             = useState(1)
+  const [notes, setNotes]         = useState("")
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!name || !phone || !pickupDate || !pickup || !dropoff) {
+      setError("Please fill in all required fields.")
+      return
+    }
+    setError("")
+    setLoading(true)
+    try {
+      const res = await fetch("/api/public/quote-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          companyId,
+          clientName:    name,
+          clientPhone:   phone,
+          clientEmail:   email || undefined,
+          pickupDate,
+          pickupTime:    pickupTime || undefined,
+          pickupAddress: pickup,
+          dropoffAddress:dropoff,
+          vehicleType:   vehicle || undefined,
+          passengerCount:pax,
+          notes:         notes || undefined,
+        }),
+      })
+      if (!res.ok) throw new Error("Failed to submit")
+      setStep("success")
+    } catch {
+      setError("Something went wrong. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fieldCls = "w-full h-11 px-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
+  const labelCls = "block text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-1.5"
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}>
+      <div ref={scrollRef} className="bg-white w-full sm:max-w-lg sm:rounded-3xl rounded-t-3xl shadow-2xl max-h-[92vh] flex flex-col overflow-hidden">
+
+        {step === "success" ? (
+          <div className="flex flex-col items-center justify-center px-8 py-14 text-center gap-4">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-2"
+              style={{ background: "linear-gradient(135deg,#d1fae5,#a7f3d0)" }}>
+              <CheckCircle2 className="w-8 h-8 text-emerald-600" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900">Request Sent!</h2>
+            <p className="text-sm text-gray-500 leading-relaxed max-w-xs">
+              {companyName} will review your request and reach out with pricing shortly.
+            </p>
+            <button onClick={onClose}
+              className="mt-4 w-full h-12 rounded-2xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)" }}>
+              Done
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100 flex-shrink-0">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">Request a Quote</h2>
+                <p className="text-xs text-gray-400 mt-0.5">{companyName} · No commitment required</p>
+              </div>
+              <button onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Scrollable form */}
+            <form onSubmit={handleSubmit} className="overflow-y-auto flex-1 px-6 py-5 space-y-4">
+
+              {/* Contact */}
+              <div className="rounded-2xl border border-gray-100 bg-gray-50/60 p-4 space-y-3">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                  <User className="w-3 h-3" />Contact Info
+                </p>
+                <div>
+                  <label className={labelCls}>Name *</label>
+                  <input value={name} onChange={e => setName(e.target.value)} placeholder="Your full name" className={fieldCls} autoComplete="name" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className={labelCls}>Phone *</label>
+                    <input value={phone} onChange={e => setPhone(e.target.value)} type="tel" placeholder="(555) 000-0000" className={fieldCls} autoComplete="tel" />
+                  </div>
+                  <div>
+                    <label className={labelCls}>Email</label>
+                    <input value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder="Optional" className={fieldCls} autoComplete="email" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Trip details */}
+              <div className="rounded-2xl border border-gray-100 bg-gray-50/60 p-4 space-y-3">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                  <Calendar className="w-3 h-3" />Trip Details
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className={labelCls}>Date *</label>
+                    <input value={pickupDate} onChange={e => setPickupDate(e.target.value)} type="date" className={fieldCls} />
+                  </div>
+                  <div>
+                    <label className={labelCls}>Time</label>
+                    <input value={pickupTime} onChange={e => setPickupTime(e.target.value)} type="time" className={fieldCls} />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelCls}><MapPin className="w-3 h-3 inline mr-1 text-green-500" />Pickup Address *</label>
+                  <input value={pickup} onChange={e => setPickup(e.target.value)} placeholder="Hotel, address, or landmark" className={fieldCls} />
+                </div>
+                <div className="flex items-center gap-2 py-0.5">
+                  <div className="flex-1 h-px bg-gray-200" />
+                  <ArrowRight className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
+                  <div className="flex-1 h-px bg-gray-200" />
+                </div>
+                <div>
+                  <label className={labelCls}><MapPin className="w-3 h-3 inline mr-1 text-red-400" />Drop-off Address *</label>
+                  <input value={dropoff} onChange={e => setDropoff(e.target.value)} placeholder="Destination address" className={fieldCls} />
+                </div>
+              </div>
+
+              {/* Preferences */}
+              <div className="rounded-2xl border border-gray-100 bg-gray-50/60 p-4 space-y-3">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                  <Car className="w-3 h-3" />Preferences
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className={labelCls}><Users className="w-3 h-3 inline mr-1" />Passengers *</label>
+                    <div className="flex items-center gap-2">
+                      <button type="button" onClick={() => setPax(p => Math.max(1, p - 1))}
+                        className="w-11 h-11 rounded-xl border border-gray-200 bg-white text-gray-600 font-bold text-lg flex items-center justify-center hover:bg-gray-50 transition-colors flex-shrink-0">−</button>
+                      <span className="flex-1 text-center text-sm font-semibold text-gray-900">{pax}</span>
+                      <button type="button" onClick={() => setPax(p => p + 1)}
+                        className="w-11 h-11 rounded-xl border border-gray-200 bg-white text-gray-600 font-bold text-lg flex items-center justify-center hover:bg-gray-50 transition-colors flex-shrink-0">+</button>
+                    </div>
+                  </div>
+                  <div>
+                    <label className={labelCls}>Vehicle Type</label>
+                    <div className="relative">
+                      <select value={vehicle} onChange={e => setVehicle(e.target.value)}
+                        className={`${fieldCls} appearance-none pr-8 cursor-pointer`}>
+                        {VEHICLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className={labelCls}><Clock className="w-3 h-3 inline mr-1" />Special Instructions</label>
+                  <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={2}
+                    placeholder="Flight number, special requests, accessibility needs…"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all resize-none" />
+                </div>
+              </div>
+
+              {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+            </form>
+
+            {/* Submit */}
+            <div className="px-6 pb-6 pt-3 border-t border-gray-100 flex-shrink-0">
+              <button onClick={handleSubmit} disabled={loading}
+                className="w-full h-13 rounded-2xl text-sm font-semibold text-white transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)", height: 52 }}>
+                {loading ? (
+                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                ) : <MessageSquare className="w-4 h-4" />}
+                {loading ? "Sending…" : "Submit Quote Request"}
+              </button>
+              <p className="text-center text-[11px] text-gray-400 mt-2.5">No payment required · {companyName} will follow up with pricing</p>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function SlugProfilePage() {
@@ -167,6 +385,7 @@ export default function SlugProfilePage() {
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null)
+  const [quoteOpen, setQuoteOpen] = useState(false)
 
   useEffect(() => {
     setLoading(true)
@@ -237,6 +456,10 @@ export default function SlugProfilePage() {
         <Lightbox photos={allPhotos} index={lightboxIdx} onClose={() => setLightboxIdx(null)} onNav={setLightboxIdx} />
       )}
 
+      {quoteOpen && (
+        <QuoteForm companyId={profile.id} companyName={profile.name} onClose={() => setQuoteOpen(false)} />
+      )}
+
       {/* Top bar */}
       <div className="border-b border-white/60 bg-white/70 backdrop-blur-sm sticky top-0" style={{ zIndex: 50 }}>
         <div className="max-w-5xl mx-auto px-6 flex items-center justify-between" style={{ height: 52 }}>
@@ -246,12 +469,22 @@ export default function SlugProfilePage() {
             </div>
             <span className="text-sm font-bold text-gray-900">Livery Connect</span>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold"
-            style={{
-              background: profileType === "client" ? "linear-gradient(135deg,#fef3c7,#fde68a)" : "linear-gradient(135deg,#dbeafe,#bfdbfe)",
-              color: profileType === "client" ? "#92400e" : "#1e40af",
-            }}>
-            {profileType === "client" ? "Client Profile" : "Affiliate Profile"}
+          <div className="flex items-center gap-3">
+            {profileType === "client" && (
+              <button onClick={() => setQuoteOpen(true)}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold text-white transition-opacity hover:opacity-90"
+                style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)" }}>
+                <MessageSquare className="w-3 h-3" />
+                Request a Quote
+              </button>
+            )}
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold"
+              style={{
+                background: profileType === "client" ? "linear-gradient(135deg,#fef3c7,#fde68a)" : "linear-gradient(135deg,#dbeafe,#bfdbfe)",
+                color: profileType === "client" ? "#92400e" : "#1e40af",
+              }}>
+              {profileType === "client" ? "Client Profile" : "Affiliate Profile"}
+            </div>
           </div>
         </div>
       </div>
@@ -285,6 +518,24 @@ export default function SlugProfilePage() {
             <SocialIcons instagram={profile.instagramUrl} facebook={profile.facebookUrl} tiktok={profile.tiktokUrl} x={profile.xUrl} linkedin={profile.linkedinUrl} />
           </div>
         </div>
+
+        {/* Request a Quote CTA */}
+        {profileType === "client" && (
+          <div className="bg-white rounded-2xl border border-gray-100/80 shadow-sm overflow-hidden">
+            <div className="px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-gray-900">Ready to book your ride?</p>
+                <p className="text-xs text-gray-400 mt-0.5">Submit a free quote request — no commitment required.</p>
+              </div>
+              <button onClick={() => setQuoteOpen(true)}
+                className="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 whitespace-nowrap"
+                style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)" }}>
+                <MessageSquare className="w-4 h-4" />
+                Request a Quote
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* About */}
         {profile.about && (

@@ -56,6 +56,7 @@ model Company {
 
   appNotifications AppNotification[]
   addresses        CompanyAddress[]
+  quoteRequests    QuoteRequest[]
 }
 
 model CompanyAddress {
@@ -264,8 +265,8 @@ model Trip {
   vehicleId String?
   vehicle   Vehicle? @relation(fields: [vehicleId], references: [id])
 
-  customerId String
-  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id])
 
   price        Decimal? @db.Decimal(10, 2)
   gratuity     Decimal? @db.Decimal(10, 2)
@@ -549,6 +550,45 @@ enum AppNotificationType {
   TRIP_STATUS_CHANGED
   TRIP_DRIVER_CHANGED
   TRIP_CANCELLED
+  QUOTE_REQUEST_RECEIVED
+}
+
+// ============ QUOTE REQUESTS ============
+
+enum QuoteRequestStatus {
+  NEW
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model QuoteRequest {
+  id             String             @id @default(cuid())
+  companyId      String
+  company        Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  clientName     String
+  clientPhone    String
+  clientEmail    String?
+
+  pickupDate     String
+  pickupTime     String?
+  pickupAddress  String
+  dropoffAddress String
+  vehicleType    VehicleType?
+  passengerCount Int                @default(1)
+  notes          String?
+
+  status         QuoteRequestStatus @default(NEW)
+  price          Decimal?           @db.Decimal(10, 2)
+
+  tripId         String?            @unique
+
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([companyId])
+  @@index([status])
 }
 
 model AppNotification {

@@ -45,7 +45,7 @@ Trip: ${trip.pickupTime} pickup from ${trip.pickupAddress} to ${trip.dropoffAddr
 Trip type: ${trip.tripType}
 Passengers: ${trip.passengerCount}
 VIP: ${trip.vip}
-Customer preferred driver ID: ${trip.customer.preferredDriverId || "none"}
+Customer preferred driver ID: ${trip.customer?.preferredDriverId || "none"}
 
 Available drivers:
 ${drivers.map((d) => `- ${d.name} (ID: ${d.id}): ${d.trips.length} trips today, currently ${d.trips.find((t: { status: string }) => ["DISPATCHED", "DRIVER_EN_ROUTE", "DRIVER_ARRIVED", "IN_PROGRESS"].includes(t.status)) ? "BUSY" : "AVAILABLE"}`).join("\n")}
