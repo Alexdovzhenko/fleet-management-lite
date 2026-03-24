@@ -599,6 +599,7 @@ interface StopEntry {
   flightNumber: string
   // Structured address fields
   locationName?: string
+  address1?: string
   address2?: string
   city?: string
   state?: string
@@ -1868,7 +1869,7 @@ function RouteBuilder({
     setLocType(stop.locType)
     setRole(stop.role)
     setLocationName(stop.locationName ?? "")
-    setAddress1(stop.address ?? "")
+    setAddress1(stop.address1 ?? "")
     setAddress2(stop.address2 ?? "")
     setCity(stop.city ?? "")
     setStateVal(stop.state ?? "")
@@ -1944,6 +1945,7 @@ function RouteBuilder({
       flightNumber: fullFlightNum,
       // Address / FBO fields
       locationName: locationName.trim() || undefined,
+      address1: address1.trim() || undefined,
       address2: address2.trim() || undefined,
       city: city.trim() || undefined,
       state: stateVal.trim() || undefined,
