@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { useParams } from "next/navigation"
+import { US_CITIES } from "@/lib/us-cities"
 import {
   Mail, Phone, MapPin, Globe, Car, ChevronLeft, ChevronRight, X,
   Calendar, ExternalLink, MessageSquare, CheckCircle2, ChevronDown,
@@ -397,6 +398,78 @@ function QuoteAirlinePicker({ value, onSelect }: {
   )
 }
 
+// ─── City / State Autocomplete ────────────────────────────────────────────────
+
+function CityStatePicker({ cityValue, stateValue, zipValue, onCityChange, onStateChange, onZipChange, fieldCls }: {
+  cityValue: string; stateValue: string; zipValue: string
+  onCityChange: (v: string) => void; onStateChange: (v: string) => void; onZipChange: (v: string) => void
+  fieldCls: string
+}) {
+  const [open, setOpen]   = useState(false)
+  const [style, setStyle] = useState<React.CSSProperties>({})
+  const ref     = useRef<HTMLDivElement>(null)
+  const dropRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      const t = e.target as Node
+      if (ref.current && !ref.current.contains(t) && dropRef.current && !dropRef.current.contains(t)) setOpen(false)
+    }
+    document.addEventListener("mousedown", handle)
+    return () => document.removeEventListener("mousedown", handle)
+  }, [])
+
+  const filtered = cityValue.trim().length >= 1
+    ? US_CITIES.filter(c =>
+        c.city.toLowerCase().startsWith(cityValue.toLowerCase()) ||
+        c.city.toLowerCase().includes(cityValue.toLowerCase())
+      ).slice(0, 10)
+    : []
+
+  function openDrop() {
+    if (!ref.current) return
+    const r = ref.current.getBoundingClientRect()
+    const below = window.innerHeight - r.bottom
+    setStyle(below < 240
+      ? { position: "fixed", bottom: window.innerHeight - r.top + 4, left: r.left, minWidth: Math.max(r.width, 260), zIndex: 10000 }
+      : { position: "fixed", top: r.bottom + 4, left: r.left, minWidth: Math.max(r.width, 260), zIndex: 10000 }
+    )
+    setOpen(true)
+  }
+
+  return (
+    <div className="grid grid-cols-[1fr_80px_90px] gap-2">
+      <div ref={ref} className="relative">
+        <input
+          value={cityValue}
+          onChange={e => { onCityChange(e.target.value); setTimeout(openDrop, 0) }}
+          onFocus={openDrop}
+          placeholder="City"
+          autoComplete="off"
+          className={fieldCls}
+        />
+        {open && filtered.length > 0 && createPortal(
+          <div ref={dropRef} style={style} className="bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-hidden">
+            <div className="max-h-56 overflow-y-auto">
+              {filtered.map((c, i) => (
+                <button key={i} type="button"
+                  onMouseDown={e => { e.preventDefault(); onCityChange(c.city); onStateChange(c.state); setOpen(false) }}
+                  className="w-full text-left px-4 py-2.5 hover:bg-blue-50 transition-colors flex items-center justify-between gap-3">
+                  <span className="text-sm text-gray-800 font-medium">{c.city}</span>
+                  <span className="text-xs font-mono font-bold text-indigo-500 flex-shrink-0">{c.state}</span>
+                </button>
+              ))}
+            </div>
+          </div>,
+          document.body
+        )}
+      </div>
+      <input value={stateValue} onChange={e => onStateChange(e.target.value.toUpperCase())} placeholder="State" className={fieldCls} maxLength={2} autoComplete="off" />
+      <input value={zipValue} onChange={e => onZipChange(e.target.value)} placeholder="ZIP" className={fieldCls} maxLength={10} autoComplete="postal-code" />
+    </div>
+  )
+}
+
 // ─── Quote Request Form ────────────────────────────────────────────────────────
 
 const VEHICLE_OPTIONS = [
@@ -666,11 +739,7 @@ function QuoteForm({ companyId, companyName, vehicles, onClose }: QuoteFormProps
                   <div className="space-y-2">
                     <label className={labelCls}><MapPin className="w-3 h-3 inline mr-1 text-green-500" />Pickup Address *</label>
                     <input value={pickupStreet} onChange={e => setPickupStreet(e.target.value)} placeholder="Street address" className={fieldCls} autoComplete="address-line1" />
-                    <div className="grid grid-cols-[1fr_80px_90px] gap-2">
-                      <input value={pickupCity}  onChange={e => setPickupCity(e.target.value)}  placeholder="City"  className={fieldCls} autoComplete="address-level2" />
-                      <input value={pickupState} onChange={e => setPickupState(e.target.value)} placeholder="State" className={fieldCls} autoComplete="address-level1" maxLength={2} />
-                      <input value={pickupZip}   onChange={e => setPickupZip(e.target.value)}   placeholder="ZIP"   className={fieldCls} autoComplete="postal-code" maxLength={10} />
-                    </div>
+                    <CityStatePicker cityValue={pickupCity} stateValue={pickupState} zipValue={pickupZip} onCityChange={setPickupCity} onStateChange={setPickupState} onZipChange={setPickupZip} fieldCls={fieldCls} />
                   </div>
                 )}
 
@@ -741,11 +810,7 @@ function QuoteForm({ companyId, companyName, vehicles, onClose }: QuoteFormProps
                       <>
                         <input value={newStop.street} onChange={e => setNewStop(s => ({ ...s, street: e.target.value }))}
                           placeholder="Street address" autoFocus className={fieldCls} />
-                        <div className="grid grid-cols-[1fr_80px_90px] gap-2">
-                          <input value={newStop.city}  onChange={e => setNewStop(s => ({ ...s, city:  e.target.value }))} placeholder="City"  className={fieldCls} />
-                          <input value={newStop.state} onChange={e => setNewStop(s => ({ ...s, state: e.target.value }))} placeholder="State" className={fieldCls} maxLength={2} />
-                          <input value={newStop.zip}   onChange={e => setNewStop(s => ({ ...s, zip:   e.target.value }))} placeholder="ZIP"   className={fieldCls} maxLength={10} />
-                        </div>
+                        <CityStatePicker cityValue={newStop.city} stateValue={newStop.state} zipValue={newStop.zip} onCityChange={v => setNewStop(s => ({ ...s, city: v }))} onStateChange={v => setNewStop(s => ({ ...s, state: v }))} onZipChange={v => setNewStop(s => ({ ...s, zip: v }))} fieldCls={fieldCls} />
                       </>
                     )}
 
@@ -811,11 +876,7 @@ function QuoteForm({ companyId, companyName, vehicles, onClose }: QuoteFormProps
                     <div className="space-y-2">
                       <label className={labelCls}><MapPin className="w-3 h-3 inline mr-1 text-red-400" />Drop-off Address *</label>
                       <input value={dropoffStreet} onChange={e => setDropoffStreet(e.target.value)} placeholder="Street address" className={fieldCls} autoComplete="address-line1" />
-                      <div className="grid grid-cols-[1fr_80px_90px] gap-2">
-                        <input value={dropoffCity}  onChange={e => setDropoffCity(e.target.value)}  placeholder="City"  className={fieldCls} autoComplete="address-level2" />
-                        <input value={dropoffState} onChange={e => setDropoffState(e.target.value)} placeholder="State" className={fieldCls} autoComplete="address-level1" maxLength={2} />
-                        <input value={dropoffZip}   onChange={e => setDropoffZip(e.target.value)}   placeholder="ZIP"   className={fieldCls} autoComplete="postal-code" maxLength={10} />
-                      </div>
+                      <CityStatePicker cityValue={dropoffCity} stateValue={dropoffState} zipValue={dropoffZip} onCityChange={setDropoffCity} onStateChange={setDropoffState} onZipChange={setDropoffZip} fieldCls={fieldCls} />
                     </div>
                   </>
                 ) : (
