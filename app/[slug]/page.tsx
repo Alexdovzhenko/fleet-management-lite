@@ -464,7 +464,16 @@ function CityStatePicker({ cityValue, stateValue, zipValue, onCityChange, onStat
           document.body
         )}
       </div>
-      <input value={stateValue} onChange={e => onStateChange(e.target.value.toUpperCase())} placeholder="State" className={fieldCls} maxLength={2} autoComplete="off" />
+      <div className="relative">
+        <select value={stateValue} onChange={e => onStateChange(e.target.value)}
+          className={`${fieldCls} appearance-none pr-6 cursor-pointer`}>
+          <option value="">State</option>
+          {["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"].map(s => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+        <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 pointer-events-none" />
+      </div>
       <input value={zipValue} onChange={e => onZipChange(e.target.value)} placeholder="ZIP" className={fieldCls} maxLength={10} autoComplete="postal-code" />
     </div>
   )
