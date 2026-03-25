@@ -1207,9 +1207,10 @@ export default function SlugProfilePage() {
         {/* Footer */}
         <div className="flex items-center justify-center pt-4 pb-8">
           <div className="flex items-center gap-2 text-xs text-gray-400">
-            <div className="w-4 h-4 rounded bg-blue-600 flex items-center justify-center">
-              <Car className="w-2.5 h-2.5 text-white" />
-            </div>
+            <svg viewBox="0 0 44 30" className="h-4 w-auto" fill="currentColor" aria-label="Livery Connect">
+              <path d="M3 2 L3 24 Q3 28 7 28 L15 28 L13 24 L8 24 Q7 24 7 23 L7 2 Z" />
+              <path d="M30 6 L23 6 Q17 6 17 15 Q17 24 23 24 L30 24 L32 28 L23 28 Q11 28 11 15 Q11 2 23 2 L32 2 Z" />
+            </svg>
             Powered by <span className="font-semibold text-gray-500">Livery Connect</span>
           </div>
         </div>
