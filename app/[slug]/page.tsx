@@ -606,7 +606,11 @@ function QuoteForm({ companyId, companyName, vehicles, onClose }: QuoteFormProps
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className={labelCls}>Phone *</label>
-                    <input value={phone} onChange={e => setPhone(e.target.value)} type="tel" placeholder="(555) 000-0000" className={fieldCls} autoComplete="tel" />
+                    <input value={phone} onChange={e => {
+                      const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
+                      const fmt = digits.length === 0 ? "" : digits.length <= 3 ? `(${digits}` : digits.length <= 6 ? `(${digits.slice(0,3)}) ${digits.slice(3)}` : `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
+                      setPhone(fmt)
+                    }} type="tel" placeholder="(555) 000-0000" className={fieldCls} autoComplete="tel" />
                   </div>
                   <div>
                     <label className={labelCls}>Email</label>
