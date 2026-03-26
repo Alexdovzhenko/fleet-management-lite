@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query"
 import type { AppNotification } from "@prisma/client"
 
-export type NotificationTab = "all" | "affiliates" | "farmouts" | "reservations" | "unread"
+export type NotificationTab = "all" | "affiliates" | "farmin" | "farmout" | "reservations" | "quotes" | "unread"
 
 async function fetchNotifications(tab: NotificationTab, cursor?: string) {
   const params = new URLSearchParams({ tab })

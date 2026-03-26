@@ -8,11 +8,15 @@ const AFFILIATE_TYPES: AppNotificationType[] = [
   "AFFILIATE_INVITE_ACCEPTED",
   "AFFILIATE_INVITE_DECLINED",
 ]
-const FARM_OUT_TYPES: AppNotificationType[] = [
+// Farm-in: jobs sent TO us by an affiliate
+const FARM_IN_TYPES: AppNotificationType[] = [
   "FARM_OUT_RECEIVED",
+  "FARM_OUT_CANCELLED",
+]
+// Farm-out: jobs we sent TO an affiliate (and their response)
+const FARM_OUT_TYPES: AppNotificationType[] = [
   "FARM_OUT_ACCEPTED",
   "FARM_OUT_DECLINED",
-  "FARM_OUT_CANCELLED",
 ]
 const TRIP_TYPES: AppNotificationType[] = [
   "TRIP_PICKUP_TIME_CHANGED",
@@ -22,6 +26,9 @@ const TRIP_TYPES: AppNotificationType[] = [
   "TRIP_STATUS_CHANGED",
   "TRIP_DRIVER_CHANGED",
   "TRIP_CANCELLED",
+]
+const QUOTE_TYPES: AppNotificationType[] = [
+  "QUOTE_REQUEST_RECEIVED",
 ]
 
 export async function GET(request: NextRequest) {
@@ -35,8 +42,10 @@ export async function GET(request: NextRequest) {
 
   let typeFilter: AppNotificationType[] | undefined
   if (tab === "affiliates") typeFilter = AFFILIATE_TYPES
-  else if (tab === "farmouts") typeFilter = FARM_OUT_TYPES
+  else if (tab === "farmin") typeFilter = FARM_IN_TYPES
+  else if (tab === "farmout") typeFilter = FARM_OUT_TYPES
   else if (tab === "reservations") typeFilter = TRIP_TYPES
+  else if (tab === "quotes") typeFilter = QUOTE_TYPES
   else if (tab === "unread") typeFilter = undefined
 
   const where = {

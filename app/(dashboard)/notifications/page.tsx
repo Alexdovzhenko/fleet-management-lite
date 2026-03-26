@@ -62,23 +62,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#d97706",
     accentBg: "rgba(217,119,6,0.03)",
     chipBg: "bg-amber-50", chipText: "text-amber-700",
-    label: "Farm Outs",
-  },
-  FARM_OUT_ACCEPTED: {
-    icon: CheckCheck,
-    gradient: "from-emerald-400 to-green-500",
-    accent: "#16a34a",
-    accentBg: "rgba(22,163,74,0.03)",
-    chipBg: "bg-emerald-50", chipText: "text-emerald-700",
-    label: "Farm Outs",
-  },
-  FARM_OUT_DECLINED: {
-    icon: XCircle,
-    gradient: "from-red-400 to-rose-500",
-    accent: "#dc2626",
-    accentBg: "rgba(220,38,38,0.03)",
-    chipBg: "bg-red-50", chipText: "text-red-700",
-    label: "Farm Outs",
+    label: "Farm-in",
   },
   FARM_OUT_CANCELLED: {
     icon: XCircle,
@@ -86,7 +70,23 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#ea580c",
     accentBg: "rgba(234,88,12,0.03)",
     chipBg: "bg-orange-50", chipText: "text-orange-700",
-    label: "Farm Outs",
+    label: "Farm-in",
+  },
+  FARM_OUT_ACCEPTED: {
+    icon: CheckCheck,
+    gradient: "from-emerald-400 to-green-500",
+    accent: "#16a34a",
+    accentBg: "rgba(22,163,74,0.03)",
+    chipBg: "bg-emerald-50", chipText: "text-emerald-700",
+    label: "Farm-out",
+  },
+  FARM_OUT_DECLINED: {
+    icon: XCircle,
+    gradient: "from-red-400 to-rose-500",
+    accent: "#dc2626",
+    accentBg: "rgba(220,38,38,0.03)",
+    chipBg: "bg-red-50", chipText: "text-red-700",
+    label: "Farm-out",
   },
   TRIP_PICKUP_TIME_CHANGED: {
     icon: Clock,
@@ -159,8 +159,10 @@ const TYPE_META: Record<string, TypeMeta> = {
 const TABS: { id: NotificationTab; label: string }[] = [
   { id: "all",          label: "All" },
   { id: "affiliates",   label: "Affiliates" },
-  { id: "farmouts",     label: "Farm Outs" },
+  { id: "farmin",       label: "Farm-in" },
+  { id: "farmout",      label: "Farm-out" },
   { id: "reservations", label: "Reservations" },
+  { id: "quotes",       label: "Quote Requests" },
   { id: "unread",       label: "Unread" },
 ]
 
@@ -293,7 +295,7 @@ function NotificationCard({
               "inline-flex items-center gap-1 text-[11px] font-medium transition-colors",
               isUnread ? "text-gray-400 group-hover:text-gray-600" : "text-gray-300 group-hover:text-gray-500"
             )}>
-              {notif.entityType === "trip" ? "View reservation" : "View affiliate"}
+              {notif.entityType === "trip" ? "View reservation" : notif.entityType === "quote_request" ? "View quote" : "View affiliate"}
               <ArrowUpRight className="w-3 h-3" />
             </span>
           )}
@@ -338,11 +340,13 @@ function groupByDate(notifications: AppNotification[]) {
 
 function EmptyState({ tab }: { tab: NotificationTab }) {
   const msgs: Record<NotificationTab, { icon: React.ElementType; title: string; body: string }> = {
-    all:          { icon: Inbox,          title: "All caught up",          body: "No notifications yet. Activity will appear here as it happens." },
-    affiliates:   { icon: UserCheck,      title: "No affiliate updates",   body: "Connection accepts, declines, and new invites will show here." },
-    farmouts:     { icon: ArrowRightLeft, title: "No farm-out activity",   body: "Farm-out requests, acceptances, and cancellations appear here." },
-    reservations: { icon: Clock,          title: "No reservation changes", body: "Pickup time changes, address updates, and status shifts show here." },
-    unread:       { icon: BellOff,        title: "Nothing unread",         body: "You're all caught up — great job staying on top of things." },
+    all:          { icon: Inbox,          title: "All caught up",           body: "No notifications yet. Activity will appear here as it happens." },
+    affiliates:   { icon: UserCheck,      title: "No affiliate updates",    body: "Connection accepts, declines, and new invites will show here." },
+    farmin:       { icon: ArrowRightLeft, title: "No farm-in jobs",         body: "Jobs sent to you by affiliates will appear here." },
+    farmout:      { icon: ArrowRightLeft, title: "No farm-out updates",     body: "Responses to jobs you've farmed out to affiliates will appear here." },
+    reservations: { icon: Clock,          title: "No reservation changes",  body: "Pickup time changes, address updates, and status shifts show here." },
+    quotes:       { icon: MessageSquare,  title: "No quote requests",       body: "New quote requests from your public profile will appear here." },
+    unread:       { icon: BellOff,        title: "Nothing unread",          body: "You're all caught up — great job staying on top of things." },
   }
   const { icon: Icon, title, body } = msgs[tab]
   return (
