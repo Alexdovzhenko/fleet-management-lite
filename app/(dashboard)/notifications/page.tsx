@@ -389,7 +389,7 @@ export default function NotificationsPage() {
   const { data: unreadData } = useUnreadCount()
   const unreadCount = unreadData?.count ?? 0
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useNotifications(tab)
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isFetching } = useNotifications(tab)
   const markAsRead = useMarkAsRead()
   const markAllAsRead = useMarkAllAsRead()
 
@@ -506,19 +506,19 @@ export default function NotificationsPage() {
       </div>
 
       {/* ── Content ── */}
-      {isLoading ? (
-        <div className="space-y-2.5">
+      {isLoading || (isFetching && !isFetchingNextPage) ? (
+        <div key={`skeleton-${tab}`} className="space-y-2.5">
           {Array.from({ length: 5 }).map((_, i) => (
             <SkeletonCard key={i} delay={i * 60} />
           ))}
         </div>
       ) : allNotifications.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <div key={`empty-${tab}`} className="bg-white rounded-2xl border border-gray-100 shadow-sm">
           <EmptyState tab={tab} />
         </div>
       ) : (
-        <div className="space-y-6">
-          <AnimatePresence mode="popLayout">
+        <div key={`list-${tab}`} className="space-y-6">
+          <AnimatePresence mode="popLayout" initial={false}>
             {groups.map((group) => (
               <div key={group.label}>
                 {/* Date label */}
