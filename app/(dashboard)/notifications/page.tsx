@@ -243,11 +243,7 @@ function NotificationCard({
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.97 }}
-      transition={{ duration: 0.2, ease: "easeOut", delay: index * 0.03 }}
+    <div
       onClick={handleClick}
       className={cn(
         "group relative flex gap-4 p-4 rounded-2xl border cursor-pointer transition-all duration-200",
@@ -330,7 +326,7 @@ function NotificationCard({
           style={{ backgroundColor: meta.accent, boxShadow: `0 0 0 3px ${meta.accent}20` }}
         />
       )}
-    </motion.div>
+    </div>
   )
 }
 
@@ -571,7 +567,7 @@ export default function NotificationsPage() {
       </AnimatePresence>
 
       {/* ── Header card ── */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.03)] relative">
 
         {/* Title row + metric strip */}
         <div className="flex items-center justify-between gap-4 px-6 pt-5 pb-5">
