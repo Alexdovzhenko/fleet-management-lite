@@ -389,7 +389,7 @@ export default function NotificationsPage() {
   const { data: unreadData } = useUnreadCount()
   const unreadCount = unreadData?.count ?? 0
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isFetching } = useNotifications(tab)
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useNotifications(tab)
   const markAsRead = useMarkAsRead()
   const markAllAsRead = useMarkAllAsRead()
 
@@ -506,19 +506,40 @@ export default function NotificationsPage() {
       </div>
 
       {/* ── Content ── */}
-      {isLoading || (isFetching && !isFetchingNextPage) ? (
-        <div key={`skeleton-${tab}`} className="space-y-2.5">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <SkeletonCard key={i} delay={i * 60} />
-          ))}
-        </div>
-      ) : allNotifications.length === 0 ? (
-        <div key={`empty-${tab}`} className="bg-white rounded-2xl border border-gray-100 shadow-sm">
-          <EmptyState tab={tab} />
-        </div>
-      ) : (
-        <div key={`list-${tab}`} className="space-y-6">
-          <AnimatePresence mode="popLayout" initial={false}>
+      <AnimatePresence mode="wait" initial={false}>
+        {isLoading ? (
+          <motion.div
+            key={`skeleton-${tab}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="space-y-2.5"
+          >
+            {Array.from({ length: 5 }).map((_, i) => (
+              <SkeletonCard key={i} delay={i * 60} />
+            ))}
+          </motion.div>
+        ) : allNotifications.length === 0 ? (
+          <motion.div
+            key={`empty-${tab}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="bg-white rounded-2xl border border-gray-100 shadow-sm"
+          >
+            <EmptyState tab={tab} />
+          </motion.div>
+        ) : (
+          <motion.div
+            key={`list-${tab}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="space-y-6"
+          >
             {groups.map((group) => (
               <div key={group.label}>
                 {/* Date label */}
@@ -545,25 +566,25 @@ export default function NotificationsPage() {
                 </div>
               </div>
             ))}
-          </AnimatePresence>
 
-          {/* Infinite scroll sentinel */}
-          <div ref={loadMoreRef} className="py-2 flex justify-center">
-            {isFetchingNextPage && (
-              <div className="flex items-center gap-1.5">
-                {[0, 1, 2].map((i) => (
-                  <motion.div
-                    key={i}
-                    className="w-1.5 h-1.5 rounded-full bg-gray-300"
-                    animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1, 0.8] }}
-                    transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.18 }}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+            {/* Infinite scroll sentinel */}
+            <div ref={loadMoreRef} className="py-2 flex justify-center">
+              {isFetchingNextPage && (
+                <div className="flex items-center gap-1.5">
+                  {[0, 1, 2].map((i) => (
+                    <motion.div
+                      key={i}
+                      className="w-1.5 h-1.5 rounded-full bg-gray-300"
+                      animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1, 0.8] }}
+                      transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.18 }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
