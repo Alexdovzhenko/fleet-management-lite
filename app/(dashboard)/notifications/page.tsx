@@ -6,7 +6,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   Bell, BellOff, CheckCheck, UserCheck, UserX, UserPlus,
   ArrowRightLeft, Clock, MapPin, FileText, Activity, XCircle,
-  Car, ArrowUpRight, Inbox, MessageSquare,
+  Car, ArrowUpRight, Inbox, MessageSquare, Trash2, ChevronDown,
+  Square, CheckSquare, X,
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import type { AppNotification, AppNotificationType } from "@prisma/client"
@@ -15,6 +16,7 @@ import {
   useMarkAsRead,
   useMarkAllAsRead,
   useUnreadCount,
+  useDeleteNotifications,
   type NotificationTab,
 } from "@/lib/hooks/use-notifications"
 import { cn } from "@/lib/utils"
@@ -216,10 +218,16 @@ function NotificationCard({
   notif,
   onRead,
   index,
+  selectMode,
+  selected,
+  onToggleSelect,
 }: {
   notif: AppNotification
   onRead: (id: string) => void
   index: number
+  selectMode: boolean
+  selected: boolean
+  onToggleSelect: (id: string) => void
 }) {
   const router = useRouter()
   const meta = TYPE_META[notif.type] ?? TYPE_META.TRIP_NOTES_CHANGED
@@ -227,6 +235,7 @@ function NotificationCard({
   const isUnread = !notif.readAt
 
   function handleClick() {
+    if (selectMode) { onToggleSelect(notif.id); return }
     if (isUnread) onRead(notif.id)
     if (notif.entityType === "trip") router.push(`/dispatch?open=${notif.entityId}`)
     else if (notif.entityType === "affiliate") router.push("/affiliates")
@@ -243,17 +252,29 @@ function NotificationCard({
       className={cn(
         "group relative flex gap-4 p-4 rounded-2xl border cursor-pointer transition-all duration-200",
         "hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]",
-        isUnread
-          ? "bg-white border-gray-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
-          : "bg-gray-50/60 border-gray-100 shadow-none hover:bg-white"
+        selected
+          ? "border-blue-300 bg-blue-50/60 shadow-[0_0_0_2px_rgba(37,99,235,0.12)]"
+          : isUnread
+            ? "bg-white border-gray-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
+            : "bg-gray-50/60 border-gray-100 shadow-none hover:bg-white"
       )}
-      style={isUnread ? {
+      style={!selected && isUnread ? {
         borderLeftWidth: "3px",
         borderLeftColor: meta.accent,
         background: meta.accentBg,
         boxShadow: `0 2px 12px rgba(0,0,0,0.05)`,
       } : undefined}
     >
+      {/* Checkbox in select mode */}
+      {selectMode && (
+        <div className="flex items-center justify-center flex-shrink-0">
+          {selected
+            ? <CheckSquare className="w-5 h-5 text-blue-600" />
+            : <Square className="w-5 h-5 text-gray-300 group-hover:text-gray-400" />
+          }
+        </div>
+      )}
+
       {/* Icon */}
       <div className={cn(
         "w-11 h-11 rounded-2xl bg-gradient-to-br flex items-center justify-center flex-shrink-0 shadow-sm transition-transform duration-200 group-hover:scale-105",
@@ -290,7 +311,7 @@ function NotificationCard({
           )}>
             {meta.label}
           </span>
-          {notif.entityId && notif.entityType && (
+          {!selectMode && notif.entityId && notif.entityType && (
             <span className={cn(
               "inline-flex items-center gap-1 text-[11px] font-medium transition-colors",
               isUnread ? "text-gray-400 group-hover:text-gray-600" : "text-gray-300 group-hover:text-gray-500"
@@ -302,14 +323,70 @@ function NotificationCard({
         </div>
       </div>
 
-      {/* Unread indicator */}
-      {isUnread && (
+      {/* Unread indicator (only when not in select mode) */}
+      {!selectMode && isUnread && (
         <div
           className="absolute top-4 right-4 w-2 h-2 rounded-full flex-shrink-0"
           style={{ backgroundColor: meta.accent, boxShadow: `0 0 0 3px ${meta.accent}20` }}
         />
       )}
     </motion.div>
+  )
+}
+
+// ── Confirm dialog ─────────────────────────────────────────────────────────────
+
+function ConfirmDialog({
+  title,
+  body,
+  confirmLabel,
+  onConfirm,
+  onCancel,
+  isPending,
+}: {
+  title: string
+  body: string
+  confirmLabel: string
+  onConfirm: () => void
+  onCancel: () => void
+  isPending: boolean
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" onClick={onCancel} />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 8 }}
+        transition={{ duration: 0.18 }}
+        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 z-10"
+      >
+        <div className="flex items-start gap-3 mb-4">
+          <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
+            <Trash2 className="w-4 h-4 text-red-500" />
+          </div>
+          <div>
+            <p className="font-semibold text-gray-900 text-[15px]">{title}</p>
+            <p className="text-[13px] text-gray-500 mt-1 leading-relaxed">{body}</p>
+          </div>
+        </div>
+        <div className="flex gap-2 justify-end">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 rounded-xl hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isPending}
+            className="px-4 py-2 text-sm font-semibold text-white bg-red-500 hover:bg-red-600 rounded-xl transition-colors disabled:opacity-60"
+          >
+            {isPending ? "Deleting…" : confirmLabel}
+          </button>
+        </div>
+      </motion.div>
+    </div>
   )
 }
 
@@ -386,12 +463,57 @@ function SkeletonCard({ delay }: { delay: number }) {
 
 export default function NotificationsPage() {
   const [tab, setTab] = useState<NotificationTab>("all")
+  const [selectMode, setSelectMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [clearDropdownOpen, setClearDropdownOpen] = useState(false)
+  const [confirm, setConfirm] = useState<{
+    type: "range"
+    range: "24h" | "week" | "all"
+  } | {
+    type: "selected"
+  } | null>(null)
+
   const { data: unreadData } = useUnreadCount()
   const unreadCount = unreadData?.count ?? 0
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useNotifications(tab)
   const markAsRead = useMarkAsRead()
   const markAllAsRead = useMarkAllAsRead()
+  const deleteNotifications = useDeleteNotifications()
+
+  function toggleSelectMode() {
+    setSelectMode((v) => !v)
+    setSelectedIds(new Set())
+  }
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  function toggleSelectAll() {
+    if (selectedIds.size === allNotifications.length) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(allNotifications.map((n) => n.id)))
+    }
+  }
+
+  function handleConfirmDelete() {
+    if (!confirm) return
+    if (confirm.type === "range") {
+      deleteNotifications.mutate({ range: confirm.range }, {
+        onSuccess: () => { setConfirm(null); setClearDropdownOpen(false) },
+      })
+    } else {
+      deleteNotifications.mutate({ ids: Array.from(selectedIds) }, {
+        onSuccess: () => { setConfirm(null); setSelectMode(false); setSelectedIds(new Set()) },
+      })
+    }
+  }
 
   const allNotifications = data?.pages.flatMap((p) => p.notifications) ?? []
   const groups = groupByDate(allNotifications)
@@ -419,8 +541,34 @@ export default function NotificationsPage() {
     [fetchNextPage, hasNextPage, isFetchingNextPage]
   )
 
+  const allSelected = allNotifications.length > 0 && selectedIds.size === allNotifications.length
+
   return (
     <div className="max-w-5xl mx-auto space-y-5">
+
+      {/* ── Confirm dialog ── */}
+      <AnimatePresence>
+        {confirm && (
+          <ConfirmDialog
+            title={
+              confirm.type === "selected"
+                ? `Delete ${selectedIds.size} notification${selectedIds.size !== 1 ? "s" : ""}?`
+                : confirm.range === "24h" ? "Clear notifications older than 24h?"
+                : confirm.range === "week" ? "Clear notifications older than 1 week?"
+                : "Clear all notifications?"
+            }
+            body={
+              confirm.type === "selected"
+                ? "The selected notifications will be permanently removed."
+                : "This action cannot be undone."
+            }
+            confirmLabel="Delete"
+            onConfirm={handleConfirmDelete}
+            onCancel={() => setConfirm(null)}
+            isPending={deleteNotifications.isPending}
+          />
+        )}
+      </AnimatePresence>
 
       {/* ── Header card ── */}
       <div className="bg-white border border-gray-100 rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
@@ -488,21 +636,121 @@ export default function NotificationsPage() {
         {/* Gradient divider */}
         <div className="h-px bg-gradient-to-r from-transparent via-gray-100 to-transparent mx-6" />
 
-        {/* Tab bar + mark all read */}
+        {/* Tab bar + action buttons */}
         <div className="flex items-center justify-between gap-4 px-6">
-          <TabBar active={tab} onChange={setTab} unreadCount={unreadCount} />
+          <TabBar active={tab} onChange={(t) => { setTab(t); setSelectMode(false); setSelectedIds(new Set()) }} unreadCount={unreadCount} />
 
-          {unreadCount > 0 && (
-            <button
-              onClick={() => markAllAsRead.mutate()}
-              disabled={markAllAsRead.isPending}
-              className="flex items-center gap-1.5 text-[12px] font-semibold text-blue-600 hover:text-blue-700 transition-colors disabled:opacity-50 py-3"
-            >
-              <CheckCheck className="w-3.5 h-3.5" />
-              Mark all read
-            </button>
-          )}
+          <div className="flex items-center gap-2 py-3 shrink-0">
+            {/* Mark all read */}
+            {unreadCount > 0 && !selectMode && (
+              <button
+                onClick={() => markAllAsRead.mutate()}
+                disabled={markAllAsRead.isPending}
+                className="flex items-center gap-1.5 text-[12px] font-semibold text-blue-600 hover:text-blue-700 transition-colors disabled:opacity-50"
+              >
+                <CheckCheck className="w-3.5 h-3.5" />
+                Mark all read
+              </button>
+            )}
+
+            {/* Select mode toggle */}
+            {allNotifications.length > 0 && (
+              <button
+                onClick={toggleSelectMode}
+                className={cn(
+                  "flex items-center gap-1.5 text-[12px] font-semibold transition-colors px-2.5 py-1 rounded-lg",
+                  selectMode
+                    ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                )}
+              >
+                {selectMode ? <X className="w-3.5 h-3.5" /> : <CheckSquare className="w-3.5 h-3.5" />}
+                {selectMode ? "Cancel" : "Select"}
+              </button>
+            )}
+
+            {/* Clear dropdown */}
+            {allNotifications.length > 0 && !selectMode && (
+              <div className="relative">
+                <button
+                  onClick={() => setClearDropdownOpen((v) => !v)}
+                  className="flex items-center gap-1.5 text-[12px] font-semibold text-gray-500 hover:text-red-600 transition-colors px-2.5 py-1 rounded-lg hover:bg-red-50"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Clear
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+                <AnimatePresence>
+                  {clearDropdownOpen && (
+                    <>
+                      <div className="fixed inset-0 z-10" onClick={() => setClearDropdownOpen(false)} />
+                      <motion.div
+                        initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                        transition={{ duration: 0.14 }}
+                        className="absolute right-0 top-full mt-1 w-52 bg-white rounded-xl shadow-xl border border-gray-100 z-20 overflow-hidden py-1"
+                      >
+                        {([
+                          { label: "Older than 24 hours", range: "24h" as const },
+                          { label: "Older than 1 week",   range: "week" as const },
+                          { label: "All notifications",   range: "all" as const },
+                        ]).map((item) => (
+                          <button
+                            key={item.range}
+                            onClick={() => { setClearDropdownOpen(false); setConfirm({ type: "range", range: item.range }) }}
+                            className="w-full text-left px-4 py-2.5 text-[13px] text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors font-medium"
+                          >
+                            {item.label}
+                          </button>
+                        ))}
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Select mode toolbar */}
+        <AnimatePresence>
+          {selectMode && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="flex items-center justify-between gap-3 px-6 py-3 bg-blue-50/70 border-t border-blue-100">
+                <button
+                  onClick={toggleSelectAll}
+                  className="flex items-center gap-2 text-[12px] font-semibold text-blue-700 hover:text-blue-900 transition-colors"
+                >
+                  {allSelected
+                    ? <CheckSquare className="w-4 h-4" />
+                    : <Square className="w-4 h-4" />
+                  }
+                  {allSelected ? "Deselect all" : "Select all"}
+                </button>
+                <div className="flex items-center gap-3">
+                  <span className="text-[12px] text-blue-600 font-medium">
+                    {selectedIds.size} selected
+                  </span>
+                  <button
+                    onClick={() => setConfirm({ type: "selected" })}
+                    disabled={selectedIds.size === 0}
+                    className="flex items-center gap-1.5 text-[12px] font-semibold text-white bg-red-500 hover:bg-red-600 transition-colors px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Delete selected
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* ── Content ── */}
@@ -561,6 +809,9 @@ export default function NotificationsPage() {
                       notif={notif}
                       index={i}
                       onRead={(id) => markAsRead.mutate(id)}
+                      selectMode={selectMode}
+                      selected={selectedIds.has(notif.id)}
+                      onToggleSelect={toggleSelect}
                     />
                   ))}
                 </div>

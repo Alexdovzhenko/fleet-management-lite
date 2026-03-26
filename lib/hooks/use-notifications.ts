@@ -68,3 +68,22 @@ export function useMarkAllAsRead() {
     },
   })
 }
+
+export function useDeleteNotifications() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (payload: { range: "24h" | "week" | "all" } | { ids: string[] }) => {
+      const res = await fetch("/api/notifications/delete-bulk", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) throw new Error("Failed to delete notifications")
+      return res.json()
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["notifications"] })
+      qc.invalidateQueries({ queryKey: ["notifications-unread-count"] })
+    },
+  })
+}
