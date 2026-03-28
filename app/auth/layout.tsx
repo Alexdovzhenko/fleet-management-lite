@@ -87,7 +87,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         alignItems: "center",
         justifyContent: "center",
         position: "relative",
-        overflow: "hidden",
+        overflow: "clip",
         fontFamily: "var(--font-outfit, system-ui)",
         padding: "clamp(0.75rem, 2vw, 1.5rem)",
       }}
