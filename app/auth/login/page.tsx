@@ -5,11 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   STYLES  — route flow, entrance animations, floating labels
-───────────────────────────────────────────────────────────────────────────── */
 const STYLES = `
-  /* Route flow — dashes travel along path */
   @keyframes flow-fwd {
     from { stroke-dashoffset: 13; }
     to   { stroke-dashoffset: 0; }
@@ -18,13 +14,14 @@ const STYLES = `
     from { stroke-dashoffset: 0; }
     to   { stroke-dashoffset: 13; }
   }
-  /* Slower, longer dash variant */
   @keyframes flow-slow {
     from { stroke-dashoffset: 22; }
     to   { stroke-dashoffset: 0; }
   }
-
-  /* Staggered form entrance */
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(1.4); }
+  }
   @keyframes rise {
     from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -38,11 +35,7 @@ const STYLES = `
   .d6  { animation-delay: 0.40s; }
   .d7  { animation-delay: 0.47s; }
 
-  /* ── Floating label field ── */
-  .f {
-    position: relative;
-    padding-top: 20px;
-  }
+  .f { position: relative; padding-top: 20px; }
   .f label {
     position: absolute;
     top: 22px; left: 0;
@@ -52,11 +45,7 @@ const STYLES = `
     color: rgba(51,65,85,0.42);
     letter-spacing: 0.04em;
     pointer-events: none;
-    transition:
-      top 0.22s ease,
-      font-size 0.22s ease,
-      color 0.22s ease,
-      letter-spacing 0.22s ease;
+    transition: top 0.22s ease, font-size 0.22s ease, color 0.22s ease, letter-spacing 0.22s ease;
   }
   .f input:focus ~ label,
   .f input:not(:placeholder-shown) ~ label {
@@ -82,8 +71,6 @@ const STYLES = `
   }
   .fi::placeholder { color: transparent; }
   .fi:focus { border-bottom-color: rgba(201,168,124,0.6); }
-
-  /* Gold underline sweep on focus */
   .f::after {
     content: '';
     position: absolute;
@@ -94,7 +81,6 @@ const STYLES = `
   }
   .f:focus-within::after { width: 100%; }
 
-  /* ── Primary CTA button ── */
   .btn-primary {
     width: 100%;
     padding: 15px 24px;
@@ -117,7 +103,6 @@ const STYLES = `
   .btn-primary:active:not(:disabled) { transform: translateY(0); box-shadow: none; }
   .btn-primary:disabled { opacity: 0.28; cursor: not-allowed; }
 
-  /* ── Links ── */
   .lk {
     color: #0d0d0d;
     text-decoration: none;
@@ -138,10 +123,9 @@ const STYLES = `
   }
   .lk-dim:hover { color: #a07840; border-color: rgba(160,120,64,0.35); }
 
-  /* ── Mobile: form fills screen, map is subtle BG ── */
   @media (max-width: 720px) {
     .map-wrap  { opacity: 0.18 !important; }
-    .grad-veil { background: rgba(240,244,248,0.94) !important; }
+    .grad-veil { background: rgba(238,242,247,0.94) !important; }
     .form-side {
       width: 100% !important;
       padding-left: clamp(1.5rem,5vw,2.5rem) !important;
@@ -150,28 +134,19 @@ const STYLES = `
   }
 `
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   MAP PINS — reusable pulsing dispatch marker
-───────────────────────────────────────────────────────────────────────────── */
 function Pin({ cx, cy, delay = "0s", size = 7 }: { cx: number; cy: number; delay?: string; size?: number }) {
   return (
     <g>
-      {/* Outer pulse ring */}
       <circle cx={cx} cy={cy} r={size + 7} stroke="rgba(201,168,124,0.22)" strokeWidth="1" fill="none">
         <animate attributeName="r" values={`${size + 7};${size + 20};${size + 7}`} dur="2.8s" begin={delay} repeatCount="indefinite" />
         <animate attributeName="opacity" values="0.7;0;0.7" dur="2.8s" begin={delay} repeatCount="indefinite" />
       </circle>
-      {/* Inner ring */}
       <circle cx={cx} cy={cy} r={size} stroke="#c9a87c" strokeWidth="1.4" fill="rgba(201,168,124,0.1)" />
-      {/* Center dot */}
       <circle cx={cx} cy={cy} r={size * 0.38} fill="#c9a87c" />
     </g>
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   LOGIN FORM — inner component (needs useSearchParams → Suspense wrapper)
-───────────────────────────────────────────────────────────────────────────── */
 function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -189,11 +164,7 @@ function LoginForm() {
       const supabase = createClient()
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
       if (signInError) {
-        setError(
-          signInError.message === "Invalid login credentials"
-            ? "Incorrect email or password."
-            : signInError.message
-        )
+        setError(signInError.message === "Invalid login credentials" ? "Incorrect email or password." : signInError.message)
         return
       }
       router.push(next)
@@ -206,30 +177,14 @@ function LoginForm() {
   }
 
   return (
-    <div style={{
-      width: "100%",
-      height: "100vh",
-      position: "relative",
-      overflow: "hidden",
-      background: "#f0f4f8",
-      fontFamily: "var(--font-outfit, system-ui)",
-    }}>
+    <div style={{ width: "100%", height: "100vh", position: "relative", overflow: "hidden", background: "#eef2f7", fontFamily: "var(--font-outfit, system-ui)" }}>
       <style>{STYLES}</style>
 
-      {/* ══════════════════════════════════════════════════════════════════════
-          LAYER 1 — CITY MAP SVG
-          Tesla-style navigation: light background, clean road network,
-          animated gold dispatch routes, pulsing pickup/dropoff pins.
-      ══════════════════════════════════════════════════════════════════════ */}
+      {/* ══ LAYER 1 — CITY MAP ══ */}
       <div className="map-wrap" style={{ position: "absolute", inset: 0, zIndex: 1 }}>
-        <svg
-          viewBox="0 0 1440 900"
-          preserveAspectRatio="xMidYMid slice"
-          style={{ width: "100%", height: "100%", display: "block" }}
-          aria-hidden
-        >
+        <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice"
+          style={{ width: "100%", height: "100%", display: "block" }} aria-hidden>
           <defs>
-            {/* Gold glow for routes and pins */}
             <filter id="glow-r" x="-20%" y="-50%" width="140%" height="200%">
               <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="b" />
               <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
@@ -238,370 +193,365 @@ function LoginForm() {
               <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b" />
               <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
             </filter>
-            {/* Subtle vignette */}
+            <filter id="poi-shadow" x="-40%" y="-40%" width="180%" height="180%">
+              <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="rgba(0,0,0,0.1)" />
+            </filter>
             <radialGradient id="vignette" cx="65%" cy="55%" r="72%">
-              <stop offset="0%" stopColor="rgba(240,244,248,0)" />
-              <stop offset="100%" stopColor="rgba(215,225,236,0.28)" />
+              <stop offset="0%" stopColor="rgba(238,242,247,0)" />
+              <stop offset="100%" stopColor="rgba(210,220,232,0.3)" />
             </radialGradient>
           </defs>
 
-          {/* Base fill */}
-          <rect width="1440" height="900" fill="#f0f4f8" />
+          {/* Base */}
+          <rect width="1440" height="900" fill="#eef2f7" />
 
-          {/* ── Block fills — districts & zones ── */}
-          {/* Subtle park/green zone */}
-          <rect x="504" y="264" width="192" height="192" fill="rgba(187,247,208,0.14)" />
-          {/* Water/terminal zone bottom-right */}
-          <rect x="1020" y="624" width="360" height="252" fill="rgba(186,230,253,0.12)" />
-          {/* Dense district top-right */}
-          <rect x="984" y="24" width="432" height="216" fill="rgba(226,232,240,0.35)" />
+          {/* ══ WATER ══ */}
+          <path d="M 1295,0 L 1440,0 L 1440,900 L 1295,900
+            C 1268,820 1255,730 1275,640 C 1292,555 1315,470 1288,385
+            C 1265,305 1248,215 1278,128 C 1290,62 1295,28 1295,0 Z"
+            fill="rgba(186,213,238,0.52)" />
+          <path d="M 1440,762 L 1440,900 L 820,900 L 820,876
+            Q 930,854 1052,869 Q 1168,882 1270,856 Q 1362,833 1440,762 Z"
+            fill="rgba(186,213,238,0.46)" />
+          {[330, 470, 605, 710].map(y => (
+            <line key={`wl${y}`} x1="1292" y1={y} x2="1432" y2={y}
+              stroke="rgba(147,197,225,0.26)" strokeWidth="0.8" />
+          ))}
+          <text x="1363" y="582" fill="rgba(100,155,195,0.36)" fontSize="8.5"
+            fontFamily="system-ui" letterSpacing="0.14em" textAnchor="middle">HARBOR</text>
 
-          {/* ── Secondary horizontal streets ── */}
-          {[60, 120, 180, 300, 420, 600, 660, 780, 840].map(y => (
-            <line key={`sh${y}`} x1="0" y1={y} x2="1440" y2={y}
-              stroke="rgba(148,163,184,0.2)" strokeWidth="0.75" />
+          {/* ══ ZONES ══ */}
+          {/* City Park */}
+          <rect x="504" y="246" width="212" height="228" rx="4" fill="rgba(141,200,150,0.24)" />
+          <path d="M 520,302 Q 576,280 622,318 Q 662,354 706,340"
+            stroke="rgba(100,170,115,0.2)" strokeWidth="1.2" fill="none" />
+          <path d="M 504,374 Q 558,356 600,386 Q 640,412 716,400"
+            stroke="rgba(100,170,115,0.16)" strokeWidth="1" fill="none" />
+          <text x="610" y="374" fill="rgba(80,140,90,0.3)" fontSize="8.5"
+            fontFamily="system-ui" letterSpacing="0.1em" textAnchor="middle">CITY PARK</text>
+          {/* Small parks */}
+          <rect x="960" y="108" width="132" height="82" rx="3" fill="rgba(141,200,150,0.19)" />
+          <rect x="1200" y="242" width="72" height="176" rx="2" fill="rgba(141,200,150,0.15)" />
+
+          {/* Airport grounds */}
+          <rect x="788" y="626" width="478" height="256" rx="5" fill="rgba(208,216,226,0.7)" />
+          <rect x="788" y="626" width="478" height="256" rx="5"
+            fill="none" stroke="rgba(148,163,180,0.38)" strokeWidth="1.2" strokeDasharray="7,5" />
+          {/* Runway 1 */}
+          <line x1="810" y1="856" x2="1242" y2="646"
+            stroke="rgba(128,142,158,0.5)" strokeWidth="12" strokeLinecap="round" />
+          <line x1="810" y1="856" x2="1242" y2="646"
+            stroke="rgba(196,206,218,0.82)" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="18,14" />
+          {/* Runway 2 */}
+          <line x1="832" y1="648" x2="1152" y2="858"
+            stroke="rgba(128,142,158,0.4)" strokeWidth="9" strokeLinecap="round" />
+          <line x1="832" y1="648" x2="1152" y2="858"
+            stroke="rgba(196,206,218,0.76)" strokeWidth="2" strokeLinecap="round" strokeDasharray="14,11" />
+          {/* Taxiways */}
+          <path d="M 1022,726 L 1022,678 L 1094,678"
+            stroke="rgba(138,153,170,0.36)" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M 950,756 L 950,708 L 880,708"
+            stroke="rgba(138,153,170,0.32)" strokeWidth="3.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          {/* Terminal */}
+          <rect x="866" y="744" width="150" height="62" rx="4"
+            fill="rgba(188,200,214,0.88)" stroke="rgba(148,163,180,0.48)" strokeWidth="1" />
+          <rect x="884" y="756" width="114" height="38" rx="2" fill="rgba(172,186,200,0.52)" />
+          {[890,914,938,962,986].map(x => (
+            <rect key={`gf${x}`} x={x} y={806} width={17} height={24} rx="1.5"
+              fill="rgba(178,192,208,0.68)" />
+          ))}
+          <text x="984" y="874" fill="rgba(78,92,110,0.34)" fontSize="7.5"
+            fontFamily="system-ui" letterSpacing="0.14em" textAnchor="middle">
+            INTERNATIONAL AIRPORT
+          </text>
+
+          {/* ══ BUILDING BLOCKS ══ */}
+          {/* Downtown upper (x:720-1240, y:36-220) */}
+          {Array.from({ length: 4 }, (_, row) =>
+            Array.from({ length: 10 }, (_, col) => ({
+              x: 726 + col * 50 + (row % 2 ? 23 : 0),
+              y: 38 + row * 42,
+              w: 34 + (col % 3) * 5,
+              h: 24 + (row % 2) * 6,
+            }))
+          ).flat().filter(b => b.x + b.w < 1268).map((b, i) => (
+            <rect key={`db${i}`} x={b.x} y={b.y} width={b.w} height={b.h}
+              fill="rgba(168,182,198,0.34)" rx="1.5" />
+          ))}
+          {/* Midtown (x:720-1240, y:296-438) */}
+          {Array.from({ length: 3 }, (_, row) =>
+            Array.from({ length: 9 }, (_, col) => ({
+              x: 724 + col * 54 + (row % 2 ? 26 : 0),
+              y: 298 + row * 44,
+              w: 38 + (col % 3) * 4,
+              h: 26 + (row % 2) * 5,
+            }))
+          ).flat().filter(b => b.x + b.w < 1268 && !(b.x >= 504 && b.x < 720 && b.y >= 246 && b.y < 478)).map((b, i) => (
+            <rect key={`mt${i}`} x={b.x} y={b.y} width={b.w} height={b.h}
+              fill="rgba(168,182,198,0.28)" rx="1.5" />
+          ))}
+          {/* South district (x:720-1240, y:500-590) */}
+          {Array.from({ length: 2 }, (_, row) =>
+            Array.from({ length: 8 }, (_, col) => ({
+              x: 730 + col * 60,
+              y: 504 + row * 48,
+              w: 42 + (col % 3) * 4,
+              h: 28 + (row % 2) * 6,
+            }))
+          ).flat().filter(b => b.x + b.w < 1250).map((b, i) => (
+            <rect key={`sd${i}`} x={b.x} y={b.y} width={b.w} height={b.h}
+              fill="rgba(168,182,198,0.24)" rx="1.5" />
           ))}
 
-          {/* ── Secondary vertical streets ── */}
-          {[60, 120, 180, 300, 420, 540, 660, 780, 900, 1020, 1140, 1260, 1380].map(x => (
-            <line key={`sv${x}`} x1={x} y1="0" x2={x} y2="900"
-              stroke="rgba(148,163,184,0.2)" strokeWidth="0.75" />
+          {/* ══ ROAD NETWORK ══ */}
+          {/* Local streets H */}
+          {[66,106,148,174,208,260,338,380,416,454,508,560,614,652,694].map(y => (
+            <line key={`hl${y}`} x1="0" y1={y} x2="1288" y2={y}
+              stroke="rgba(164,178,194,0.19)" strokeWidth="0.75" />
           ))}
-
-          {/* ── Primary horizontal arteries ── */}
+          {/* Local streets V */}
+          {[64,108,152,190,228,266,314,356,398,440,506,560,608,656,704,752,800,836,878,932,968,1016,1062,1106,1150,1194,1252].map(x => (
+            <line key={`vl${x}`} x1={x} y1="0" x2={x} y2="900"
+              stroke="rgba(164,178,194,0.19)" strokeWidth="0.75" />
+          ))}
+          {/* Secondary H */}
+          {[120, 360, 600].map(y => (
+            <line key={`hs${y}`} x1="0" y1={y} x2="1288" y2={y}
+              stroke="rgba(138,153,170,0.28)" strokeWidth="1.2" />
+          ))}
+          {/* Secondary V */}
+          {[300, 540, 840, 1080].map(x => (
+            <line key={`vs${x}`} x1={x} y1="0" x2={x} y2="900"
+              stroke="rgba(138,153,170,0.28)" strokeWidth="1.2" />
+          ))}
+          {/* Primary arteries H */}
           {[240, 480, 720].map(y => (
-            <line key={`ph${y}`} x1="0" y1={y} x2="1440" y2={y}
-              stroke="rgba(100,116,139,0.3)" strokeWidth="2" />
+            <line key={`hp${y}`} x1="0" y1={y} x2="1288" y2={y}
+              stroke="rgba(100,116,139,0.38)" strokeWidth="2" />
           ))}
-
-          {/* ── Primary vertical arteries ── */}
+          {/* Primary arteries V */}
           {[240, 480, 720, 960, 1200].map(x => (
-            <line key={`pv${x}`} x1={x} y1="0" x2={x} y2="900"
-              stroke="rgba(100,116,139,0.3)" strokeWidth="2" />
+            <line key={`vp${x}`} x1={x} y1="0" x2={x} y2="900"
+              stroke="rgba(100,116,139,0.38)" strokeWidth="2" />
           ))}
-
-          {/* ── Intersection dots at primary crossings ── */}
+          {/* Expressways */}
+          <path d="M 960,900 L 960,752 Q 960,724 986,714 L 1082,714"
+            stroke="rgba(78,93,112,0.5)" strokeWidth="4" fill="none"
+            strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M 1200,0 L 1200,608 Q 1200,624 1182,634 L 1088,680"
+            stroke="rgba(78,93,112,0.46)" strokeWidth="4" fill="none"
+            strokeLinecap="round" strokeLinejoin="round" />
+          {/* Diagonal boulevards */}
+          <path d="M 240,900 L 720,0" stroke="rgba(100,116,139,0.14)" strokeWidth="1.4" />
+          <path d="M 720,900 L 1200,0" stroke="rgba(100,116,139,0.13)" strokeWidth="1.2" />
+          {/* Intersection dots */}
           {[240, 480, 720].flatMap(y =>
             [240, 480, 720, 960, 1200].map(x => (
-              <circle key={`id${x}-${y}`} cx={x} cy={y} r="2.5"
-                fill="rgba(100,116,139,0.22)" />
+              <circle key={`id${x}-${y}`} cx={x} cy={y} r="2.5" fill="rgba(100,116,139,0.2)" />
             ))
           )}
 
-          {/* ── Diagonal avenues ── */}
-          <path d="M 0,900 L 480,0" stroke="rgba(100,116,139,0.16)" strokeWidth="1.5" />
-          <path d="M 240,900 L 840,0" stroke="rgba(100,116,139,0.11)" strokeWidth="1" />
-          <path d="M 1080,900 L 1440,330" stroke="rgba(100,116,139,0.13)" strokeWidth="1.2" />
-          <path d="M 1440,720 L 840,0" stroke="rgba(100,116,139,0.09)" strokeWidth="0.9" />
-
-          {/* ── Organic curved roads (park perimeter, ramps) ── */}
-          <path d="M 480,480 Q 540,390 600,360" stroke="rgba(100,116,139,0.18)" strokeWidth="1.2" fill="none" />
-          <path d="M 1200,720 Q 1110,665 1080,600" stroke="rgba(100,116,139,0.14)" strokeWidth="1" fill="none" />
-          <path d="M 720,0 Q 740,120 720,240" stroke="rgba(100,116,139,0.2)" strokeWidth="1.8" fill="none" />
-
-          {/* ════════════════════════════════
-              ANIMATED DISPATCH ROUTES
-          ════════════════════════════════ */}
-
-          {/* ── Motion path for animateMotion (invisible) ── */}
+          {/* ══ DISPATCH ROUTES ══ */}
           <path id="route-motion"
-            d="M 1380,840 L 1200,840 L 1200,720 L 960,720 L 960,480 L 720,480 L 720,240 L 480,240"
+            d="M 1140,680 L 1200,680 L 1200,480 L 960,480 L 960,360 L 900,360"
             fill="none" />
-
-          {/* ── Route Alpha — main dispatch, gold glow + flowing dashes ── */}
-          {/* Soft glow halo beneath */}
-          <path
-            d="M 1380,840 L 1200,840 L 1200,720 L 960,720 L 960,480 L 720,480 L 720,240 L 480,240"
-            stroke="rgba(201,168,124,0.22)" strokeWidth="12" fill="none"
-            strokeLinecap="round" strokeLinejoin="round"
-            filter="url(#glow-r)"
-          />
-          {/* Main route line */}
-          <path
-            d="M 1380,840 L 1200,840 L 1200,720 L 960,720 L 960,480 L 720,480 L 720,240 L 480,240"
+          {/* Glow */}
+          <path d="M 1140,680 L 1200,680 L 1200,480 L 960,480 L 960,360 L 900,360"
+            stroke="rgba(201,168,124,0.2)" strokeWidth="14" fill="none"
+            strokeLinecap="round" strokeLinejoin="round" filter="url(#glow-r)" />
+          {/* Gold dashes */}
+          <path d="M 1140,680 L 1200,680 L 1200,480 L 960,480 L 960,360 L 900,360"
             stroke="#c9a87c" strokeWidth="2.5" fill="none"
-            strokeLinecap="round" strokeLinejoin="round"
-            strokeDasharray="8,5"
-            style={{ animation: "flow-fwd 1.3s linear infinite" }}
-          />
+            strokeLinecap="round" strokeLinejoin="round" strokeDasharray="8,5"
+            style={{ animation: "flow-fwd 1.3s linear infinite" }} />
+          {/* Beta route */}
+          <path d="M 960,720 L 960,600 L 1200,600 L 1200,480"
+            stroke="rgba(201,168,124,0.36)" strokeWidth="1.6" fill="none"
+            strokeLinecap="round" strokeLinejoin="round" strokeDasharray="6,5"
+            style={{ animation: "flow-rev 1.8s linear infinite" }} />
+          {/* Gamma route */}
+          <path d="M 1080,240 L 1080,180 L 1020,180"
+            stroke="rgba(201,168,124,0.26)" strokeWidth="1.4" fill="none"
+            strokeLinecap="round" strokeLinejoin="round" strokeDasharray="5,5"
+            style={{ animation: "flow-fwd 2.2s linear infinite" }} />
 
-          {/* ── Route Beta — secondary, subtler ── */}
-          <path
-            d="M 1380,480 L 1200,480 L 1200,240 L 960,240 L 960,120"
-            stroke="rgba(201,168,124,0.45)" strokeWidth="1.6" fill="none"
-            strokeLinecap="round" strokeLinejoin="round"
-            strokeDasharray="6,5"
-            style={{ animation: "flow-rev 1.7s linear infinite" }}
-          />
-
-          {/* ── Route Gamma — short branch ── */}
-          <path
-            d="M 960,840 L 960,720 L 1200,720"
-            stroke="rgba(201,168,124,0.32)" strokeWidth="1.4" fill="none"
-            strokeLinecap="round" strokeLinejoin="round"
-            strokeDasharray="5,5"
-            style={{ animation: "flow-fwd 2s linear infinite" }}
-          />
-
-          {/* ── Route Delta — far right feeder ── */}
-          <path
-            d="M 1440,480 L 1380,480 L 1380,720 L 1200,720"
-            stroke="rgba(201,168,124,0.25)" strokeWidth="1.2" fill="none"
-            strokeLinecap="round" strokeLinejoin="round"
-            strokeDasharray="5,6"
-            style={{ animation: "flow-slow 2.4s linear infinite" }}
-          />
-
-          {/* ════════════════════════════════
-              MOVING VEHICLE DOT — Route Alpha
-          ════════════════════════════════ */}
-          {/* Lead vehicle */}
+          {/* Moving vehicle */}
           <circle r="6" fill="#c9a87c" filter="url(#glow-pin)">
-            <animateMotion dur="14s" repeatCount="indefinite" calcMode="linear">
+            <animateMotion dur="12s" repeatCount="indefinite" calcMode="linear">
               <mpath href="#route-motion" />
             </animateMotion>
           </circle>
-          {/* Trail dot 1 */}
-          <circle r="3.5" fill="rgba(201,168,124,0.65)">
-            <animateMotion dur="14s" begin="-1.1s" repeatCount="indefinite" calcMode="linear">
+          <circle r="3.5" fill="rgba(201,168,124,0.62)">
+            <animateMotion dur="12s" begin="-1s" repeatCount="indefinite" calcMode="linear">
               <mpath href="#route-motion" />
             </animateMotion>
           </circle>
-          {/* Trail dot 2 */}
-          <circle r="2" fill="rgba(201,168,124,0.35)">
-            <animateMotion dur="14s" begin="-2s" repeatCount="indefinite" calcMode="linear">
+          <circle r="2" fill="rgba(201,168,124,0.32)">
+            <animateMotion dur="12s" begin="-1.9s" repeatCount="indefinite" calcMode="linear">
               <mpath href="#route-motion" />
             </animateMotion>
           </circle>
 
-          {/* ════════════════════════════════
-              DISPATCH PINS — pickup & dropoff
-          ════════════════════════════════ */}
+          {/* Dispatch pins */}
           <g filter="url(#glow-pin)">
-            {/* Pickup — top-center */}
-            <Pin cx={480} cy={240} delay="0s" size={7} />
-            {/* Dropoff — bottom-right */}
-            <Pin cx={1380} cy={840} delay="1.4s" size={7} />
+            <Pin cx={900} cy={360} delay="0s" size={7} />
+            <Pin cx={1140} cy={680} delay="1.4s" size={7} />
           </g>
+          <circle cx={1080} cy={180} r="4.5" stroke="rgba(201,168,124,0.44)" strokeWidth="1.2" fill="rgba(201,168,124,0.08)" />
+          <circle cx={960} cy={600} r="4" stroke="rgba(201,168,124,0.34)" strokeWidth="1.2" fill="rgba(201,168,124,0.07)" />
 
-          {/* Minor active dispatch nodes */}
-          <circle cx={960} cy={240} r="5" stroke="rgba(201,168,124,0.5)" strokeWidth="1.2"
-            fill="rgba(201,168,124,0.08)" />
-          <circle cx={1200} cy={480} r="4" stroke="rgba(201,168,124,0.42)" strokeWidth="1.2"
-            fill="rgba(201,168,124,0.07)" />
-          <circle cx={720} cy={720} r="4" stroke="rgba(201,168,124,0.38)" strokeWidth="1"
-            fill="rgba(201,168,124,0.06)" />
-          <circle cx={960} cy={720} r="3.5" stroke="rgba(201,168,124,0.35)" strokeWidth="1"
-            fill="rgba(201,168,124,0.06)" />
+          {/* ══ POI MARKERS ══ */}
 
-          {/* ── Street label text ── */}
-          <text x="1210" y="235" fill="rgba(71,85,105,0.28)" fontSize="9.5"
-            fontFamily="system-ui" fontWeight="400" letterSpacing="0.1em">
-            PARK AVE N
-          </text>
-          <text x="730" y="476" fill="rgba(71,85,105,0.28)" fontSize="9.5"
-            fontFamily="system-ui" fontWeight="400" letterSpacing="0.1em"
-            transform="rotate(-90 730 476)" textAnchor="middle">
-            5TH AVENUE
-          </text>
-          <text x="978" y="835" fill="rgba(71,85,105,0.24)" fontSize="9"
-            fontFamily="system-ui" fontWeight="400" letterSpacing="0.08em">
-            TERMINAL DR
-          </text>
-          <text x="490" y="235" fill="rgba(71,85,105,0.26)" fontSize="9"
-            fontFamily="system-ui" fontWeight="400" letterSpacing="0.1em">
-            PICKUP
-          </text>
-          <text x="1300" y="856" fill="rgba(71,85,105,0.26)" fontSize="9"
-            fontFamily="system-ui" fontWeight="400" letterSpacing="0.1em">
-            DESTINATION
-          </text>
+          {/* Airport */}
+          <g filter="url(#poi-shadow)">
+            <circle cx={960} cy={720} r="17" fill="white" stroke="#c9a87c" strokeWidth="1.4" />
+          </g>
+          {/* Airplane top-down silhouette */}
+          <path transform="translate(953,712)"
+            d="M 7,0 C 8.1,0 9,0.9 9,2 L 9,6.5 L 15.5,10 L 15.5,12 L 9,10.5 L 9,14 L 11,15 L 11,16.5 L 7,15.5 L 3,16.5 L 3,15 L 5,14 L 5,10.5 L -1.5,12 L -1.5,10 L 5,6.5 L 5,2 C 5,0.9 5.9,0 7,0 Z"
+            fill="#c9a87c" />
+          <rect x="930" y="741" width="60" height="15" rx="3"
+            fill="rgba(255,255,255,0.96)" stroke="rgba(201,168,124,0.22)" strokeWidth="0.5" />
+          <text x="960" y="751.5" textAnchor="middle"
+            fill="#1e293b" fontSize="7.5" fontFamily="system-ui" fontWeight="600" letterSpacing="0.1em">AIRPORT</text>
 
-          {/* Vignette overlay inside SVG */}
+          {/* FBO */}
+          <g filter="url(#poi-shadow)">
+            <circle cx={1140} cy={680} r="15" fill="white" stroke="#c9a87c" strokeWidth="1.4" />
+          </g>
+          <path d="M 1140,668 L 1152,680 L 1140,692 L 1128,680 Z"
+            fill="none" stroke="#c9a87c" strokeWidth="1.7" strokeLinejoin="round" />
+          <circle cx={1140} cy={680} r="3" fill="#c9a87c" />
+          <rect x="1114" y="699" width="52" height="15" rx="3"
+            fill="rgba(255,255,255,0.96)" stroke="rgba(201,168,124,0.22)" strokeWidth="0.5" />
+          <text x="1140" y="709.5" textAnchor="middle"
+            fill="#1e293b" fontSize="7.5" fontFamily="system-ui" fontWeight="600" letterSpacing="0.15em">FBO</text>
+
+          {/* Hotel */}
+          <g filter="url(#poi-shadow)">
+            <circle cx={900} cy={360} r="16" fill="white" stroke="#c9a87c" strokeWidth="1.4" />
+          </g>
+          <text x="900" y="365.5" textAnchor="middle"
+            fill="#c9a87c" fontSize="16" fontFamily="system-ui" fontWeight="700">H</text>
+          <rect x="872" y="380" width="56" height="15" rx="3"
+            fill="rgba(255,255,255,0.96)" stroke="rgba(201,168,124,0.22)" strokeWidth="0.5" />
+          <text x="900" y="390.5" textAnchor="middle"
+            fill="#1e293b" fontSize="7.5" fontFamily="system-ui" fontWeight="600" letterSpacing="0.1em">HOTEL</text>
+
+          {/* Restaurant */}
+          <g filter="url(#poi-shadow)">
+            <circle cx={1080} cy={180} r="15" fill="white" stroke="#c9a87c" strokeWidth="1.4" />
+          </g>
+          {/* Fork */}
+          <line x1="1076" y1="172" x2="1076" y2="188" stroke="#c9a87c" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M 1074,172 Q 1074,178 1076,179 Q 1078,178 1078,172"
+            stroke="#c9a87c" strokeWidth="1.3" fill="none" />
+          {/* Knife */}
+          <line x1="1084" y1="172" x2="1084" y2="188" stroke="#c9a87c" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M 1084,172 Q 1088,175 1084,179"
+            stroke="#c9a87c" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+          <rect x="1050" y="199" width="60" height="15" rx="3"
+            fill="rgba(255,255,255,0.96)" stroke="rgba(201,168,124,0.22)" strokeWidth="0.5" />
+          <text x="1080" y="209.5" textAnchor="middle"
+            fill="#1e293b" fontSize="7" fontFamily="system-ui" fontWeight="600" letterSpacing="0.08em">RESTAURANT</text>
+
+          {/* Street labels */}
+          <text x="728" y="476" fill="rgba(71,85,105,0.24)" fontSize="8.5"
+            fontFamily="system-ui" fontWeight="400" letterSpacing="0.09em"
+            transform="rotate(-90 728 476)" textAnchor="middle">5TH AVENUE</text>
+          <text x="968" y="476" fill="rgba(71,85,105,0.2)" fontSize="8"
+            fontFamily="system-ui" fontWeight="400" letterSpacing="0.09em"
+            transform="rotate(-90 968 476)" textAnchor="middle">PARK BLVD</text>
+          <text x="494" y="236" fill="rgba(71,85,105,0.2)" fontSize="8.5"
+            fontFamily="system-ui" fontWeight="400" letterSpacing="0.09em">GRAND AVE</text>
+          <text x="736" y="236" fill="rgba(71,85,105,0.2)" fontSize="8.5"
+            fontFamily="system-ui" fontWeight="400" letterSpacing="0.09em">MIDTOWN BLVD</text>
+          <text x="1208" y="470" fill="rgba(71,85,105,0.18)" fontSize="8"
+            fontFamily="system-ui" fontWeight="400" letterSpacing="0.08em"
+            transform="rotate(-90 1208 470)" textAnchor="middle">HARBOR DR</text>
+
           <rect width="1440" height="900" fill="url(#vignette)" />
         </svg>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════════════════
-          LAYER 2 — WHITE GRADIENT VEIL
-          Creates clean reading zone on the left where the form lives.
-          Fades naturally into the visible map on the right.
-      ══════════════════════════════════════════════════════════════════════ */}
-      <div
-        className="grad-veil"
-        aria-hidden
-        style={{
-          position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
-          background: [
-            "linear-gradient(90deg,",
-            "rgba(240,244,248,1) 0%,",
-            "rgba(240,244,248,0.99) 25%,",
-            "rgba(240,244,248,0.94) 42%,",
-            "rgba(240,244,248,0.72) 55%,",
-            "rgba(240,244,248,0.22) 68%,",
-            "rgba(240,244,248,0) 78%)",
-          ].join(" "),
-        }}
-      />
+      {/* ══ LAYER 2 — GRADIENT VEIL ══ */}
+      <div className="grad-veil" aria-hidden style={{
+        position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
+        background: "linear-gradient(90deg, rgba(238,242,247,1) 0%, rgba(238,242,247,0.99) 25%, rgba(238,242,247,0.94) 42%, rgba(238,242,247,0.72) 55%, rgba(238,242,247,0.22) 68%, rgba(238,242,247,0) 78%)",
+      }} />
 
-      {/* ══════════════════════════════════════════════════════════════════════
-          LAYER 3 — BRAND MARK  (top-left)
-      ══════════════════════════════════════════════════════════════════════ */}
-      <div
-        className="lx d1"
-        style={{
-          position: "absolute",
-          top: "clamp(1.5rem, 3.5vh, 2.75rem)",
-          left: "clamp(2rem, 5vw, 4.5rem)",
-          zIndex: 10,
-          display: "flex",
-          alignItems: "center",
-          gap: "11px",
-        }}
-      >
-        {/* Diamond monogram */}
+      {/* ══ LAYER 3 — BRAND MARK ══ */}
+      <div className="lx d1" style={{
+        position: "absolute",
+        top: "clamp(1.5rem, 3.5vh, 2.75rem)",
+        left: "clamp(2rem, 5vw, 4.5rem)",
+        zIndex: 10, display: "flex", alignItems: "center", gap: "11px",
+      }}>
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden>
           <rect x="5" y="5" width="12" height="12" stroke="rgba(201,168,124,0.75)" strokeWidth="1.2"
             transform="rotate(45 11 11)" fill="none" />
           <circle cx="11" cy="11" r="2.2" fill="#c9a87c" />
         </svg>
         <span style={{
-          fontFamily: "var(--font-outfit, system-ui)",
-          fontSize: "0.6rem",
-          fontWeight: 500,
-          color: "#0d0d0d",
-          letterSpacing: "0.28em",
-          textTransform: "uppercase",
-        }}>
-          Livery Connect
-        </span>
+          fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.6rem", fontWeight: 500,
+          color: "#0d0d0d", letterSpacing: "0.28em", textTransform: "uppercase",
+        }}>Livery Connect</span>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════════════════
-          LAYER 4 — FORM  (left-aligned, floats in gradient zone)
-          NOT a card — the form breathes directly in clean white space.
-      ══════════════════════════════════════════════════════════════════════ */}
-      <div
-        className="form-side"
-        style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: "clamp(360px, 42%, 500px)",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          paddingLeft: "clamp(2rem, 5vw, 4.5rem)",
-          paddingRight: "clamp(1.5rem, 3vw, 2.5rem)",
-          paddingTop: "5rem",
-          paddingBottom: "3rem",
-          zIndex: 10,
-        }}
-      >
-
-        {/* ── Heading block ── */}
+      {/* ══ LAYER 4 — FORM ══ */}
+      <div className="form-side" style={{
+        position: "absolute", left: 0, top: 0, bottom: 0,
+        width: "clamp(360px, 42%, 500px)",
+        display: "flex", flexDirection: "column", justifyContent: "center",
+        paddingLeft: "clamp(2rem, 5vw, 4.5rem)",
+        paddingRight: "clamp(1.5rem, 3vw, 2.5rem)",
+        paddingTop: "5rem", paddingBottom: "3rem", zIndex: 10,
+      }}>
         <div className="lx d2" style={{ marginBottom: "2.75rem" }}>
-          {/* Eyebrow */}
           <div style={{ display: "flex", alignItems: "center", gap: "11px", marginBottom: "1.2rem" }}>
             <div style={{ width: "26px", height: "1px", background: "#c9a87c", flexShrink: 0 }} />
             <span style={{
-              fontFamily: "var(--font-outfit, system-ui)",
-              fontSize: "0.57rem",
-              fontWeight: 500,
-              letterSpacing: "0.3em",
-              textTransform: "uppercase",
-              color: "rgba(160,120,64,0.8)",
-            }}>
-              Member Access
-            </span>
+              fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.57rem", fontWeight: 500,
+              letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(160,120,64,0.8)",
+            }}>Member Access</span>
           </div>
-
-          {/* Main heading */}
           <h1 style={{
             fontFamily: "var(--font-cormorant, serif)",
-            fontSize: "clamp(2.4rem, 3.8vw, 3.2rem)",
-            fontWeight: 400,
-            fontStyle: "italic",
-            color: "#0d0d0d",
-            letterSpacing: "-0.02em",
-            lineHeight: 1.12,
-            marginBottom: "0.9rem",
-          }}>
-            Welcome back
-          </h1>
-
-          {/* Sub-copy */}
+            fontSize: "clamp(2.4rem, 3.8vw, 3.2rem)", fontWeight: 400, fontStyle: "italic",
+            color: "#0d0d0d", letterSpacing: "-0.02em", lineHeight: 1.12, marginBottom: "0.9rem",
+          }}>Welcome back</h1>
           <p style={{
-            fontFamily: "var(--font-outfit, system-ui)",
-            fontSize: "0.82rem",
-            color: "rgba(71,85,105,0.55)",
-            fontWeight: 300,
-            letterSpacing: "0.01em",
-            lineHeight: 1.6,
-          }}>
-            Sign in to your dispatch console
-          </p>
+            fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.82rem",
+            color: "rgba(71,85,105,0.55)", fontWeight: 300, letterSpacing: "0.01em", lineHeight: 1.6,
+          }}>Sign in to your dispatch console</p>
         </div>
 
-        {/* ── Error message ── */}
         {error && (
           <div style={{
-            marginBottom: "1.5rem",
-            paddingBottom: "0.75rem",
+            marginBottom: "1.5rem", paddingBottom: "0.75rem",
             borderBottom: "1px solid rgba(180,50,50,0.15)",
             display: "flex", alignItems: "center", gap: "9px",
           }}>
             <div style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#c0392b", flexShrink: 0 }} />
-            <span style={{ fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.78rem", color: "#c0392b" }}>
-              {error}
-            </span>
+            <span style={{ fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.78rem", color: "#c0392b" }}>{error}</span>
           </div>
         )}
 
-        {/* ── Form ── */}
         <form onSubmit={handleSubmit}>
-          {/* Email */}
           <div className="lx d3 f" style={{ marginBottom: "1.8rem" }}>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email address"
-              required
-              autoFocus
-              className="fi"
-              id="lx-email"
-            />
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+              placeholder="Email address" required autoFocus className="fi" id="lx-email" />
             <label htmlFor="lx-email">Email address</label>
           </div>
-
-          {/* Password */}
           <div className="lx d4 f" style={{ marginBottom: "0.5rem" }}>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              required
-              className="fi"
-              id="lx-pass"
-            />
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)}
+              placeholder="Password" required className="fi" id="lx-pass" />
             <label htmlFor="lx-pass">Password</label>
           </div>
-
-          {/* Forgot password */}
           <div className="lx d4" style={{ textAlign: "right", marginBottom: "2.6rem" }}>
-            <Link
-              href="/auth/forgot-password"
-              className="lk-dim"
-              style={{ fontFamily: "var(--font-outfit, system-ui)" }}
-            >
-              Forgot password?
-            </Link>
+            <Link href="/auth/forgot-password" className="lk-dim"
+              style={{ fontFamily: "var(--font-outfit, system-ui)" }}>Forgot password?</Link>
           </div>
-
-          {/* Submit */}
           <div className="lx d5">
             <button type="submit" disabled={loading} className="btn-primary">
               {loading ? "Signing in…" : "Sign In"}
@@ -609,98 +559,82 @@ function LoginForm() {
           </div>
         </form>
 
-        {/* ── Divider ── */}
         <div className="lx d6" style={{ display: "flex", alignItems: "center", gap: "1.2rem", margin: "1.8rem 0" }}>
           <div style={{ flex: 1, height: "1px", background: "rgba(71,85,105,0.1)" }} />
           <span style={{
-            fontFamily: "var(--font-outfit, system-ui)",
-            fontSize: "0.6rem",
-            color: "rgba(71,85,105,0.3)",
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
+            fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.6rem",
+            color: "rgba(71,85,105,0.3)", letterSpacing: "0.14em", textTransform: "uppercase",
           }}>or</span>
           <div style={{ flex: 1, height: "1px", background: "rgba(71,85,105,0.1)" }} />
         </div>
 
-        {/* ── Signup link ── */}
         <p className="lx d7" style={{
-          fontFamily: "var(--font-outfit, system-ui)",
-          fontSize: "0.8rem",
-          color: "rgba(71,85,105,0.48)",
-          fontWeight: 300,
-          textAlign: "center",
+          fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.8rem",
+          color: "rgba(71,85,105,0.48)", fontWeight: 300, textAlign: "center",
         }}>
           New to Livery Connect?{" "}
           <Link href="/auth/signup" className="lk">Create an account</Link>
         </p>
-
       </div>
 
-      {/* ══════════════════════════════════════════════════════════════════════
-          LAYER 5 — LIVE DISPATCH TICKER  (bottom-right corner, atmospheric)
-          Subtle data overlay that reinforces the "active platform" feeling.
-      ══════════════════════════════════════════════════════════════════════ */}
-      <div
-        className="lx d3"
-        style={{
-          position: "absolute",
-          bottom: "clamp(1.5rem, 3vh, 2.5rem)",
-          right: "clamp(1.5rem, 3vw, 3rem)",
-          zIndex: 10,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          gap: "6px",
-          pointerEvents: "none",
-        }}
-      >
-        {[
-          { label: "Active Routes", value: "14" },
-          { label: "En Route", value: "9" },
-          { label: "Available", value: "5" },
-        ].map(({ label, value }) => (
-          <div key={label} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{
-              fontFamily: "var(--font-outfit, system-ui)",
-              fontSize: "0.58rem",
-              fontWeight: 400,
-              color: "rgba(71,85,105,0.4)",
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-            }}>
-              {label}
-            </span>
-            <span style={{
-              fontFamily: "var(--font-cormorant, serif)",
-              fontSize: "1.05rem",
-              fontWeight: 600,
-              color: "rgba(201,168,124,0.7)",
-              letterSpacing: "-0.01em",
-              lineHeight: 1,
-            }}>
-              {value}
-            </span>
-          </div>
-        ))}
-        <div style={{ width: "100%", height: "1px", background: "rgba(201,168,124,0.2)", marginTop: "2px" }} />
-        <span style={{
-          fontFamily: "var(--font-outfit, system-ui)",
-          fontSize: "0.52rem",
-          color: "rgba(71,85,105,0.3)",
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
+      {/* ══ LAYER 5 — DISPATCH STATS ══ */}
+      <div className="lx d3" style={{
+        position: "absolute",
+        bottom: "clamp(1.5rem, 3vh, 2.5rem)",
+        right: "clamp(1.5rem, 3vw, 3rem)",
+        zIndex: 10, pointerEvents: "none",
+      }}>
+        <div style={{
+          background: "rgba(240,244,248,0.92)",
+          border: "1px solid rgba(201,168,124,0.18)",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,0.75)",
+          padding: "14px 20px 16px",
+          minWidth: "168px",
         }}>
-          Live · NYC Metro
-        </span>
+          {/* Status row */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: "8px",
+            paddingBottom: "10px", marginBottom: "10px",
+            borderBottom: "1px solid rgba(201,168,124,0.13)",
+          }}>
+            <div style={{
+              width: "7px", height: "7px", borderRadius: "50%",
+              background: "#22c55e", flexShrink: 0,
+              animation: "pulse-dot 2s ease-in-out infinite",
+            }} />
+            <span style={{
+              fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.54rem", fontWeight: 500,
+              color: "rgba(51,65,85,0.5)", letterSpacing: "0.16em", textTransform: "uppercase",
+            }}>Dispatch Active</span>
+          </div>
+          {/* Stats */}
+          {[
+            { label: "Active Routes", value: "14" },
+            { label: "En Route",      value: "9"  },
+            { label: "Available",     value: "5"  },
+          ].map(({ label, value }, i) => (
+            <div key={label} style={{
+              display: "flex", alignItems: "baseline",
+              justifyContent: "space-between", gap: "28px",
+              marginTop: i === 0 ? 0 : "8px",
+            }}>
+              <span style={{
+                fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.62rem", fontWeight: 400,
+                color: "rgba(51,65,85,0.52)", letterSpacing: "0.06em", textTransform: "uppercase",
+              }}>{label}</span>
+              <span style={{
+                fontFamily: "var(--font-cormorant, serif)", fontSize: "1.45rem", fontWeight: 600,
+                color: "#b89060", letterSpacing: "-0.02em", lineHeight: 1,
+              }}>{value}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
     </div>
   )
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   PAGE EXPORT
-───────────────────────────────────────────────────────────────────────────── */
 export default function LoginPage() {
   return (
     <Suspense>
