@@ -1045,9 +1045,11 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       passengerName:    data.passengerName || undefined,
       passengerPhone:   data.passengerPhone || undefined,
       passengerEmail:   data.passengerEmail || undefined,
-      additionalPassengers: additionalPassengers.length > 0
-        ? additionalPassengers.map(({ firstName, lastName, phone, email }) => ({ firstName, lastName, phone: phone || undefined, email: email || undefined }))
-        : null,
+      additionalPassengers: additionalPassengers.map(({ firstName, lastName, phone, email }) => ({
+        firstName, lastName,
+        ...(phone ? { phone } : {}),
+        ...(email ? { email } : {}),
+      })) as never,
       driverId:         driverIdValue || undefined,
       vehicleId:        vehicleIdValue || undefined,
       secondaryDriverId:  secondaryDriverIdValue || undefined,

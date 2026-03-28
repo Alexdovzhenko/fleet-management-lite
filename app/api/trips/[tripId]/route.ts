@@ -145,11 +145,12 @@ export async function PUT(
     // Farm-in trips: only allow updating dispatch fields and status
     const updateData = isOwned
       ? (() => {
-          const { customerId, ...restData } = data
+          const { customerId, additionalPassengers, ...restData } = data
           return {
             ...restData,
             ...extraData,
             ...(customerId ? { customerId } : {}),
+            ...(additionalPassengers !== undefined ? { additionalPassengers: additionalPassengers ?? [] } : {}),
             pickupDate: data.pickupDate ? new Date(data.pickupDate) : undefined,
             flightArrival: data.flightArrival ? new Date(data.flightArrival) : undefined,
           }
