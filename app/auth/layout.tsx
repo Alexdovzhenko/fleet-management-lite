@@ -199,9 +199,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               <animate attributeName="r" values="7;20" dur="2.5s" begin="1.5s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="0.6;0" dur="2.5s" begin="1.5s" repeatCount="indefinite" />
             </circle>
-            {/* Label pill */}
-            <rect x="322" y="51" width="68" height="18" rx="9" fill="rgba(0,113,227,0.25)" stroke="rgba(0,113,227,0.4)" strokeWidth="0.75" />
-            <text x="356" y="63.5" textAnchor="middle" fill="rgba(255,255,255,0.85)" fontSize="9" fontFamily="var(--font-jakarta,system-ui)" fontWeight="600" letterSpacing="0.03em">AIRPORT</text>
+            {/* AIRPORT pill — plane icon + label */}
+            <rect x="320" y="48" width="80" height="20" rx="10" fill="rgba(0,80,180,0.55)" stroke="rgba(100,180,255,0.5)" strokeWidth="0.8" />
+            {/* plane icon */}
+            <g transform="translate(329, 54)" fill="rgba(255,255,255,0.9)">
+              <path d="M0 4.5 L6 1.5 Q7.5 0.5 8 2 L8 3 L4.5 4.5 L8 6 L8 7 Q7.5 8.5 6 7.5 L0 4.5Z" />
+            </g>
+            <text x="362" y="61.5" textAnchor="start" fill="rgba(255,255,255,0.95)" fontSize="8.5" fontFamily="var(--font-jakarta,system-ui)" fontWeight="700" letterSpacing="0.06em">AIRPORT</text>
           </g>
 
           {/* HOTEL */}
@@ -212,8 +216,16 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               <animate attributeName="r" values="5.5;16" dur="2.8s" begin="2.7s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="0.5;0" dur="2.8s" begin="2.7s" repeatCount="indefinite" />
             </circle>
-            <rect x="130" y="111" width="42" height="16" rx="8" fill="rgba(52,170,220,0.2)" stroke="rgba(52,170,220,0.35)" strokeWidth="0.75" />
-            <text x="151" y="122.5" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="8.5" fontFamily="var(--font-jakarta,system-ui)" fontWeight="600" letterSpacing="0.03em">HOTEL</text>
+            {/* HOTEL pill — bed icon */}
+            <rect x="122" y="109" width="62" height="19" rx="9.5" fill="rgba(30,120,180,0.5)" stroke="rgba(90,190,240,0.45)" strokeWidth="0.8" />
+            {/* bed icon */}
+            <g transform="translate(130, 115)" fill="rgba(255,255,255,0.9)">
+              <rect x="0" y="4" width="10" height="2" rx="0.5" />
+              <rect x="3" y="1.5" width="7" height="3" rx="1.5" />
+              <rect x="0" y="5.5" width="1.5" height="3" rx="0.5" />
+              <rect x="8.5" y="5.5" width="1.5" height="3" rx="0.5" />
+            </g>
+            <text x="144" y="121.5" textAnchor="start" fill="rgba(255,255,255,0.9)" fontSize="8.5" fontFamily="var(--font-jakarta,system-ui)" fontWeight="700" letterSpacing="0.06em">HOTEL</text>
           </g>
 
           {/* CONVENTION CTR */}
@@ -224,8 +236,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               <animate attributeName="r" values="6;18" dur="3.0s" begin="3.5s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="0.5;0" dur="3.0s" begin="3.5s" repeatCount="indefinite" />
             </circle>
-            <rect x="341" y="161" width="72" height="16" rx="8" fill="rgba(0,113,227,0.2)" stroke="rgba(0,113,227,0.35)" strokeWidth="0.75" />
-            <text x="377" y="172.5" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="8" fontFamily="var(--font-jakarta,system-ui)" fontWeight="600" letterSpacing="0.03em">CONVENTION</text>
+            {/* CONVENTION pill — star icon */}
+            <rect x="340" y="159" width="78" height="19" rx="9.5" fill="rgba(0,80,180,0.5)" stroke="rgba(100,170,255,0.45)" strokeWidth="0.8" />
+            {/* star icon */}
+            <g transform="translate(348, 164)" fill="rgba(255,255,255,0.9)">
+              <path d="M5 0 L6.2 3.6 L10 3.6 L7 5.8 L8.1 9.4 L5 7.2 L1.9 9.4 L3 5.8 L0 3.6 L3.8 3.6Z" transform="scale(0.9)" />
+            </g>
+            <text x="360" y="171.5" textAnchor="start" fill="rgba(255,255,255,0.92)" fontSize="8" fontFamily="var(--font-jakarta,system-ui)" fontWeight="700" letterSpacing="0.05em">CONVENTION</text>
           </g>
 
           {/* DOWNTOWN — central hub, largest pulse */}
@@ -236,8 +253,21 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               <animate attributeName="r" values="8;24" dur="2.2s" begin="4.3s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="0.7;0" dur="2.2s" begin="4.3s" repeatCount="indefinite" />
             </circle>
-            <rect x="212" y="221.5" width="68" height="17" rx="8.5" fill="rgba(0,113,227,0.3)" stroke="rgba(0,113,227,0.5)" strokeWidth="0.75" />
-            <text x="246" y="233.5" textAnchor="middle" fill="rgba(255,255,255,0.9)" fontSize="9" fontFamily="var(--font-jakarta,system-ui)" fontWeight="700" letterSpacing="0.03em">DOWNTOWN</text>
+            {/* DOWNTOWN pill — building icon + connection badge */}
+            <rect x="212" y="219" width="80" height="21" rx="10.5" fill="rgba(0,90,210,0.65)" stroke="rgba(100,180,255,0.6)" strokeWidth="1" />
+            {/* building icon */}
+            <g transform="translate(220, 224)" fill="rgba(255,255,255,0.95)">
+              <rect x="1" y="0" width="8" height="10" rx="0.5" />
+              <rect x="2.5" y="1.5" width="2" height="2" rx="0.3" fill="rgba(0,90,210,0.8)" />
+              <rect x="5.5" y="1.5" width="2" height="2" rx="0.3" fill="rgba(0,90,210,0.8)" />
+              <rect x="2.5" y="5" width="2" height="2" rx="0.3" fill="rgba(0,90,210,0.8)" />
+              <rect x="5.5" y="5" width="2" height="2" rx="0.3" fill="rgba(0,90,210,0.8)" />
+              <rect x="3.5" y="7.5" width="3" height="2.5" rx="0.3" fill="rgba(0,90,210,0.8)" />
+            </g>
+            <text x="234" y="232.5" textAnchor="start" fill="white" fontSize="9" fontFamily="var(--font-jakarta,system-ui)" fontWeight="800" letterSpacing="0.05em">DOWNTOWN</text>
+            {/* Connection badge */}
+            <circle cx="292" cy="218" r="7" fill="#0071e3" stroke="#0a0f1e" strokeWidth="1.5" />
+            <text x="292" y="221.5" textAnchor="middle" fill="white" fontSize="7.5" fontFamily="var(--font-jakarta,system-ui)" fontWeight="800">6</text>
           </g>
 
           {/* STADIUM */}
@@ -248,8 +278,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               <animate attributeName="r" values="5;14" dur="3.2s" begin="5.1s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="0.4;0" dur="3.2s" begin="5.1s" repeatCount="indefinite" />
             </circle>
-            <rect x="100" y="262" width="55" height="16" rx="8" fill="rgba(90,200,250,0.15)" stroke="rgba(90,200,250,0.3)" strokeWidth="0.75" />
-            <text x="127.5" y="273" textAnchor="middle" fill="rgba(255,255,255,0.75)" fontSize="8.5" fontFamily="var(--font-jakarta,system-ui)" fontWeight="600" letterSpacing="0.03em">STADIUM</text>
+            {/* STADIUM pill — flag icon */}
+            <rect x="100" y="260" width="66" height="19" rx="9.5" fill="rgba(40,140,200,0.45)" stroke="rgba(90,200,250,0.4)" strokeWidth="0.8" />
+            {/* flag icon */}
+            <g transform="translate(108, 265)" fill="rgba(255,255,255,0.85)">
+              <rect x="0" y="0" width="1.5" height="9" rx="0.5" />
+              <path d="M1.5 0 L8 2 L1.5 4.5Z" />
+            </g>
+            <text x="121" y="272.5" textAnchor="start" fill="rgba(255,255,255,0.88)" fontSize="8.5" fontFamily="var(--font-jakarta,system-ui)" fontWeight="700" letterSpacing="0.05em">STADIUM</text>
           </g>
 
           {/* MARINA */}
@@ -260,8 +296,16 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               <animate attributeName="r" values="5.5;16" dur="2.8s" begin="5.7s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="0.4;0" dur="2.8s" begin="5.7s" repeatCount="indefinite" />
             </circle>
-            <rect x="275" y="281" width="48" height="16" rx="8" fill="rgba(52,170,220,0.2)" stroke="rgba(52,170,220,0.35)" strokeWidth="0.75" />
-            <text x="299" y="292" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="8.5" fontFamily="var(--font-jakarta,system-ui)" fontWeight="600" letterSpacing="0.03em">MARINA</text>
+            {/* MARINA pill — anchor icon */}
+            <rect x="270" y="279" width="66" height="19" rx="9.5" fill="rgba(30,120,180,0.5)" stroke="rgba(90,190,240,0.45)" strokeWidth="0.8" />
+            {/* anchor icon */}
+            <g transform="translate(278, 284)" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="1.2" strokeLinecap="round">
+              <circle cx="5" cy="2" r="1.5" />
+              <line x1="5" y1="3.5" x2="5" y2="9" />
+              <path d="M2 5.5 C2 8.5 8 8.5 8 5.5" />
+              <line x1="3" y1="4.5" x2="7" y2="4.5" />
+            </g>
+            <text x="291" y="291.5" textAnchor="start" fill="rgba(255,255,255,0.9)" fontSize="8.5" fontFamily="var(--font-jakarta,system-ui)" fontWeight="700" letterSpacing="0.05em">MARINA</text>
           </g>
         </svg>
 
@@ -352,13 +396,46 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       {/* ═══════════════════════════════════════════════════════
-          RIGHT PANEL — macOS frosted card
+          RIGHT PANEL — living light background
       ════════════════════════════════════════════════════════ */}
       <div
-        className="flex-1 flex items-center justify-center p-8 lg:p-12"
-        style={{ background: "#f5f5f7" }}
+        className="flex-1 flex items-center justify-center p-8 lg:p-12 relative overflow-hidden"
+        style={{ background: "#eef1f6" }}
       >
-        <div style={{ width: "100%", maxWidth: "400px" }}>
+        {/* Slow-drifting gradient orbs — create depth under the card */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden>
+          <div style={{
+            position: "absolute", borderRadius: "50%",
+            width: "70%", height: "70%",
+            top: "-15%", right: "-10%",
+            background: "radial-gradient(circle, rgba(0,113,227,0.07) 0%, transparent 70%)",
+            animation: "orb1 18s ease-in-out infinite alternate",
+          }} />
+          <div style={{
+            position: "absolute", borderRadius: "50%",
+            width: "55%", height: "55%",
+            bottom: "-10%", left: "-8%",
+            background: "radial-gradient(circle, rgba(52,170,220,0.06) 0%, transparent 70%)",
+            animation: "orb2 22s ease-in-out infinite alternate",
+          }} />
+          <div style={{
+            position: "absolute", borderRadius: "50%",
+            width: "45%", height: "45%",
+            top: "40%", left: "30%",
+            background: "radial-gradient(circle, rgba(255,255,255,0.55) 0%, transparent 70%)",
+            animation: "orb3 15s ease-in-out infinite alternate",
+          }} />
+        </div>
+        {/* Subtle diagonal line texture */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden style={{ opacity: 0.025 }}>
+          <defs>
+            <pattern id="diag-lines" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+              <line x1="0" y1="0" x2="0" y2="20" stroke="#0071e3" strokeWidth="0.8" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#diag-lines)" />
+        </svg>
+        <div style={{ width: "100%", maxWidth: "400px", position: "relative", zIndex: 1 }}>
           {/* Mobile logo */}
           <div className="flex items-center justify-center gap-2 mb-8 lg:hidden">
             <svg viewBox="0 0 44 30" style={{ height: "20px", width: "auto" }}>
@@ -408,6 +485,18 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         @keyframes nodeIn {
           from { opacity: 0; transform: scale(0.6); }
           to   { opacity: 1; transform: scale(1); }
+        }
+        @keyframes orb1 {
+          from { transform: translate(0, 0) scale(1); }
+          to   { transform: translate(-6%, 8%) scale(1.12); }
+        }
+        @keyframes orb2 {
+          from { transform: translate(0, 0) scale(1); }
+          to   { transform: translate(8%, -6%) scale(1.08); }
+        }
+        @keyframes orb3 {
+          from { transform: translate(0, 0) scale(1); }
+          to   { transform: translate(-4%, 5%) scale(0.92); }
         }
       `}</style>
     </div>
