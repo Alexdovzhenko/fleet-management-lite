@@ -169,6 +169,10 @@ export interface Trip {
   driver?: Driver
   vehicleId?: string
   vehicle?: Vehicle
+  secondaryDriverId?: string
+  secondaryDriver?: Driver
+  secondaryVehicleId?: string
+  secondaryVehicle?: Vehicle
   customerId: string
   customer?: Customer
   price?: string

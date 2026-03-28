@@ -127,7 +127,8 @@ model Driver {
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
 
-  trips            Trip[]
+  trips            Trip[] @relation("PrimaryDriver")
+  secondaryTrips   Trip[] @relation("SecondaryDriver")
   defaultVehicleId String?
   defaultVehicle   Vehicle?             @relation("DefaultDriver", fields: [defaultVehicleId], references: [id])
   availability     DriverAvailability[]
@@ -173,7 +174,8 @@ model Vehicle {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
-  trips          Trip[]
+  trips          Trip[] @relation("PrimaryVehicle")
+  secondaryTrips Trip[] @relation("SecondaryVehicle")
   defaultDrivers Driver[] @relation("DefaultDriver")
 
   @@index([companyId])
@@ -261,9 +263,14 @@ model Trip {
   passengerEmail String?
 
   driverId  String?
-  driver    Driver?  @relation(fields: [driverId], references: [id])
+  driver    Driver?  @relation("PrimaryDriver", fields: [driverId], references: [id])
   vehicleId String?
-  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id])
+  vehicle   Vehicle? @relation("PrimaryVehicle", fields: [vehicleId], references: [id])
+
+  secondaryDriverId  String?
+  secondaryDriver    Driver?  @relation("SecondaryDriver", fields: [secondaryDriverId], references: [id])
+  secondaryVehicleId String?
+  secondaryVehicle   Vehicle? @relation("SecondaryVehicle", fields: [secondaryVehicleId], references: [id])
 
   customerId String?
   customer   Customer? @relation(fields: [customerId], references: [id])
@@ -301,6 +308,7 @@ model Trip {
   @@index([status])
   @@index([pickupDate])
   @@index([driverId])
+  @@index([secondaryDriverId])
   @@index([customerId])
 }
 

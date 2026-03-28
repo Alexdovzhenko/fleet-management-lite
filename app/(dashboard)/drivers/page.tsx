@@ -280,11 +280,12 @@ function DriverCard({ driver, onEdit, index }: { driver: Driver; onEdit: (d: Dri
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -2, transition: { duration: 0.15, ease: "easeOut" } }}
       transition={{ duration: 0.22, ease: "easeOut", delay: index * 0.04 }}
       onClick={() => onEdit(driver)}
       className={cn(
         "group relative bg-white rounded-2xl border border-gray-100 cursor-pointer overflow-hidden",
-        "transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(0,0,0,0.09)]",
+        "transition-shadow duration-200 hover:shadow-[0_8px_28px_rgba(0,0,0,0.09)]",
         "shadow-[0_2px_8px_rgba(0,0,0,0.04)]"
       )}
       style={{

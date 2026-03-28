@@ -31,6 +31,8 @@ const tripSchema = z.object({
   passengerPhone: z.string().optional(),
   driverId: z.string().optional(),
   vehicleId: z.string().optional(),
+  secondaryDriverId: z.string().optional(),
+  secondaryVehicleId: z.string().optional(),
   price: z.preprocess((v) => (typeof v === "number" && isNaN(v) ? undefined : v), z.number().optional()),
   gratuityPercent: z.number().min(0).max(100),
   pricingNotes: z.string().optional(),
@@ -156,6 +158,7 @@ export function TripForm({ onSubmit, onCancel, isLoading }: TripFormProps) {
   const [aiLoading, setAiLoading] = useState(false)
   const [showSpecial, setShowSpecial] = useState(false)
   const [showFlight, setShowFlight] = useState(false)
+  const [dispatchTab, setDispatchTab] = useState<"primary" | "secondary">("primary")
 
   const { data: customers } = useCustomers()
   const { data: drivers } = useDrivers()
@@ -343,33 +346,98 @@ export function TripForm({ onSubmit, onCancel, isLoading }: TripFormProps) {
       )}
 
       {/* Assignment */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-1.5">
-          <Label>Driver</Label>
-          <Select onValueChange={(v) => { if (typeof v === "string") setValue("driverId", v) }}>
-            <SelectTrigger>
-              <SelectValue placeholder="Assign driver..." />
-            </SelectTrigger>
-            <SelectContent>
-              {drivers?.filter((d) => d.status === "ACTIVE").map((d) => (
-                <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <Label className="text-sm font-semibold text-gray-700">Driver & Vehicle</Label>
+          <div className="flex items-center gap-0.5 bg-gray-100 rounded-lg p-0.5">
+            <button
+              type="button"
+              onClick={() => setDispatchTab("primary")}
+              className={cn(
+                "px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150",
+                dispatchTab === "primary"
+                  ? "bg-white text-gray-800 shadow-sm"
+                  : "text-gray-400 hover:text-gray-600"
+              )}
+            >
+              Primary
+            </button>
+            <button
+              type="button"
+              onClick={() => setDispatchTab("secondary")}
+              className={cn(
+                "relative px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150",
+                dispatchTab === "secondary"
+                  ? "bg-white text-gray-800 shadow-sm"
+                  : "text-gray-400 hover:text-gray-600"
+              )}
+            >
+              Secondary
+              {(watch("secondaryDriverId") || watch("secondaryVehicleId")) && (
+                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-violet-500" />
+              )}
+            </button>
+          </div>
         </div>
-        <div className="space-y-1.5">
-          <Label>Vehicle</Label>
-          <Select onValueChange={(v) => { if (typeof v === "string") setValue("vehicleId", v) }}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select vehicle..." />
-            </SelectTrigger>
-            <SelectContent>
-              {vehicles?.filter((v) => v.status === "ACTIVE").map((v) => (
-                <SelectItem key={v.id} value={v.id}>{v.name} ({v.capacity} pax)</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+
+        {dispatchTab === "primary" ? (
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs text-gray-500">Driver</Label>
+              <Select onValueChange={(v) => { if (typeof v === "string") setValue("driverId", v) }}>
+                <SelectTrigger><SelectValue placeholder="Assign driver..." /></SelectTrigger>
+                <SelectContent>
+                  {drivers?.filter((d) => d.status === "ACTIVE").map((d) => (
+                    <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-gray-500">Vehicle</Label>
+              <Select onValueChange={(v) => { if (typeof v === "string") setValue("vehicleId", v) }}>
+                <SelectTrigger><SelectValue placeholder="Select vehicle..." /></SelectTrigger>
+                <SelectContent>
+                  {vehicles?.filter((v) => v.status === "ACTIVE").map((v) => (
+                    <SelectItem key={v.id} value={v.id}>{v.name} ({v.capacity} pax)</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="flex items-center gap-1.5 text-[10.5px] text-gray-400 font-medium">
+              <span className="w-3 h-px bg-gray-300" />
+              Optional — for multi-shift trips
+              <span className="flex-1 h-px bg-gray-200" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs text-gray-500">Driver</Label>
+                <Select onValueChange={(v) => { if (typeof v === "string") setValue("secondaryDriverId", v) }}>
+                  <SelectTrigger><SelectValue placeholder="Assign driver..." /></SelectTrigger>
+                  <SelectContent>
+                    {drivers?.filter((d) => d.status === "ACTIVE").map((d) => (
+                      <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-gray-500">Vehicle</Label>
+                <Select onValueChange={(v) => { if (typeof v === "string") setValue("secondaryVehicleId", v) }}>
+                  <SelectTrigger><SelectValue placeholder="Select vehicle..." /></SelectTrigger>
+                  <SelectContent>
+                    {vehicles?.filter((v) => v.status === "ACTIVE").map((v) => (
+                      <SelectItem key={v.id} value={v.id}>{v.name} ({v.capacity} pax)</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Pricing */}

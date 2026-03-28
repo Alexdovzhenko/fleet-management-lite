@@ -24,6 +24,8 @@ const updateTripSchema = z.object({
   customerId: z.string().optional().nullable(),
   driverId: z.string().optional().nullable(),
   vehicleId: z.string().optional().nullable(),
+  secondaryDriverId: z.string().optional().nullable(),
+  secondaryVehicleId: z.string().optional().nullable(),
   price: z.number().optional().nullable(),
   gratuity: z.number().optional().nullable(),
   totalPrice: z.number().optional().nullable(),
@@ -67,6 +69,8 @@ export async function GET(
         customer: true,
         driver: true,
         vehicle: true,
+        secondaryDriver: true,
+        secondaryVehicle: true,
         stops: { orderBy: { order: "asc" } },
         notifications: { orderBy: { sentAt: "desc" }, take: 20 },
         invoice: true,
@@ -149,6 +153,8 @@ export async function PUT(
           ...(data.status !== undefined ? { status: data.status, ...extraData } : {}),
           ...(data.driverId !== undefined ? { driverId: data.driverId } : {}),
           ...(data.vehicleId !== undefined ? { vehicleId: data.vehicleId } : {}),
+          ...(data.secondaryDriverId !== undefined ? { secondaryDriverId: data.secondaryDriverId } : {}),
+          ...(data.secondaryVehicleId !== undefined ? { secondaryVehicleId: data.secondaryVehicleId } : {}),
         }
 
     const trip = await prisma.trip.update({
@@ -156,8 +162,10 @@ export async function PUT(
       data: updateData,
       include: {
         customer: { select: { id: true, name: true, phone: true } },
-        driver: { select: { id: true, name: true } },
+        driver: { select: { id: true, name: true, phone: true, avatarUrl: true } },
         vehicle: { select: { id: true, name: true, type: true } },
+        secondaryDriver: { select: { id: true, name: true, phone: true, avatarUrl: true } },
+        secondaryVehicle: { select: { id: true, name: true, type: true } },
       },
     })
 
