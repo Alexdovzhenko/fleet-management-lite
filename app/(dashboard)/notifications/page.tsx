@@ -9,7 +9,7 @@ import {
   Car, ArrowUpRight, Inbox, MessageSquare, Trash2, ChevronDown, X,
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
-import type { AppNotification } from "@prisma/client"
+import type { AppNotification, AppNotificationType } from "@prisma/client"
 import {
   useNotifications,
   useMarkAsRead,
@@ -25,7 +25,8 @@ import { cn } from "@/lib/utils"
 type TypeMeta = {
   icon: React.ElementType
   gradient: string
-  accent: string
+  accent: string       // hex, used for left border + glow
+  accentBg: string     // rgba, used for unread card tint
   chipBg: string
   chipText: string
   label: string
@@ -36,6 +37,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     icon: UserPlus,
     gradient: "from-violet-500 to-purple-600",
     accent: "#7c3aed",
+    accentBg: "rgba(124,58,237,0.03)",
     chipBg: "bg-violet-50", chipText: "text-violet-700",
     label: "Affiliates",
   },
@@ -43,6 +45,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     icon: UserCheck,
     gradient: "from-emerald-400 to-teal-500",
     accent: "#059669",
+    accentBg: "rgba(5,150,105,0.03)",
     chipBg: "bg-emerald-50", chipText: "text-emerald-700",
     label: "Affiliates",
   },
@@ -50,6 +53,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     icon: UserX,
     gradient: "from-rose-400 to-red-500",
     accent: "#e11d48",
+    accentBg: "rgba(225,29,72,0.03)",
     chipBg: "bg-rose-50", chipText: "text-rose-700",
     label: "Affiliates",
   },
@@ -57,6 +61,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     icon: ArrowRightLeft,
     gradient: "from-amber-400 to-orange-500",
     accent: "#d97706",
+    accentBg: "rgba(217,119,6,0.03)",
     chipBg: "bg-amber-50", chipText: "text-amber-700",
     label: "Farm-in",
   },
@@ -64,6 +69,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     icon: XCircle,
     gradient: "from-orange-400 to-red-400",
     accent: "#ea580c",
+    accentBg: "rgba(234,88,12,0.03)",
     chipBg: "bg-orange-50", chipText: "text-orange-700",
     label: "Farm-in",
   },
@@ -71,6 +77,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     icon: CheckCheck,
     gradient: "from-emerald-400 to-green-500",
     accent: "#16a34a",
+    accentBg: "rgba(22,163,74,0.03)",
     chipBg: "bg-emerald-50", chipText: "text-emerald-700",
     label: "Farm-out",
   },
@@ -78,6 +85,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     icon: XCircle,
     gradient: "from-red-400 to-rose-500",
     accent: "#dc2626",
+    accentBg: "rgba(220,38,38,0.03)",
     chipBg: "bg-red-50", chipText: "text-red-700",
     label: "Farm-out",
   },
@@ -85,6 +93,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     icon: Clock,
     gradient: "from-blue-500 to-blue-600",
     accent: "#2563eb",
+    accentBg: "rgba(37,99,235,0.03)",
     chipBg: "bg-blue-50", chipText: "text-blue-700",
     label: "Reservations",
   },
@@ -92,6 +101,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     icon: MapPin,
     gradient: "from-blue-400 to-indigo-500",
     accent: "#4338ca",
+    accentBg: "rgba(67,56,202,0.03)",
     chipBg: "bg-indigo-50", chipText: "text-indigo-700",
     label: "Reservations",
   },
@@ -99,6 +109,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     icon: MapPin,
     gradient: "from-indigo-500 to-violet-500",
     accent: "#6d28d9",
+    accentBg: "rgba(109,40,217,0.03)",
     chipBg: "bg-violet-50", chipText: "text-violet-700",
     label: "Reservations",
   },
@@ -106,6 +117,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     icon: FileText,
     gradient: "from-slate-400 to-slate-600",
     accent: "#475569",
+    accentBg: "rgba(71,85,105,0.03)",
     chipBg: "bg-slate-50", chipText: "text-slate-600",
     label: "Reservations",
   },
@@ -113,6 +125,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     icon: Activity,
     gradient: "from-indigo-400 to-violet-600",
     accent: "#7c3aed",
+    accentBg: "rgba(124,58,237,0.03)",
     chipBg: "bg-violet-50", chipText: "text-violet-700",
     label: "Reservations",
   },
@@ -120,6 +133,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     icon: Car,
     gradient: "from-sky-400 to-blue-500",
     accent: "#0284c7",
+    accentBg: "rgba(2,132,199,0.03)",
     chipBg: "bg-sky-50", chipText: "text-sky-700",
     label: "Reservations",
   },
@@ -127,6 +141,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     icon: XCircle,
     gradient: "from-red-400 to-rose-600",
     accent: "#e11d48",
+    accentBg: "rgba(225,29,72,0.03)",
     chipBg: "bg-rose-50", chipText: "text-rose-700",
     label: "Reservations",
   },
@@ -134,6 +149,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     icon: MessageSquare,
     gradient: "from-blue-500 to-indigo-600",
     accent: "#2563eb",
+    accentBg: "rgba(37,99,235,0.03)",
     chipBg: "bg-blue-50", chipText: "text-blue-700",
     label: "Quote Requests",
   },
@@ -151,7 +167,7 @@ const TABS: { id: NotificationTab; label: string }[] = [
   { id: "unread",       label: "Unread" },
 ]
 
-// ── Tab bar — pill style ───────────────────────────────────────────────────────
+// ── Tab bar ───────────────────────────────────────────────────────────────────
 
 function TabBar({
   active,
@@ -163,26 +179,31 @@ function TabBar({
   unreadCount: number
 }) {
   return (
-    <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
+    <div className="flex items-center">
       {TABS.map((tab) => (
         <button
           key={tab.id}
           onClick={() => onChange(tab.id)}
           className={cn(
-            "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[12.5px] font-medium whitespace-nowrap transition-all duration-150 flex-shrink-0",
-            active === tab.id
-              ? "bg-gray-900 text-white shadow-sm"
-              : "bg-white/70 text-gray-500 border border-gray-200/80 hover:border-gray-300 hover:text-gray-700"
+            "relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-150 select-none",
+            active === tab.id ? "text-gray-900" : "text-gray-400 hover:text-gray-600"
           )}
         >
           {tab.label}
           {tab.id === "unread" && unreadCount > 0 && (
             <span className={cn(
-              "inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[9px] font-bold leading-none",
-              active === tab.id ? "bg-white/20 text-white" : "bg-red-500 text-white"
+              "inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold leading-none",
+              active === tab.id ? "bg-blue-600 text-white" : "bg-red-500 text-white"
             )}>
               {unreadCount > 99 ? "99+" : unreadCount}
             </span>
+          )}
+          {active === tab.id && (
+            <motion.div
+              layoutId="notifications-tab-indicator"
+              className="absolute bottom-0 left-0 right-0 h-[2px] bg-blue-600 rounded-full"
+              transition={{ type: "spring", bounce: 0.2, duration: 0.35 }}
+            />
           )}
         </button>
       ))}
@@ -190,7 +211,7 @@ function TabBar({
   )
 }
 
-// ── Notification row ───────────────────────────────────────────────────────────
+// ── Notification card ─────────────────────────────────────────────────────────
 
 function NotificationCard({
   notif,
@@ -198,14 +219,12 @@ function NotificationCard({
   selectMode,
   selected,
   onToggleSelect,
-  isLast,
 }: {
   notif: AppNotification
   onRead: (id: string) => void
   selectMode: boolean
   selected: boolean
   onToggleSelect: (id: string) => void
-  isLast: boolean
 }) {
   const router = useRouter()
   const meta = TYPE_META[notif.type] ?? TYPE_META.TRIP_NOTES_CHANGED
@@ -226,107 +245,105 @@ function NotificationCard({
   }
 
   return (
-    <div className="relative">
-      {/* Unread accent bar */}
-      {isUnread && !selected && (
-        <div
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[55%] rounded-r-full z-10"
-          style={{ backgroundColor: meta.accent }}
-        />
+    <div
+      onClick={handleCardClick}
+      className={cn(
+        "group relative flex gap-4 p-4 rounded-2xl border cursor-pointer transition-all duration-200",
+        !selectMode && "hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]",
+        selected
+          ? "border-blue-300 bg-blue-50/40"
+          : isUnread
+            ? "bg-white border-gray-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
+            : "bg-gray-50/60 border-gray-100 shadow-none hover:bg-white"
       )}
-
+      style={!selected && isUnread ? {
+        borderLeftWidth: "3px",
+        borderLeftColor: meta.accent,
+        background: meta.accentBg,
+        boxShadow: `0 2px 12px rgba(0,0,0,0.05)`,
+      } : undefined}
+    >
+      {/* Checkbox — visible on hover or when selectMode is active */}
       <div
-        onClick={handleCardClick}
+        onClick={handleCheckboxClick}
         className={cn(
-          "group relative flex items-start gap-3.5 px-5 py-4 cursor-pointer transition-colors duration-150",
-          selected
-            ? "bg-blue-50"
-            : "hover:bg-gray-50"
+          "absolute left-4 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-5 h-5 transition-all duration-150",
+          selectMode || selected
+            ? "opacity-100"
+            : "opacity-0 group-hover:opacity-100"
         )}
       >
-        {/* Checkbox */}
-        <div
-          onClick={handleCheckboxClick}
-          className={cn(
-            "absolute left-5 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center transition-all duration-150",
-            selectMode || selected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-          )}
-        >
-          <div className={cn(
-            "w-[18px] h-[18px] rounded-[5px] border-2 flex items-center justify-center transition-all",
-            selected ? "bg-blue-600 border-blue-600" : "bg-white border-gray-300 group-hover:border-gray-400"
-          )}>
-            {selected && (
-              <svg viewBox="0 0 10 8" className="w-2.5 h-2" fill="none">
-                <path d="M1 3.5L3.5 6.5L9 1" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            )}
-          </div>
-        </div>
-
-        {/* Icon */}
         <div className={cn(
-          "w-9 h-9 rounded-xl bg-gradient-to-br flex items-center justify-center flex-shrink-0 transition-all duration-200",
-          meta.gradient,
-          !isUnread && "opacity-60",
-          selectMode || selected ? "ml-6" : "group-hover:ml-6"
+          "w-[18px] h-[18px] rounded-[5px] border-2 flex items-center justify-center transition-all duration-150",
+          selected
+            ? "bg-blue-600 border-blue-600"
+            : "bg-white border-gray-300 group-hover:border-gray-400"
         )}>
-          <Icon className="text-white" style={{ width: 15, height: 15 }} />
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-3">
-            <p className={cn(
-              "text-[13.5px] leading-snug",
-              isUnread ? "font-semibold text-gray-900" : "font-medium text-gray-400"
-            )}>
-              {notif.title}
-            </p>
-            <div className="flex items-center gap-2 flex-shrink-0 mt-0.5">
-              {isUnread && !selected && (
-                <div
-                  className="w-2 h-2 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: meta.accent }}
-                />
-              )}
-              <span className="text-[11px] text-gray-400 whitespace-nowrap font-medium">
-                {formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true })}
-              </span>
-            </div>
-          </div>
-
-          <p className={cn(
-            "text-[12px] leading-relaxed mt-0.5",
-            isUnread ? "text-gray-500" : "text-gray-400"
-          )}>
-            {notif.body}
-          </p>
-
-          <div className="flex items-center gap-2 mt-2">
-            <span className={cn(
-              "text-[10.5px] font-semibold px-2 py-0.5 rounded-md",
-              meta.chipBg, meta.chipText
-            )}>
-              {meta.label}
-            </span>
-            {!selectMode && notif.entityId && notif.entityType && (
-              <span className="inline-flex items-center gap-0.5 text-[11px] font-medium text-gray-300 group-hover:text-gray-500 transition-colors">
-                {notif.entityType === "trip"
-                  ? "View reservation"
-                  : notif.entityType === "quote_request"
-                    ? "View quote"
-                    : "View affiliate"}
-                <ArrowUpRight className="w-3 h-3" />
-              </span>
-            )}
-          </div>
+          {selected && (
+            <svg viewBox="0 0 10 8" className="w-2.5 h-2" fill="none">
+              <path d="M1 3.5L3.5 6.5L9 1" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
         </div>
       </div>
 
-      {/* Hairline divider */}
-      {!isLast && (
-        <div className="absolute bottom-0 left-5 right-5 h-px bg-gray-100" />
+      {/* Icon — shifts right when checkbox is visible */}
+      <div className={cn(
+        "w-12 h-12 rounded-full bg-gradient-to-br flex items-center justify-center flex-shrink-0 transition-all duration-200",
+        "shadow-[0_2px_8px_rgba(0,0,0,0.15)] ring-2 ring-white",
+        meta.gradient,
+        !selectMode && "group-hover:scale-110 group-hover:shadow-[0_4px_14px_rgba(0,0,0,0.18)]",
+        selectMode || selected ? "ml-6" : "group-hover:ml-6"
+      )}>
+        <Icon className="text-white drop-shadow-sm" style={{ width: 18, height: 18 }} />
+      </div>
+
+      {/* Body */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-3 mb-1">
+          <p className={cn(
+            "text-[13.5px] leading-snug",
+            isUnread ? "font-semibold text-gray-900" : "font-medium text-gray-500"
+          )}>
+            {notif.title}
+          </p>
+          <span className="text-[11px] text-gray-400 whitespace-nowrap font-medium flex-shrink-0 mt-0.5">
+            {formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true })}
+          </span>
+        </div>
+
+        <p className={cn(
+          "text-[12.5px] leading-relaxed mb-2.5",
+          isUnread ? "text-gray-500" : "text-gray-400"
+        )}>
+          {notif.body}
+        </p>
+
+        <div className="flex items-center gap-2">
+          <span className={cn(
+            "text-[11px] font-semibold px-2 py-0.5 rounded-md",
+            meta.chipBg, meta.chipText
+          )}>
+            {meta.label}
+          </span>
+          {!selectMode && notif.entityId && notif.entityType && (
+            <span className={cn(
+              "inline-flex items-center gap-1 text-[11px] font-medium transition-colors",
+              isUnread ? "text-gray-400 group-hover:text-gray-600" : "text-gray-300 group-hover:text-gray-500"
+            )}>
+              {notif.entityType === "trip" ? "View reservation" : notif.entityType === "quote_request" ? "View quote" : "View affiliate"}
+              <ArrowUpRight className="w-3 h-3" />
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Unread dot */}
+      {!selectMode && !selected && isUnread && (
+        <div
+          className="absolute top-4 right-4 w-2 h-2 rounded-full flex-shrink-0"
+          style={{ backgroundColor: meta.accent, boxShadow: `0 0 0 3px ${meta.accent}20` }}
+        />
       )}
     </div>
   )
@@ -425,9 +442,9 @@ function EmptyState({ tab }: { tab: NotificationTab }) {
   }
   const { icon: Icon, title, body } = msgs[tab]
   return (
-    <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
-      <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
-        <Icon className="w-5 h-5 text-gray-300" />
+    <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+      <div className="w-14 h-14 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center mb-4">
+        <Icon className="w-6 h-6 text-gray-300" />
       </div>
       <p className="font-semibold text-gray-500 text-sm">{title}</p>
       <p className="text-xs text-gray-400 mt-1.5 max-w-xs leading-relaxed">{body}</p>
@@ -437,21 +454,21 @@ function EmptyState({ tab }: { tab: NotificationTab }) {
 
 // ── Skeleton loader ───────────────────────────────────────────────────────────
 
-function SkeletonRow({ delay }: { delay: number }) {
+function SkeletonCard({ delay }: { delay: number }) {
   return (
     <div
-      className="flex items-start gap-3.5 px-5 py-4 animate-pulse"
+      className="flex gap-4 p-4 bg-white rounded-2xl border border-gray-100 animate-pulse"
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="w-9 h-9 rounded-xl bg-gray-100 flex-shrink-0" />
-      <div className="flex-1 space-y-2 pt-0.5">
+      <div className="w-11 h-11 rounded-2xl bg-gray-100 flex-shrink-0" />
+      <div className="flex-1 space-y-2 py-0.5">
         <div className="flex justify-between gap-4">
-          <div className="h-3 bg-gray-100 rounded-full w-2/5" />
-          <div className="h-2.5 bg-gray-100 rounded-full w-14" />
+          <div className="h-3.5 bg-gray-100 rounded-full w-2/5" />
+          <div className="h-3 bg-gray-100 rounded-full w-14" />
         </div>
-        <div className="h-2.5 bg-gray-100 rounded-full w-4/5" />
-        <div className="h-2.5 bg-gray-100 rounded-full w-3/5" />
-        <div className="h-4 bg-gray-100 rounded-md w-16 mt-1" />
+        <div className="h-3 bg-gray-100 rounded-full w-4/5" />
+        <div className="h-3 bg-gray-100 rounded-full w-3/5" />
+        <div className="h-5 bg-gray-100 rounded-md w-20 mt-1" />
       </div>
     </div>
   )
@@ -484,6 +501,7 @@ export default function NotificationsPage() {
     setSelectedIds((prev) => {
       const next = new Set(prev)
       next.has(id) ? next.delete(id) : next.add(id)
+      // Exit select mode if nothing remains selected
       if (next.size === 0) setSelectMode(false)
       return next
     })
@@ -538,14 +556,8 @@ export default function NotificationsPage() {
 
   const allSelected = allNotifications.length > 0 && selectedIds.size === allNotifications.length
 
-  function handleTabChange(t: NotificationTab) {
-    setTab(t)
-    setSelectMode(false)
-    setSelectedIds(new Set())
-  }
-
   return (
-    <div className="max-w-3xl mx-auto space-y-4">
+    <div className="max-w-5xl mx-auto space-y-5">
 
       {/* ── Confirm dialog ── */}
       <AnimatePresence>
@@ -571,51 +583,95 @@ export default function NotificationsPage() {
         )}
       </AnimatePresence>
 
-      {/* ── Page header ── */}
-      <div className="space-y-4">
+      {/* ── Header card ── */}
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.03)] relative">
 
-        {/* Title + actions */}
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
+        {/* Title row + metric strip */}
+        <div className="flex items-center justify-between gap-4 px-6 pt-5 pb-5">
+
+          {/* Left: icon + title + description */}
+          <div className="flex items-center gap-3.5 min-w-0">
             <div
-              className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
+              className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
               style={{
                 background: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)",
-                boxShadow: "0 4px 12px rgba(37,99,235,0.25)",
+                boxShadow: "0 4px 12px rgba(37,99,235,0.18)",
               }}
             >
               <Bell className="w-[18px] h-[18px] text-white" />
             </div>
-            <div>
-              <h1 className="text-[18px] font-bold text-gray-900 tracking-tight leading-tight">
+            <div className="min-w-0">
+              <h1 className="text-[17px] font-bold text-gray-900 tracking-tight leading-tight">
                 Notifications
               </h1>
-              <p className="text-[12px] text-gray-400 mt-0.5">
+              <p className="text-[13px] text-gray-400 mt-0.5 leading-snug">
                 {unreadCount > 0
-                  ? `${unreadCount} unread · ${allNotifications.length} total · ${todayCount} today`
-                  : `${allNotifications.length} total · ${todayCount} today`}
+                  ? `${unreadCount} update${unreadCount !== 1 ? "s" : ""} waiting for your review`
+                  : "Stay on top of affiliate and reservation activity"}
               </p>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-1.5 shrink-0">
+          {/* Right: metric strip */}
+          <div className="flex items-stretch divide-x divide-gray-100 rounded-xl border border-gray-100 bg-gray-50/50 overflow-hidden shrink-0">
+            {([
+              { label: "All",    value: allNotifications.length, dot: "bg-blue-500",    tabId: "all"    as NotificationTab },
+              { label: "Unread", value: unreadCount,             dot: "bg-red-400",     tabId: "unread" as NotificationTab },
+              { label: "Today",  value: todayCount,              dot: "bg-emerald-500", tabId: "all"    as NotificationTab },
+            ] as const).map((stat) => (
+              <button
+                key={stat.label}
+                onClick={() => setTab(stat.tabId)}
+                className={cn(
+                  "flex flex-col items-center justify-center px-5 py-3 min-w-[88px] transition-all duration-150",
+                  tab === stat.tabId && stat.label !== "Today"
+                    ? "bg-white shadow-[0_0_0_1px_rgba(37,99,235,0.08)] relative"
+                    : "hover:bg-white/70"
+                )}
+              >
+                <span className={cn(
+                  "text-[22px] font-bold leading-none tracking-tight",
+                  tab === stat.tabId && stat.label !== "Today" ? "text-blue-600" : "text-gray-800"
+                )}>
+                  {stat.value}
+                </span>
+                <span className="flex items-center gap-1.5 mt-1.5">
+                  <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", stat.dot)} />
+                  <span className="text-[11px] text-gray-400 font-medium leading-none whitespace-nowrap">
+                    {stat.label}
+                  </span>
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Gradient divider */}
+        <div className="h-px bg-gradient-to-r from-transparent via-gray-100 to-transparent mx-6" />
+
+        {/* Tab bar + action buttons */}
+        <div className="flex items-center justify-between gap-4 px-6">
+          <TabBar active={tab} onChange={(t) => { setTab(t); setSelectMode(false); setSelectedIds(new Set()) }} unreadCount={unreadCount} />
+
+          <div className="flex items-center gap-2 py-3 shrink-0">
+            {/* Mark all read */}
             {unreadCount > 0 && (
               <button
                 onClick={() => markAllAsRead.mutate()}
                 disabled={markAllAsRead.isPending}
-                className="flex items-center gap-1.5 text-[12px] font-semibold text-blue-600 hover:text-blue-700 transition-colors px-3 py-2 rounded-xl hover:bg-blue-50 disabled:opacity-50"
+                className="flex items-center gap-1.5 text-[12px] font-semibold text-blue-600 hover:text-blue-700 transition-colors disabled:opacity-50"
               >
                 <CheckCheck className="w-3.5 h-3.5" />
                 Mark all read
               </button>
             )}
 
+            {/* Clear dropdown */}
             {allNotifications.length > 0 && (
               <div className="relative">
                 <button
                   onClick={() => setClearDropdownOpen((v) => !v)}
-                  className="flex items-center gap-1.5 text-[12px] font-semibold text-gray-500 hover:text-red-600 transition-colors px-3 py-2 rounded-xl hover:bg-red-50"
+                  className="flex items-center gap-1.5 text-[12px] font-semibold text-gray-500 hover:text-red-600 transition-colors px-2.5 py-1 rounded-lg hover:bg-red-50"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   Clear
@@ -653,9 +709,6 @@ export default function NotificationsPage() {
             )}
           </div>
         </div>
-
-        {/* Pill tabs */}
-        <TabBar active={tab} onChange={handleTabChange} unreadCount={unreadCount} />
       </div>
 
       {/* ── Content ── */}
@@ -667,10 +720,10 @@ export default function NotificationsPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden divide-y divide-gray-100"
+            className="space-y-2.5"
           >
             {Array.from({ length: 5 }).map((_, i) => (
-              <SkeletonRow key={i} delay={i * 60} />
+              <SkeletonCard key={i} delay={i * 60} />
             ))}
           </motion.div>
         ) : allNotifications.length === 0 ? (
@@ -691,24 +744,24 @@ export default function NotificationsPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="space-y-3"
+            className="space-y-6"
           >
             {groups.map((group) => (
               <div key={group.label}>
                 {/* Date label */}
-                <div className="flex items-center gap-2 mb-2 px-1">
-                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.07em]">
+                <div className="flex items-center gap-3 mb-3 px-1">
+                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-[0.08em] whitespace-nowrap">
                     {group.label}
                   </span>
-                  <div className="flex-1 h-px bg-gray-200/70" />
-                  <span className="text-[10.5px] text-gray-300 font-medium">
+                  <div className="flex-1 h-px bg-gray-100" />
+                  <span className="text-[11px] text-gray-300 font-medium whitespace-nowrap">
                     {group.items.length} {group.items.length !== 1 ? "updates" : "update"}
                   </span>
                 </div>
 
-                {/* Group card */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                  {group.items.map((notif, idx) => (
+                {/* Cards */}
+                <div className="space-y-2">
+                  {group.items.map((notif) => (
                     <NotificationCard
                       key={notif.id}
                       notif={notif}
@@ -716,7 +769,6 @@ export default function NotificationsPage() {
                       selectMode={selectMode}
                       selected={selectedIds.has(notif.id)}
                       onToggleSelect={toggleSelect}
-                      isLast={idx === group.items.length - 1}
                     />
                   ))}
                 </div>
