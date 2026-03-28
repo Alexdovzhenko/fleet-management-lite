@@ -6,66 +6,92 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 
 const STYLES = `
-  @keyframes auth-up {
-    from { opacity: 0; transform: translateY(18px); }
+  @keyframes t-up {
+    from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .au { animation: auth-up 0.5s cubic-bezier(0.16,1,0.3,1) both; }
-  .au-1 { animation-delay: 0.05s; }
-  .au-2 { animation-delay: 0.12s; }
-  .au-3 { animation-delay: 0.19s; }
-  .au-4 { animation-delay: 0.26s; }
-  .au-5 { animation-delay: 0.33s; }
+  .t-in { animation: t-up 0.45s cubic-bezier(0.16,1,0.3,1) both; }
+  .t-d1 { animation-delay: 0.06s; }
+  .t-d2 { animation-delay: 0.13s; }
+  .t-d3 { animation-delay: 0.20s; }
+  .t-d4 { animation-delay: 0.27s; }
+  .t-d5 { animation-delay: 0.34s; }
 
-  .lc-input {
+  .t-input {
     width: 100%;
-    background: #f8f9fb;
-    border: 1.5px solid #e8eaf0;
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 0.88rem;
-    color: #0f172a;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 4px;
+    padding: 13px 14px;
+    font-size: 0.82rem;
+    color: #fafaf9;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-    font-family: var(--font-outfit, system-ui);
+    font-family: var(--font-mono, monospace);
     font-weight: 400;
+    letter-spacing: 0.02em;
   }
-  .lc-input::placeholder { color: #a0a8b8; }
-  .lc-input:focus {
-    border-color: #6366f1;
-    background: #ffffff;
-    box-shadow: 0 0 0 4px rgba(99,102,241,0.08);
+  .t-input::placeholder {
+    color: rgba(255,255,255,0.2);
+    font-weight: 300;
+  }
+  .t-input:focus {
+    border-color: rgba(245,158,11,0.6);
+    background: rgba(245,158,11,0.04);
+    box-shadow: 0 0 0 3px rgba(245,158,11,0.07);
   }
 
-  .lc-btn {
+  .t-btn {
     width: 100%;
-    padding: 13px;
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-    color: #ffffff;
+    padding: 14px;
+    background: #f59e0b;
+    color: #080706;
     border: none;
-    border-radius: 10px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    font-family: var(--font-outfit, system-ui);
-    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
-    box-shadow: 0 4px 14px rgba(99,102,241,0.35);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-family: var(--font-mono, monospace);
+    transition: background 0.2s, transform 0.15s;
   }
-  .lc-btn:hover:not(:disabled) {
-    opacity: 0.92;
+  .t-btn:hover:not(:disabled) {
+    background: #fbbf24;
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(99,102,241,0.4);
   }
-  .lc-btn:active:not(:disabled) {
-    transform: translateY(0);
-  }
-  .lc-btn:disabled {
-    opacity: 0.5;
+  .t-btn:active:not(:disabled) { transform: translateY(0); }
+  .t-btn:disabled {
+    opacity: 0.35;
     cursor: not-allowed;
     transform: none;
-    box-shadow: none;
   }
+
+  .t-label {
+    display: block;
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 0.5rem;
+    font-family: var(--font-mono, monospace);
+    font-weight: 400;
+  }
+
+  .t-link {
+    color: #f59e0b;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+  .t-link:hover { opacity: 0.7; }
+
+  .t-link-plain {
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .t-link-plain:hover { color: #f59e0b; }
 `
 
 function LoginForm() {
@@ -106,102 +132,135 @@ function LoginForm() {
       <style>{STYLES}</style>
 
       {/* Heading */}
-      <div className="au au-1 mb-8">
-        <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: "#6366f1" }}>
-          Welcome back
-        </p>
-        <h2
-          className="font-bold leading-tight"
-          style={{ fontSize: "2rem", color: "#0f172a", letterSpacing: "-0.03em" }}
+      <div className="t-in t-d1 mb-9">
+        <div
+          style={{
+            fontSize: "0.58rem",
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+            color: "rgba(245,158,11,0.6)",
+            fontFamily: "var(--font-mono)",
+            marginBottom: "0.75rem",
+          }}
         >
-          Sign in to your workspace
+          // AUTH_MODULE
+        </div>
+        <h2
+          style={{
+            fontFamily: "var(--font-bebas)",
+            fontSize: "2.8rem",
+            color: "#fafaf9",
+            letterSpacing: "0.04em",
+            lineHeight: 1,
+          }}
+        >
+          SIGN IN
         </h2>
-        <p className="mt-2 text-sm" style={{ color: "#64748b", fontWeight: 400 }}>
-          Manage your fleet and dispatch operations
+        <p
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.75rem",
+            color: "rgba(255,255,255,0.3)",
+            fontWeight: 300,
+            marginTop: "0.6rem",
+            letterSpacing: "0.02em",
+          }}
+        >
+          Access your dispatch workspace
         </p>
       </div>
 
       {/* Error */}
       {error && (
         <div
-          className="mb-5 py-3 px-4 rounded-lg text-sm flex items-center gap-2"
-          style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626" }}
+          className="mb-5"
+          style={{
+            background: "rgba(239,68,68,0.08)",
+            border: "1px solid rgba(239,68,68,0.25)",
+            borderRadius: "4px",
+            padding: "10px 14px",
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.75rem",
+            color: "rgba(252,165,165,0.9)",
+            letterSpacing: "0.01em",
+          }}
         >
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 flex-shrink-0">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
-          </svg>
+          <span style={{ color: "#f87171", marginRight: "6px" }}>!</span>
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
         {/* Email */}
-        <div className="au au-2 mb-4">
-          <label className="block text-xs font-semibold mb-2" style={{ color: "#374151" }}>
-            Email address
-          </label>
+        <div className="t-in t-d2" style={{ marginBottom: "1.25rem" }}>
+          <label className="t-label">Email_Address</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="john@yourlimo.com"
+            placeholder="operator@yourlimo.com"
             required
             autoFocus
-            className="lc-input"
+            className="t-input"
           />
         </div>
 
         {/* Password */}
-        <div className="au au-3 mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-xs font-semibold" style={{ color: "#374151" }}>
-              Password
-            </label>
-            <Link
-              href="/auth/forgot-password"
-              className="text-xs font-medium"
-              style={{ color: "#6366f1", textDecoration: "none" }}
-              onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
-              onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
-            >
-              Forgot password?
+        <div className="t-in t-d3" style={{ marginBottom: "2rem" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+            <label className="t-label" style={{ margin: 0 }}>Password</label>
+            <Link href="/auth/forgot-password" className="t-link" style={{ fontSize: "0.62rem", letterSpacing: "0.1em" }}>
+              RESET →
             </Link>
           </div>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
+            placeholder="••••••••••••"
             required
-            className="lc-input"
+            className="t-input"
           />
         </div>
 
         {/* Submit */}
-        <div className="au au-4">
-          <button type="submit" disabled={loading} className="lc-btn">
-            {loading ? "Signing in…" : "Sign In"}
+        <div className="t-in t-d4">
+          <button type="submit" disabled={loading} className="t-btn">
+            {loading ? "AUTHENTICATING..." : "SIGN IN →"}
           </button>
         </div>
       </form>
 
       {/* Divider */}
-      <div className="au au-5 flex items-center gap-3 my-6">
-        <div className="flex-1 h-px bg-gray-100" />
-        <span className="text-xs text-gray-400">or</span>
-        <div className="flex-1 h-px bg-gray-100" />
+      <div
+        className="t-in t-d5"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "1rem",
+          margin: "1.75rem 0",
+        }}
+      >
+        <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "rgba(255,255,255,0.2)", letterSpacing: "0.1em" }}>
+          OR
+        </span>
+        <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
       </div>
 
-      <p className="au au-5 text-center text-sm text-gray-500">
-        New to Livery Connect?{" "}
-        <Link
-          href="/auth/signup"
-          className="font-semibold"
-          style={{ color: "#6366f1", textDecoration: "none" }}
-          onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
-          onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
-        >
-          Create an account
+      <p
+        className="t-in t-d5"
+        style={{
+          textAlign: "center",
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.72rem",
+          color: "rgba(255,255,255,0.25)",
+          letterSpacing: "0.02em",
+        }}
+      >
+        No account?{" "}
+        <Link href="/auth/signup" className="t-link-plain">
+          Register operator →
         </Link>
       </p>
     </>

@@ -6,66 +6,87 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 
 const STYLES = `
-  @keyframes auth-up {
-    from { opacity: 0; transform: translateY(18px); }
+  @keyframes t-up {
+    from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .au { animation: auth-up 0.5s cubic-bezier(0.16,1,0.3,1) both; }
-  .au-1 { animation-delay: 0.05s; }
-  .au-2 { animation-delay: 0.11s; }
-  .au-3 { animation-delay: 0.17s; }
-  .au-4 { animation-delay: 0.23s; }
-  .au-5 { animation-delay: 0.29s; }
-  .au-6 { animation-delay: 0.35s; }
-  .au-7 { animation-delay: 0.41s; }
+  .t-in { animation: t-up 0.45s cubic-bezier(0.16,1,0.3,1) both; }
+  .t-d1 { animation-delay: 0.06s; }
+  .t-d2 { animation-delay: 0.12s; }
+  .t-d3 { animation-delay: 0.18s; }
+  .t-d4 { animation-delay: 0.24s; }
+  .t-d5 { animation-delay: 0.30s; }
+  .t-d6 { animation-delay: 0.36s; }
+  .t-d7 { animation-delay: 0.42s; }
 
-  .lc-input {
+  .t-input {
     width: 100%;
-    background: #f8f9fb;
-    border: 1.5px solid #e8eaf0;
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 0.88rem;
-    color: #0f172a;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 4px;
+    padding: 13px 14px;
+    font-size: 0.82rem;
+    color: #fafaf9;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-    font-family: var(--font-outfit, system-ui);
+    font-family: var(--font-mono, monospace);
     font-weight: 400;
+    letter-spacing: 0.02em;
   }
-  .lc-input::placeholder { color: #a0a8b8; }
-  .lc-input:focus {
-    border-color: #6366f1;
-    background: #ffffff;
-    box-shadow: 0 0 0 4px rgba(99,102,241,0.08);
+  .t-input::placeholder {
+    color: rgba(255,255,255,0.2);
+    font-weight: 300;
+  }
+  .t-input:focus {
+    border-color: rgba(245,158,11,0.6);
+    background: rgba(245,158,11,0.04);
+    box-shadow: 0 0 0 3px rgba(245,158,11,0.07);
   }
 
-  .lc-btn {
+  .t-btn {
     width: 100%;
-    padding: 13px;
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-    color: #ffffff;
+    padding: 14px;
+    background: #f59e0b;
+    color: #080706;
     border: none;
-    border-radius: 10px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    font-family: var(--font-outfit, system-ui);
-    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
-    box-shadow: 0 4px 14px rgba(99,102,241,0.35);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-family: var(--font-mono, monospace);
+    transition: background 0.2s, transform 0.15s;
   }
-  .lc-btn:hover:not(:disabled) {
-    opacity: 0.92;
+  .t-btn:hover:not(:disabled) {
+    background: #fbbf24;
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(99,102,241,0.4);
   }
-  .lc-btn:active:not(:disabled) { transform: translateY(0); }
-  .lc-btn:disabled {
-    opacity: 0.5;
+  .t-btn:active:not(:disabled) { transform: translateY(0); }
+  .t-btn:disabled {
+    opacity: 0.35;
     cursor: not-allowed;
     transform: none;
-    box-shadow: none;
   }
+
+  .t-label {
+    display: block;
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 0.5rem;
+    font-family: var(--font-mono, monospace);
+    font-weight: 400;
+  }
+
+  .t-link-plain {
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .t-link-plain:hover { color: #f59e0b; }
 `
 
 export default function SignupPage() {
@@ -86,7 +107,6 @@ export default function SignupPage() {
     setError("")
     if (form.password !== form.confirmPassword) { setError("Passwords do not match"); return }
     if (form.password.length < 8) { setError("Password must be at least 8 characters"); return }
-
     setLoading(true)
     try {
       const supabase = createClient()
@@ -120,17 +140,40 @@ export default function SignupPage() {
       <style>{STYLES}</style>
 
       {/* Heading */}
-      <div className="au au-1 mb-7">
-        <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: "#6366f1" }}>
-          Get started
-        </p>
-        <h2
-          className="font-bold leading-tight"
-          style={{ fontSize: "1.85rem", color: "#0f172a", letterSpacing: "-0.03em" }}
+      <div className="t-in t-d1" style={{ marginBottom: "2rem" }}>
+        <div
+          style={{
+            fontSize: "0.58rem",
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+            color: "rgba(245,158,11,0.6)",
+            fontFamily: "var(--font-mono)",
+            marginBottom: "0.75rem",
+          }}
         >
-          Create your account
+          // REGISTER_OPERATOR
+        </div>
+        <h2
+          style={{
+            fontFamily: "var(--font-bebas)",
+            fontSize: "2.6rem",
+            color: "#fafaf9",
+            letterSpacing: "0.04em",
+            lineHeight: 1,
+          }}
+        >
+          CREATE ACCOUNT
         </h2>
-        <p className="mt-2 text-sm" style={{ color: "#64748b" }}>
+        <p
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.75rem",
+            color: "rgba(255,255,255,0.3)",
+            fontWeight: 300,
+            marginTop: "0.6rem",
+            letterSpacing: "0.02em",
+          }}
+        >
           Set up your limo dispatch workspace
         </p>
       </div>
@@ -138,78 +181,91 @@ export default function SignupPage() {
       {/* Error */}
       {error && (
         <div
-          className="mb-5 py-3 px-4 rounded-lg text-sm flex items-center gap-2"
-          style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626" }}
+          className="mb-5"
+          style={{
+            background: "rgba(239,68,68,0.08)",
+            border: "1px solid rgba(239,68,68,0.25)",
+            borderRadius: "4px",
+            padding: "10px 14px",
+            fontFamily: "var(--font-mono)",
+            fontSize: "0.75rem",
+            color: "rgba(252,165,165,0.9)",
+            letterSpacing: "0.01em",
+          }}
         >
-          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 flex-shrink-0">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
-          </svg>
+          <span style={{ color: "#f87171", marginRight: "6px" }}>!</span>
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
         {/* Company */}
-        <div className="au au-2 mb-4">
-          <label className="block text-xs font-semibold mb-2" style={{ color: "#374151" }}>Company Name</label>
-          <input value={form.companyName} onChange={field("companyName")} placeholder="Luxury Limousine Co." required className="lc-input" />
+        <div className="t-in t-d2" style={{ marginBottom: "1.1rem" }}>
+          <label className="t-label">Company_Name</label>
+          <input value={form.companyName} onChange={field("companyName")} placeholder="Luxury Limousine Co." required className="t-input" />
         </div>
 
         {/* First / Last */}
-        <div className="au au-3 grid grid-cols-2 gap-3 mb-4">
+        <div className="t-in t-d3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1.1rem" }}>
           <div>
-            <label className="block text-xs font-semibold mb-2" style={{ color: "#374151" }}>First Name</label>
-            <input value={form.firstName} onChange={field("firstName")} placeholder="John" required className="lc-input" />
+            <label className="t-label">First_Name</label>
+            <input value={form.firstName} onChange={field("firstName")} placeholder="John" required className="t-input" />
           </div>
           <div>
-            <label className="block text-xs font-semibold mb-2" style={{ color: "#374151" }}>Last Name</label>
-            <input value={form.lastName} onChange={field("lastName")} placeholder="Smith" required className="lc-input" />
+            <label className="t-label">Last_Name</label>
+            <input value={form.lastName} onChange={field("lastName")} placeholder="Smith" required className="t-input" />
           </div>
         </div>
 
         {/* Email */}
-        <div className="au au-4 mb-4">
-          <label className="block text-xs font-semibold mb-2" style={{ color: "#374151" }}>Business Email</label>
-          <input type="email" value={form.email} onChange={field("email")} placeholder="john@yourlimo.com" required autoFocus className="lc-input" />
+        <div className="t-in t-d4" style={{ marginBottom: "1.1rem" }}>
+          <label className="t-label">Business_Email</label>
+          <input type="email" value={form.email} onChange={field("email")} placeholder="operator@yourlimo.com" required autoFocus className="t-input" />
         </div>
 
         {/* Passwords */}
-        <div className="au au-5 grid grid-cols-2 gap-3 mb-7">
+        <div className="t-in t-d5" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1.75rem" }}>
           <div>
-            <label className="block text-xs font-semibold mb-2" style={{ color: "#374151" }}>Password</label>
-            <input type="password" value={form.password} onChange={field("password")} placeholder="Min. 8 characters" required className="lc-input" />
+            <label className="t-label">Password</label>
+            <input type="password" value={form.password} onChange={field("password")} placeholder="Min. 8 chars" required className="t-input" />
           </div>
           <div>
-            <label className="block text-xs font-semibold mb-2" style={{ color: "#374151" }}>Confirm</label>
-            <input type="password" value={form.confirmPassword} onChange={field("confirmPassword")} placeholder="Repeat password" required className="lc-input" />
+            <label className="t-label">Confirm</label>
+            <input type="password" value={form.confirmPassword} onChange={field("confirmPassword")} placeholder="Repeat" required className="t-input" />
           </div>
         </div>
 
         {/* Submit */}
-        <div className="au au-6">
-          <button type="submit" disabled={loading} className="lc-btn">
-            {loading ? "Creating account…" : "Create Account"}
+        <div className="t-in t-d6">
+          <button type="submit" disabled={loading} className="t-btn">
+            {loading ? "INITIALIZING..." : "CREATE ACCOUNT →"}
           </button>
         </div>
       </form>
 
       {/* Divider */}
-      <div className="au au-7 flex items-center gap-3 my-5">
-        <div className="flex-1 h-px bg-gray-100" />
-        <span className="text-xs text-gray-400">or</span>
-        <div className="flex-1 h-px bg-gray-100" />
+      <div
+        className="t-in t-d7"
+        style={{ display: "flex", alignItems: "center", gap: "1rem", margin: "1.5rem 0" }}
+      >
+        <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "rgba(255,255,255,0.2)", letterSpacing: "0.1em" }}>OR</span>
+        <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
       </div>
 
-      <p className="au au-7 text-center text-sm text-gray-500">
-        Already have an account?{" "}
-        <Link
-          href="/auth/login"
-          className="font-semibold"
-          style={{ color: "#6366f1", textDecoration: "none" }}
-          onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
-          onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
-        >
-          Sign in
+      <p
+        className="t-in t-d7"
+        style={{
+          textAlign: "center",
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.72rem",
+          color: "rgba(255,255,255,0.25)",
+          letterSpacing: "0.02em",
+        }}
+      >
+        Have an account?{" "}
+        <Link href="/auth/login" className="t-link-plain">
+          Sign in →
         </Link>
       </p>
     </>
