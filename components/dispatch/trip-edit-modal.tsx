@@ -872,6 +872,18 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const [childSeats, setChildSeats] = useState({ forward: 0, rear: 0, booster: 0 })
   const [childSeatsOpen, setChildSeatsOpen] = useState(false)
 
+  type AdditionalPax = { id: string; firstName: string; lastName: string; phone: string; email: string }
+  const [additionalPassengers, setAdditionalPassengers] = useState<AdditionalPax[]>([])
+  const addAdditionalPassenger = useCallback(() => {
+    setAdditionalPassengers(prev => [...prev, { id: Math.random().toString(36).slice(2), firstName: "", lastName: "", phone: "", email: "" }])
+  }, [])
+  const removeAdditionalPassenger = useCallback((id: string) => {
+    setAdditionalPassengers(prev => prev.filter(p => p.id !== id))
+  }, [])
+  const updateAdditionalPassenger = useCallback((id: string, field: string, value: string) => {
+    setAdditionalPassengers(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p))
+  }, [])
+
   const CHILD_SEAT_TYPES = [
     { key: "forward" as const, label: "Forward Facing" },
     { key: "rear"    as const, label: "Rear Facing"    },
@@ -907,6 +919,12 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     setSecondaryDriverIdValue(trip.secondaryDriverId ?? "")
     setSecondaryVehicleIdValue(trip.secondaryVehicleId ?? "")
     setDispatchTab("primary")
+    const existing = Array.isArray(trip.additionalPassengers) ? trip.additionalPassengers : []
+    setAdditionalPassengers(existing.map((p: { firstName?: string; lastName?: string; phone?: string; email?: string }) => ({
+      id: Math.random().toString(36).slice(2),
+      firstName: p.firstName ?? "", lastName: p.lastName ?? "",
+      phone: p.phone ?? "", email: p.email ?? "",
+    })))
     setSaveError("")
     setStopsError("")
     setChildSeatsOpen(false)
@@ -1027,6 +1045,9 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       passengerName:    data.passengerName || undefined,
       passengerPhone:   data.passengerPhone || undefined,
       passengerEmail:   data.passengerEmail || undefined,
+      additionalPassengers: additionalPassengers.length > 0
+        ? additionalPassengers.map(({ firstName, lastName, phone, email }) => ({ firstName, lastName, phone: phone || undefined, email: email || undefined }))
+        : null,
       driverId:         driverIdValue || undefined,
       vehicleId:        vehicleIdValue || undefined,
       secondaryDriverId:  secondaryDriverIdValue || undefined,
@@ -1243,34 +1264,105 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                 {/* Passenger */}
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
                   <p className="text-[10px] font-bold text-purple-500 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                    <span className="w-1 h-3 rounded-full bg-purple-400 inline-block flex-shrink-0" />Passenger
+                    <span className="w-1 h-3 rounded-full bg-purple-400 inline-block flex-shrink-0" />
+                    Passengers
                   </p>
-                  <div className="grid grid-cols-[1fr_1fr_200px] gap-3">
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Passenger Name</Label>
-                      <Input {...register("passengerName")} className="h-9 text-sm" placeholder="Full name" />
+                  <div className="space-y-2.5">
+                    {/* Primary passenger */}
+                    <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl px-3.5 py-3">
+                      <div className="flex items-center gap-2 mb-2.5">
+                        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-500 text-white text-[9px] font-bold shadow-sm shadow-indigo-200">1</span>
+                        <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Primary</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2.5 mb-2.5">
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-medium text-gray-500">Name</Label>
+                          <Input {...register("passengerName")} className="h-9 text-sm bg-white" placeholder="Full name" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-medium text-gray-500">Phone</Label>
+                          <Input
+                            {...register("passengerPhone")}
+                            type="tel"
+                            className="h-9 text-sm bg-white"
+                            placeholder="(305) 555-1234"
+                            onChange={(e) => {
+                              const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
+                              let formatted = digits
+                              if (digits.length > 6) formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
+                              else if (digits.length > 3) formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
+                              else if (digits.length > 0) formatted = `(${digits}`
+                              setValue("passengerPhone", formatted, { shouldDirty: true })
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label className="text-[11px] font-medium text-gray-500">Email</Label>
+                        <Input {...register("passengerEmail")} type="email" className="h-9 text-sm bg-white" placeholder="passenger@example.com" />
+                      </div>
                     </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Phone</Label>
-                      <Input
-                        {...register("passengerPhone")}
-                        type="tel"
-                        className="h-9 text-sm"
-                        placeholder="(305) 555-1234"
-                        onChange={(e) => {
-                          const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
-                          let formatted = digits
-                          if (digits.length > 6) formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
-                          else if (digits.length > 3) formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
-                          else if (digits.length > 0) formatted = `(${digits}`
-                          setValue("passengerPhone", formatted, { shouldDirty: true })
-                        }}
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Email</Label>
-                      <Input {...register("passengerEmail")} type="email" className="h-9 text-sm" placeholder="passenger@example.com" />
-                    </div>
+
+                    {/* Additional passengers */}
+                    {additionalPassengers.map((pax, idx) => (
+                      <div key={pax.id} className="relative bg-white border border-gray-200 rounded-xl px-3.5 py-3">
+                        <div className="flex items-center justify-between mb-2.5">
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-[9px] font-bold">{idx + 2}</span>
+                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Additional</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeAdditionalPassenger(pax.id)}
+                            className="w-5 h-5 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2.5 mb-2.5">
+                          <div className="space-y-1.5">
+                            <Label className="text-[11px] font-medium text-gray-500">First Name</Label>
+                            <Input value={pax.firstName} onChange={(e) => updateAdditionalPassenger(pax.id, "firstName", e.target.value)} className="h-9 text-sm" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-[11px] font-medium text-gray-500">Last Name</Label>
+                            <Input value={pax.lastName} onChange={(e) => updateAdditionalPassenger(pax.id, "lastName", e.target.value)} className="h-9 text-sm" />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2.5">
+                          <div className="space-y-1.5">
+                            <Label className="text-[11px] font-medium text-gray-500">Phone</Label>
+                            <Input
+                              type="tel"
+                              value={pax.phone}
+                              onChange={(e) => {
+                                const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
+                                let formatted = digits
+                                if (digits.length > 6) formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
+                                else if (digits.length > 3) formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
+                                else if (digits.length > 0) formatted = `(${digits}`
+                                updateAdditionalPassenger(pax.id, "phone", formatted)
+                              }}
+                              className="h-9 text-sm"
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-[11px] font-medium text-gray-500">Email</Label>
+                            <Input value={pax.email} type="email" onChange={(e) => updateAdditionalPassenger(pax.id, "email", e.target.value)} className="h-9 text-sm" />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Add passenger */}
+                    <button
+                      type="button"
+                      onClick={addAdditionalPassenger}
+                      className="w-full h-8 flex items-center justify-center gap-1.5 border border-dashed border-gray-200 hover:border-indigo-300 rounded-xl text-[11.5px] font-medium text-gray-400 hover:text-indigo-500 hover:bg-indigo-50/40 transition-all"
+                    >
+                      <Plus className="w-3 h-3" />
+                      Add passenger
+                    </button>
                   </div>
                 </div>
 

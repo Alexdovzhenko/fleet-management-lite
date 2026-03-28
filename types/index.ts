@@ -165,6 +165,7 @@ export interface Trip {
   passengerName?: string
   passengerPhone?: string
   passengerEmail?: string
+  additionalPassengers?: Array<{ firstName: string; lastName: string; phone?: string; email?: string }> | null
   driverId?: string
   driver?: Driver
   vehicleId?: string

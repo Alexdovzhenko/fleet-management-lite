@@ -2488,6 +2488,18 @@ export default function NewTripPage() {
   const [confirmCopied, setConfirmCopied] = useState(false)
   const [headerCopied, setHeaderCopied] = useState(false)
 
+  type AdditionalPax = { id: string; firstName: string; lastName: string; phone: string; email: string }
+  const [additionalPassengers, setAdditionalPassengers] = useState<AdditionalPax[]>([])
+  const addAdditionalPassenger = useCallback(() => {
+    setAdditionalPassengers(prev => [...prev, { id: Math.random().toString(36).slice(2), firstName: "", lastName: "", phone: "", email: "" }])
+  }, [])
+  const removeAdditionalPassenger = useCallback((id: string) => {
+    setAdditionalPassengers(prev => prev.filter(p => p.id !== id))
+  }, [])
+  const updateAdditionalPassenger = useCallback((id: string, field: string, value: string) => {
+    setAdditionalPassengers(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p))
+  }, [])
+
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema) as Resolver<FormData>,
     defaultValues: {
@@ -2547,6 +2559,9 @@ export default function NewTripPage() {
       passengerPhone:   data.passengerPhone || undefined,
       passengerEmail:   data.passengerEmail || undefined,
       passengerCount:   data.passengerCount,
+      additionalPassengers: additionalPassengers.length > 0
+        ? additionalPassengers.map(({ firstName, lastName, phone, email }) => ({ firstName, lastName, phone: phone || undefined, email: email || undefined }))
+        : undefined,
       luggageCount:     data.luggageCount ?? undefined,
       driverId:         data.driverId || undefined,
       vehicleId:        data.vehicleId || undefined,
@@ -2785,47 +2800,115 @@ export default function NewTripPage() {
 
                 {/* Passenger sub-section */}
                 <div className="px-5 pt-4 pb-5">
-                  <p className="text-[10px] font-bold text-purple-500 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
+                  <p className="text-[10px] font-bold text-purple-500 uppercase tracking-widest mb-3 flex items-center gap-1.5">
                     <span className="w-1 h-3 rounded-full bg-purple-400 inline-block flex-shrink-0" />
-                    Passenger
+                    Passengers
                     <span className="font-normal text-gray-400 normal-case">— if different from account holder</span>
                   </p>
-                  <div className="grid grid-cols-[1fr_1fr_1fr_160px] gap-3 mb-3">
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-900">First Name</Label>
-                      <Input {...register("passengerFirstName")} className="h-9 text-sm" />
+                  <div className="space-y-2.5">
+                    {/* Primary passenger */}
+                    <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl px-4 py-3.5">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-500 text-white text-[9px] font-bold shadow-sm shadow-indigo-200">1</span>
+                        <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Primary</span>
+                      </div>
+                      <div className="grid grid-cols-4 gap-3 mb-2.5">
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-medium text-gray-500">First Name</Label>
+                          <Input {...register("passengerFirstName")} className="h-9 text-sm bg-white" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-medium text-gray-500">Last Name</Label>
+                          <Input {...register("passengerLastName")} className="h-9 text-sm bg-white" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-medium text-gray-500">Company</Label>
+                          <Input {...register("passengerCompany")} className="h-9 text-sm bg-white" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-medium text-gray-500">Phone</Label>
+                          <Input
+                            {...register("passengerPhone")}
+                            type="tel"
+                            className="h-9 text-sm bg-white"
+                            onChange={(e) => {
+                              const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
+                              let formatted = digits
+                              if (digits.length >= 7) formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
+                              else if (digits.length >= 4) formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
+                              else if (digits.length >= 1) formatted = `(${digits}`
+                              e.target.value = formatted
+                              register("passengerPhone").onChange(e)
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div className="w-[calc(75%-6px)]">
+                        <div className="space-y-1.5">
+                          <Label className="text-[11px] font-medium text-gray-500">Email</Label>
+                          <Input {...register("passengerEmail")} type="email" className="h-9 text-sm bg-white" />
+                        </div>
+                      </div>
                     </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-900">Last Name</Label>
-                      <Input {...register("passengerLastName")} className="h-9 text-sm" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-900">Company</Label>
-                      <Input {...register("passengerCompany")} className="h-9 text-sm" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-900">Phone</Label>
-                      <Input
-                        {...register("passengerPhone")}
-                        type="tel"
-                        className="h-9 text-sm"
-                        onChange={(e) => {
-                          const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
-                          let formatted = digits
-                          if (digits.length >= 7) formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
-                          else if (digits.length >= 4) formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
-                          else if (digits.length >= 1) formatted = `(${digits}`
-                          e.target.value = formatted
-                          register("passengerPhone").onChange(e)
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-[260px_1fr] gap-3">
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-900">Email</Label>
-                      <Input {...register("passengerEmail")} type="email" className="h-9 text-sm" />
-                    </div>
+
+                    {/* Additional passengers */}
+                    {additionalPassengers.map((pax, idx) => (
+                      <div key={pax.id} className="group relative bg-white border border-gray-200 rounded-xl px-4 py-3.5">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-[9px] font-bold">{idx + 2}</span>
+                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Additional</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeAdditionalPassenger(pax.id)}
+                            className="w-6 h-6 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-4 gap-3">
+                          <div className="space-y-1.5">
+                            <Label className="text-[11px] font-medium text-gray-500">First Name</Label>
+                            <Input value={pax.firstName} onChange={(e) => updateAdditionalPassenger(pax.id, "firstName", e.target.value)} className="h-9 text-sm" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-[11px] font-medium text-gray-500">Last Name</Label>
+                            <Input value={pax.lastName} onChange={(e) => updateAdditionalPassenger(pax.id, "lastName", e.target.value)} className="h-9 text-sm" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-[11px] font-medium text-gray-500">Phone</Label>
+                            <Input
+                              type="tel"
+                              value={pax.phone}
+                              onChange={(e) => {
+                                const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
+                                let formatted = digits
+                                if (digits.length >= 7) formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
+                                else if (digits.length >= 4) formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
+                                else if (digits.length >= 1) formatted = `(${digits}`
+                                updateAdditionalPassenger(pax.id, "phone", formatted)
+                              }}
+                              className="h-9 text-sm"
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-[11px] font-medium text-gray-500">Email</Label>
+                            <Input value={pax.email} type="email" onChange={(e) => updateAdditionalPassenger(pax.id, "email", e.target.value)} className="h-9 text-sm" />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Add passenger */}
+                    <button
+                      type="button"
+                      onClick={addAdditionalPassenger}
+                      className="w-full h-9 flex items-center justify-center gap-1.5 border border-dashed border-gray-200 hover:border-indigo-300 rounded-xl text-[12px] font-medium text-gray-400 hover:text-indigo-500 hover:bg-indigo-50/40 transition-all"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Add passenger
+                    </button>
                   </div>
                 </div>
               </div>

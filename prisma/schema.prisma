@@ -256,11 +256,12 @@ model Trip {
   flightStatus  String?
   airportCode   String?
 
-  passengerCount Int     @default(1)
-  luggageCount   Int?
-  passengerName  String?
-  passengerPhone String?
-  passengerEmail String?
+  passengerCount       Int     @default(1)
+  luggageCount         Int?
+  passengerName        String?
+  passengerPhone       String?
+  passengerEmail       String?
+  additionalPassengers Json?
 
   driverId  String?
   driver    Driver?  @relation("PrimaryDriver", fields: [driverId], references: [id])
