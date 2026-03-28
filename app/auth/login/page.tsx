@@ -6,59 +6,104 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 
 const STYLES = `
-  @keyframes lc-rise {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
+  /* Staggered spring entrance */
+  @keyframes spring-up {
+    0%   { opacity: 0; transform: translateY(20px) scale(0.98); }
+    60%  { opacity: 1; transform: translateY(-3px) scale(1.002); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
   }
-  .lc-a  { animation: lc-rise 0.4s cubic-bezier(0.16,1,0.3,1) both; }
-  .lc-a1 { animation-delay: 0.05s; }
-  .lc-a2 { animation-delay: 0.11s; }
-  .lc-a3 { animation-delay: 0.17s; }
-  .lc-a4 { animation-delay: 0.23s; }
-  .lc-a5 { animation-delay: 0.29s; }
+  .s-in { animation: spring-up 0.55s cubic-bezier(0.34,1.3,0.64,1) both; }
+  .s-1 { animation-delay: 0.08s; }
+  .s-2 { animation-delay: 0.15s; }
+  .s-3 { animation-delay: 0.22s; }
+  .s-4 { animation-delay: 0.29s; }
+  .s-5 { animation-delay: 0.36s; }
+  .s-6 { animation-delay: 0.43s; }
 
-  .lc-input {
+  /* Input — Apple HIG style */
+  .ap-input {
     width: 100%;
-    background: #f8f9fb;
-    border: 1.5px solid #e2e6eb;
-    border-radius: 8px;
+    background: rgba(29,29,31,0.04);
+    border: 1.5px solid rgba(29,29,31,0.15);
+    border-radius: 10px;
     padding: 11px 14px;
-    font-size: 0.875rem;
-    color: #0d1b2a;
+    font-size: 0.9375rem;
+    color: #1d1d1f;
     outline: none;
-    transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
-    font-family: var(--font-instrument, system-ui);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    font-family: var(--font-jakarta, system-ui);
     font-weight: 400;
+    -webkit-font-smoothing: antialiased;
   }
-  .lc-input::placeholder { color: #a8b4c0; }
-  .lc-input:focus {
-    border-color: #0c2340;
-    background: #fff;
-    box-shadow: 0 0 0 3.5px rgba(12,35,64,0.08);
+  .ap-input::placeholder {
+    color: rgba(29,29,31,0.3);
+  }
+  .ap-input:hover {
+    border-color: rgba(29,29,31,0.25);
+  }
+  .ap-input:focus {
+    border-color: #0071e3;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(0,113,227,0.15);
   }
 
-  .lc-btn {
+  /* Button — Apple blue CTA */
+  .ap-btn {
     width: 100%;
-    padding: 12px 16px;
-    background: #0c2340;
+    padding: 13px 20px;
+    background: #0071e3;
     color: #ffffff;
     border: none;
-    border-radius: 8px;
+    border-radius: 980px;
     cursor: pointer;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     font-weight: 600;
-    font-family: var(--font-instrument, system-ui);
-    letter-spacing: 0.01em;
-    transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
-    box-shadow: 0 2px 8px rgba(12,35,64,0.2);
+    font-family: var(--font-jakarta, system-ui);
+    letter-spacing: -0.01em;
+    transition: background 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    -webkit-font-smoothing: antialiased;
+    box-shadow: 0 2px 12px rgba(0,113,227,0.3);
   }
-  .lc-btn:hover:not(:disabled) {
-    background: #163860;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(12,35,64,0.25);
+  .ap-btn:hover:not(:disabled) {
+    background: #0077ed;
+    transform: scale(1.008);
+    box-shadow: 0 4px 18px rgba(0,113,227,0.38);
   }
-  .lc-btn:active:not(:disabled) { transform: translateY(0); box-shadow: 0 2px 8px rgba(12,35,64,0.2); }
-  .lc-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+  .ap-btn:active:not(:disabled) {
+    background: #006bda;
+    transform: scale(0.996);
+    box-shadow: 0 1px 6px rgba(0,113,227,0.25);
+    transition-duration: 0.06s;
+  }
+  .ap-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Loading spinner */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .ap-spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.35);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  /* Link */
+  .ap-link {
+    color: #0071e3;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.15s;
+  }
+  .ap-link:hover { opacity: 0.75; }
+  .ap-link:active { opacity: 0.5; }
 `
 
 function LoginForm() {
@@ -78,7 +123,11 @@ function LoginForm() {
       const supabase = createClient()
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
       if (signInError) {
-        setError(signInError.message === "Invalid login credentials" ? "Incorrect email or password" : signInError.message)
+        setError(
+          signInError.message === "Invalid login credentials"
+            ? "Incorrect email or password. Please try again."
+            : signInError.message
+        )
         return
       }
       router.push(next)
@@ -94,45 +143,59 @@ function LoginForm() {
     <>
       <style>{STYLES}</style>
 
-      {/* Heading */}
-      <div className="lc-a lc-a1" style={{ marginBottom: "2rem" }}>
+      {/* ── Logo mark (desktop, inside card) ── */}
+      <div
+        className="s-in s-1 hidden lg:flex items-center gap-2 mb-7"
+      >
+        <svg viewBox="0 0 44 30" style={{ height: "18px", width: "auto" }} aria-label="Livery Connect">
+          <path d="M3 2 L3 24 Q3 28 7 28 L15 28 L13 24 L8 24 Q7 24 7 23 L7 2 Z" fill="#0071e3" />
+          <path d="M30 6 L23 6 Q17 6 17 15 Q17 24 23 24 L30 24 L32 28 L23 28 Q11 28 11 15 Q11 2 23 2 L32 2 Z" fill="#0071e3" />
+        </svg>
+        <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "#1d1d1f", letterSpacing: "-0.01em" }}>
+          Livery Connect
+        </span>
+      </div>
+
+      {/* ── Heading ── */}
+      <div className="s-in s-2" style={{ marginBottom: "1.75rem" }}>
         <h2
           style={{
-            fontFamily: "var(--font-bricolage)",
-            fontSize: "1.9rem",
+            fontSize: "1.75rem",
             fontWeight: 700,
-            color: "#0c2340",
-            letterSpacing: "-0.025em",
-            lineHeight: 1.15,
-            marginBottom: "0.5rem",
+            color: "#1d1d1f",
+            letterSpacing: "-0.03em",
+            lineHeight: 1.2,
+            marginBottom: "0.4rem",
+            WebkitFontSmoothing: "antialiased",
           }}
         >
-          Welcome back
+          Sign in
         </h2>
-        <p style={{ fontSize: "0.875rem", color: "#6b7c8d", fontWeight: 400 }}>
-          Sign in to your dispatch workspace
+        <p style={{ fontSize: "0.88rem", color: "rgba(29,29,31,0.55)", fontWeight: 400, lineHeight: 1.5 }}>
+          to your dispatch workspace
         </p>
       </div>
 
-      {/* Error */}
+      {/* ── Error ── */}
       {error && (
         <div
-          className="lc-a lc-a1"
+          className="s-in s-1"
           style={{
             marginBottom: "1.25rem",
-            padding: "10px 14px",
-            background: "#fff5f5",
-            border: "1.5px solid #fecaca",
-            borderRadius: "8px",
-            fontSize: "0.82rem",
-            color: "#c53030",
+            padding: "11px 14px",
+            background: "rgba(255,59,48,0.06)",
+            border: "1px solid rgba(255,59,48,0.2)",
+            borderRadius: "10px",
+            fontSize: "0.84rem",
+            color: "#d70015",
             display: "flex",
-            alignItems: "center",
+            alignItems: "flex-start",
             gap: "8px",
+            lineHeight: 1.45,
           }}
         >
-          <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style={{ flexShrink: 0 }}>
-            <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm-.75 4a.75.75 0 011.5 0v3a.75.75 0 01-1.5 0V5zm.75 7a1 1 0 110-2 1 1 0 010 2z"/>
+          <svg viewBox="0 0 20 20" fill="currentColor" style={{ width: 15, height: 15, marginTop: 1, flexShrink: 0 }}>
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
           </svg>
           {error}
         </div>
@@ -140,42 +203,37 @@ function LoginForm() {
 
       <form onSubmit={handleSubmit}>
         {/* Email */}
-        <div className="lc-a lc-a2" style={{ marginBottom: "1rem" }}>
+        <div className="s-in s-3" style={{ marginBottom: "0.85rem" }}>
           <label
             style={{
               display: "block",
-              fontSize: "0.78rem",
+              fontSize: "0.8rem",
               fontWeight: 600,
-              color: "#374558",
+              color: "rgba(29,29,31,0.75)",
               marginBottom: "0.45rem",
-              letterSpacing: "0.01em",
+              letterSpacing: "-0.005em",
             }}
           >
-            Email address
+            Email
           </label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="john@yourlimo.com"
+            placeholder="name@company.com"
             required
             autoFocus
-            className="lc-input"
+            className="ap-input"
           />
         </div>
 
         {/* Password */}
-        <div className="lc-a lc-a3" style={{ marginBottom: "1.5rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.45rem" }}>
-            <label style={{ fontSize: "0.78rem", fontWeight: 600, color: "#374558", letterSpacing: "0.01em" }}>
+        <div className="s-in s-4" style={{ marginBottom: "1.5rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "0.45rem" }}>
+            <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "rgba(29,29,31,0.75)", letterSpacing: "-0.005em" }}>
               Password
             </label>
-            <Link
-              href="/auth/forgot-password"
-              style={{ fontSize: "0.78rem", color: "#0c2340", fontWeight: 500, textDecoration: "none" }}
-              onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
-              onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
-            >
+            <Link href="/auth/forgot-password" className="ap-link" style={{ fontSize: "0.8rem" }}>
               Forgot password?
             </Link>
           </div>
@@ -183,36 +241,32 @@ function LoginForm() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
+            placeholder="Your password"
             required
-            className="lc-input"
+            className="ap-input"
           />
         </div>
 
         {/* Submit */}
-        <div className="lc-a lc-a4">
-          <button type="submit" disabled={loading} className="lc-btn">
+        <div className="s-in s-5">
+          <button type="submit" disabled={loading} className="ap-btn">
+            {loading && <span className="ap-spinner" />}
             {loading ? "Signing in…" : "Sign in"}
           </button>
         </div>
       </form>
 
       {/* Divider */}
-      <div className="lc-a lc-a5" style={{ display: "flex", alignItems: "center", gap: "12px", margin: "1.5rem 0" }}>
-        <div style={{ flex: 1, height: "1px", background: "#edf0f3" }} />
-        <span style={{ fontSize: "0.75rem", color: "#b0bbc7", fontWeight: 400 }}>or</span>
-        <div style={{ flex: 1, height: "1px", background: "#edf0f3" }} />
+      <div className="s-in s-6" style={{ display: "flex", alignItems: "center", gap: "10px", margin: "1.5rem 0 1.25rem" }}>
+        <div style={{ flex: 1, height: "1px", background: "rgba(29,29,31,0.1)" }} />
+        <span style={{ fontSize: "0.75rem", color: "rgba(29,29,31,0.35)", fontWeight: 400 }}>or</span>
+        <div style={{ flex: 1, height: "1px", background: "rgba(29,29,31,0.1)" }} />
       </div>
 
-      <p className="lc-a lc-a5" style={{ textAlign: "center", fontSize: "0.85rem", color: "#6b7c8d" }}>
-        New to Livery Connect?{" "}
-        <Link
-          href="/auth/signup"
-          style={{ color: "#0c2340", fontWeight: 600, textDecoration: "none" }}
-          onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
-          onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
-        >
-          Create an account
+      <p className="s-in s-6" style={{ textAlign: "center", fontSize: "0.875rem", color: "rgba(29,29,31,0.55)" }}>
+        Don&apos;t have an account?{" "}
+        <Link href="/auth/signup" className="ap-link">
+          Create one
         </Link>
       </p>
     </>
