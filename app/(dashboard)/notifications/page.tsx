@@ -6,8 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   Bell, BellOff, CheckCheck, UserCheck, UserX, UserPlus,
   ArrowRightLeft, Clock, MapPin, FileText, Activity, XCircle,
-  Car, ArrowUpRight, Inbox, MessageSquare, Trash2, ChevronDown,
-  Square, CheckSquare, X,
+  Car, ArrowUpRight, Inbox, MessageSquare, Trash2, ChevronDown, X,
 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import type { AppNotification, AppNotificationType } from "@prisma/client"
@@ -217,14 +216,12 @@ function TabBar({
 function NotificationCard({
   notif,
   onRead,
-  index,
   selectMode,
   selected,
   onToggleSelect,
 }: {
   notif: AppNotification
   onRead: (id: string) => void
-  index: number
   selectMode: boolean
   selected: boolean
   onToggleSelect: (id: string) => void
@@ -234,7 +231,7 @@ function NotificationCard({
   const Icon = meta.icon
   const isUnread = !notif.readAt
 
-  function handleClick() {
+  function handleCardClick() {
     if (selectMode) { onToggleSelect(notif.id); return }
     if (isUnread) onRead(notif.id)
     if (notif.entityType === "trip") router.push(`/dispatch?open=${notif.entityId}`)
@@ -242,14 +239,19 @@ function NotificationCard({
     else if (notif.entityType === "quote_request") router.push(`/quote-requests?open=${notif.entityId}`)
   }
 
+  function handleCheckboxClick(e: React.MouseEvent) {
+    e.stopPropagation()
+    onToggleSelect(notif.id)
+  }
+
   return (
     <div
-      onClick={handleClick}
+      onClick={handleCardClick}
       className={cn(
         "group relative flex gap-4 p-4 rounded-2xl border cursor-pointer transition-all duration-200",
-        "hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]",
+        !selectMode && "hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]",
         selected
-          ? "border-blue-300 bg-blue-50/60 shadow-[0_0_0_2px_rgba(37,99,235,0.12)]"
+          ? "border-blue-300 bg-blue-50/40"
           : isUnread
             ? "bg-white border-gray-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.05)]"
             : "bg-gray-50/60 border-gray-100 shadow-none hover:bg-white"
@@ -261,20 +263,35 @@ function NotificationCard({
         boxShadow: `0 2px 12px rgba(0,0,0,0.05)`,
       } : undefined}
     >
-      {/* Checkbox in select mode */}
-      {selectMode && (
-        <div className="flex items-center justify-center flex-shrink-0">
-          {selected
-            ? <CheckSquare className="w-5 h-5 text-blue-600" />
-            : <Square className="w-5 h-5 text-gray-300 group-hover:text-gray-400" />
-          }
+      {/* Checkbox — visible on hover or when selectMode is active */}
+      <div
+        onClick={handleCheckboxClick}
+        className={cn(
+          "absolute left-4 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-5 h-5 transition-all duration-150",
+          selectMode || selected
+            ? "opacity-100"
+            : "opacity-0 group-hover:opacity-100"
+        )}
+      >
+        <div className={cn(
+          "w-[18px] h-[18px] rounded-[5px] border-2 flex items-center justify-center transition-all duration-150",
+          selected
+            ? "bg-blue-600 border-blue-600"
+            : "bg-white border-gray-300 group-hover:border-gray-400"
+        )}>
+          {selected && (
+            <svg viewBox="0 0 10 8" className="w-2.5 h-2" fill="none">
+              <path d="M1 3.5L3.5 6.5L9 1" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
         </div>
-      )}
+      </div>
 
-      {/* Icon */}
+      {/* Icon — shifts right when checkbox is visible */}
       <div className={cn(
-        "w-11 h-11 rounded-2xl bg-gradient-to-br flex items-center justify-center flex-shrink-0 shadow-sm transition-transform duration-200 group-hover:scale-105",
-        meta.gradient
+        "w-11 h-11 rounded-2xl bg-gradient-to-br flex items-center justify-center flex-shrink-0 shadow-sm transition-all duration-200",
+        !selectMode && "group-hover:scale-105",
+        selectMode || selected ? "ml-6" : "group-hover:ml-6"
       )}>
         <Icon className="text-white" style={{ width: 17, height: 17 }} />
       </div>
@@ -319,8 +336,8 @@ function NotificationCard({
         </div>
       </div>
 
-      {/* Unread indicator (only when not in select mode) */}
-      {!selectMode && isUnread && (
+      {/* Unread dot */}
+      {!selectMode && !selected && isUnread && (
         <div
           className="absolute top-4 right-4 w-2 h-2 rounded-full flex-shrink-0"
           style={{ backgroundColor: meta.accent, boxShadow: `0 0 0 3px ${meta.accent}20` }}
@@ -477,15 +494,13 @@ export default function NotificationsPage() {
   const markAllAsRead = useMarkAllAsRead()
   const deleteNotifications = useDeleteNotifications()
 
-  function toggleSelectMode() {
-    setSelectMode((v) => !v)
-    setSelectedIds(new Set())
-  }
-
   function toggleSelect(id: string) {
+    setSelectMode(true)
     setSelectedIds((prev) => {
       const next = new Set(prev)
       next.has(id) ? next.delete(id) : next.add(id)
+      // Exit select mode if nothing remains selected
+      if (next.size === 0) setSelectMode(false)
       return next
     })
   }
@@ -638,7 +653,7 @@ export default function NotificationsPage() {
 
           <div className="flex items-center gap-2 py-3 shrink-0">
             {/* Mark all read */}
-            {unreadCount > 0 && !selectMode && (
+            {unreadCount > 0 && (
               <button
                 onClick={() => markAllAsRead.mutate()}
                 disabled={markAllAsRead.isPending}
@@ -649,24 +664,8 @@ export default function NotificationsPage() {
               </button>
             )}
 
-            {/* Select mode toggle */}
-            {allNotifications.length > 0 && (
-              <button
-                onClick={toggleSelectMode}
-                className={cn(
-                  "flex items-center gap-1.5 text-[12px] font-semibold transition-colors px-2.5 py-1 rounded-lg",
-                  selectMode
-                    ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-                )}
-              >
-                {selectMode ? <X className="w-3.5 h-3.5" /> : <CheckSquare className="w-3.5 h-3.5" />}
-                {selectMode ? "Cancel" : "Select"}
-              </button>
-            )}
-
             {/* Clear dropdown */}
-            {allNotifications.length > 0 && !selectMode && (
+            {allNotifications.length > 0 && (
               <div className="relative">
                 <button
                   onClick={() => setClearDropdownOpen((v) => !v)}
@@ -708,45 +707,6 @@ export default function NotificationsPage() {
             )}
           </div>
         </div>
-
-        {/* Select mode toolbar */}
-        <AnimatePresence>
-          {selectMode && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden"
-            >
-              <div className="flex items-center justify-between gap-3 px-6 py-3 bg-blue-50/70 border-t border-blue-100">
-                <button
-                  onClick={toggleSelectAll}
-                  className="flex items-center gap-2 text-[12px] font-semibold text-blue-700 hover:text-blue-900 transition-colors"
-                >
-                  {allSelected
-                    ? <CheckSquare className="w-4 h-4" />
-                    : <Square className="w-4 h-4" />
-                  }
-                  {allSelected ? "Deselect all" : "Select all"}
-                </button>
-                <div className="flex items-center gap-3">
-                  <span className="text-[12px] text-blue-600 font-medium">
-                    {selectedIds.size} selected
-                  </span>
-                  <button
-                    onClick={() => setConfirm({ type: "selected" })}
-                    disabled={selectedIds.size === 0}
-                    className="flex items-center gap-1.5 text-[12px] font-semibold text-white bg-red-500 hover:bg-red-600 transition-colors px-3 py-1.5 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                    Delete selected
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       {/* ── Content ── */}
@@ -799,11 +759,10 @@ export default function NotificationsPage() {
 
                 {/* Cards */}
                 <div className="space-y-2">
-                  {group.items.map((notif, i) => (
+                  {group.items.map((notif) => (
                     <NotificationCard
                       key={notif.id}
                       notif={notif}
-                      index={i}
                       onRead={(id) => markAsRead.mutate(id)}
                       selectMode={selectMode}
                       selected={selectedIds.has(notif.id)}
@@ -828,6 +787,64 @@ export default function NotificationsPage() {
                   ))}
                 </div>
               )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Floating selection action bar ── */}
+      <AnimatePresence>
+        {selectMode && (
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 24 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+          >
+            <div className="flex items-center gap-3 bg-gray-900 text-white rounded-2xl px-4 py-3 shadow-2xl shadow-black/25 border border-white/10">
+              {/* Select all checkbox */}
+              <button
+                onClick={toggleSelectAll}
+                className="flex items-center gap-2 text-[13px] font-medium text-white/80 hover:text-white transition-colors pr-3 border-r border-white/15"
+              >
+                <div className={cn(
+                  "w-[18px] h-[18px] rounded-[4px] border-2 flex items-center justify-center transition-all",
+                  allSelected ? "bg-blue-500 border-blue-500" : "border-white/40 hover:border-white/70"
+                )}>
+                  {allSelected && (
+                    <svg viewBox="0 0 10 8" className="w-2.5 h-2" fill="none">
+                      <path d="M1 3.5L3.5 6.5L9 1" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </div>
+                All
+              </button>
+
+              {/* Count */}
+              <span className="text-[13px] font-semibold text-white min-w-[80px] text-center">
+                {selectedIds.size === 0
+                  ? "Select items"
+                  : `${selectedIds.size} selected`}
+              </span>
+
+              {/* Delete */}
+              <button
+                onClick={() => setConfirm({ type: "selected" })}
+                disabled={selectedIds.size === 0}
+                className="flex items-center gap-1.5 text-[13px] font-semibold bg-red-500 hover:bg-red-600 transition-colors px-3 py-1.5 rounded-xl disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Delete
+              </button>
+
+              {/* Cancel */}
+              <button
+                onClick={() => { setSelectMode(false); setSelectedIds(new Set()) }}
+                className="w-7 h-7 flex items-center justify-center rounded-xl text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           </motion.div>
         )}
