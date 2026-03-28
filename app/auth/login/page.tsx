@@ -36,15 +36,15 @@ const STYLES = `
     font-weight: 300;
   }
   .t-input:focus {
-    border-color: rgba(245,158,11,0.6);
-    background: rgba(245,158,11,0.04);
-    box-shadow: 0 0 0 3px rgba(245,158,11,0.07);
+    border-color: rgba(163,230,53,0.6);
+    background: rgba(163,230,53,0.04);
+    box-shadow: 0 0 0 3px rgba(163,230,53,0.07);
   }
 
   .t-btn {
     width: 100%;
     padding: 14px;
-    background: #f59e0b;
+    background: #a3e635;
     color: #080706;
     border: none;
     border-radius: 4px;
@@ -57,7 +57,7 @@ const STYLES = `
     transition: background 0.2s, transform 0.15s;
   }
   .t-btn:hover:not(:disabled) {
-    background: #fbbf24;
+    background: #bef264;
     transform: translateY(-1px);
   }
   .t-btn:active:not(:disabled) { transform: translateY(0); }
@@ -79,7 +79,7 @@ const STYLES = `
   }
 
   .t-link {
-    color: #f59e0b;
+    color: #a3e635;
     text-decoration: none;
     transition: opacity 0.15s;
   }
@@ -91,7 +91,7 @@ const STYLES = `
     text-decoration: none;
     transition: color 0.15s;
   }
-  .t-link-plain:hover { color: #f59e0b; }
+  .t-link-plain:hover { color: #a3e635; }
 `
 
 function LoginForm() {
@@ -138,7 +138,7 @@ function LoginForm() {
             fontSize: "0.58rem",
             letterSpacing: "0.22em",
             textTransform: "uppercase",
-            color: "rgba(245,158,11,0.6)",
+            color: "rgba(163,230,53,0.6)",
             fontFamily: "var(--font-mono)",
             marginBottom: "0.75rem",
           }}

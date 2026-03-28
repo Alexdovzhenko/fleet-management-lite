@@ -32,12 +32,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           }}
         />
 
-        {/* Amber spotlight — warm glow from center-left */}
+        {/* Lime spotlight — electric glow from center-left */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse 75% 65% at 20% 58%, rgba(245,158,11,0.08) 0%, transparent 68%)",
+              "radial-gradient(ellipse 75% 65% at 20% 58%, rgba(163,230,53,0.08) 0%, transparent 68%)",
           }}
         />
 
@@ -64,8 +64,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           {/* Logo mark */}
           <div>
             <svg viewBox="0 0 44 30" className="h-6 w-auto" aria-label="Livery Connect">
-              <path d="M3 2 L3 24 Q3 28 7 28 L15 28 L13 24 L8 24 Q7 24 7 23 L7 2 Z" fill="#f59e0b" />
-              <path d="M30 6 L23 6 Q17 6 17 15 Q17 24 23 24 L30 24 L32 28 L23 28 Q11 28 11 15 Q11 2 23 2 L32 2 Z" fill="#f59e0b" />
+              <path d="M3 2 L3 24 Q3 28 7 28 L15 28 L13 24 L8 24 Q7 24 7 23 L7 2 Z" fill="#a3e635" />
+              <path d="M30 6 L23 6 Q17 6 17 15 Q17 24 23 24 L30 24 L32 28 L23 28 Q11 28 11 15 Q11 2 23 2 L32 2 Z" fill="#a3e635" />
             </svg>
           </div>
 
@@ -87,12 +87,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
             {/* Terminal tag line */}
             <div className="flex items-center gap-3 mt-7 mb-8">
-              <div style={{ width: "28px", height: "1px", background: "#f59e0b", flexShrink: 0 }} />
+              <div style={{ width: "28px", height: "1px", background: "#a3e635", flexShrink: 0 }} />
               <span
                 style={{
                   fontFamily: "var(--font-mono)",
                   fontSize: "0.62rem",
-                  color: "rgba(245,158,11,0.65)",
+                  color: "rgba(163,230,53,0.65)",
                   letterSpacing: "0.18em",
                 }}
               >
@@ -141,7 +141,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                   style={{
                     fontFamily: "var(--font-bebas)",
                     fontSize: "2.25rem",
-                    color: "#f59e0b",
+                    color: "#a3e635",
                     lineHeight: 1,
                     letterSpacing: "0.02em",
                   }}
@@ -175,7 +175,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse 90% 70% at 50% 38%, rgba(245,158,11,0.025) 0%, transparent 65%)",
+              "radial-gradient(ellipse 90% 70% at 50% 38%, rgba(163,230,53,0.025) 0%, transparent 65%)",
           }}
         />
 
@@ -183,8 +183,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           {/* Mobile-only logo */}
           <div className="lg:hidden flex items-center gap-3 mb-10">
             <svg viewBox="0 0 44 30" className="h-5 w-auto" aria-label="Livery Connect">
-              <path d="M3 2 L3 24 Q3 28 7 28 L15 28 L13 24 L8 24 Q7 24 7 23 L7 2 Z" fill="#f59e0b" />
-              <path d="M30 6 L23 6 Q17 6 17 15 Q17 24 23 24 L30 24 L32 28 L23 28 Q11 28 11 15 Q11 2 23 2 L32 2 Z" fill="#f59e0b" />
+              <path d="M3 2 L3 24 Q3 28 7 28 L15 28 L13 24 L8 24 Q7 24 7 23 L7 2 Z" fill="#a3e635" />
+              <path d="M30 6 L23 6 Q17 6 17 15 Q17 24 23 24 L30 24 L32 28 L23 28 Q11 28 11 15 Q11 2 23 2 L32 2 Z" fill="#a3e635" />
             </svg>
             <span
               style={{
@@ -211,7 +211,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           display: inline-block;
           width: 7px;
           height: 12px;
-          background: #f59e0b;
+          background: #a3e635;
           animation: terminal-blink 1.1s step-end infinite;
           vertical-align: middle;
         }
