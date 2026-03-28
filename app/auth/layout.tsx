@@ -1,181 +1,165 @@
-import { Cormorant_Garamond, DM_Sans } from "next/font/google"
+import { Outfit } from "next/font/google"
 
-const cormorant = Cormorant_Garamond({
+const outfit = Outfit({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  style: ["normal", "italic"],
-  variable: "--font-cormorant",
-  display: "swap",
-})
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
-  variable: "--font-dm-sans",
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-outfit",
   display: "swap",
 })
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className={`min-h-screen flex ${cormorant.variable} ${dmSans.variable}`}
-      style={{ fontFamily: "var(--font-dm-sans, system-ui, sans-serif)" }}
+      className={`min-h-screen flex ${outfit.variable}`}
+      style={{ fontFamily: "var(--font-outfit, system-ui, sans-serif)" }}
     >
-      {/* ── Left atmospheric panel ─────────────────────────── */}
+      {/* ── Left gradient mesh panel ───────────────────────── */}
       <div
-        className="hidden lg:flex lg:w-[58%] relative flex-col overflow-hidden"
-        style={{
-          background: "linear-gradient(160deg, #080c14 0%, #0d1524 60%, #07090f 100%)",
-        }}
+        className="hidden lg:flex lg:w-[52%] relative flex-col overflow-hidden"
+        style={{ background: "#06080f" }}
       >
-        {/* Grain texture */}
+        {/* Gradient mesh layers */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: `
+              radial-gradient(ellipse 80% 60% at 20% 10%, rgba(99,102,241,0.45) 0%, transparent 60%),
+              radial-gradient(ellipse 60% 70% at 80% 80%, rgba(14,165,233,0.3) 0%, transparent 55%),
+              radial-gradient(ellipse 50% 50% at 60% 30%, rgba(139,92,246,0.25) 0%, transparent 50%),
+              radial-gradient(ellipse 70% 40% at 10% 80%, rgba(6,182,212,0.15) 0%, transparent 50%)
+            `,
+          }}
+        />
+
+        {/* Geometric grid overlay */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none"
-          style={{ opacity: 0.04 }}
+          style={{ opacity: 0.07 }}
           aria-hidden
         >
-          <filter id="grain-auth">
-            <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="4" stitchTiles="stitch" />
-            <feColorMatrix type="saturate" values="0" />
-          </filter>
-          <rect width="100%" height="100%" filter="url(#grain-auth)" />
+          <defs>
+            <pattern id="auth-grid" width="48" height="48" patternUnits="userSpaceOnUse">
+              <path d="M 48 0 L 0 0 0 48" fill="none" stroke="white" strokeWidth="0.5" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#auth-grid)" />
         </svg>
 
-        {/* Atmospheric glow — top right */}
+        {/* Noise texture */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.03 }} aria-hidden>
+          <filter id="noise-auth">
+            <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch" />
+            <feColorMatrix type="saturate" values="0" />
+          </filter>
+          <rect width="100%" height="100%" filter="url(#noise-auth)" />
+        </svg>
+
+        {/* Glow orbs */}
         <div
-          className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full pointer-events-none"
-          style={{
-            background: "radial-gradient(circle, rgba(201,169,110,0.07) 0%, transparent 70%)",
-          }}
+          className="absolute top-[-80px] left-[-80px] w-[360px] h-[360px] rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%)" }}
+        />
+        <div
+          className="absolute bottom-[-60px] right-[-60px] w-[300px] h-[300px] rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(14,165,233,0.2) 0%, transparent 70%)" }}
         />
 
-        {/* Atmospheric glow — bottom left */}
+        {/* Decorative circle outline */}
         <div
-          className="absolute -bottom-32 -left-32 w-[400px] h-[400px] rounded-full pointer-events-none"
-          style={{
-            background: "radial-gradient(circle, rgba(201,169,110,0.04) 0%, transparent 70%)",
-          }}
-        />
-
-        {/* Decorative ring — center right */}
-        <div
-          className="absolute right-[-120px] top-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full pointer-events-none"
-          style={{ border: "1px solid rgba(201,169,110,0.07)" }}
+          className="absolute right-[-140px] top-1/2 -translate-y-1/2 w-[480px] h-[480px] rounded-full pointer-events-none"
+          style={{ border: "1px solid rgba(255,255,255,0.06)" }}
         />
         <div
-          className="absolute right-[-60px] top-1/2 -translate-y-1/2 w-[280px] h-[280px] rounded-full pointer-events-none"
-          style={{ border: "1px solid rgba(201,169,110,0.05)" }}
-        />
-
-        {/* Horizontal hairlines */}
-        <div
-          className="absolute left-0 right-0 h-px pointer-events-none"
-          style={{
-            top: "36%",
-            background: "linear-gradient(90deg, transparent 0%, rgba(201,169,110,0.18) 40%, transparent 100%)",
-          }}
-        />
-        <div
-          className="absolute left-0 right-0 h-px pointer-events-none"
-          style={{
-            top: "64%",
-            background: "linear-gradient(90deg, transparent 0%, rgba(201,169,110,0.09) 50%, transparent 100%)",
-          }}
+          className="absolute right-[-80px] top-1/2 -translate-y-1/2 w-[320px] h-[320px] rounded-full pointer-events-none"
+          style={{ border: "1px solid rgba(255,255,255,0.04)" }}
         />
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col h-full px-16 py-14">
-          {/* Brand mark */}
-          <div className="flex items-center gap-3">
-            <svg viewBox="0 0 44 30" className="h-7 w-auto" aria-label="Livery Connect">
-              <path d="M3 2 L3 24 Q3 28 7 28 L15 28 L13 24 L8 24 Q7 24 7 23 L7 2 Z" fill="#c9a96e" />
-              <path d="M30 6 L23 6 Q17 6 17 15 Q17 24 23 24 L30 24 L32 28 L23 28 Q11 28 11 15 Q11 2 23 2 L32 2 Z" fill="#c9a96e" />
-            </svg>
+        <div className="relative z-10 flex flex-col h-full px-14 py-12">
+          {/* Logo */}
+          <div className="flex items-center gap-2.5">
+            <div
+              className="flex items-center justify-center w-8 h-8 rounded-lg"
+              style={{ background: "rgba(255,255,255,0.12)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.15)" }}
+            >
+              <svg viewBox="0 0 44 30" className="h-4 w-auto" aria-label="LC">
+                <path d="M3 2 L3 24 Q3 28 7 28 L15 28 L13 24 L8 24 Q7 24 7 23 L7 2 Z" fill="white" />
+                <path d="M30 6 L23 6 Q17 6 17 15 Q17 24 23 24 L30 24 L32 28 L23 28 Q11 28 11 15 Q11 2 23 2 L32 2 Z" fill="white" />
+              </svg>
+            </div>
             <span
-              className="text-xs tracking-[0.22em] uppercase"
-              style={{ color: "rgba(201,169,110,0.65)", fontFamily: "var(--font-dm-sans)", fontWeight: 300 }}
+              className="text-sm font-medium tracking-wide"
+              style={{ color: "rgba(255,255,255,0.75)" }}
             >
               Livery Connect
             </span>
           </div>
 
-          {/* Hero copy */}
-          <div className="flex-1 flex flex-col justify-center">
-            {/* Large watermark monogram */}
+          {/* Hero */}
+          <div className="flex-1 flex flex-col justify-center max-w-[400px]">
+            {/* Tag line */}
             <div
-              className="absolute right-0 top-1/2 -translate-y-[45%] pointer-events-none select-none"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-8 w-fit"
               style={{
-                color: "rgba(201,169,110,0.025)",
-                fontFamily: "var(--font-cormorant)",
-                fontSize: "32rem",
-                fontWeight: 300,
-                lineHeight: 1,
-                letterSpacing: "-0.05em",
+                background: "rgba(99,102,241,0.2)",
+                border: "1px solid rgba(99,102,241,0.4)",
               }}
-              aria-hidden
             >
-              LC
+              <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" style={{ boxShadow: "0 0 6px rgba(129,140,248,0.8)" }} />
+              <span className="text-xs font-medium" style={{ color: "rgba(165,180,252,0.9)", letterSpacing: "0.05em" }}>
+                Fleet Management Platform
+              </span>
             </div>
 
-            <p
-              className="text-xs tracking-[0.3em] uppercase mb-7"
-              style={{ color: "rgba(201,169,110,0.45)" }}
-            >
-              Fleet Management Platform
-            </p>
-
             <h1
+              className="font-bold leading-[1.08] mb-6"
               style={{
-                fontFamily: "var(--font-cormorant)",
-                fontSize: "clamp(3rem, 4.5vw, 4.75rem)",
-                fontWeight: 300,
-                color: "#f0ebe0",
-                lineHeight: 1.05,
-                letterSpacing: "-0.01em",
-                marginBottom: "2rem",
+                fontSize: "clamp(2.6rem, 4.5vw, 4rem)",
+                color: "#ffffff",
+                letterSpacing: "-0.03em",
               }}
             >
-              Move with
+              Dispatch smarter.
               <br />
-              <em style={{ fontStyle: "italic", color: "#c9a96e" }}>elegance.</em>
+              <span
+                style={{
+                  background: "linear-gradient(135deg, #818cf8 0%, #38bdf8 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Move faster.
+              </span>
             </h1>
 
             <p
               className="text-sm leading-relaxed"
-              style={{
-                color: "rgba(255,255,255,0.3)",
-                fontWeight: 300,
-                maxWidth: "300px",
-                lineHeight: 1.8,
-              }}
+              style={{ color: "rgba(255,255,255,0.45)", fontWeight: 300, lineHeight: 1.8 }}
             >
-              The dispatch platform built for premium limo operators. Manage your fleet, affiliates, and bookings — all in one place.
+              The all-in-one platform for premium limo operators. Real-time dispatch, affiliate network, and fleet intelligence — built for operators who don't compromise.
             </p>
           </div>
 
-          {/* Bottom trust indicators */}
-          <div className="flex items-end gap-10">
+          {/* Bottom stats */}
+          <div className="flex items-center gap-0">
             {[
               { value: "500+", label: "Operators" },
               { value: "99.9%", label: "Uptime" },
               { value: "24/7", label: "Support" },
-            ].map(({ value, label }) => (
-              <div key={label}>
-                <div
-                  style={{
-                    fontFamily: "var(--font-cormorant)",
-                    fontSize: "1.75rem",
-                    fontWeight: 400,
-                    color: "#c9a96e",
-                    lineHeight: 1,
-                  }}
-                >
+            ].map(({ value, label }, i) => (
+              <div
+                key={label}
+                className="flex-1 py-4"
+                style={{
+                  borderTop: "1px solid rgba(255,255,255,0.08)",
+                  borderLeft: i > 0 ? "1px solid rgba(255,255,255,0.06)" : undefined,
+                  paddingLeft: i > 0 ? "1.5rem" : undefined,
+                }}
+              >
+                <div className="text-xl font-semibold" style={{ color: "#ffffff", letterSpacing: "-0.02em" }}>
                   {value}
                 </div>
-                <div
-                  className="text-[10px] tracking-[0.2em] uppercase mt-1.5"
-                  style={{ color: "rgba(255,255,255,0.25)" }}
-                >
+                <div className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.35)", fontWeight: 300 }}>
                   {label}
                 </div>
               </div>
@@ -187,21 +171,21 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       {/* ── Right form panel ───────────────────────────────── */}
       <div
         className="flex-1 flex items-center justify-center p-8 lg:p-16"
-        style={{ background: "#fafaf8" }}
+        style={{ background: "#ffffff" }}
       >
         <div className="w-full max-w-[380px]">
-          {/* Mobile-only logo */}
+          {/* Mobile logo */}
           <div className="flex items-center gap-2 mb-10 lg:hidden">
-            <svg viewBox="0 0 44 30" className="h-6 w-auto" aria-label="Livery Connect">
-              <path d="M3 2 L3 24 Q3 28 7 28 L15 28 L13 24 L8 24 Q7 24 7 23 L7 2 Z" fill="#c9a96e" />
-              <path d="M30 6 L23 6 Q17 6 17 15 Q17 24 23 24 L30 24 L32 28 L23 28 Q11 28 11 15 Q11 2 23 2 L32 2 Z" fill="#c9a96e" />
-            </svg>
-            <span
-              className="text-xs tracking-[0.18em] uppercase"
-              style={{ color: "#8c8680", fontFamily: "var(--font-dm-sans)", fontWeight: 300 }}
+            <div
+              className="flex items-center justify-center w-7 h-7 rounded-md"
+              style={{ background: "linear-gradient(135deg, #6366f1, #38bdf8)" }}
             >
-              Livery Connect
-            </span>
+              <svg viewBox="0 0 44 30" className="h-3.5 w-auto" aria-label="LC">
+                <path d="M3 2 L3 24 Q3 28 7 28 L15 28 L13 24 L8 24 Q7 24 7 23 L7 2 Z" fill="white" />
+                <path d="M30 6 L23 6 Q17 6 17 15 Q17 24 23 24 L30 24 L32 28 L23 28 Q11 28 11 15 Q11 2 23 2 L32 2 Z" fill="white" />
+              </svg>
+            </div>
+            <span className="text-sm font-medium text-gray-700">Livery Connect</span>
           </div>
 
           {children}

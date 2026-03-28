@@ -6,81 +6,65 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 
 const STYLES = `
-  @keyframes auth-fade-up {
-    from { opacity: 0; transform: translateY(20px); }
+  @keyframes auth-up {
+    from { opacity: 0; transform: translateY(18px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .auth-animate {
-    animation: auth-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  .auth-field { animation-delay: 0.1s; }
-  .auth-field-2 { animation-delay: 0.18s; }
-  .auth-field-3 { animation-delay: 0.26s; }
-  .auth-cta { animation-delay: 0.34s; }
-  .auth-footer { animation-delay: 0.42s; }
+  .au { animation: auth-up 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+  .au-1 { animation-delay: 0.05s; }
+  .au-2 { animation-delay: 0.12s; }
+  .au-3 { animation-delay: 0.19s; }
+  .au-4 { animation-delay: 0.26s; }
+  .au-5 { animation-delay: 0.33s; }
 
   .lc-input {
     width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #dedad4;
-    padding: 11px 0;
+    background: #f8f9fb;
+    border: 1.5px solid #e8eaf0;
+    border-radius: 10px;
+    padding: 12px 14px;
     font-size: 0.88rem;
-    color: #1a1a1a;
+    color: #0f172a;
     outline: none;
-    transition: border-color 0.25s ease;
-    font-family: var(--font-dm-sans, system-ui);
-    font-weight: 300;
-    letter-spacing: 0.01em;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    font-family: var(--font-outfit, system-ui);
+    font-weight: 400;
   }
-  .lc-input::placeholder {
-    color: #b8b2aa;
-    font-weight: 300;
-  }
+  .lc-input::placeholder { color: #a0a8b8; }
   .lc-input:focus {
-    border-bottom-color: #c9a96e;
+    border-color: #6366f1;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.08);
   }
 
   .lc-btn {
     width: 100%;
-    padding: 14px;
-    background: #1a1a1a;
-    color: #c9a96e;
+    padding: 13px;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: #ffffff;
     border: none;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 0.72rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    font-family: var(--font-dm-sans, system-ui);
-    font-weight: 400;
-    transition: background 0.25s ease, color 0.25s ease;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    font-family: var(--font-outfit, system-ui);
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(99,102,241,0.35);
   }
   .lc-btn:hover:not(:disabled) {
-    background: #c9a96e;
-    color: #1a1a1a;
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(99,102,241,0.4);
+  }
+  .lc-btn:active:not(:disabled) {
+    transform: translateY(0);
   }
   .lc-btn:disabled {
-    opacity: 0.45;
+    opacity: 0.5;
     cursor: not-allowed;
-  }
-
-  .lc-link {
-    color: #1a1a1a;
-    font-weight: 500;
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-  .lc-link:hover {
-    color: #c9a96e;
-  }
-
-  .lc-gold-link {
-    color: #c9a96e;
-    text-decoration: none;
-    transition: opacity 0.2s;
-  }
-  .lc-gold-link:hover {
-    opacity: 0.7;
+    transform: none;
+    box-shadow: none;
   }
 `
 
@@ -97,11 +81,9 @@ function LoginForm() {
     e.preventDefault()
     setError("")
     setLoading(true)
-
     try {
       const supabase = createClient()
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
-
       if (signInError) {
         setError(
           signInError.message === "Invalid login credentials"
@@ -110,7 +92,6 @@ function LoginForm() {
         )
         return
       }
-
       router.push(next)
       router.refresh()
     } catch {
@@ -125,50 +106,38 @@ function LoginForm() {
       <style>{STYLES}</style>
 
       {/* Heading */}
-      <div className="auth-animate mb-10">
-        <h2
-          style={{
-            fontFamily: "var(--font-cormorant)",
-            fontSize: "2.8rem",
-            fontWeight: 300,
-            color: "#1a1a1a",
-            lineHeight: 1.05,
-            letterSpacing: "-0.01em",
-          }}
-        >
+      <div className="au au-1 mb-8">
+        <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: "#6366f1" }}>
           Welcome back
-        </h2>
-        <p
-          className="mt-2.5 text-sm"
-          style={{ color: "#9c9690", fontWeight: 300, lineHeight: 1.6 }}
+        </p>
+        <h2
+          className="font-bold leading-tight"
+          style={{ fontSize: "2rem", color: "#0f172a", letterSpacing: "-0.03em" }}
         >
-          Sign in to your dispatch workspace
+          Sign in to your workspace
+        </h2>
+        <p className="mt-2 text-sm" style={{ color: "#64748b", fontWeight: 400 }}>
+          Manage your fleet and dispatch operations
         </p>
       </div>
 
       {/* Error */}
       {error && (
         <div
-          className="mb-6 py-3 px-4 text-sm"
-          style={{
-            background: "rgba(220,38,38,0.04)",
-            borderLeft: "2px solid rgba(220,38,38,0.5)",
-            color: "#b91c1c",
-            fontSize: "0.82rem",
-            fontWeight: 300,
-          }}
+          className="mb-5 py-3 px-4 rounded-lg text-sm flex items-center gap-2"
+          style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626" }}
         >
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 flex-shrink-0">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+          </svg>
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
         {/* Email */}
-        <div className="auth-animate auth-field mb-7">
-          <label
-            className="block text-[10px] tracking-[0.2em] uppercase mb-3"
-            style={{ color: "#9c9690", fontWeight: 400 }}
-          >
+        <div className="au au-2 mb-4">
+          <label className="block text-xs font-semibold mb-2" style={{ color: "#374151" }}>
             Email address
           </label>
           <input
@@ -183,15 +152,18 @@ function LoginForm() {
         </div>
 
         {/* Password */}
-        <div className="auth-animate auth-field-2 mb-9">
-          <div className="flex items-center justify-between mb-3">
-            <label
-              className="block text-[10px] tracking-[0.2em] uppercase"
-              style={{ color: "#9c9690", fontWeight: 400 }}
-            >
+        <div className="au au-3 mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-xs font-semibold" style={{ color: "#374151" }}>
               Password
             </label>
-            <Link href="/auth/forgot-password" className="lc-gold-link text-[11px]">
+            <Link
+              href="/auth/forgot-password"
+              className="text-xs font-medium"
+              style={{ color: "#6366f1", textDecoration: "none" }}
+              onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+              onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+            >
               Forgot password?
             </Link>
           </div>
@@ -206,7 +178,7 @@ function LoginForm() {
         </div>
 
         {/* Submit */}
-        <div className="auth-animate auth-cta">
+        <div className="au au-4">
           <button type="submit" disabled={loading} className="lc-btn">
             {loading ? "Signing in…" : "Sign In"}
           </button>
@@ -214,15 +186,21 @@ function LoginForm() {
       </form>
 
       {/* Divider */}
-      <div className="auth-animate auth-footer flex items-center gap-4 mt-8 mb-6">
-        <div className="flex-1 h-px" style={{ background: "#e8e3dc" }} />
-        <span className="text-[10px] tracking-widest uppercase" style={{ color: "#c0bab2" }}>or</span>
-        <div className="flex-1 h-px" style={{ background: "#e8e3dc" }} />
+      <div className="au au-5 flex items-center gap-3 my-6">
+        <div className="flex-1 h-px bg-gray-100" />
+        <span className="text-xs text-gray-400">or</span>
+        <div className="flex-1 h-px bg-gray-100" />
       </div>
 
-      <p className="auth-animate auth-footer text-center text-sm" style={{ color: "#9c9690", fontWeight: 300 }}>
+      <p className="au au-5 text-center text-sm text-gray-500">
         New to Livery Connect?{" "}
-        <Link href="/auth/signup" className="lc-link">
+        <Link
+          href="/auth/signup"
+          className="font-semibold"
+          style={{ color: "#6366f1", textDecoration: "none" }}
+          onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+          onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+        >
           Create an account
         </Link>
       </p>

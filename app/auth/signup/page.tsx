@@ -6,74 +6,65 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 
 const STYLES = `
-  @keyframes auth-fade-up {
-    from { opacity: 0; transform: translateY(20px); }
+  @keyframes auth-up {
+    from { opacity: 0; transform: translateY(18px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .auth-animate {
-    animation: auth-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  .auth-f1 { animation-delay: 0.08s; }
-  .auth-f2 { animation-delay: 0.14s; }
-  .auth-f3 { animation-delay: 0.20s; }
-  .auth-f4 { animation-delay: 0.26s; }
-  .auth-f5 { animation-delay: 0.32s; }
-  .auth-f6 { animation-delay: 0.38s; }
-  .auth-f7 { animation-delay: 0.44s; }
+  .au { animation: auth-up 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+  .au-1 { animation-delay: 0.05s; }
+  .au-2 { animation-delay: 0.11s; }
+  .au-3 { animation-delay: 0.17s; }
+  .au-4 { animation-delay: 0.23s; }
+  .au-5 { animation-delay: 0.29s; }
+  .au-6 { animation-delay: 0.35s; }
+  .au-7 { animation-delay: 0.41s; }
 
   .lc-input {
     width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #dedad4;
-    padding: 11px 0;
+    background: #f8f9fb;
+    border: 1.5px solid #e8eaf0;
+    border-radius: 10px;
+    padding: 12px 14px;
     font-size: 0.88rem;
-    color: #1a1a1a;
+    color: #0f172a;
     outline: none;
-    transition: border-color 0.25s ease;
-    font-family: var(--font-dm-sans, system-ui);
-    font-weight: 300;
-    letter-spacing: 0.01em;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    font-family: var(--font-outfit, system-ui);
+    font-weight: 400;
   }
-  .lc-input::placeholder {
-    color: #b8b2aa;
-    font-weight: 300;
-  }
+  .lc-input::placeholder { color: #a0a8b8; }
   .lc-input:focus {
-    border-bottom-color: #c9a96e;
+    border-color: #6366f1;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.08);
   }
 
   .lc-btn {
     width: 100%;
-    padding: 14px;
-    background: #1a1a1a;
-    color: #c9a96e;
+    padding: 13px;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: #ffffff;
     border: none;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 0.72rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    font-family: var(--font-dm-sans, system-ui);
-    font-weight: 400;
-    transition: background 0.25s ease, color 0.25s ease;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    font-family: var(--font-outfit, system-ui);
+    transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(99,102,241,0.35);
   }
   .lc-btn:hover:not(:disabled) {
-    background: #c9a96e;
-    color: #1a1a1a;
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(99,102,241,0.4);
   }
+  .lc-btn:active:not(:disabled) { transform: translateY(0); }
   .lc-btn:disabled {
-    opacity: 0.45;
+    opacity: 0.5;
     cursor: not-allowed;
-  }
-
-  .lc-link {
-    color: #1a1a1a;
-    font-weight: 500;
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-  .lc-link:hover {
-    color: #c9a96e;
+    transform: none;
+    box-shadow: none;
   }
 `
 
@@ -93,15 +84,8 @@ export default function SignupPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError("")
-
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match")
-      return
-    }
-    if (form.password.length < 8) {
-      setError("Password must be at least 8 characters")
-      return
-    }
+    if (form.password !== form.confirmPassword) { setError("Passwords do not match"); return }
+    if (form.password.length < 8) { setError("Password must be at least 8 characters"); return }
 
     setLoading(true)
     try {
@@ -117,12 +101,7 @@ export default function SignupPage() {
           },
         },
       })
-
-      if (signUpError) {
-        setError(signUpError.message)
-        return
-      }
-
+      if (signUpError) { setError(signUpError.message); return }
       router.push("/auth/verify-email")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
@@ -141,20 +120,17 @@ export default function SignupPage() {
       <style>{STYLES}</style>
 
       {/* Heading */}
-      <div className="auth-animate mb-8">
+      <div className="au au-1 mb-7">
+        <p className="text-xs font-semibold tracking-widest uppercase mb-3" style={{ color: "#6366f1" }}>
+          Get started
+        </p>
         <h2
-          style={{
-            fontFamily: "var(--font-cormorant)",
-            fontSize: "2.6rem",
-            fontWeight: 300,
-            color: "#1a1a1a",
-            lineHeight: 1.05,
-            letterSpacing: "-0.01em",
-          }}
+          className="font-bold leading-tight"
+          style={{ fontSize: "1.85rem", color: "#0f172a", letterSpacing: "-0.03em" }}
         >
           Create your account
         </h2>
-        <p className="mt-2 text-sm" style={{ color: "#9c9690", fontWeight: 300, lineHeight: 1.6 }}>
+        <p className="mt-2 text-sm" style={{ color: "#64748b" }}>
           Set up your limo dispatch workspace
         </p>
       </div>
@@ -162,110 +138,55 @@ export default function SignupPage() {
       {/* Error */}
       {error && (
         <div
-          className="mb-5 py-3 px-4"
-          style={{
-            background: "rgba(220,38,38,0.04)",
-            borderLeft: "2px solid rgba(220,38,38,0.5)",
-            color: "#b91c1c",
-            fontSize: "0.82rem",
-            fontWeight: 300,
-          }}
+          className="mb-5 py-3 px-4 rounded-lg text-sm flex items-center gap-2"
+          style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626" }}
         >
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 flex-shrink-0">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+          </svg>
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
-        {/* Company name */}
-        <div className="auth-animate auth-f1 mb-6">
-          <label className="block text-[10px] tracking-[0.2em] uppercase mb-3" style={{ color: "#9c9690" }}>
-            Company Name
-          </label>
-          <input
-            value={form.companyName}
-            onChange={field("companyName")}
-            placeholder="Luxury Limousine Co."
-            required
-            className="lc-input"
-          />
+        {/* Company */}
+        <div className="au au-2 mb-4">
+          <label className="block text-xs font-semibold mb-2" style={{ color: "#374151" }}>Company Name</label>
+          <input value={form.companyName} onChange={field("companyName")} placeholder="Luxury Limousine Co." required className="lc-input" />
         </div>
 
-        {/* First / Last name */}
-        <div className="auth-animate auth-f2 grid grid-cols-2 gap-6 mb-6">
+        {/* First / Last */}
+        <div className="au au-3 grid grid-cols-2 gap-3 mb-4">
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase mb-3" style={{ color: "#9c9690" }}>
-              First Name
-            </label>
-            <input
-              value={form.firstName}
-              onChange={field("firstName")}
-              placeholder="John"
-              required
-              className="lc-input"
-            />
+            <label className="block text-xs font-semibold mb-2" style={{ color: "#374151" }}>First Name</label>
+            <input value={form.firstName} onChange={field("firstName")} placeholder="John" required className="lc-input" />
           </div>
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase mb-3" style={{ color: "#9c9690" }}>
-              Last Name
-            </label>
-            <input
-              value={form.lastName}
-              onChange={field("lastName")}
-              placeholder="Smith"
-              required
-              className="lc-input"
-            />
+            <label className="block text-xs font-semibold mb-2" style={{ color: "#374151" }}>Last Name</label>
+            <input value={form.lastName} onChange={field("lastName")} placeholder="Smith" required className="lc-input" />
           </div>
         </div>
 
         {/* Email */}
-        <div className="auth-animate auth-f3 mb-6">
-          <label className="block text-[10px] tracking-[0.2em] uppercase mb-3" style={{ color: "#9c9690" }}>
-            Business Email
-          </label>
-          <input
-            type="email"
-            value={form.email}
-            onChange={field("email")}
-            placeholder="john@yourlimo.com"
-            required
-            autoFocus
-            className="lc-input"
-          />
+        <div className="au au-4 mb-4">
+          <label className="block text-xs font-semibold mb-2" style={{ color: "#374151" }}>Business Email</label>
+          <input type="email" value={form.email} onChange={field("email")} placeholder="john@yourlimo.com" required autoFocus className="lc-input" />
         </div>
 
-        {/* Password / Confirm */}
-        <div className="auth-animate auth-f4 grid grid-cols-2 gap-6 mb-9">
+        {/* Passwords */}
+        <div className="au au-5 grid grid-cols-2 gap-3 mb-7">
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase mb-3" style={{ color: "#9c9690" }}>
-              Password
-            </label>
-            <input
-              type="password"
-              value={form.password}
-              onChange={field("password")}
-              placeholder="Min. 8 characters"
-              required
-              className="lc-input"
-            />
+            <label className="block text-xs font-semibold mb-2" style={{ color: "#374151" }}>Password</label>
+            <input type="password" value={form.password} onChange={field("password")} placeholder="Min. 8 characters" required className="lc-input" />
           </div>
           <div>
-            <label className="block text-[10px] tracking-[0.2em] uppercase mb-3" style={{ color: "#9c9690" }}>
-              Confirm
-            </label>
-            <input
-              type="password"
-              value={form.confirmPassword}
-              onChange={field("confirmPassword")}
-              placeholder="Repeat password"
-              required
-              className="lc-input"
-            />
+            <label className="block text-xs font-semibold mb-2" style={{ color: "#374151" }}>Confirm</label>
+            <input type="password" value={form.confirmPassword} onChange={field("confirmPassword")} placeholder="Repeat password" required className="lc-input" />
           </div>
         </div>
 
         {/* Submit */}
-        <div className="auth-animate auth-f5">
+        <div className="au au-6">
           <button type="submit" disabled={loading} className="lc-btn">
             {loading ? "Creating account…" : "Create Account"}
           </button>
@@ -273,15 +194,21 @@ export default function SignupPage() {
       </form>
 
       {/* Divider */}
-      <div className="auth-animate auth-f6 flex items-center gap-4 mt-7 mb-5">
-        <div className="flex-1 h-px" style={{ background: "#e8e3dc" }} />
-        <span className="text-[10px] tracking-widest uppercase" style={{ color: "#c0bab2" }}>or</span>
-        <div className="flex-1 h-px" style={{ background: "#e8e3dc" }} />
+      <div className="au au-7 flex items-center gap-3 my-5">
+        <div className="flex-1 h-px bg-gray-100" />
+        <span className="text-xs text-gray-400">or</span>
+        <div className="flex-1 h-px bg-gray-100" />
       </div>
 
-      <p className="auth-animate auth-f7 text-center text-sm" style={{ color: "#9c9690", fontWeight: 300 }}>
+      <p className="au au-7 text-center text-sm text-gray-500">
         Already have an account?{" "}
-        <Link href="/auth/login" className="lc-link">
+        <Link
+          href="/auth/login"
+          className="font-semibold"
+          style={{ color: "#6366f1", textDecoration: "none" }}
+          onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+          onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+        >
           Sign in
         </Link>
       </p>
