@@ -6,61 +6,96 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 
 const STYLES = `
-  @keyframes lc-rise {
-    from { opacity: 0; transform: translateY(12px); }
+  @keyframes lx-up {
+    from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .lc-a  { animation: lc-rise 0.4s cubic-bezier(0.16,1,0.3,1) both; }
-  .lc-a1 { animation-delay: 0.05s; }
-  .lc-a2 { animation-delay: 0.10s; }
-  .lc-a3 { animation-delay: 0.15s; }
-  .lc-a4 { animation-delay: 0.20s; }
-  .lc-a5 { animation-delay: 0.25s; }
-  .lc-a6 { animation-delay: 0.30s; }
-  .lc-a7 { animation-delay: 0.35s; }
+  .lx { animation: lx-up 0.65s cubic-bezier(0.16,1,0.3,1) both; }
+  .lx-1 { animation-delay: 0.06s; }
+  .lx-2 { animation-delay: 0.11s; }
+  .lx-3 { animation-delay: 0.16s; }
+  .lx-4 { animation-delay: 0.21s; }
+  .lx-5 { animation-delay: 0.26s; }
+  .lx-6 { animation-delay: 0.31s; }
+  .lx-7 { animation-delay: 0.36s; }
+  .lx-8 { animation-delay: 0.41s; }
 
-  .lc-input {
-    width: 100%;
-    background: #f8f9fb;
-    border: 1.5px solid #e2e6eb;
-    border-radius: 8px;
-    padding: 11px 14px;
-    font-size: 0.875rem;
-    color: #0d1b2a;
-    outline: none;
-    transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
-    font-family: var(--font-instrument, system-ui);
+  .lx-field {
+    position: relative;
+    padding-top: 20px;
+  }
+  .lx-field label {
+    position: absolute;
+    top: 22px; left: 0;
+    font-family: var(--font-dm, system-ui);
+    font-size: 0.82rem;
     font-weight: 400;
+    color: rgba(13,13,13,0.4);
+    letter-spacing: 0.04em;
+    pointer-events: none;
+    transition: top 0.22s ease, font-size 0.22s ease, color 0.22s ease, letter-spacing 0.22s ease;
   }
-  .lc-input::placeholder { color: #a8b4c0; }
-  .lc-input:focus {
-    border-color: #0c2340;
-    background: #fff;
-    box-shadow: 0 0 0 3.5px rgba(12,35,64,0.08);
+  .lx-field input:focus ~ label,
+  .lx-field input:not(:placeholder-shown) ~ label {
+    top: 2px;
+    font-size: 0.62rem;
+    color: #c9a87c;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
   }
-
-  .lc-btn {
+  .lx-input {
     width: 100%;
-    padding: 12px 16px;
-    background: #0c2340;
-    color: #ffffff;
+    background: transparent;
     border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: 600;
-    font-family: var(--font-instrument, system-ui);
+    border-bottom: 1px solid rgba(13,13,13,0.12);
+    padding: 10px 0;
+    font-family: var(--font-dm, system-ui);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    color: #0d0d0d;
+    outline: none;
+    transition: border-color 0.22s ease;
     letter-spacing: 0.01em;
-    transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
-    box-shadow: 0 2px 8px rgba(12,35,64,0.2);
   }
-  .lc-btn:hover:not(:disabled) {
-    background: #163860;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(12,35,64,0.25);
+  .lx-input::placeholder { color: transparent; }
+  .lx-input:focus { border-bottom-color: #c9a87c; }
+  .lx-field::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 1px;
+    background: #c9a87c;
+    transition: width 0.3s cubic-bezier(0.4,0,0.2,1);
   }
-  .lc-btn:active:not(:disabled) { transform: translateY(0); box-shadow: 0 2px 8px rgba(12,35,64,0.2); }
-  .lc-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+  .lx-field:focus-within::after { width: 100%; }
+
+  .lx-btn {
+    width: 100%;
+    padding: 16px 20px;
+    background: #0d0d0d;
+    color: #c9a87c;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-dm, system-ui);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  .lx-btn:hover:not(:disabled) { background: #1a1a1a; transform: translateY(-1px); }
+  .lx-btn:active:not(:disabled) { transform: translateY(0); }
+  .lx-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .lx-link {
+    color: #0d0d0d;
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(13,13,13,0.2);
+    transition: border-color 0.2s, color 0.2s;
+    padding-bottom: 1px;
+  }
+  .lx-link:hover { color: #c9a87c; border-color: #c9a87c; }
 `
 
 export default function SignupPage() {
@@ -75,8 +110,8 @@ export default function SignupPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError("")
-    if (form.password !== form.confirmPassword) { setError("Passwords do not match"); return }
-    if (form.password.length < 8) { setError("Password must be at least 8 characters"); return }
+    if (form.password !== form.confirmPassword) { setError("Passwords do not match."); return }
+    if (form.password.length < 8) { setError("Password must be at least 8 characters."); return }
     setLoading(true)
     try {
       const supabase = createClient()
@@ -101,120 +136,113 @@ export default function SignupPage() {
   }
 
   function field(key: keyof typeof form) {
-    return (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, [key]: e.target.value }))
+    return (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, [key]: e.target.value }))
   }
-
-  const labelStyle = { fontSize: "0.78rem", fontWeight: 600, color: "#374558", letterSpacing: "0.01em", display: "block", marginBottom: "0.45rem" } as const
 
   return (
     <>
       <style>{STYLES}</style>
 
       {/* Heading */}
-      <div className="lc-a lc-a1" style={{ marginBottom: "1.75rem" }}>
-        <h2
-          style={{
-            fontFamily: "var(--font-bricolage)",
-            fontSize: "1.75rem",
-            fontWeight: 700,
-            color: "#0c2340",
-            letterSpacing: "-0.025em",
-            lineHeight: 1.15,
-            marginBottom: "0.5rem",
-          }}
-        >
+      <div className="lx lx-1" style={{ marginBottom: "2.5rem" }}>
+        <p style={{
+          fontFamily: "var(--font-dm)",
+          fontSize: "0.62rem",
+          fontWeight: 400,
+          letterSpacing: "0.22em",
+          textTransform: "uppercase",
+          color: "rgba(13,13,13,0.35)",
+          marginBottom: "0.85rem",
+        }}>
+          New Membership
+        </p>
+        <h2 style={{
+          fontFamily: "var(--font-playfair)",
+          fontSize: "1.85rem",
+          fontWeight: 400,
+          fontStyle: "italic",
+          color: "#0d0d0d",
+          letterSpacing: "-0.01em",
+          lineHeight: 1.2,
+        }}>
           Create your account
         </h2>
-        <p style={{ fontSize: "0.875rem", color: "#6b7c8d", fontWeight: 400 }}>
-          Set up your limo dispatch workspace
-        </p>
       </div>
 
       {/* Error */}
       {error && (
-        <div
-          style={{
-            marginBottom: "1.25rem",
-            padding: "10px 14px",
-            background: "#fff5f5",
-            border: "1.5px solid #fecaca",
-            borderRadius: "8px",
-            fontSize: "0.82rem",
-            color: "#c53030",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-          }}
-        >
-          <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style={{ flexShrink: 0 }}>
-            <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm-.75 4a.75.75 0 011.5 0v3a.75.75 0 01-1.5 0V5zm.75 7a1 1 0 110-2 1 1 0 010 2z"/>
-          </svg>
-          {error}
+        <div style={{
+          marginBottom: "1.5rem",
+          paddingBottom: "0.75rem",
+          borderBottom: "1px solid rgba(180,30,30,0.2)",
+          display: "flex", alignItems: "center", gap: "8px",
+        }}>
+          <div style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#b41e1e", flexShrink: 0 }} />
+          <span style={{ fontFamily: "var(--font-dm)", fontSize: "0.8rem", color: "#b41e1e" }}>{error}</span>
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
         {/* Company */}
-        <div className="lc-a lc-a2" style={{ marginBottom: "0.9rem" }}>
-          <label style={labelStyle}>Company name</label>
-          <input value={form.companyName} onChange={field("companyName")} placeholder="Luxury Limousine Co." required className="lc-input" />
+        <div className="lx lx-2 lx-field" style={{ marginBottom: "1.5rem" }}>
+          <input value={form.companyName} onChange={field("companyName")} placeholder="Company name" required className="lx-input" id="s-co" />
+          <label htmlFor="s-co">Company name</label>
         </div>
 
         {/* Name row */}
-        <div className="lc-a lc-a3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.9rem" }}>
-          <div>
-            <label style={labelStyle}>First name</label>
-            <input value={form.firstName} onChange={field("firstName")} placeholder="John" required className="lc-input" />
+        <div className="lx lx-3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "1.5rem" }}>
+          <div className="lx-field">
+            <input value={form.firstName} onChange={field("firstName")} placeholder="First name" required className="lx-input" id="s-fn" />
+            <label htmlFor="s-fn">First name</label>
           </div>
-          <div>
-            <label style={labelStyle}>Last name</label>
-            <input value={form.lastName} onChange={field("lastName")} placeholder="Smith" required className="lc-input" />
+          <div className="lx-field">
+            <input value={form.lastName} onChange={field("lastName")} placeholder="Last name" required className="lx-input" id="s-ln" />
+            <label htmlFor="s-ln">Last name</label>
           </div>
         </div>
 
         {/* Email */}
-        <div className="lc-a lc-a4" style={{ marginBottom: "0.9rem" }}>
-          <label style={labelStyle}>Business email</label>
-          <input type="email" value={form.email} onChange={field("email")} placeholder="john@yourlimo.com" required autoFocus className="lc-input" />
+        <div className="lx lx-4 lx-field" style={{ marginBottom: "1.5rem" }}>
+          <input type="email" value={form.email} onChange={field("email")} placeholder="Business email" required autoFocus className="lx-input" id="s-em" />
+          <label htmlFor="s-em">Business email</label>
         </div>
 
         {/* Passwords */}
-        <div className="lc-a lc-a5" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1.5rem" }}>
-          <div>
-            <label style={labelStyle}>Password</label>
-            <input type="password" value={form.password} onChange={field("password")} placeholder="Min. 8 chars" required className="lc-input" />
+        <div className="lx lx-5" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "2.5rem" }}>
+          <div className="lx-field">
+            <input type="password" value={form.password} onChange={field("password")} placeholder="Password" required className="lx-input" id="s-pw" />
+            <label htmlFor="s-pw">Password</label>
           </div>
-          <div>
-            <label style={labelStyle}>Confirm</label>
-            <input type="password" value={form.confirmPassword} onChange={field("confirmPassword")} placeholder="Repeat" required className="lc-input" />
+          <div className="lx-field">
+            <input type="password" value={form.confirmPassword} onChange={field("confirmPassword")} placeholder="Confirm" required className="lx-input" id="s-cp" />
+            <label htmlFor="s-cp">Confirm</label>
           </div>
         </div>
 
         {/* Submit */}
-        <div className="lc-a lc-a6">
-          <button type="submit" disabled={loading} className="lc-btn">
-            {loading ? "Creating account…" : "Create account"}
+        <div className="lx lx-6">
+          <button type="submit" disabled={loading} className="lx-btn">
+            {loading ? "Creating account…" : "Create Account"}
           </button>
         </div>
       </form>
 
       {/* Divider */}
-      <div className="lc-a lc-a7" style={{ display: "flex", alignItems: "center", gap: "12px", margin: "1.5rem 0" }}>
-        <div style={{ flex: 1, height: "1px", background: "#edf0f3" }} />
-        <span style={{ fontSize: "0.75rem", color: "#b0bbc7" }}>or</span>
-        <div style={{ flex: 1, height: "1px", background: "#edf0f3" }} />
+      <div className="lx lx-7" style={{ display: "flex", alignItems: "center", gap: "1.25rem", margin: "1.75rem 0" }}>
+        <div style={{ flex: 1, height: "1px", background: "rgba(13,13,13,0.08)" }} />
+        <span style={{ fontFamily: "var(--font-dm)", fontSize: "0.65rem", color: "rgba(13,13,13,0.3)", letterSpacing: "0.12em", textTransform: "uppercase" }}>or</span>
+        <div style={{ flex: 1, height: "1px", background: "rgba(13,13,13,0.08)" }} />
       </div>
 
-      <p className="lc-a lc-a7" style={{ textAlign: "center", fontSize: "0.85rem", color: "#6b7c8d" }}>
-        Already have an account?{" "}
-        <Link
-          href="/auth/login"
-          style={{ color: "#0c2340", fontWeight: 600, textDecoration: "none" }}
-          onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
-          onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
-        >
-          Sign in
-        </Link>
+      <p className="lx lx-8" style={{
+        textAlign: "center",
+        fontFamily: "var(--font-dm)",
+        fontSize: "0.82rem",
+        color: "rgba(13,13,13,0.45)",
+        fontWeight: 300,
+      }}>
+        Already a member?{" "}
+        <Link href="/auth/login" className="lx-link">Sign in</Link>
       </p>
     </>
   )
