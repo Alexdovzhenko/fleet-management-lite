@@ -857,6 +857,9 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const [copied, setCopied] = useState(false)
   const [driverIdValue, setDriverIdValue] = useState("")
   const [vehicleIdValue, setVehicleIdValue] = useState("")
+  const [secondaryDriverIdValue, setSecondaryDriverIdValue] = useState("")
+  const [secondaryVehicleIdValue, setSecondaryVehicleIdValue] = useState("")
+  const [dispatchTab, setDispatchTab] = useState<"primary" | "secondary">("primary")
   const [tripTypeValue, setTripTypeValue] = useState("")
   const [customerSearch, setCustomerSearch] = useState("")
   const [customerPickerOpen, setCustomerPickerOpen] = useState(false)
@@ -901,6 +904,9 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     setTripTypeValue(trip.tripType ?? "ONE_WAY")
     setDriverIdValue(trip.driverId ?? "")
     setVehicleIdValue(trip.vehicleId ?? "")
+    setSecondaryDriverIdValue(trip.secondaryDriverId ?? "")
+    setSecondaryVehicleIdValue(trip.secondaryVehicleId ?? "")
+    setDispatchTab("primary")
     setSaveError("")
     setStopsError("")
     setChildSeatsOpen(false)
@@ -1023,6 +1029,8 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       passengerEmail:   data.passengerEmail || undefined,
       driverId:         driverIdValue || undefined,
       vehicleId:        vehicleIdValue || undefined,
+      secondaryDriverId:  secondaryDriverIdValue || undefined,
+      secondaryVehicleId: secondaryVehicleIdValue || undefined,
       price:            data.price as never,
       gratuity:         gratuity as never,
       totalPrice:       totalPrice as never,
@@ -1340,8 +1348,61 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                 {/* Dispatch */}
                 <section className="space-y-3">
                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Dispatch</p>
-                  <DriverPickerCard drivers={activeDrivers} value={driverIdValue} onChange={setDriverIdValue} />
-                  <VehiclePickerCard vehicles={activeVehicles} value={vehicleIdValue} onChange={setVehicleIdValue} />
+
+                  {/* Driver label row with inline Primary/Secondary toggle */}
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-semibold text-gray-700">Driver</p>
+                    <div className="flex items-center gap-0.5 bg-gray-100 rounded-lg p-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setDispatchTab("primary")}
+                        className={cn(
+                          "px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150",
+                          dispatchTab === "primary"
+                            ? "bg-white text-gray-800 shadow-sm"
+                            : "text-gray-400 hover:text-gray-600"
+                        )}
+                      >
+                        Primary
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDispatchTab("secondary")}
+                        className={cn(
+                          "relative px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150",
+                          dispatchTab === "secondary"
+                            ? "bg-white text-gray-800 shadow-sm"
+                            : "text-gray-400 hover:text-gray-600"
+                        )}
+                      >
+                        Secondary
+                        {(secondaryDriverIdValue || secondaryVehicleIdValue) && (
+                          <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-violet-500" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {dispatchTab === "primary" ? (
+                    <>
+                      <DriverPickerCard drivers={activeDrivers} value={driverIdValue} onChange={setDriverIdValue} />
+                      <VehiclePickerCard vehicles={activeVehicles} value={vehicleIdValue} onChange={setVehicleIdValue} />
+                    </>
+                  ) : (
+                    <div className="space-y-3">
+                      <DriverPickerCard drivers={activeDrivers} value={secondaryDriverIdValue} onChange={setSecondaryDriverIdValue} />
+                      <VehiclePickerCard vehicles={activeVehicles} value={secondaryVehicleIdValue} onChange={setSecondaryVehicleIdValue} />
+                      {(secondaryDriverIdValue || secondaryVehicleIdValue) && (
+                        <button
+                          type="button"
+                          onClick={() => { setSecondaryDriverIdValue(""); setSecondaryVehicleIdValue("") }}
+                          className="w-full text-[11px] text-red-400 hover:text-red-600 transition-colors text-center py-1"
+                        >
+                          Clear secondary assignment
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </section>
 
                 {/* Farm-Out status — shown inline after Dispatch */}

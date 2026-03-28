@@ -23,7 +23,7 @@ import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
 import { useServiceTypes } from "@/lib/hooks/use-service-types"
 import { useDebounce } from "@/lib/hooks/use-debounce"
-import { formatCurrency, generateConfirmationNumber } from "@/lib/utils"
+import { formatCurrency, generateConfirmationNumber, cn } from "@/lib/utils"
 import { DatePickerInput } from "@/components/ui/date-picker"
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
 import { useUpsertAddress } from "@/lib/hooks/use-addresses"
@@ -44,6 +44,8 @@ const schema = z.object({
   luggageCount:         z.number().int().min(0).optional(),
   driverId:             z.string().optional(),
   vehicleId:            z.string().optional(),
+  secondaryDriverId:    z.string().optional(),
+  secondaryVehicleId:   z.string().optional(),
   price:                z.preprocess((v) => (typeof v === "number" && isNaN(v) ? undefined : v), z.number().optional()),
   gratuityPercent:      z.preprocess((v) => (typeof v === "number" && isNaN(v) ? 0 : v), z.number().min(0).max(100)),
   tripNotes:            z.string().optional(),
@@ -369,8 +371,8 @@ function getInitials(name: string) {
 }
 
 function DriverPickerCard({
-  drivers, value, onChange,
-}: { drivers: Driver[]; value: string; onChange: (id: string) => void }) {
+  drivers, value, onChange, label = "Driver",
+}: { drivers: Driver[]; value: string; onChange: (id: string) => void; label?: string | null }) {
   const [open, setOpen] = useState(false)
   const [dropStyle, setDropStyle] = useState<React.CSSProperties>({})
   const ref = useRef<HTMLDivElement>(null)
@@ -401,8 +403,8 @@ function DriverPickerCard({
   }
 
   return (
-    <div ref={ref} className="space-y-1.5">
-      <Label className="text-xs font-medium text-gray-900">Driver</Label>
+    <div ref={ref} className={label ? "space-y-1.5" : ""}>
+      {label && <Label className="text-xs font-medium text-gray-900">{label}</Label>}
       {selected ? (
         <div className="flex items-center gap-2.5 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2.5">
           <div className="w-8 h-8 rounded-full bg-indigo-200 flex items-center justify-center text-xs font-bold text-indigo-700 flex-shrink-0 overflow-hidden">
@@ -2472,6 +2474,9 @@ export default function NewTripPage() {
   const [tripTypeValue, setTripTypeValue] = useState("")
   const [driverIdValue, setDriverIdValue] = useState("")
   const [vehicleIdValue, setVehicleIdValue] = useState("")
+  const [secondaryDriverIdValue, setSecondaryDriverIdValue] = useState("")
+  const [secondaryVehicleIdValue, setSecondaryVehicleIdValue] = useState("")
+  const [dispatchTab, setDispatchTab] = useState<"primary" | "secondary">("primary")
   const [stops, setStops] = useState<StopEntry[]>([])
   const [stopsError, setStopsError] = useState("")
   const [submitError, setSubmitError] = useState("")
@@ -2545,6 +2550,8 @@ export default function NewTripPage() {
       luggageCount:     data.luggageCount ?? undefined,
       driverId:         data.driverId || undefined,
       vehicleId:        data.vehicleId || undefined,
+      secondaryDriverId:  data.secondaryDriverId || undefined,
+      secondaryVehicleId: data.secondaryVehicleId || undefined,
       price:            data.price as never,
       gratuity:         gratuity as never,
       totalPrice:       totalPrice as never,
@@ -2987,17 +2994,84 @@ export default function NewTripPage() {
                   <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Dispatch</h4>
                 </div>
                 <div className="px-4 py-3.5 space-y-2.5">
-                  <DriverPickerCard
-                    drivers={drivers?.filter((d) => d.status === "ACTIVE") ?? []}
-                    value={driverIdValue}
-                    onChange={(id) => { setDriverIdValue(id); setValue("driverId", id) }}
-                  />
-                  <VehiclePickerCard
-                    vehicles={vehicles?.filter((v) => v.status === "ACTIVE") ?? []}
-                    value={vehicleIdValue}
-                    passengerCount={watch("passengerCount") || 1}
-                    onChange={(id) => { setVehicleIdValue(id); setValue("vehicleId", id) }}
-                  />
+                  {/* Driver label row with inline Primary/Secondary toggle */}
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-medium text-gray-900">Driver</Label>
+                    <div className="flex items-center gap-0.5 bg-gray-100 rounded-lg p-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setDispatchTab("primary")}
+                        className={cn(
+                          "px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150",
+                          dispatchTab === "primary"
+                            ? "bg-white text-gray-800 shadow-sm"
+                            : "text-gray-400 hover:text-gray-600"
+                        )}
+                      >
+                        Primary
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDispatchTab("secondary")}
+                        className={cn(
+                          "relative px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150",
+                          dispatchTab === "secondary"
+                            ? "bg-white text-gray-800 shadow-sm"
+                            : "text-gray-400 hover:text-gray-600"
+                        )}
+                      >
+                        Secondary
+                        {(secondaryDriverIdValue || secondaryVehicleIdValue) && (
+                          <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-violet-500" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                  {dispatchTab === "primary" ? (
+                    <>
+                      <DriverPickerCard
+                        label={null}
+                        drivers={drivers?.filter((d) => d.status === "ACTIVE") ?? []}
+                        value={driverIdValue}
+                        onChange={(id) => { setDriverIdValue(id); setValue("driverId", id) }}
+                      />
+                      <VehiclePickerCard
+                        vehicles={vehicles?.filter((v) => v.status === "ACTIVE") ?? []}
+                        value={vehicleIdValue}
+                        passengerCount={watch("passengerCount") || 1}
+                        onChange={(id) => { setVehicleIdValue(id); setValue("vehicleId", id) }}
+                      />
+                    </>
+                  ) : (
+                    <div className="space-y-2.5">
+                      <DriverPickerCard
+                        label={null}
+                        drivers={drivers?.filter((d) => d.status === "ACTIVE") ?? []}
+                        value={secondaryDriverIdValue}
+                        onChange={(id) => { setSecondaryDriverIdValue(id); setValue("secondaryDriverId", id) }}
+                      />
+                      <VehiclePickerCard
+                        vehicles={vehicles?.filter((v) => v.status === "ACTIVE") ?? []}
+                        value={secondaryVehicleIdValue}
+                        passengerCount={watch("passengerCount") || 1}
+                        onChange={(id) => { setSecondaryVehicleIdValue(id); setValue("secondaryVehicleId", id) }}
+                      />
+                      {(secondaryDriverIdValue || secondaryVehicleIdValue) && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSecondaryDriverIdValue("")
+                            setSecondaryVehicleIdValue("")
+                            setValue("secondaryDriverId", "")
+                            setValue("secondaryVehicleId", "")
+                          }}
+                          className="w-full text-[11px] text-red-400 hover:text-red-600 transition-colors text-center py-1"
+                        >
+                          Clear secondary assignment
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
