@@ -566,22 +566,22 @@ function LoginForm() {
           </div>
         </form>
 
-        <div className="lx d6" style={{ display: "flex", alignItems: "center", gap: "1.2rem", margin: "1.8rem 0" }}>
-          <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.07)" }} />
-          <span style={{
-            fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.6rem",
-            color: "rgba(255,255,255,0.2)", letterSpacing: "0.14em", textTransform: "uppercase",
-          }}>or</span>
-          <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.07)" }} />
-        </div>
-
-        <p className="lx d7" style={{
-          fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.8rem",
-          color: "rgba(200,212,228,0.3)", fontWeight: 300, textAlign: "center",
+        <div className="lx d6" style={{
+          marginTop: "1.75rem",
+          paddingTop: "1.4rem",
+          borderTop: "1px solid rgba(255,255,255,0.07)",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
-          New to Livery Connect?{" "}
-          <Link href="/auth/signup" className="lk">Create an account</Link>
-        </p>
+          <span style={{
+            fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.9rem",
+            color: "rgba(200,212,228,0.5)", fontWeight: 300, letterSpacing: "0.01em",
+          }}>New to Livery Connect?</span>
+          <Link href="/auth/signup" className="lk" style={{
+            fontSize: "0.9rem", display: "inline-flex", alignItems: "center", gap: "5px",
+          }}>
+            Create an account <span style={{ fontSize: "1.05rem", lineHeight: 1 }}>→</span>
+          </Link>
+        </div>
       </div>
 
       {/* ══ LAYER 5 — DISPATCH STATS ══ */}

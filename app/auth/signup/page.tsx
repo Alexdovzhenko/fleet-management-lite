@@ -482,8 +482,8 @@ export default function SignupPage() {
           <div style={{ display: "flex", alignItems: "center", gap: "11px", marginBottom: "1rem" }}>
             <div style={{ width: "26px", height: "1px", background: "#c9a87c", flexShrink: 0 }} />
             <span style={{
-              fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.57rem", fontWeight: 500,
-              letterSpacing: "0.3em", textTransform: "uppercase", color: "rgba(201,168,124,0.7)",
+              fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.68rem", fontWeight: 500,
+              letterSpacing: "0.28em", textTransform: "uppercase", color: "rgba(201,168,124,0.88)",
             }}>New Membership</span>
           </div>
           <h1 style={{
@@ -492,8 +492,8 @@ export default function SignupPage() {
             color: "rgba(255,255,255,0.92)", letterSpacing: "-0.02em", lineHeight: 1.12, marginBottom: "0.65rem",
           }}>Create your account</h1>
           <p style={{
-            fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.8rem",
-            color: "rgba(200,212,228,0.38)", fontWeight: 300, letterSpacing: "0.01em", lineHeight: 1.6,
+            fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.95rem",
+            color: "rgba(200,212,228,0.55)", fontWeight: 300, letterSpacing: "0.01em", lineHeight: 1.6,
           }}>Join Livery Connect and streamline your dispatch</p>
         </div>
 
@@ -560,23 +560,23 @@ export default function SignupPage() {
           </div>
         </form>
 
-        {/* Divider */}
-        <div className="lx d8" style={{ display: "flex", alignItems: "center", gap: "1.2rem", margin: "1.5rem 0" }}>
-          <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.07)" }} />
-          <span style={{
-            fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.6rem",
-            color: "rgba(255,255,255,0.2)", letterSpacing: "0.14em", textTransform: "uppercase",
-          }}>or</span>
-          <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.07)" }} />
-        </div>
-
-        <p className="lx d8" style={{
-          fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.8rem",
-          color: "rgba(200,212,228,0.3)", fontWeight: 300, textAlign: "center",
+        {/* CTA */}
+        <div className="lx d8" style={{
+          marginTop: "1.75rem",
+          paddingTop: "1.4rem",
+          borderTop: "1px solid rgba(255,255,255,0.07)",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
-          Already a member?{" "}
-          <Link href="/auth/login" className="lk">Sign in</Link>
-        </p>
+          <span style={{
+            fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.9rem",
+            color: "rgba(200,212,228,0.5)", fontWeight: 300, letterSpacing: "0.01em",
+          }}>Already a member?</span>
+          <Link href="/auth/login" className="lk" style={{
+            fontSize: "0.9rem", display: "inline-flex", alignItems: "center", gap: "5px",
+          }}>
+            Sign in <span style={{ fontSize: "1.05rem", lineHeight: 1 }}>→</span>
+          </Link>
+        </div>
       </div>
 
       {/* ══ LAYER 5 — DISPATCH STATS ══ */}
