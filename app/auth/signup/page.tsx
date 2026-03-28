@@ -6,98 +6,68 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 
 const STYLES = `
-  @keyframes t-up {
-    from { opacity: 0; transform: translateY(14px); }
+  @keyframes lc-rise {
+    from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .t-in { animation: t-up 0.45s cubic-bezier(0.16,1,0.3,1) both; }
-  .t-d1 { animation-delay: 0.06s; }
-  .t-d2 { animation-delay: 0.12s; }
-  .t-d3 { animation-delay: 0.18s; }
-  .t-d4 { animation-delay: 0.24s; }
-  .t-d5 { animation-delay: 0.30s; }
-  .t-d6 { animation-delay: 0.36s; }
-  .t-d7 { animation-delay: 0.42s; }
+  .lc-a  { animation: lc-rise 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+  .lc-a1 { animation-delay: 0.05s; }
+  .lc-a2 { animation-delay: 0.10s; }
+  .lc-a3 { animation-delay: 0.15s; }
+  .lc-a4 { animation-delay: 0.20s; }
+  .lc-a5 { animation-delay: 0.25s; }
+  .lc-a6 { animation-delay: 0.30s; }
+  .lc-a7 { animation-delay: 0.35s; }
 
-  .t-input {
+  .lc-input {
     width: 100%;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.09);
-    border-radius: 4px;
-    padding: 13px 14px;
-    font-size: 0.82rem;
-    color: #fafaf9;
+    background: #f8f9fb;
+    border: 1.5px solid #e2e6eb;
+    border-radius: 8px;
+    padding: 11px 14px;
+    font-size: 0.875rem;
+    color: #0d1b2a;
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-    font-family: var(--font-mono, monospace);
+    transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+    font-family: var(--font-instrument, system-ui);
     font-weight: 400;
-    letter-spacing: 0.02em;
   }
-  .t-input::placeholder {
-    color: rgba(255,255,255,0.2);
-    font-weight: 300;
-  }
-  .t-input:focus {
-    border-color: rgba(163,230,53,0.6);
-    background: rgba(163,230,53,0.04);
-    box-shadow: 0 0 0 3px rgba(163,230,53,0.07);
+  .lc-input::placeholder { color: #a8b4c0; }
+  .lc-input:focus {
+    border-color: #0c2340;
+    background: #fff;
+    box-shadow: 0 0 0 3.5px rgba(12,35,64,0.08);
   }
 
-  .t-btn {
+  .lc-btn {
     width: 100%;
-    padding: 14px;
-    background: #a3e635;
-    color: #080706;
+    padding: 12px 16px;
+    background: #0c2340;
+    color: #ffffff;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    font-family: var(--font-mono, monospace);
-    transition: background 0.2s, transform 0.15s;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: var(--font-instrument, system-ui);
+    letter-spacing: 0.01em;
+    transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+    box-shadow: 0 2px 8px rgba(12,35,64,0.2);
   }
-  .t-btn:hover:not(:disabled) {
-    background: #bef264;
+  .lc-btn:hover:not(:disabled) {
+    background: #163860;
     transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(12,35,64,0.25);
   }
-  .t-btn:active:not(:disabled) { transform: translateY(0); }
-  .t-btn:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-    transform: none;
-  }
-
-  .t-label {
-    display: block;
-    font-size: 0.58rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.35);
-    margin-bottom: 0.5rem;
-    font-family: var(--font-mono, monospace);
-    font-weight: 400;
-  }
-
-  .t-link-plain {
-    color: rgba(255,255,255,0.7);
-    font-weight: 500;
-    text-decoration: none;
-    transition: color 0.15s;
-  }
-  .t-link-plain:hover { color: #a3e635; }
+  .lc-btn:active:not(:disabled) { transform: translateY(0); box-shadow: 0 2px 8px rgba(12,35,64,0.2); }
+  .lc-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
 `
 
 export default function SignupPage() {
   const router = useRouter()
   const [form, setForm] = useState({
-    companyName: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+    companyName: "", firstName: "", lastName: "",
+    email: "", password: "", confirmPassword: "",
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -124,56 +94,38 @@ export default function SignupPage() {
       if (signUpError) { setError(signUpError.message); return }
       router.push("/auth/verify-email")
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
+      setError(err instanceof Error ? err.message : "Something went wrong.")
     } finally {
       setLoading(false)
     }
   }
 
   function field(key: keyof typeof form) {
-    return (e: React.ChangeEvent<HTMLInputElement>) =>
-      setForm((f) => ({ ...f, [key]: e.target.value }))
+    return (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, [key]: e.target.value }))
   }
+
+  const labelStyle = { fontSize: "0.78rem", fontWeight: 600, color: "#374558", letterSpacing: "0.01em", display: "block", marginBottom: "0.45rem" } as const
 
   return (
     <>
       <style>{STYLES}</style>
 
       {/* Heading */}
-      <div className="t-in t-d1" style={{ marginBottom: "2rem" }}>
-        <div
-          style={{
-            fontSize: "0.58rem",
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: "rgba(163,230,53,0.6)",
-            fontFamily: "var(--font-mono)",
-            marginBottom: "0.75rem",
-          }}
-        >
-          // REGISTER_OPERATOR
-        </div>
+      <div className="lc-a lc-a1" style={{ marginBottom: "1.75rem" }}>
         <h2
           style={{
-            fontFamily: "var(--font-bebas)",
-            fontSize: "2.6rem",
-            color: "#fafaf9",
-            letterSpacing: "0.04em",
-            lineHeight: 1,
+            fontFamily: "var(--font-bricolage)",
+            fontSize: "1.75rem",
+            fontWeight: 700,
+            color: "#0c2340",
+            letterSpacing: "-0.025em",
+            lineHeight: 1.15,
+            marginBottom: "0.5rem",
           }}
         >
-          CREATE ACCOUNT
+          Create your account
         </h2>
-        <p
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "0.75rem",
-            color: "rgba(255,255,255,0.3)",
-            fontWeight: 300,
-            marginTop: "0.6rem",
-            letterSpacing: "0.02em",
-          }}
-        >
+        <p style={{ fontSize: "0.875rem", color: "#6b7c8d", fontWeight: 400 }}>
           Set up your limo dispatch workspace
         </p>
       </div>
@@ -181,91 +133,87 @@ export default function SignupPage() {
       {/* Error */}
       {error && (
         <div
-          className="mb-5"
           style={{
-            background: "rgba(239,68,68,0.08)",
-            border: "1px solid rgba(239,68,68,0.25)",
-            borderRadius: "4px",
+            marginBottom: "1.25rem",
             padding: "10px 14px",
-            fontFamily: "var(--font-mono)",
-            fontSize: "0.75rem",
-            color: "rgba(252,165,165,0.9)",
-            letterSpacing: "0.01em",
+            background: "#fff5f5",
+            border: "1.5px solid #fecaca",
+            borderRadius: "8px",
+            fontSize: "0.82rem",
+            color: "#c53030",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
           }}
         >
-          <span style={{ color: "#f87171", marginRight: "6px" }}>!</span>
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" style={{ flexShrink: 0 }}>
+            <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm-.75 4a.75.75 0 011.5 0v3a.75.75 0 01-1.5 0V5zm.75 7a1 1 0 110-2 1 1 0 010 2z"/>
+          </svg>
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
         {/* Company */}
-        <div className="t-in t-d2" style={{ marginBottom: "1.1rem" }}>
-          <label className="t-label">Company_Name</label>
-          <input value={form.companyName} onChange={field("companyName")} placeholder="Luxury Limousine Co." required className="t-input" />
+        <div className="lc-a lc-a2" style={{ marginBottom: "0.9rem" }}>
+          <label style={labelStyle}>Company name</label>
+          <input value={form.companyName} onChange={field("companyName")} placeholder="Luxury Limousine Co." required className="lc-input" />
         </div>
 
-        {/* First / Last */}
-        <div className="t-in t-d3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1.1rem" }}>
+        {/* Name row */}
+        <div className="lc-a lc-a3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.9rem" }}>
           <div>
-            <label className="t-label">First_Name</label>
-            <input value={form.firstName} onChange={field("firstName")} placeholder="John" required className="t-input" />
+            <label style={labelStyle}>First name</label>
+            <input value={form.firstName} onChange={field("firstName")} placeholder="John" required className="lc-input" />
           </div>
           <div>
-            <label className="t-label">Last_Name</label>
-            <input value={form.lastName} onChange={field("lastName")} placeholder="Smith" required className="t-input" />
+            <label style={labelStyle}>Last name</label>
+            <input value={form.lastName} onChange={field("lastName")} placeholder="Smith" required className="lc-input" />
           </div>
         </div>
 
         {/* Email */}
-        <div className="t-in t-d4" style={{ marginBottom: "1.1rem" }}>
-          <label className="t-label">Business_Email</label>
-          <input type="email" value={form.email} onChange={field("email")} placeholder="operator@yourlimo.com" required autoFocus className="t-input" />
+        <div className="lc-a lc-a4" style={{ marginBottom: "0.9rem" }}>
+          <label style={labelStyle}>Business email</label>
+          <input type="email" value={form.email} onChange={field("email")} placeholder="john@yourlimo.com" required autoFocus className="lc-input" />
         </div>
 
         {/* Passwords */}
-        <div className="t-in t-d5" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1.75rem" }}>
+        <div className="lc-a lc-a5" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1.5rem" }}>
           <div>
-            <label className="t-label">Password</label>
-            <input type="password" value={form.password} onChange={field("password")} placeholder="Min. 8 chars" required className="t-input" />
+            <label style={labelStyle}>Password</label>
+            <input type="password" value={form.password} onChange={field("password")} placeholder="Min. 8 chars" required className="lc-input" />
           </div>
           <div>
-            <label className="t-label">Confirm</label>
-            <input type="password" value={form.confirmPassword} onChange={field("confirmPassword")} placeholder="Repeat" required className="t-input" />
+            <label style={labelStyle}>Confirm</label>
+            <input type="password" value={form.confirmPassword} onChange={field("confirmPassword")} placeholder="Repeat" required className="lc-input" />
           </div>
         </div>
 
         {/* Submit */}
-        <div className="t-in t-d6">
-          <button type="submit" disabled={loading} className="t-btn">
-            {loading ? "INITIALIZING..." : "CREATE ACCOUNT →"}
+        <div className="lc-a lc-a6">
+          <button type="submit" disabled={loading} className="lc-btn">
+            {loading ? "Creating account…" : "Create account"}
           </button>
         </div>
       </form>
 
       {/* Divider */}
-      <div
-        className="t-in t-d7"
-        style={{ display: "flex", alignItems: "center", gap: "1rem", margin: "1.5rem 0" }}
-      >
-        <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", color: "rgba(255,255,255,0.2)", letterSpacing: "0.1em" }}>OR</span>
-        <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
+      <div className="lc-a lc-a7" style={{ display: "flex", alignItems: "center", gap: "12px", margin: "1.5rem 0" }}>
+        <div style={{ flex: 1, height: "1px", background: "#edf0f3" }} />
+        <span style={{ fontSize: "0.75rem", color: "#b0bbc7" }}>or</span>
+        <div style={{ flex: 1, height: "1px", background: "#edf0f3" }} />
       </div>
 
-      <p
-        className="t-in t-d7"
-        style={{
-          textAlign: "center",
-          fontFamily: "var(--font-mono)",
-          fontSize: "0.72rem",
-          color: "rgba(255,255,255,0.25)",
-          letterSpacing: "0.02em",
-        }}
-      >
-        Have an account?{" "}
-        <Link href="/auth/login" className="t-link-plain">
-          Sign in →
+      <p className="lc-a lc-a7" style={{ textAlign: "center", fontSize: "0.85rem", color: "#6b7c8d" }}>
+        Already have an account?{" "}
+        <Link
+          href="/auth/login"
+          style={{ color: "#0c2340", fontWeight: 600, textDecoration: "none" }}
+          onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+          onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+        >
+          Sign in
         </Link>
       </p>
     </>
