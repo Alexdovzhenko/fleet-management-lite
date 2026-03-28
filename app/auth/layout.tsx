@@ -1,402 +1,262 @@
-import { Playfair_Display, DM_Sans } from "next/font/google"
+import { Cormorant_Garamond, Outfit } from "next/font/google"
 
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-playfair",
-  display: "swap",
-})
-
-const dmSans = DM_Sans({
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600"],
-  variable: "--font-dm",
+  style: ["normal", "italic"],
+  variable: "--font-cormorant",
   display: "swap",
 })
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-outfit",
+  display: "swap",
+})
+
+const STYLES = `
+  @keyframes sclass-run {
+    0%   { transform: translateX(-350px); opacity: 0; }
+    7%   { opacity: 0.48; }
+    93%  { opacity: 0.48; }
+    100% { transform: translateX(calc(100vw + 350px)); opacity: 0; }
+  }
+  @keyframes escalade-run {
+    0%   { transform: translateX(calc(100vw + 350px)); opacity: 0; }
+    7%   { opacity: 0.36; }
+    93%  { opacity: 0.36; }
+    100% { transform: translateX(-350px); opacity: 0; }
+  }
+  @keyframes sprinter-run {
+    0%   { transform: translateX(-350px); opacity: 0; }
+    7%   { opacity: 0.42; }
+    93%  { opacity: 0.42; }
+    100% { transform: translateX(calc(100vw + 350px)); opacity: 0; }
+  }
+  @keyframes bokeh-drift {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33%       { transform: translate(-28px,-22px) scale(1.06); }
+    66%       { transform: translate(18px,-32px) scale(0.94); }
+  }
+  @keyframes card-emerge {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .lx-bokeh {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(72px);
+    animation: bokeh-drift ease-in-out infinite;
+  }
+  .lx-vehicle {
+    position: absolute;
+    left: 0;
+    pointer-events: none;
+    will-change: transform;
+  }
+  .lx-card {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 430px;
+    padding: clamp(2rem, 5vw, 3rem) clamp(1.75rem, 4.5vw, 2.75rem);
+    background: rgba(10, 14, 24, 0.84);
+    backdrop-filter: blur(60px) saturate(180%);
+    -webkit-backdrop-filter: blur(60px) saturate(180%);
+    border: 1px solid rgba(201, 168, 124, 0.14);
+    box-shadow:
+      inset 0 1px 0 rgba(201, 168, 124, 0.09),
+      0 70px 140px rgba(0, 0, 0, 0.75),
+      0 30px 60px rgba(0, 0, 0, 0.45);
+    animation: card-emerge 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+  }
+  @media (max-width: 500px) {
+    .lx-card { max-width: 100%; margin: 0.5rem; }
+  }
+`
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className={`min-h-screen flex ${playfair.variable} ${dmSans.variable}`}
-      style={{ fontFamily: "var(--font-dm, system-ui)" }}
+      className={`${cormorant.variable} ${outfit.variable}`}
+      style={{
+        minHeight: "100vh",
+        background: "#070a0f",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+        overflow: "hidden",
+        fontFamily: "var(--font-outfit, system-ui)",
+        padding: "clamp(0.75rem, 2vw, 1.5rem)",
+      }}
     >
+      <style>{STYLES}</style>
 
-      {/* ═══════════════════════════════════════
-          LEFT PANEL — Editorial / Atmospheric
-      ════════════════════════════════════════ */}
-      <div
-        className="hidden lg:flex lg:w-[46%] relative flex-col overflow-hidden"
-        style={{ background: "#0d0d0d" }}
+      {/* ── Atmospheric layers ── */}
+      {/* Warm ground glow — city lights reflected upward */}
+      <div aria-hidden style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        background: "radial-gradient(ellipse 110% 50% at 50% 115%, rgba(201,168,124,0.07) 0%, transparent 55%)",
+      }} />
+      {/* Upper dark vignette */}
+      <div aria-hidden style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        background: "linear-gradient(165deg, rgba(5,10,28,0.65) 0%, transparent 50%)",
+      }} />
+      {/* Grain texture for depth */}
+      <div aria-hidden style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")`,
+        opacity: 0.55,
+      }} />
+
+      {/* ── Bokeh city lights ── */}
+      <div className="lx-bokeh" style={{ width: 290, height: 290, bottom: "2%", left: "3%", background: "rgba(201,168,124,0.08)", animationDuration: "15s" }} />
+      <div className="lx-bokeh" style={{ width: 210, height: 210, bottom: "18%", right: "4%", background: "rgba(55,75,190,0.06)", animationDuration: "19s", animationDelay: "-6s" }} />
+      <div className="lx-bokeh" style={{ width: 165, height: 165, bottom: "0%", left: "44%", background: "rgba(225,170,55,0.07)", animationDuration: "12s", animationDelay: "-9s" }} />
+      <div className="lx-bokeh" style={{ width: 105, height: 105, bottom: "22%", left: "17%", background: "rgba(201,168,124,0.05)", animationDuration: "17s", animationDelay: "-3s" }} />
+
+      {/* ── Perspective road ── */}
+      <svg
+        aria-hidden
+        style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: "33%", pointerEvents: "none", opacity: 0.15 }}
+        viewBox="0 0 1440 350"
+        preserveAspectRatio="none"
       >
-        {/* Grain overlay for depth */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E")`,
-            backgroundRepeat: "repeat",
-            opacity: 0.4,
-          }}
-        />
+        {/* Road surface */}
+        <polygon points="612,0 828,0 1440,350 0,350" fill="rgba(20,27,46,0.95)" />
+        {/* Road edge lines */}
+        <line x1="612" y1="0" x2="0" y2="350" stroke="rgba(201,168,124,0.65)" strokeWidth="1.5" />
+        <line x1="828" y1="0" x2="1440" y2="350" stroke="rgba(201,168,124,0.65)" strokeWidth="1.5" />
+        {/* Lane dashes — 3 lanes */}
+        <line x1="678" y1="0" x2="145" y2="350" stroke="rgba(201,168,124,0.28)" strokeWidth="1" strokeDasharray="20,16" />
+        <line x1="720" y1="0" x2="720" y2="350" stroke="rgba(201,168,124,0.35)" strokeWidth="1" strokeDasharray="20,16" />
+        <line x1="762" y1="0" x2="1295" y2="350" stroke="rgba(201,168,124,0.28)" strokeWidth="1" strokeDasharray="20,16" />
+      </svg>
 
-        {/* Vignette edges */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: "radial-gradient(ellipse 120% 100% at 50% 50%, transparent 40%, rgba(0,0,0,0.7) 100%)",
-          }}
-        />
+      {/* ════════════════════════════════
+          Animated Vehicle Silhouettes
+      ════════════════════════════════ */}
 
-        {/* Warm gold ambient glow — bottom third */}
-        <div
-          className="absolute bottom-0 left-0 right-0 pointer-events-none"
-          style={{
-            height: "55%",
-            background: "radial-gradient(ellipse 80% 60% at 30% 100%, rgba(201,168,124,0.08) 0%, transparent 65%)",
-          }}
-        />
-
-        {/* ── Luxury Car Line Illustration ── */}
-        <svg
-          className="absolute pointer-events-none"
-          style={{ bottom: "8%", right: "-4%", width: "78%", opacity: 0.9 }}
-          viewBox="0 0 440 180"
-          fill="none"
-          aria-hidden
-        >
+      {/* ── Mercedes S-Class (W223) — LTR, mid-distance ── */}
+      <div className="lx-vehicle" style={{ bottom: "26%", animation: "sclass-run 24s linear 2s infinite" }}>
+        <svg viewBox="0 0 258 62" width="200" height="48" fill="none" aria-hidden>
           <defs>
-            <filter id="gold-glow" x="-20%" y="-40%" width="140%" height="180%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur" />
-              <feColorMatrix in="blur" type="matrix"
-                values="1 0.8 0.3 0 0  0.8 0.6 0.1 0 0  0.1 0.05 0 0 0  0 0 0 0.5 0"
-                result="glow" />
-              <feMerge><feMergeNode in="glow" /><feMergeNode in="SourceGraphic" /></feMerge>
+            <filter id="vg-s" x="-15%" y="-50%" width="130%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="b" />
+              <feColorMatrix in="b" type="matrix"
+                values="1 0.78 0.28 0 0  0.8 0.58 0.08 0 0  0.08 0.02 0 0 0  0 0 0 0.42 0"
+                result="g" />
+              <feMerge><feMergeNode in="g" /><feMergeNode in="SourceGraphic" /></feMerge>
             </filter>
           </defs>
-
-          {/* Single continuous luxury sedan silhouette — hairline gold */}
-          {/* Body + roofline */}
-          <path
-            d="
-              M 20 130
-              L 40 130
-              Q 50 130 55 125
-              L 75 85
-              Q 82 72 95 68
-              L 160 62
-              Q 175 60 188 58
-              L 230 52
-              Q 255 50 275 52
-              L 330 58
-              Q 348 61 358 68
-              L 378 85
-              Q 385 92 390 100
-              L 415 105
-              Q 428 107 432 115
-              L 432 130
-              L 410 130
-            "
-            stroke="#c9a87c"
-            strokeWidth="0.9"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            filter="url(#gold-glow)"
-            pathLength="1"
-            strokeDasharray="1"
-            strokeDashoffset="1"
-          >
-            <animate
-              attributeName="stroke-dashoffset"
-              from="1" to="0"
-              dur="2.8s"
-              begin="0.3s"
-              fill="freeze"
-              calcMode="spline"
-              keySplines="0.4 0 0.2 1"
-              keyTimes="0;1"
-            />
-          </path>
-
-          {/* Underbody / ground line */}
-          <path
-            d="M 75 130 L 130 130 M 175 130 L 285 130 M 340 130 L 410 130"
-            stroke="#c9a87c"
-            strokeWidth="0.8"
-            strokeLinecap="round"
-            filter="url(#gold-glow)"
-            pathLength="1"
-            strokeDasharray="1"
-            strokeDashoffset="1"
-          >
-            <animate attributeName="stroke-dashoffset" from="1" to="0"
-              dur="1.2s" begin="2.6s" fill="freeze"
-              calcMode="spline" keySplines="0.4 0 0.2 1" keyTimes="0;1" />
-          </path>
-
-          {/* Front wheel */}
-          <circle cx="130" cy="130" r="26" stroke="#c9a87c" strokeWidth="0.8" filter="url(#gold-glow)"
-            strokeDasharray="163.4" strokeDashoffset="163.4">
-            <animate attributeName="stroke-dashoffset" from="163.4" to="0"
-              dur="1.0s" begin="2.4s" fill="freeze"
-              calcMode="spline" keySplines="0.4 0 0.2 1" keyTimes="0;1" />
-          </circle>
-          <circle cx="130" cy="130" r="10" stroke="rgba(201,168,124,0.4)" strokeWidth="0.6"
-            strokeDasharray="62.8" strokeDashoffset="62.8">
-            <animate attributeName="stroke-dashoffset" from="62.8" to="0"
-              dur="0.8s" begin="3.2s" fill="freeze" />
-          </circle>
-          <circle cx="130" cy="130" r="3" fill="#c9a87c" opacity="0">
-            <animate attributeName="opacity" from="0" to="0.7" dur="0.3s" begin="3.8s" fill="freeze" />
-          </circle>
-
-          {/* Rear wheel */}
-          <circle cx="330" cy="130" r="26" stroke="#c9a87c" strokeWidth="0.8" filter="url(#gold-glow)"
-            strokeDasharray="163.4" strokeDashoffset="163.4">
-            <animate attributeName="stroke-dashoffset" from="163.4" to="0"
-              dur="1.0s" begin="2.5s" fill="freeze"
-              calcMode="spline" keySplines="0.4 0 0.2 1" keyTimes="0;1" />
-          </circle>
-          <circle cx="330" cy="130" r="10" stroke="rgba(201,168,124,0.4)" strokeWidth="0.6"
-            strokeDasharray="62.8" strokeDashoffset="62.8">
-            <animate attributeName="stroke-dashoffset" from="62.8" to="0"
-              dur="0.8s" begin="3.3s" fill="freeze" />
-          </circle>
-          <circle cx="330" cy="130" r="3" fill="#c9a87c" opacity="0">
-            <animate attributeName="opacity" from="0" to="0.7" dur="0.3s" begin="3.9s" fill="freeze" />
-          </circle>
-
-          {/* Door line detail */}
-          <path
-            d="M 180 68 L 182 120 M 270 60 L 272 118"
-            stroke="rgba(201,168,124,0.35)"
-            strokeWidth="0.7"
-            strokeLinecap="round"
-            strokeDasharray="60" strokeDashoffset="60"
-          >
-            <animate attributeName="stroke-dashoffset" from="60" to="0"
-              dur="0.6s" begin="3.0s" fill="freeze" />
-          </path>
-
-          {/* Window line */}
-          <path
-            d="M 85 80 Q 90 68 100 66 L 165 61 Q 178 60 180 68 L 175 82 Q 130 84 85 80 Z"
-            stroke="rgba(201,168,124,0.3)" strokeWidth="0.7" fill="none"
-            strokeDasharray="200" strokeDashoffset="200"
-          >
-            <animate attributeName="stroke-dashoffset" from="200" to="0"
-              dur="1.0s" begin="1.6s" fill="freeze" />
-          </path>
-          <path
-            d="M 183 68 L 185 58 Q 230 50 275 52 L 340 58 Q 355 62 360 68 L 355 80 Q 270 84 183 80 Z"
-            stroke="rgba(201,168,124,0.3)" strokeWidth="0.7" fill="none"
-            strokeDasharray="400" strokeDashoffset="400"
-          >
-            <animate attributeName="stroke-dashoffset" from="400" to="0"
-              dur="1.2s" begin="1.8s" fill="freeze" />
-          </path>
-
-          {/* Headlight */}
-          <path d="M 390 100 Q 420 102 432 115" stroke="rgba(201,168,124,0.5)" strokeWidth="1.2"
-            strokeLinecap="round" filter="url(#gold-glow)"
-            strokeDasharray="50" strokeDashoffset="50">
-            <animate attributeName="stroke-dashoffset" from="50" to="0"
-              dur="0.5s" begin="3.5s" fill="freeze" />
-          </path>
-          {/* Headlight beam — subtle */}
-          <path d="M 432 118 L 440 110 M 432 122 L 440 118 M 432 126 L 440 128"
-            stroke="rgba(201,168,124,0.15)" strokeWidth="0.6" strokeLinecap="round"
-            opacity="0">
-            <animate attributeName="opacity" from="0" to="1" dur="0.8s" begin="4.0s" fill="freeze" />
-          </path>
+          <g stroke="#c9a87c" strokeLinecap="round" strokeLinejoin="round" filter="url(#vg-s)">
+            {/* Body — long graceful sedan profile */}
+            <path strokeWidth="0.85" d="
+              M 6 54 L 6 46 Q 11 40 25 40 L 54 38 Q 66 35 76 27
+              L 85 11 Q 124 6 162 9 L 185 18 Q 210 28 220 38
+              L 234 44 L 238 52 L 238 54
+            " />
+            {/* Underbody with wheel arch gaps */}
+            <path strokeWidth="0.85" d="M 6 54 L 36 54 M 62 54 L 178 54 M 204 54 L 238 54" />
+            {/* Front wheel */}
+            <circle cx="49" cy="54" r="13" strokeWidth="0.85" />
+            <circle cx="49" cy="54" r="5.5" strokeWidth="0.6" stroke="rgba(201,168,124,0.4)" />
+            {/* Rear wheel */}
+            <circle cx="191" cy="54" r="13" strokeWidth="0.85" />
+            <circle cx="191" cy="54" r="5.5" strokeWidth="0.6" stroke="rgba(201,168,124,0.4)" />
+          </g>
         </svg>
-
-        {/* ── Content ── */}
-        <div className="relative z-10 flex flex-col h-full px-14 py-14">
-
-          {/* Brand wordmark */}
-          <div
-            className="flex items-center gap-3"
-            style={{ animation: "fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s both" }}
-          >
-            <div
-              style={{
-                width: "28px",
-                height: "1px",
-                background: "#c9a87c",
-              }}
-            />
-            <span
-              style={{
-                fontFamily: "var(--font-dm)",
-                fontSize: "0.65rem",
-                fontWeight: 500,
-                color: "#c9a87c",
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-              }}
-            >
-              Livery Connect
-            </span>
-          </div>
-
-          {/* Editorial headline */}
-          <div className="flex-1 flex flex-col justify-center" style={{ maxWidth: "380px" }}>
-            <p
-              style={{
-                fontFamily: "var(--font-dm)",
-                fontSize: "0.62rem",
-                fontWeight: 400,
-                letterSpacing: "0.25em",
-                textTransform: "uppercase",
-                color: "rgba(201,168,124,0.5)",
-                marginBottom: "1.5rem",
-                animation: "fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.25s both",
-              }}
-            >
-              Executive Fleet Management
-            </p>
-
-            <h1
-              style={{
-                fontFamily: "var(--font-playfair)",
-                fontSize: "clamp(2.8rem, 4.2vw, 4rem)",
-                fontWeight: 400,
-                fontStyle: "italic",
-                color: "#f5f0e8",
-                lineHeight: 1.18,
-                letterSpacing: "-0.01em",
-                marginBottom: "2.5rem",
-                animation: "fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) 0.35s both",
-              }}
-            >
-              Where precision
-              <br />
-              <span style={{ fontStyle: "normal", fontWeight: 600, color: "#ffffff" }}>
-                meets service.
-              </span>
-            </h1>
-
-            {/* Gold hairline */}
-            <div
-              style={{
-                width: "40px",
-                height: "1px",
-                background: "linear-gradient(90deg, #c9a87c, transparent)",
-                marginBottom: "1.75rem",
-                animation: "fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.5s both",
-              }}
-            />
-
-            <p
-              style={{
-                fontFamily: "var(--font-playfair)",
-                fontSize: "0.9rem",
-                fontStyle: "italic",
-                color: "rgba(245,240,232,0.45)",
-                lineHeight: 1.8,
-                letterSpacing: "0.01em",
-                animation: "fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.55s both",
-              }}
-            >
-              &ldquo;The standard of excellence
-              <br />
-              in every dispatch.&rdquo;
-            </p>
-          </div>
-
-          {/* Bottom — stats in luxury treatment */}
-          <div
-            style={{
-              animation: "fadeUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.65s both",
-            }}
-          >
-            <div
-              style={{
-                width: "100%",
-                height: "1px",
-                background: "linear-gradient(90deg, rgba(201,168,124,0.25), transparent)",
-                marginBottom: "1.75rem",
-              }}
-            />
-            <div style={{ display: "flex", gap: "2.5rem" }}>
-              {[
-                { value: "500+", label: "Operators" },
-                { value: "99.9%", label: "Uptime" },
-                { value: "24 / 7", label: "Support" },
-              ].map(({ value, label }) => (
-                <div key={label}>
-                  <div
-                    style={{
-                      fontFamily: "var(--font-playfair)",
-                      fontSize: "1.4rem",
-                      fontWeight: 600,
-                      color: "#c9a87c",
-                      letterSpacing: "-0.01em",
-                      lineHeight: 1,
-                    }}
-                  >
-                    {value}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: "var(--font-dm)",
-                      fontSize: "0.62rem",
-                      fontWeight: 400,
-                      color: "rgba(255,255,255,0.25)",
-                      letterSpacing: "0.12em",
-                      textTransform: "uppercase",
-                      marginTop: "0.35rem",
-                    }}
-                  >
-                    {label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
 
-      {/* ═══════════════════════════════════════
-          RIGHT PANEL — Pristine form space
-      ════════════════════════════════════════ */}
-      <div
-        className="flex-1 flex items-center justify-center"
-        style={{ background: "#ffffff", padding: "clamp(2rem, 6vw, 5rem)" }}
-      >
-        <div style={{ width: "100%", maxWidth: "360px" }}>
-
-          {/* Mobile wordmark */}
-          <div
-            className="lg:hidden flex items-center gap-3 mb-12"
-            style={{ justifyContent: "center" }}
-          >
-            <div style={{ width: "20px", height: "1px", background: "#c9a87c" }} />
-            <span
-              style={{
-                fontFamily: "var(--font-dm)",
-                fontSize: "0.65rem",
-                fontWeight: 500,
-                color: "#c9a87c",
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-              }}
-            >
-              Livery Connect
-            </span>
-            <div style={{ width: "20px", height: "1px", background: "#c9a87c" }} />
-          </div>
-
-          {children}
-        </div>
+      {/* ── Cadillac Escalade — RTL, lower layer ── */}
+      {/* scaleX(-1) flips it so the front faces the direction of travel */}
+      <div className="lx-vehicle" style={{ bottom: "15%", animation: "escalade-run 31s linear 9s infinite" }}>
+        <svg viewBox="0 0 212 76" width="182" height="65" fill="none" aria-hidden style={{ transform: "scaleX(-1)" }}>
+          <g stroke="#c9a87c" strokeLinecap="round" strokeLinejoin="round">
+            {/* Body — boxy, imposing SUV */}
+            <path strokeWidth="0.85" d="
+              M 8 65 L 8 20 Q 10 13 20 13 L 190 13 Q 198 13 199 20
+              L 199 42 L 201 56 L 202 65
+            " />
+            {/* Window band */}
+            <path strokeWidth="0.55" stroke="rgba(201,168,124,0.3)"
+              d="M 12 21 L 12 38 L 196 38 L 196 21 Q 195 16 190 16 L 22 16 Q 14 16 12 21 Z" />
+            {/* Underbody */}
+            <path strokeWidth="0.85" d="M 8 65 L 27 65 M 57 65 L 152 65 M 182 65 L 202 65" />
+            {/* Front wheel */}
+            <circle cx="42" cy="65" r="15" strokeWidth="0.85" />
+            <circle cx="42" cy="65" r="6" strokeWidth="0.65" stroke="rgba(201,168,124,0.38)" />
+            {/* Rear wheel */}
+            <circle cx="167" cy="65" r="15" strokeWidth="0.85" />
+            <circle cx="167" cy="65" r="6" strokeWidth="0.65" stroke="rgba(201,168,124,0.38)" />
+          </g>
+        </svg>
       </div>
 
-      <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(18px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
+      {/* ── Mercedes Sprinter — LTR, foreground ── */}
+      <div className="lx-vehicle" style={{ bottom: "5%", animation: "sprinter-run 40s linear 18s infinite" }}>
+        <svg viewBox="0 0 294 83" width="244" height="69" fill="none" aria-hidden>
+          <g stroke="#c9a87c" strokeLinecap="round" strokeLinejoin="round">
+            {/* Body — high-roof van, characteristic tall profile */}
+            <path strokeWidth="0.85" d="
+              M 14 70 L 14 33 Q 16 20 27 18 L 91 16 Q 95 11 275 11
+              L 280 16 L 280 66 L 280 70
+            " />
+            {/* Underbody */}
+            <path strokeWidth="0.85" d="M 14 70 L 35 70 M 67 70 L 246 70 M 278 70 L 280 70" />
+            {/* Cab window — distinctive trapezoid */}
+            <path strokeWidth="0.58" stroke="rgba(201,168,124,0.32)"
+              d="M 18 33 L 90 18 L 90 46 L 18 46 Z" />
+            {/* Cargo panel divider */}
+            <line x1="150" y1="14" x2="150" y2="70" stroke="rgba(201,168,124,0.18)" strokeWidth="0.55" />
+            {/* Front wheel */}
+            <circle cx="51" cy="70" r="16" strokeWidth="0.85" />
+            <circle cx="51" cy="70" r="6.5" strokeWidth="0.65" stroke="rgba(201,168,124,0.38)" />
+            {/* Rear wheel */}
+            <circle cx="263" cy="70" r="16" strokeWidth="0.85" />
+            <circle cx="263" cy="70" r="6.5" strokeWidth="0.65" stroke="rgba(201,168,124,0.38)" />
+          </g>
+        </svg>
+      </div>
+
+      {/* ══ Auth Card ══ */}
+      <div className="lx-card">
+        {/* Brand wordmark with flanking hairlines */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "14px",
+          marginBottom: "2.5rem",
+        }}>
+          <div style={{
+            flex: 1, maxWidth: "68px", height: "1px",
+            background: "linear-gradient(90deg, transparent, rgba(201,168,124,0.5))",
+          }} />
+          <span style={{
+            fontFamily: "var(--font-outfit)",
+            fontSize: "0.6rem",
+            fontWeight: 500,
+            color: "#c9a87c",
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            whiteSpace: "nowrap",
+          }}>
+            Livery Connect
+          </span>
+          <div style={{
+            flex: 1, maxWidth: "68px", height: "1px",
+            background: "linear-gradient(90deg, rgba(201,168,124,0.5), transparent)",
+          }} />
+        </div>
+
+        {children}
+      </div>
     </div>
   )
 }
