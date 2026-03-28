@@ -289,11 +289,13 @@ function NotificationCard({
 
       {/* Icon — shifts right when checkbox is visible */}
       <div className={cn(
-        "w-11 h-11 rounded-2xl bg-gradient-to-br flex items-center justify-center flex-shrink-0 shadow-sm transition-all duration-200",
-        !selectMode && "group-hover:scale-105",
+        "w-12 h-12 rounded-full bg-gradient-to-br flex items-center justify-center flex-shrink-0 transition-all duration-200",
+        "shadow-[0_2px_8px_rgba(0,0,0,0.15)] ring-2 ring-white",
+        meta.gradient,
+        !selectMode && "group-hover:scale-110 group-hover:shadow-[0_4px_14px_rgba(0,0,0,0.18)]",
         selectMode || selected ? "ml-6" : "group-hover:ml-6"
       )}>
-        <Icon className="text-white" style={{ width: 17, height: 17 }} />
+        <Icon className="text-white drop-shadow-sm" style={{ width: 18, height: 18 }} />
       </div>
 
       {/* Body */}
