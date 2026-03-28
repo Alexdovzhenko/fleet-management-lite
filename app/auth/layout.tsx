@@ -63,9 +63,7 @@ const STYLES = `
     width: 100%;
     max-width: 430px;
     padding: clamp(2rem, 5vw, 3rem) clamp(1.75rem, 4.5vw, 2.75rem);
-    background: rgba(10, 14, 24, 0.84);
-    backdrop-filter: blur(60px) saturate(180%);
-    -webkit-backdrop-filter: blur(60px) saturate(180%);
+    background: rgba(10, 14, 24, 0.96);
     border: 1px solid rgba(201, 168, 124, 0.14);
     box-shadow:
       inset 0 1px 0 rgba(201, 168, 124, 0.09),
