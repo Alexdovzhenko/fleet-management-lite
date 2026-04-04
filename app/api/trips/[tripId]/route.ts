@@ -170,9 +170,9 @@ export async function PUT(
       data: updateData as never,
       include: {
         customer: { select: { id: true, name: true, phone: true } },
-        driver: { select: { id: true, name: true, phone: true, avatarUrl: true } },
+        driver: { select: { id: true, name: true, email: true, phone: true, avatarUrl: true } },
         vehicle: { select: { id: true, name: true, type: true } },
-        secondaryDriver: { select: { id: true, name: true, phone: true, avatarUrl: true } },
+        secondaryDriver: { select: { id: true, name: true, email: true, phone: true, avatarUrl: true } },
         secondaryVehicle: { select: { id: true, name: true, type: true } },
       },
     })

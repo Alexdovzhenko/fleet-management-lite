@@ -609,9 +609,12 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">To</p>
               {resolved ? (
                 <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50">
-                  <div className="w-7 h-7 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0">
-                    {activeTab === "driver" ? (
-                      <Car className="w-3.5 h-3.5 text-gray-500" />
+                  <div className="w-7 h-7 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden text-[10px] font-bold flex-shrink-0">
+                    {activeTab === "driver" && trip.driver?.avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={trip.driver.avatarUrl} alt={trip.driver.name} className="w-full h-full object-cover" />
+                    ) : activeTab === "driver" ? (
+                      trip.driver ? getInitials(trip.driver.name) : <Car className="w-3.5 h-3.5 text-gray-500" />
                     ) : activeTab === "affiliate" ? (
                       <ArrowRightLeft className="w-3.5 h-3.5 text-gray-500" />
                     ) : (
