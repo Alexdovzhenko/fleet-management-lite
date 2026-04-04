@@ -2183,9 +2183,10 @@ export default function SettingsPage() {
   const handleSectionChange = (newSection: Section) => {
     setSection(newSection)
     const newUrl = `/settings?tab=${newSection}`
-    router.push(newUrl)
-    // Also update browser history directly as backup
-    window.history.replaceState(null, '', newUrl)
+    // Update URL in browser without navigation
+    if (typeof window !== 'undefined') {
+      window.history.pushState({ section: newSection }, '', newUrl)
+    }
   }
 
   async function handleLogout() {
