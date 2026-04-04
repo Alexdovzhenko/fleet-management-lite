@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useAuth } from "@/components/providers/auth-provider"
 import { useCompany, useUpdateCompany } from "@/lib/hooks/use-company"
@@ -2152,8 +2152,24 @@ const NAV_GROUPS: { label: string; items: { key: Section; label: string; icon: R
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
-  const [section, setSection] = useState<Section>("profile")
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const [section, setSection] = useState<Section>("profile")
+
+  // Load section from URL on mount and update when tab param changes
+  useEffect(() => {
+    const urlTab = searchParams.get("tab") as Section | null
+    const validSections: Section[] = ["profile", "address-book", "service-types", "status-actions", "grid-columns", "personal", "team", "sender-emails", "pdf-branding"]
+    if (urlTab && validSections.includes(urlTab)) {
+      setSection(urlTab)
+    }
+  }, [searchParams])
+
+  // Update URL when section changes
+  const handleSectionChange = (newSection: Section) => {
+    setSection(newSection)
+    router.push(`?tab=${newSection}`)
+  }
 
   async function handleLogout() {
     const supabase = createClient()
@@ -2179,7 +2195,7 @@ export default function SettingsPage() {
                   {group.items.map((item) => (
                     <button
                       key={item.key}
-                      onClick={() => setSection(item.key)}
+                      onClick={() => handleSectionChange(item.key)}
                       className={cn(
                         "w-full flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[13px] transition-all text-left",
                         section === item.key
