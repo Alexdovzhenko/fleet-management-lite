@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
 const updateSchema = z.object({
   name:  z.string().min(1).optional(),
   phone: z.string().optional(),
+  role:  z.enum(["OWNER", "DISPATCHER"]).optional(),
 })
 
 export async function PATCH(request: NextRequest) {

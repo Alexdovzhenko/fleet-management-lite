@@ -92,6 +92,7 @@ export async function GET(request: NextRequest) {
       vehicle: { select: { id: true, name: true, type: true } },
       secondaryDriver: { select: { id: true, name: true, phone: true, avatarUrl: true } },
       secondaryVehicle: { select: { id: true, name: true, type: true } },
+      createdBy: { select: { id: true, name: true, role: true } },
       stops: { orderBy: { order: "asc" as const } },
       farmOuts: {
         where: { status: { in: ["PENDING" as const, "ACCEPTED" as const] } },
@@ -183,7 +184,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const auth = await requireAuth(request)
   if (!auth.ok) return auth.response
-  const { companyId } = auth.ctx
+  const { companyId, userId } = auth.ctx
 
   try {
     const body = await request.json()
@@ -233,6 +234,7 @@ export async function POST(request: NextRequest) {
         notes: data.notes || null,
         internalNotes: data.internalNotes || null,
         companyId,
+        createdById: userId,
       },
       include: {
         customer: { select: { id: true, name: true, phone: true } },

@@ -27,7 +27,9 @@ import { formatCurrency, generateConfirmationNumber, cn } from "@/lib/utils"
 import { DatePickerInput } from "@/components/ui/date-picker"
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
 import { useUpsertAddress } from "@/lib/hooks/use-addresses"
-import type { Customer, Driver, Vehicle, AffiliateSearchResult } from "@/types"
+import { ReservationMetadata } from "@/components/trips/reservation-metadata"
+import { SendEmailModal } from "@/components/email/send-email-modal"
+import type { Customer, Driver, Vehicle, AffiliateSearchResult, Trip } from "@/types"
 
 const schema = z.object({
   customerId:           z.string().min(1, "Customer is required"),
@@ -2485,8 +2487,11 @@ export default function NewTripPage() {
   const [childSeatsOpen, setChildSeatsOpen] = useState(false)
   const [confirmationNumber] = useState(() => generateConfirmationNumber())
   const [createdConfirmation, setCreatedConfirmation] = useState<string | null>(null)
-  const [confirmCopied, setConfirmCopied] = useState(false)
-  const [headerCopied, setHeaderCopied] = useState(false)
+  const [createdTrip, setCreatedTrip]               = useState<Trip | null>(null)
+  const [confirmCopied, setConfirmCopied]            = useState(false)
+  const [headerCopied, setHeaderCopied]              = useState(false)
+  const [sendEmailOpen, setSendEmailOpen]            = useState(false)
+  const [sendEmailRecipient, setSendEmailRecipient]  = useState<"driver" | "client" | "affiliate">("driver")
 
   type AdditionalPax = { id: string; firstName: string; lastName: string; phone: string; email: string }
   const [additionalPassengers, setAdditionalPassengers] = useState<AdditionalPax[]>([])
@@ -2582,7 +2587,7 @@ export default function NewTripPage() {
       wheelchairAccess: false,
       vip:              data.vip,
     } as never, {
-      onSuccess: () => setCreatedConfirmation(confirmationNumber),
+      onSuccess: (trip) => { setCreatedConfirmation(confirmationNumber); setCreatedTrip(trip) },
       onError: (err) => setSubmitError(err instanceof Error ? err.message : "Failed to save reservation. Please check your information and try again."),
     })
   }
@@ -2601,7 +2606,8 @@ export default function NewTripPage() {
   // ── Success overlay ──
   if (createdConfirmation) {
     return (
-      <div className="fixed inset-0 bg-white flex items-center justify-center p-8">
+      <>
+      <div className="fixed inset-0 bg-white flex items-center justify-center p-8 overflow-y-auto">
         <div className="max-w-sm w-full text-center">
           {/* Icon */}
           <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -2612,7 +2618,7 @@ export default function NewTripPage() {
           <p className="text-sm text-gray-400 mb-8">Your reservation has been saved successfully.</p>
 
           {/* Confirmation number */}
-          <div className="bg-blue-50 border border-blue-100 rounded-2xl px-8 py-6 mb-8">
+          <div className="bg-blue-50 border border-blue-100 rounded-2xl px-8 py-6 mb-6">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-400 mb-3">Confirmation Number</p>
             <p className="text-4xl font-mono font-black text-blue-700 tracking-wider mb-4">{createdConfirmation}</p>
             <button
@@ -2631,6 +2637,38 @@ export default function NewTripPage() {
             </button>
           </div>
 
+          {/* Send email shortcuts */}
+          {createdTrip && (
+            <div className="mb-6 rounded-2xl border border-gray-200 overflow-hidden text-left">
+              <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.14em]">Send Reservation Email</p>
+              </div>
+              <div className="divide-y divide-gray-100">
+                {[
+                  { key: "driver"    as const, label: "Driver",    sub: "Job Order PDF",      icon: Car,            color: "text-slate-600 bg-slate-100" },
+                  { key: "client"    as const, label: "Client",    sub: "Reservation PDF",    icon: User,           color: "text-blue-600 bg-blue-50" },
+                  { key: "affiliate" as const, label: "Affiliate", sub: "Reservation PDF",    icon: FileText,       color: "text-indigo-600 bg-indigo-50" },
+                ].map(({ key, label, sub, icon: Icon, color }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => { setSendEmailRecipient(key); setSendEmailOpen(true) }}
+                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left"
+                  >
+                    <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0", color)}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-800">Send to {label}</p>
+                      <p className="text-[11px] text-gray-400">{sub}</p>
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-gray-300 -rotate-90 flex-shrink-0" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="flex gap-3">
             <Button
               type="button"
@@ -2638,6 +2676,7 @@ export default function NewTripPage() {
               className="flex-1 h-11"
               onClick={() => {
                 setCreatedConfirmation(null)
+                setCreatedTrip(null)
                 router.push("/trips/new")
               }}
             >
@@ -2653,6 +2692,16 @@ export default function NewTripPage() {
           </div>
         </div>
       </div>
+
+      {createdTrip && (
+        <SendEmailModal
+          trip={createdTrip}
+          open={sendEmailOpen}
+          onOpenChange={setSendEmailOpen}
+          defaultRecipient={sendEmailRecipient}
+        />
+      )}
+      </>
     )
   }
 
@@ -3295,6 +3344,9 @@ export default function NewTripPage() {
 
                 </div>
               </div>
+
+              {/* Reservation Metadata */}
+              <ReservationMetadata />
 
               {/* Submit */}
               {submitError && (

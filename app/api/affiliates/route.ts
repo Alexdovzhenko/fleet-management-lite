@@ -10,38 +10,50 @@ export async function GET(request: NextRequest) {
 
   try {
     const sp = new URL(request.url).searchParams
-    const search      = sp.get("search")      || ""
-    const location    = sp.get("location")    || ""
+    const search       = sp.get("search")      || ""
+    const locations    = sp.getAll("locations").filter(Boolean)
     const vehicleTypes = sp.get("vehicleTypes")
       ? sp.get("vehicleTypes")!.split(",").filter(Boolean)
       : []
+    const minCapacity  = sp.get("minCapacity") ? parseInt(sp.get("minCapacity")!) : 0
+
+    // Build AND conditions so search + location filters compose correctly
+    const andConditions: object[] = []
+    if (search) {
+      andConditions.push({
+        OR: [
+          { name:  { contains: search, mode: "insensitive" } },
+          { email: { contains: search, mode: "insensitive" } },
+        ],
+      })
+    }
+    if (locations.length > 0) {
+      // Each location is "City, ST" or a state/province name
+      // Build an OR across all selected locations
+      const locationOr = locations.flatMap((loc) => {
+        const [cityPart, statePart] = loc.split(",").map((s) => s.trim())
+        const conds: object[] = [
+          { city:  { contains: cityPart, mode: "insensitive" } },
+          { state: { contains: cityPart, mode: "insensitive" } },
+        ]
+        if (statePart) {
+          conds.push({ state: { contains: statePart, mode: "insensitive" } })
+        }
+        return conds
+      })
+      andConditions.push({ OR: locationOr })
+    }
 
     const companies = await prisma.company.findMany({
       where: {
         id: { not: companyId },
         onboardingCompleted: true,
-        ...(search && {
-          OR: [
-            { name:  { contains: search,   mode: "insensitive" } },
-            { email: { contains: search,   mode: "insensitive" } },
-          ],
-        }),
-        ...(location && (() => {
-          // Support "City, ST" format — search city part against city, state part against state
-          const [cityPart, statePart] = location.split(",").map((s) => s.trim())
-          const conditions: object[] = [
-            { city:  { contains: cityPart,  mode: "insensitive" } },
-            { state: { contains: cityPart,  mode: "insensitive" } },
-          ]
-          if (statePart) {
-            conditions.push({ state: { contains: statePart, mode: "insensitive" } })
-          }
-          return { OR: conditions }
-        })()),
-        ...(vehicleTypes.length > 0 && {
+        ...(andConditions.length > 0 && { AND: andConditions }),
+        ...((vehicleTypes.length > 0 || minCapacity > 0) && {
           vehicles: {
             some: {
-              type:   { in: vehicleTypes as any[] },
+              ...(vehicleTypes.length > 0 && { type: { in: vehicleTypes as any[] } }),
+              ...(minCapacity > 0 && { capacity: { gte: minCapacity } }),
               status: "ACTIVE",
             },
           },

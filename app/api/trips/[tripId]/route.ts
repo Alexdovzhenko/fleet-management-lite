@@ -77,6 +77,7 @@ export async function GET(
         vehicle: true,
         secondaryDriver: true,
         secondaryVehicle: true,
+        createdBy: { select: { id: true, name: true, role: true } },
         stops: { orderBy: { order: "asc" } },
         notifications: { orderBy: { sentAt: "desc" }, take: 20 },
         invoice: true,

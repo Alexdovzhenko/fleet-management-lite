@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useMemo, useRef, useEffect } from "react"
+import { useState, useMemo, useRef, useEffect, useCallback, Suspense } from "react"
 import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Search, Network, UserPlus, CheckCircle2, Clock,
-  MapPin, X, Check, Building2, Handshake, Star, SlidersHorizontal, ChevronDown, Car, Copy,
+  MapPin, X, Check, Building2, Handshake, Star, SlidersHorizontal, ChevronDown, Car, Copy, Users,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -35,33 +36,65 @@ const LOCATIONS = [
   "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
   "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington",
   "West Virginia", "Wisconsin", "Wyoming",
-  // US Major Cities (City, ST)
-  "Albuquerque, NM", "Anaheim, CA", "Anchorage, AK", "Arlington, TX", "Atlanta, GA",
-  "Aurora, CO", "Austin, TX", "Bakersfield, CA", "Baltimore, MD", "Baton Rouge, LA",
-  "Bellevue, WA", "Birmingham, AL", "Boise, ID", "Boston, MA", "Bridgeport, CT",
-  "Buffalo, NY", "Charlotte, NC", "Chesapeake, VA", "Chicago, IL", "Chula Vista, CA",
-  "Cincinnati, OH", "Cleveland, OH", "Colorado Springs, CO", "Columbus, OH",
-  "Corpus Christi, TX", "Dallas, TX", "Denver, CO", "Des Moines, IA", "Detroit, MI",
-  "Durham, NC", "El Paso, TX", "Fort Lauderdale, FL", "Fort Wayne, IN",
-  "Fort Worth, TX", "Fremont, CA", "Fresno, CA", "Garland, TX", "Gilbert, AZ",
-  "Glendale, AZ", "Greensboro, NC", "Henderson, NV", "Hialeah, FL", "Hollywood, FL",
-  "Honolulu, HI", "Houston, TX", "Huntsville, AL", "Indianapolis, IN", "Irvine, CA",
-  "Jacksonville, FL", "Jersey City, NJ", "Kansas City, MO", "Knoxville, TN",
-  "Laredo, TX", "Las Vegas, NV", "Lexington, KY", "Lincoln, NE", "Little Rock, AR",
-  "Long Beach, CA", "Los Angeles, CA", "Louisville, KY", "Lubbock, TX",
-  "Madison, WI", "Memphis, TN", "Mesa, AZ", "Miami, FL", "Milwaukee, WI",
-  "Minneapolis, MN", "Modesto, CA", "Montgomery, AL", "Nashville, TN",
-  "New Orleans, LA", "New York City, NY", "Newark, NJ", "Norfolk, VA",
-  "North Las Vegas, NV", "Oakland, CA", "Oklahoma City, OK", "Omaha, NE",
-  "Orlando, FL", "Oxnard, CA", "Pasadena, CA", "Philadelphia, PA", "Phoenix, AZ",
-  "Pittsburgh, PA", "Plano, TX", "Portland, OR", "Providence, RI", "Raleigh, NC",
-  "Reno, NV", "Richmond, VA", "Riverside, CA", "Rochester, NY", "Sacramento, CA",
-  "Salt Lake City, UT", "San Antonio, TX", "San Bernardino, CA", "San Diego, CA",
-  "San Francisco, CA", "San Jose, CA", "Santa Ana, CA", "Santa Clarita, CA",
-  "Scottsdale, AZ", "Seattle, WA", "Shreveport, LA", "Spokane, WA", "St. Louis, MO",
-  "St. Paul, MN", "St. Petersburg, FL", "Stockton, CA", "Syracuse, NY",
-  "Tacoma, WA", "Tampa, FL", "Toledo, OH", "Tucson, AZ", "Tulsa, OK",
-  "Virginia Beach, VA", "Washington, DC", "Wichita, KS", "Winston-Salem, NC",
+  // US Cities
+  "Abilene, TX", "Akron, OH", "Albuquerque, NM", "Alexandria, VA", "Anaheim, CA",
+  "Anchorage, AK", "Ann Arbor, MI", "Antioch, CA", "Arlington, TX", "Arlington, VA",
+  "Arvada, CO", "Atlanta, GA", "Aurora, CO", "Aurora, IL", "Austin, TX",
+  "Bakersfield, CA", "Baltimore, MD", "Baton Rouge, LA", "Beaumont, TX",
+  "Bellevue, WA", "Berkeley, CA", "Beverly Hills, CA", "Birmingham, AL",
+  "Boca Raton, FL", "Boise, ID", "Boston, MA", "Bridgeport, CT", "Bronx, NY",
+  "Brooklyn, NY", "Buffalo, NY", "Burbank, CA", "Cape Coral, FL",
+  "Carrollton, TX", "Cary, NC", "Chandler, AZ", "Charlotte, NC", "Chesapeake, VA",
+  "Chicago, IL", "Chula Vista, CA", "Cincinnati, OH", "Clarksville, TN",
+  "Clearwater, FL", "Cleveland, OH", "Colorado Springs, CO", "Columbia, SC",
+  "Columbus, GA", "Columbus, OH", "Coral Springs, FL", "Corona, CA",
+  "Corpus Christi, TX", "Costa Mesa, CA", "Culver City, CA",
+  "Dallas, TX", "Daly City, CA", "Dayton, OH", "Denver, CO", "Des Moines, IA",
+  "Detroit, MI", "Dover, DE", "Durham, NC",
+  "El Monte, CA", "El Paso, TX", "Elk Grove, CA", "Escondido, CA", "Eugene, OR",
+  "Evansville, IN",
+  "Fargo, ND", "Fontana, CA", "Fort Collins, CO", "Fort Lauderdale, FL",
+  "Fort Wayne, IN", "Fort Worth, TX", "Fremont, CA", "Fresno, CA", "Fullerton, CA",
+  "Garden Grove, CA", "Garland, TX", "Gilbert, AZ", "Glendale, AZ", "Glendale, CA",
+  "Grand Prairie, TX", "Grand Rapids, MI", "Greensboro, NC",
+  "Hampton, VA", "Hartford, CT", "Henderson, NV", "Hialeah, FL",
+  "Hollywood, FL", "Honolulu, HI", "Houston, TX", "Huntington Beach, CA",
+  "Huntsville, AL",
+  "Independence, MO", "Indianapolis, IN", "Inglewood, CA", "Irvine, CA",
+  "Irving, TX",
+  "Jackson, MS", "Jacksonville, FL", "Jersey City, NJ", "Joliet, IL",
+  "Kansas City, KS", "Kansas City, MO", "Knoxville, TN",
+  "Lakewood, CO", "Lancaster, CA", "Laredo, TX", "Las Vegas, NV",
+  "Lexington, KY", "Lincoln, NE", "Little Rock, AR", "Long Beach, CA",
+  "Los Angeles, CA", "Louisville, KY", "Lubbock, TX",
+  "Madison, WI", "Manhattan, NY", "Marina Del Rey, CA", "McKinney, TX",
+  "Memphis, TN", "Mesa, AZ", "Mesquite, TX", "Miami, FL", "Miami Beach, FL",
+  "Milwaukee, WI", "Minneapolis, MN", "Miramar, FL", "Modesto, CA",
+  "Montgomery, AL", "Moreno Valley, CA",
+  "Naples, FL", "Nashville, TN", "New Haven, CT", "New Orleans, LA",
+  "New York City, NY", "Newark, NJ", "Newport Beach, CA", "Norfolk, VA",
+  "North Las Vegas, NV", "Norwalk, CA",
+  "Oakland, CA", "Oceanside, CA", "Oklahoma City, OK", "Omaha, NE",
+  "Ontario, CA", "Orange, CA", "Orlando, FL", "Overland Park, KS", "Oxnard, CA",
+  "Palm Bay, FL", "Palm Beach, FL", "Palmdale, CA", "Pasadena, CA", "Pasadena, TX",
+  "Pembroke Pines, FL", "Peoria, AZ", "Peoria, IL", "Philadelphia, PA",
+  "Phoenix, AZ", "Pittsburgh, PA", "Plano, TX", "Pomona, CA", "Port St. Lucie, FL",
+  "Portland, OR", "Providence, RI",
+  "Queens, NY", "Quonset, RI",
+  "Raleigh, NC", "Rancho Cucamonga, CA", "Reno, NV", "Richmond, VA",
+  "Riverside, CA", "Rochester, MN", "Rochester, NY", "Rockford, IL",
+  "Sacramento, CA", "Salt Lake City, UT", "San Antonio, TX", "San Bernardino, CA",
+  "San Diego, CA", "San Francisco, CA", "San Jose, CA", "Santa Ana, CA",
+  "Santa Barbara, CA", "Santa Clarita, CA", "Santa Monica, CA", "Savannah, GA",
+  "Scottsdale, AZ", "Seattle, WA", "Shreveport, LA", "Sioux Falls, SD",
+  "Spokane, WA", "Springfield, MA", "Springfield, MO", "St. Louis, MO",
+  "St. Paul, MN", "St. Petersburg, FL", "Stamford, CT", "Sterling Heights, MI",
+  "Stockton, CA", "Sunnyvale, CA", "Syracuse, NY",
+  "Tacoma, WA", "Tallahassee, FL", "Tampa, FL", "Tempe, AZ", "Thousand Oaks, CA",
+  "Toledo, OH", "Torrance, CA", "Tucson, AZ", "Tulsa, OK",
+  "Vancouver, WA", "Venice, CA", "Virginia Beach, VA",
+  "Warren, MI", "Washington, DC", "West Hollywood, CA", "West Palm Beach, FL",
+  "Wichita, KS", "Winston-Salem, NC", "Worcester, MA",
   "Yonkers, NY",
   // Canadian Provinces & Territories
   "Alberta", "British Columbia", "Manitoba", "New Brunswick",
@@ -79,23 +112,37 @@ const LOCATIONS = [
   "Windsor, ON", "Winnipeg, MB",
 ].sort()
 
-// ─── Location autocomplete input ─────────────────────────────────────────────
+// ─── Featured locations (shown when search query is empty) ──────────────────
 
-function LocationInput({
+const FEATURED_LOCATIONS = [
+  "New York City, NY", "Los Angeles, CA", "Miami, FL",   "Chicago, IL",
+  "Las Vegas, NV",     "Houston, TX",     "Atlanta, GA", "Dallas, TX",
+  "San Francisco, CA", "Boston, MA",      "Washington, DC", "Orlando, FL",
+]
+
+// ─── Location multi-select (popover pill) ────────────────────────────────────
+
+function LocationMultiSelect({
   value,
   onChange,
 }: {
-  value: string
-  onChange: (v: string) => void
+  value: string[]
+  onChange: (v: string[]) => void
 }) {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
+  const [open, setOpen]       = useState(false)
+  const [inputVal, setInputVal] = useState("")
+  const ref      = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  const suggestions = useMemo(() => {
-    if (!value.trim()) return []
-    const q = value.toLowerCase()
-    return LOCATIONS.filter((l) => l.toLowerCase().includes(q)).slice(0, 8)
-  }, [value])
+  // Auto-focus the search input when the panel opens; clear query on close
+  useEffect(() => {
+    if (open) {
+      const t = setTimeout(() => inputRef.current?.focus(), 60)
+      return () => clearTimeout(t)
+    } else {
+      setInputVal("")
+    }
+  }, [open])
 
   // Close on outside click
   useEffect(() => {
@@ -106,40 +153,207 @@ function LocationInput({
     return () => document.removeEventListener("mousedown", handle)
   }, [])
 
+  const suggestions = useMemo(() => {
+    const q = inputVal.toLowerCase().trim()
+    if (!q) return FEATURED_LOCATIONS.filter((l) => !value.includes(l))
+    return LOCATIONS
+      .filter((l) => !value.includes(l) && l.toLowerCase().includes(q))
+      .sort((a, b) => {
+        const aS = a.toLowerCase().startsWith(q)
+        const bS = b.toLowerCase().startsWith(q)
+        if (aS && !bS) return -1
+        if (!aS && bS) return  1
+        return a.localeCompare(b)
+      })
+      .slice(0, 8)
+  }, [inputVal, value])
+
+  function addLocation(loc: string) {
+    if (!value.includes(loc)) onChange([...value, loc])
+    setInputVal("")
+    inputRef.current?.focus()
+  }
+
+  function removeLocation(loc: string) {
+    onChange(value.filter((v) => v !== loc))
+  }
+
+  // Trigger label
+  const triggerLabel =
+    value.length === 0 ? "Location"
+    : value.length === 1 ? value[0]
+    : `${value.length} cities`
+
   return (
     <div ref={ref} className="relative">
-      <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none z-10" />
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => { onChange(e.target.value); setOpen(true) }}
-        onFocus={() => value && setOpen(true)}
-        placeholder="State or province…"
-        className="pl-8 pr-7 h-8 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-1 focus:ring-blue-200 focus:border-blue-300 placeholder:text-gray-400 w-44"
-      />
-      {value && (
-        <button
-          onClick={() => { onChange(""); setOpen(false) }}
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500"
-        >
-          <X className="w-3 h-3" />
-        </button>
-      )}
-      {open && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 mt-1 w-52 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
-          {suggestions.map((s) => (
-            <button
-              key={s}
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => { onChange(s); setOpen(false) }}
-              className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2"
-            >
-              <MapPin className="w-3 h-3 text-gray-300 flex-shrink-0" />
-              {s}
-            </button>
-          ))}
-        </div>
-      )}
+
+      {/* ── Trigger pill — identical shape to VehicleTypeFilter / PassengerFilter ── */}
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className={cn(
+          "flex items-center gap-2 h-10 px-3.5 rounded-xl border text-sm font-medium transition-all whitespace-nowrap",
+          value.length > 0
+            ? "bg-blue-600 border-blue-600 text-white shadow-sm"
+            : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-white"
+        )}
+      >
+        <MapPin className="w-4 h-4 flex-shrink-0" />
+        <span className="max-w-[140px] truncate">{triggerLabel}</span>
+        <ChevronDown className={cn(
+          "w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200",
+          open && "rotate-180"
+        )} />
+      </button>
+
+      {/* ── Dropdown panel ── */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -6, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0,  scale: 1    }}
+            exit={{    opacity: 0, y: -6, scale: 0.97 }}
+            transition={{ duration: 0.14, ease: [0.16, 1, 0.3, 1] }}
+            className="absolute top-full left-0 mt-1.5 w-72 bg-white border border-gray-200 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.10),0_2px_8px_rgba(0,0,0,0.06)] z-50 overflow-hidden"
+          >
+
+            {/* Search zone */}
+            <div className="p-2.5 pb-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={inputVal}
+                  onChange={(e) => setInputVal(e.target.value)}
+                  placeholder="Search cities & states…"
+                  className="w-full pl-8.5 pr-8 h-9 text-sm rounded-xl border border-gray-200 bg-gray-50/80 focus:bg-white focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-50 placeholder:text-gray-400 transition-all"
+                />
+                {inputVal && (
+                  <button
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => { setInputVal(""); inputRef.current?.focus() }}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
+                  >
+                    <X className="w-2.5 h-2.5 text-gray-600" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Suggestions list */}
+            <div className="overflow-y-auto" style={{ maxHeight: "204px" }}>
+              {/* Section label */}
+              <p className="px-3.5 pt-1 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-[0.08em]">
+                {inputVal.trim() ? "Results" : "Popular markets"}
+              </p>
+
+              {suggestions.length === 0 && inputVal.trim() ? (
+                <div className="py-5 px-4 text-center">
+                  <p className="text-[13px] text-gray-400">
+                    No results for{" "}
+                    <span className="font-medium text-gray-600">"{inputVal}"</span>
+                  </p>
+                </div>
+              ) : (
+                <div className="pb-1.5">
+                  {suggestions.map((s) => {
+                    const [city, state] = s.includes(",")
+                      ? s.split(",").map((p) => p.trim())
+                      : [s, null]
+                    return (
+                      <button
+                        key={s}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => addLocation(s)}
+                        className="w-full text-left px-3 py-1.5 hover:bg-blue-50/70 flex items-center gap-2.5 group/row transition-colors"
+                      >
+                        {/* Icon tile */}
+                        <div className="w-[26px] h-[26px] rounded-lg bg-gray-100 group-hover/row:bg-blue-100 flex items-center justify-center flex-shrink-0 transition-colors">
+                          <MapPin className="w-3 h-3 text-gray-400 group-hover/row:text-blue-500 transition-colors" />
+                        </div>
+                        {/* Label */}
+                        <span className="flex-1 truncate text-sm">
+                          <span className="font-medium text-gray-800">{city}</span>
+                          {state
+                            ? <span className="text-gray-400">, {state}</span>
+                            : <span className="text-[12px] text-gray-400"> — State</span>
+                          }
+                        </span>
+                        {/* "Add" affordance */}
+                        <span className="text-[10px] font-semibold text-blue-400 opacity-0 group-hover/row:opacity-100 transition-opacity mr-0.5 tracking-wide">
+                          ADD
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* ── Selected tray (shown only when cities are chosen) ── */}
+            <AnimatePresence>
+              {value.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{    opacity: 0, height: 0 }}
+                  transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                  className="overflow-hidden"
+                >
+                  {/* Hairline divider */}
+                  <div className="mx-3 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+
+                  <div className="p-3">
+                    {/* Tray header */}
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-[0.08em]">
+                        Selected
+                        <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-600 text-white text-[9px] font-bold">
+                          {value.length}
+                        </span>
+                      </p>
+                      <button
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => { onChange([]); setInputVal(""); inputRef.current?.focus() }}
+                        className="text-[11px] text-gray-400 hover:text-red-500 font-medium transition-colors"
+                      >
+                        Clear all
+                      </button>
+                    </div>
+
+                    {/* Chips */}
+                    <div className="flex flex-wrap gap-1.5">
+                      <AnimatePresence mode="popLayout">
+                        {value.map((loc) => (
+                          <motion.span
+                            key={loc}
+                            layout
+                            initial={{ opacity: 0, scale: 0.75 }}
+                            animate={{ opacity: 1, scale: 1    }}
+                            exit={{    opacity: 0, scale: 0.75 }}
+                            transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                            className="inline-flex items-center gap-1 bg-blue-50 border border-blue-100/80 text-blue-700 text-[11px] font-medium pl-2.5 pr-1 py-[3px] rounded-full group/chip"
+                          >
+                            <span className="max-w-[130px] truncate leading-none">{loc}</span>
+                            <button
+                              onMouseDown={(e) => e.preventDefault()}
+                              onClick={() => removeLocation(loc)}
+                              className="w-[14px] h-[14px] rounded-full bg-blue-100 hover:bg-red-100 flex items-center justify-center transition-colors flex-shrink-0 group/remove"
+                            >
+                              <X className="w-[9px] h-[9px] text-blue-400 group-hover/remove:text-red-500 transition-colors" />
+                            </button>
+                          </motion.span>
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -155,9 +369,110 @@ const VEHICLE_FILTERS = [
   { label: "Motor Coach",   value: "COACH" },
 ]
 
-// ─── Vehicle type dropdown ────────────────────────────────────────────────────
+// ─── Passenger capacity filter ───────────────────────────────────────────────
 
-function VehicleDropdown({
+const PASSENGER_QUICK_PICKS = [4, 7, 14, 25, 55]
+
+function PassengerFilter({
+  value,
+  onChange,
+}: {
+  value: number
+  onChange: (v: number) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const [draft, setDraft] = useState(value)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => { setDraft(value) }, [value])
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener("mousedown", handle)
+    return () => document.removeEventListener("mousedown", handle)
+  }, [])
+
+  function apply(v: number) {
+    onChange(v)
+    setOpen(false)
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className={cn(
+          "flex items-center gap-2 h-10 px-3.5 rounded-xl border text-sm font-medium transition-all whitespace-nowrap",
+          value > 0
+            ? "bg-blue-600 border-blue-600 text-white shadow-sm"
+            : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-white"
+        )}
+      >
+        <Users className="w-4 h-4" />
+        <span>{value > 0 ? `${value}+ pax` : "Passengers"}</span>
+        <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", open && "rotate-180")} />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            transition={{ duration: 0.12 }}
+            className="absolute top-full left-0 mt-1.5 w-64 bg-white border border-gray-200 rounded-2xl shadow-xl z-50 p-4"
+          >
+            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">Min. passenger capacity</p>
+            <div className="flex items-center gap-3 mb-4">
+              <button
+                type="button"
+                onClick={() => setDraft((d) => Math.max(0, d - 1))}
+                className="w-9 h-9 rounded-xl border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all text-lg font-medium"
+              >−</button>
+              <div className="flex-1 text-center">
+                {draft === 0
+                  ? <span className="text-sm text-gray-400 font-medium">Any</span>
+                  : <span className="text-xl font-bold text-gray-900">{draft}<span className="text-sm text-gray-400 font-normal ml-0.5">+</span></span>
+                }
+              </div>
+              <button
+                type="button"
+                onClick={() => setDraft((d) => d + 1)}
+                className="w-9 h-9 rounded-xl border border-gray-200 flex items-center justify-center text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all text-lg font-medium"
+              >+</button>
+            </div>
+            <p className="text-[11px] text-gray-400 mb-2">Quick select</p>
+            <div className="flex flex-wrap gap-1.5 mb-4">
+              <button
+                type="button"
+                onClick={() => setDraft(0)}
+                className={cn("px-2.5 py-1 rounded-lg text-xs font-medium transition-all", draft === 0 ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200")}
+              >Any</button>
+              {PASSENGER_QUICK_PICKS.map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setDraft(n)}
+                  className={cn("px-2.5 py-1 rounded-lg text-xs font-medium transition-all", draft === n ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200")}
+                >{n}+</button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => apply(draft)}
+              className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-colors"
+            >Apply</button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+// ─── Vehicle type filter ──────────────────────────────────────────────────────
+
+function VehicleTypeFilter({
   selected,
   onToggle,
   onClear,
@@ -187,50 +502,65 @@ function VehicleDropdown({
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className={`flex items-center gap-2 px-3 h-8 rounded-lg border text-sm transition-all ${
+        className={cn(
+          "flex items-center gap-2 h-10 px-3.5 rounded-xl border text-sm font-medium transition-all whitespace-nowrap",
           selected.length > 0
-            ? "bg-blue-600 border-blue-600 text-white"
-            : "bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700"
-        }`}
+            ? "bg-blue-600 border-blue-600 text-white shadow-sm"
+            : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-white"
+        )}
       >
-        <Car className="w-3.5 h-3.5" />
-        <span className="text-xs font-medium">{label}</span>
-        <ChevronDown className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`} />
+        <Car className="w-4 h-4" />
+        <span>{label}</span>
+        <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", open && "rotate-180")} />
       </button>
-
-      {open && (
-        <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden py-1">
-          {VEHICLE_FILTERS.map((vf) => {
-            const checked = selected.includes(vf.value)
-            return (
-              <button
-                key={vf.value}
-                onClick={() => onToggle(vf.value)}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-              >
-                <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-all ${
-                  checked ? "bg-blue-600 border-blue-600" : "border-gray-300"
-                }`}>
-                  {checked && <Check className="w-2.5 h-2.5 text-white" />}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            transition={{ duration: 0.12 }}
+            className="absolute top-full right-0 mt-1.5 w-52 bg-white border border-gray-200 rounded-2xl shadow-xl z-50 overflow-hidden"
+          >
+            <div className="p-2">
+              {VEHICLE_FILTERS.map((vf) => {
+                const checked = selected.includes(vf.value)
+                return (
+                  <button
+                    key={vf.value}
+                    onClick={() => onToggle(vf.value)}
+                    className={cn(
+                      "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all",
+                      checked ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-50"
+                    )}
+                  >
+                    <div className={cn(
+                      "w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-all",
+                      checked ? "bg-blue-600 border-blue-600" : "border-gray-300"
+                    )}>
+                      {checked && <Check className="w-2.5 h-2.5 text-white" />}
+                    </div>
+                    <span className="font-medium">{vf.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+            {selected.length > 0 && (
+              <>
+                <div className="border-t border-gray-100" />
+                <div className="p-2">
+                  <button
+                    onClick={() => { onClear(); setOpen(false) }}
+                    className="w-full text-center py-2 text-xs text-gray-400 hover:text-gray-600 font-medium transition-colors"
+                  >
+                    Clear selection
+                  </button>
                 </div>
-                {vf.label}
-              </button>
-            )
-          })}
-          {selected.length > 0 && (
-            <>
-              <div className="border-t border-gray-100 my-1" />
-              <button
-                onClick={() => { onClear(); setOpen(false) }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-              >
-                <X className="w-3 h-3" />
-                Clear selection
-              </button>
-            </>
-          )}
-        </div>
-      )}
+              </>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -612,16 +942,44 @@ function TabBar({
 
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
-export default function AffiliatesPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("browse")
+function AffiliatesContent() {
+  const router       = useRouter()
+  const searchParams = useSearchParams()
+
+  const VALID_TABS: Tab[] = ["browse", "requests", "connected"]
+  const tabFromUrl = searchParams.get("tab") as Tab | null
+  const activeTab  = VALID_TABS.includes(tabFromUrl as Tab) ? (tabFromUrl as Tab) : "browse"
+
+  const setActiveTab = useCallback((tab: Tab) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (tab === "browse") {
+      params.delete("tab")
+    } else {
+      params.set("tab", tab)
+    }
+    const qs = params.toString()
+    router.replace(`/affiliates${qs ? `?${qs}` : ""}`, { scroll: false })
+  }, [router, searchParams])
+
+  // ── Browse filters (server-side) ──────────────────────────────────────────
   const [search, setSearch] = useState("")
-  const [locationFilter, setLocationFilter] = useState("")
+  const [locationFilter, setLocationFilter] = useState<string[]>([])
   const [vehicleTypeFilter, setVehicleTypeFilter] = useState<string[]>([])
+  const [minCapacity, setMinCapacity] = useState(0)
+  const debouncedSearch = useDebounce(search, 350)
+  const hasActiveFilters = locationFilter.length > 0 || vehicleTypeFilter.length > 0 || minCapacity > 0
 
-  const debouncedSearch   = useDebounce(search, 350)
-  const debouncedLocation = useDebounce(locationFilter, 350)
-
-  const hasActiveFilters = !!locationFilter || vehicleTypeFilter.length > 0
+  // ── Connected filters (server-side via separate query) ───────────────────
+  const [connectedSearch, setConnectedSearch] = useState("")
+  const [connectedLocationFilter, setConnectedLocationFilter] = useState<string[]>([])
+  const [connectedVehicleTypeFilter, setConnectedVehicleTypeFilter] = useState<string[]>([])
+  const [connectedMinCapacity, setConnectedMinCapacity] = useState(0)
+  const debouncedConnectedSearch = useDebounce(connectedSearch, 350)
+  const hasActiveConnectedFilters =
+    !!debouncedConnectedSearch ||
+    connectedLocationFilter.length > 0 ||
+    connectedVehicleTypeFilter.length > 0 ||
+    connectedMinCapacity > 0
 
   function toggleVehicleType(value: string) {
     setVehicleTypeFilter((prev) =>
@@ -629,45 +987,70 @@ export default function AffiliatesPage() {
     )
   }
 
-  function clearFilters() {
-    setLocationFilter("")
-    setVehicleTypeFilter([])
+  function toggleConnectedVehicleType(value: string) {
+    setConnectedVehicleTypeFilter((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+    )
   }
 
-  const { data: affiliates = [], isLoading: affiliatesLoading } = useAffiliates({
+  function clearFilters() {
+    setLocationFilter([])
+    setVehicleTypeFilter([])
+    setMinCapacity(0)
+  }
+
+  function clearConnectedFilters() {
+    setConnectedSearch("")
+    setConnectedLocationFilter([])
+    setConnectedVehicleTypeFilter([])
+    setConnectedMinCapacity(0)
+  }
+
+  // Two separate queries — each only active on its own tab
+  const { data: browseData = [], isLoading: affiliatesLoading } = useAffiliates({
     search: debouncedSearch,
-    location: debouncedLocation,
+    locations: locationFilter,
     vehicleTypes: vehicleTypeFilter,
+    minCapacity,
+    enabled: activeTab === "browse",
   })
+  const { data: connectedData = [], isLoading: connectedAffiliatesLoading } = useAffiliates({
+    search: debouncedConnectedSearch,
+    locations: connectedLocationFilter,
+    vehicleTypes: connectedVehicleTypeFilter,
+    minCapacity: connectedMinCapacity,
+    enabled: activeTab === "connected",
+  })
+
   const { data: incoming = [], isLoading: incomingLoading } = useAffiliateConnections("pending")
   const { data: sent = [], isLoading: sentLoading } = useAffiliateConnections("sent")
-  const { data: connected = [], isLoading: connectedLoading } = useAffiliateConnections("connected")
+  const { data: connected = [] } = useAffiliateConnections("connected")
   const { favoriteIds } = useAffiliateFavorites()
 
-  const pendingCount = incoming.length
+  const pendingCount   = incoming.length
   const connectedCount = connected.length
 
   const browseList = useMemo(() => {
-    return affiliates.filter((a) => a.connectionStatus !== "CONNECTED")
-  }, [affiliates])
+    return browseData.filter((a) => a.connectionStatus !== "CONNECTED")
+  }, [browseData])
 
-  const connectedList = useMemo(() => {
-    return affiliates.filter((a) => a.connectionStatus === "CONNECTED")
-  }, [affiliates])
+  const filteredConnectedList = useMemo(() => {
+    return connectedData.filter((a) => a.connectionStatus === "CONNECTED")
+  }, [connectedData])
 
   const pinnedList = useMemo(() => {
-    return connectedList.filter((a) => favoriteIds.has(a.id))
-  }, [connectedList, favoriteIds])
+    return filteredConnectedList.filter((a) => favoriteIds.has(a.id))
+  }, [filteredConnectedList, favoriteIds])
 
   const unpinnedList = useMemo(() => {
-    return connectedList.filter((a) => !favoriteIds.has(a.id))
-  }, [connectedList, favoriteIds])
+    return filteredConnectedList.filter((a) => !favoriteIds.has(a.id))
+  }, [filteredConnectedList, favoriteIds])
 
   return (
     <div className="max-w-5xl mx-auto space-y-5">
 
       {/* ── Premium header card ───────────────────────────────────── */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.03)]">
 
         {/* Title row + inline metric strip */}
         <div className="flex items-center justify-between gap-4 px-6 pt-5 pb-5">
@@ -696,7 +1079,7 @@ export default function AffiliatesPage() {
           {/* Right: metric strip */}
           <div className="flex items-stretch divide-x divide-gray-100 rounded-xl border border-gray-100 bg-gray-50/50 overflow-hidden shrink-0">
             {([
-              { label: "On Network", value: affiliates.length, dot: "bg-blue-500",    tab: "browse"    as Tab },
+              { label: "On Network", value: browseData.length,  dot: "bg-blue-500",    tab: "browse"    as Tab },
               { label: "Connected",  value: connectedCount,    dot: "bg-emerald-500", tab: "connected" as Tab },
               { label: "Pending",    value: pendingCount,      dot: "bg-amber-400",   tab: "requests"  as Tab },
             ] as const).map((stat) => (
@@ -730,76 +1113,136 @@ export default function AffiliatesPage() {
         {/* Gradient divider */}
         <div className="h-px bg-gradient-to-r from-transparent via-gray-100 to-transparent mx-6" />
 
-        {/* Toolbar: tabs (left) + controls (right) */}
-        <div className="flex items-center justify-between gap-4 px-6">
+        {/* Toolbar: tabs only */}
+        <div className="px-6">
           <TabBar
             active={activeTab}
             onChange={setActiveTab}
             pendingCount={pendingCount}
             connectedCount={connectedCount}
           />
-
-          {/* Browse controls */}
-          <AnimatePresence>
-            {activeTab === "browse" && (
-              <motion.div
-                key="browse-controls"
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 4 }}
-                transition={{ duration: 0.15 }}
-                className="flex items-center gap-2 py-2"
-              >
-                {/* Search */}
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-300 pointer-events-none" />
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search companies…"
-                    className="pl-8 pr-7 h-8 w-52 text-[13px] bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-50 placeholder:text-gray-300 transition-all duration-150"
-                  />
-                  {search && (
-                    <button
-                      onClick={() => setSearch("")}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 transition-colors"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  )}
-                </div>
-
-                {/* Thin divider */}
-                <div className="w-px h-5 bg-gray-200" />
-
-                {/* Location */}
-                <LocationInput value={locationFilter} onChange={setLocationFilter} />
-
-                {/* Vehicle type */}
-                <VehicleDropdown
-                  selected={vehicleTypeFilter}
-                  onToggle={toggleVehicleType}
-                  onClear={() => setVehicleTypeFilter([])}
-                />
-
-                {/* Clear filters */}
-                {hasActiveFilters && (
-                  <button
-                    onClick={clearFilters}
-                    className="flex items-center gap-1 h-8 px-2.5 text-[12px] text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-200 transition-all"
-                  >
-                    <X className="w-3 h-3" />
-                    Clear
-                  </button>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </div>
 
+      {/* ── Browse filter panel ───────────────────────────────────── */}
+      {activeTab === "browse" && (
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.03)] p-4 space-y-3">
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by company name…"
+              className="w-full pl-10 pr-10 h-11 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-50 placeholder:text-gray-400 transition-all"
+            />
+            {affiliatesLoading && (
+              <div className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+            )}
+            {!affiliatesLoading && search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
+              >
+                <X className="w-3 h-3 text-gray-600" />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <LocationMultiSelect value={locationFilter} onChange={setLocationFilter} />
+            <PassengerFilter value={minCapacity} onChange={setMinCapacity} />
+            <VehicleTypeFilter
+              selected={vehicleTypeFilter}
+              onToggle={toggleVehicleType}
+              onClear={() => setVehicleTypeFilter([])}
+            />
+            <div className="flex-1" />
+            {!affiliatesLoading && (
+              <span className="text-xs text-gray-400 whitespace-nowrap">
+                {browseList.length} {browseList.length === 1 ? "affiliate" : "affiliates"}
+              </span>
+            )}
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 font-medium transition-colors"
+              >
+                <X className="w-3 h-3" />
+                Clear all
+              </button>
+            )}
+          </div>
+          {(minCapacity > 0 || vehicleTypeFilter.length > 0) && (
+            <div className="flex items-center gap-2 flex-wrap pt-0.5">
+              {minCapacity > 0 && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 border border-blue-100 rounded-full text-xs text-blue-700 font-medium">
+                  <Users className="w-3 h-3" />
+                  {minCapacity}+ passengers
+                  <button onClick={() => setMinCapacity(0)} className="ml-0.5 hover:text-blue-900 transition-colors"><X className="w-3 h-3" /></button>
+                </span>
+              )}
+              {vehicleTypeFilter.map((vt) => (
+                <span key={vt} className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 border border-blue-100 rounded-full text-xs text-blue-700 font-medium">
+                  <Car className="w-3 h-3" />
+                  {VEHICLE_FILTERS.find((f) => f.value === vt)?.label ?? vt}
+                  <button onClick={() => toggleVehicleType(vt)} className="ml-0.5 hover:text-blue-900 transition-colors"><X className="w-3 h-3" /></button>
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Connected filter panel ────────────────────────────────── */}
+      {activeTab === "connected" && connectedCount > 0 && (
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.03)] p-4 space-y-3">
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <input
+              type="text"
+              value={connectedSearch}
+              onChange={(e) => setConnectedSearch(e.target.value)}
+              placeholder="Search connected affiliates…"
+              className="w-full pl-10 pr-10 h-11 text-sm rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-50 placeholder:text-gray-400 transition-all"
+            />
+            {connectedSearch && (
+              <button
+                onClick={() => setConnectedSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
+              >
+                <X className="w-3 h-3 text-gray-600" />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <LocationMultiSelect value={connectedLocationFilter} onChange={setConnectedLocationFilter} />
+            <PassengerFilter value={connectedMinCapacity} onChange={setConnectedMinCapacity} />
+            <VehicleTypeFilter
+              selected={connectedVehicleTypeFilter}
+              onToggle={toggleConnectedVehicleType}
+              onClear={() => setConnectedVehicleTypeFilter([])}
+            />
+            <div className="flex-1" />
+            {!connectedAffiliatesLoading && (
+              <span className="text-xs text-gray-400 whitespace-nowrap">
+                {filteredConnectedList.length} {filteredConnectedList.length === 1 ? "connection" : "connections"}
+              </span>
+            )}
+            {hasActiveConnectedFilters && (
+              <button
+                onClick={clearConnectedFilters}
+                className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 font-medium transition-colors"
+              >
+                <X className="w-3 h-3" />
+                Clear all
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* ── Tab content ──────────────────────────────────────────── */}
+      <div>
 
         {/* ── Browse ── */}
         {activeTab === "browse" && (
@@ -893,17 +1336,23 @@ export default function AffiliatesPage() {
         {/* ── Connected ── */}
         {activeTab === "connected" && (
           <>
-            {connectedLoading ? (
+            {connectedAffiliatesLoading ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="bg-white rounded-2xl border border-gray-100 h-36 animate-pulse" />
                 ))}
               </div>
-            ) : connectedList.length === 0 ? (
+            ) : connectedCount === 0 ? (
               <EmptyState
                 icon={Handshake}
                 title="No connections yet"
                 description="Browse the network and send connection requests to other limousine companies."
+              />
+            ) : filteredConnectedList.length === 0 ? (
+              <EmptyState
+                icon={Search}
+                title="No results"
+                description="No connected affiliates match your search. Try different terms or clear the filters."
               />
             ) : (
               <div className="space-y-6">
@@ -931,7 +1380,7 @@ export default function AffiliatesPage() {
                     </h2>
                   )}
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {connectedList.map((affiliate) => (
+                    {unpinnedList.map((affiliate) => (
                       <AffiliateCard key={affiliate.id} affiliate={affiliate} showFavorite />
                     ))}
                   </div>
@@ -941,6 +1390,15 @@ export default function AffiliatesPage() {
           </>
         )}
 
+      </div>
     </div>
+  )
+}
+
+export default function AffiliatesPage() {
+  return (
+    <Suspense>
+      <AffiliatesContent />
+    </Suspense>
   )
 }

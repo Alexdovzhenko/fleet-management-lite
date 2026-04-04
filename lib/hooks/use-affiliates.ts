@@ -5,25 +5,29 @@ import type { AffiliateProfile, AffiliateConnection } from "@/types"
 
 export interface AffiliateFilters {
   search?: string
-  location?: string
+  locations?: string[]
   vehicleTypes?: string[]
+  minCapacity?: number
+  enabled?: boolean
 }
 
 export function useAffiliates(filters: AffiliateFilters = {}) {
-  const { search = "", location = "", vehicleTypes = [] } = filters
+  const { search = "", locations = [], vehicleTypes = [], minCapacity = 0, enabled = true } = filters
   return useQuery<AffiliateProfile[]>({
-    queryKey: ["affiliates", search, location, vehicleTypes.join(",")],
+    queryKey: ["affiliates", search, locations.join("|"), vehicleTypes.join(","), minCapacity],
     queryFn: async () => {
       const sp = new URLSearchParams()
       if (search)               sp.set("search",       search)
-      if (location)             sp.set("location",     location)
+      locations.forEach((l) =>  sp.append("locations", l))
       if (vehicleTypes.length)  sp.set("vehicleTypes", vehicleTypes.join(","))
+      if (minCapacity > 0)      sp.set("minCapacity",  String(minCapacity))
       const qs = sp.toString()
       const res = await fetch(`/api/affiliates${qs ? `?${qs}` : ""}`)
       if (!res.ok) throw new Error("Failed to fetch affiliates")
       return res.json()
     },
     staleTime: 30_000,
+    enabled,
   })
 }
 

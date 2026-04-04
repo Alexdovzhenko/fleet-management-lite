@@ -8,10 +8,10 @@ import {
   Building2, Phone, Mail, MapPin, Globe, Camera, Settings2, Check,
   ZoomIn, ZoomOut, Plus, Trash2, X, LogOut, Users, Search, Pencil,
   BookMarked, LayoutGrid, Eye, EyeOff, User, Star, Shield, Zap,
-  Crown, Briefcase, Package, UserPlus, Copy, Clock, Calendar, Hash,
+  Crown, Briefcase, Package, UserPlus, Copy, Clock,
   Car, Bus, Plane, Train, Ship, Anchor,
   Route, Layers, MapPin as NavPin, Navigation, RefreshCw, ExternalLink,
-  ChevronLeft, ChevronRight,
+  ChevronRight,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,6 +20,10 @@ import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useAuth } from "@/components/providers/auth-provider"
 import { useCompany, useUpdateCompany } from "@/lib/hooks/use-company"
+import {
+  useSenderEmails, useCreateSenderEmail, useUpdateSenderEmail, useDeleteSenderEmail,
+} from "@/lib/hooks/use-sender-emails"
+import type { SenderEmail } from "@/types"
 import { useVehicles, useUpdateVehicle } from "@/lib/hooks/use-vehicles"
 import {
   useServiceTypes, useToggleServiceType, useCreateServiceType, useDeleteServiceType,
@@ -1306,51 +1310,245 @@ function GridColumnsSection() {
 
 // ─── Section: Personal ────────────────────────────────────────────────────────
 
+const ROLE_OPTIONS = [
+  { value: "OWNER",      label: "Admin",      description: "Full access to all settings" },
+  { value: "DISPATCHER", label: "Dispatcher", description: "Manage trips and drivers" },
+] as const
+
+type EditableRole = "OWNER" | "DISPATCHER"
+
+function RoleSelect({
+  value,
+  onChange,
+}: {
+  value: EditableRole
+  onChange: (v: EditableRole) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [])
+
+  const current = ROLE_OPTIONS.find(r => r.value === value) ?? ROLE_OPTIONS[0]
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className={cn(
+          "w-full h-10 px-3 flex items-center justify-between gap-2 rounded-lg border text-sm transition-all",
+          open
+            ? "border-blue-400 ring-2 ring-blue-500/15 bg-white"
+            : "border-gray-200 bg-white hover:border-gray-300"
+        )}
+      >
+        <div className="flex items-center gap-2">
+          <div className={cn(
+            "w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0",
+            current.value === "OWNER" ? "bg-indigo-50" : "bg-sky-50"
+          )}>
+            {current.value === "OWNER"
+              ? <Shield className="w-3 h-3 text-indigo-600" />
+              : <Zap className="w-3 h-3 text-sky-600" />
+            }
+          </div>
+          <span className="font-medium text-gray-800">{current.label}</span>
+        </div>
+        <ChevronRight className={cn("w-3.5 h-3.5 text-gray-400 transition-transform", open && "rotate-90")} />
+      </button>
+
+      {open && (
+        <div className="absolute top-full mt-1.5 left-0 right-0 z-50 bg-white border border-gray-200 rounded-xl shadow-lg shadow-gray-900/8 overflow-hidden">
+          {ROLE_OPTIONS.map(opt => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => { onChange(opt.value); setOpen(false) }}
+              className={cn(
+                "w-full px-3 py-2.5 flex items-center gap-3 text-left transition-colors hover:bg-gray-50",
+                opt.value === value && "bg-blue-50/60"
+              )}
+            >
+              <div className={cn(
+                "w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0",
+                opt.value === "OWNER" ? "bg-indigo-50" : "bg-sky-50"
+              )}>
+                {opt.value === "OWNER"
+                  ? <Shield className="w-3.5 h-3.5 text-indigo-600" />
+                  : <Zap className="w-3.5 h-3.5 text-sky-600" />
+                }
+              </div>
+              <div className="min-w-0">
+                <div className="text-sm font-medium text-gray-800">{opt.label}</div>
+                <div className="text-xs text-gray-400 mt-0.5">{opt.description}</div>
+              </div>
+              {opt.value === value && <Check className="w-3.5 h-3.5 text-blue-600 ml-auto flex-shrink-0" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function PersonalSection() {
-  const [profile, setProfile] = useState({ name: "", email: "" })
+  const [profile, setProfile] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    role: "DISPATCHER" as EditableRole,
+  })
   const [profileSaved, setProfileSaved] = useState(false)
   const [profileSaving, setProfileSaving] = useState(false)
 
   useEffect(() => {
     fetch("/api/auth/me").then(r => r.ok ? r.json() : null).then(data => {
-      if (data?.user) setProfile({ name: data.user.name ?? "", email: data.user.email ?? "" })
+      if (data?.user) {
+        const parts = (data.user.name ?? "").trim().split(/\s+/)
+        const firstName = parts[0] ?? ""
+        const lastName  = parts.slice(1).join(" ")
+        const role: EditableRole = data.user.role === "OWNER" ? "OWNER" : "DISPATCHER"
+        setProfile({
+          firstName,
+          lastName,
+          email: data.user.email ?? "",
+          phone: data.user.phone ?? "",
+          role,
+        })
+      }
     }).catch(() => {})
   }, [])
 
+  function markDirty() { setProfileSaved(false) }
+
   async function handleProfileSave() {
-    if (!profile.name.trim()) return
+    const fullName = [profile.firstName.trim(), profile.lastName.trim()].filter(Boolean).join(" ")
+    if (!fullName) return
     setProfileSaving(true)
     try {
-      const res = await fetch("/api/auth/me", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: profile.name.trim() }) })
+      const res = await fetch("/api/auth/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: fullName, phone: profile.phone.trim() || undefined, role: profile.role }),
+      })
       if (res.ok) { setProfileSaved(true); setTimeout(() => setProfileSaved(false), 3000) }
     } finally { setProfileSaving(false) }
   }
 
+  const initials = [profile.firstName[0], profile.lastName[0]].filter(Boolean).join("").toUpperCase() || "?"
+
   return (
-    <div className="p-8 space-y-6 max-w-2xl mx-auto">
+    <div className="p-8 space-y-5 max-w-2xl mx-auto">
       <SectionHeader title="Personal Details" description="Manage your own account name and credentials." />
-      <div className="rounded-2xl border border-gray-200/80 bg-white shadow-sm overflow-hidden">
-        <div className="flex items-center gap-2.5 px-6 py-4 border-b border-gray-100">
-          <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center"><User className="w-3.5 h-3.5 text-indigo-600" /></div>
-          <span className="text-sm font-semibold text-gray-800">Your Account</span>
-        </div>
-        <div className="p-6 grid grid-cols-2 gap-4">
-          <div>
-            <Label className="text-xs font-medium text-gray-400 mb-1.5 block">Full Name</Label>
-            <Input value={profile.name} onChange={(e) => { setProfile(p => ({ ...p, name: e.target.value })); setProfileSaved(false) }} className="h-10 text-sm" placeholder="Your full name" />
+
+      {/* Avatar + identity strip */}
+      <div className="rounded-2xl border border-gray-200/80 bg-white shadow-sm">
+        <div className="flex items-center gap-4 px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-50/60 to-white rounded-t-2xl">
+          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-sm flex-shrink-0">
+            <span className="text-sm font-bold text-white tracking-wide">{initials}</span>
           </div>
-          <div>
-            <Label className="text-xs font-medium text-gray-400 mb-1.5 block">Email</Label>
-            <Input value={profile.email} readOnly className="h-10 text-sm bg-gray-50 text-gray-500 cursor-default" />
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-gray-900 leading-tight">
+              {[profile.firstName, profile.lastName].filter(Boolean).join(" ") || "Your Account"}
+            </div>
+            <div className="text-xs text-gray-400 mt-0.5 truncate">{profile.email}</div>
+          </div>
+          <div className={cn(
+            "ml-auto flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold",
+            profile.role === "OWNER" ? "bg-indigo-50 text-indigo-700" : "bg-sky-50 text-sky-700"
+          )}>
+            {profile.role === "OWNER" ? "Admin" : "Dispatcher"}
+          </div>
+        </div>
+
+        {/* Fields */}
+        <div className="p-6 space-y-4">
+          {/* Row 1: First + Last */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-gray-400 block">First Name</Label>
+              <Input
+                value={profile.firstName}
+                onChange={e => { setProfile(p => ({ ...p, firstName: e.target.value })); markDirty() }}
+                placeholder="Alex"
+                className="h-10 text-sm transition-shadow focus:ring-2 focus:ring-blue-500/15 focus:border-blue-400"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-gray-400 block">Last Name</Label>
+              <Input
+                value={profile.lastName}
+                onChange={e => { setProfile(p => ({ ...p, lastName: e.target.value })); markDirty() }}
+                placeholder="Johnson"
+                className="h-10 text-sm transition-shadow focus:ring-2 focus:ring-blue-500/15 focus:border-blue-400"
+              />
+            </div>
+          </div>
+
+          {/* Row 2: Phone + Role */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-gray-400 block">Phone Number</Label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+                <Input
+                  type="tel"
+                  value={profile.phone}
+                  onChange={e => { setProfile(p => ({ ...p, phone: e.target.value })); markDirty() }}
+                  placeholder="(305) 000-0000"
+                  className="h-10 text-sm pl-9 transition-shadow focus:ring-2 focus:ring-blue-500/15 focus:border-blue-400"
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-gray-400 block">Role</Label>
+              <RoleSelect value={profile.role} onChange={v => { setProfile(p => ({ ...p, role: v })); markDirty() }} />
+            </div>
+          </div>
+
+          {/* Row 3: Email (read-only) */}
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-1.5">
+              <Label className="text-xs font-medium text-gray-400 block">Email Address</Label>
+              <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full leading-none">read-only</span>
+            </div>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+              <Input
+                value={profile.email}
+                readOnly
+                className="h-10 text-sm pl-9 bg-gray-50 text-gray-400 cursor-default select-none"
+              />
+            </div>
           </div>
         </div>
       </div>
+
       <div className="flex justify-end">
-        <Button onClick={handleProfileSave} disabled={profileSaving || !profile.name.trim()}
-          className={cn("h-10 px-6 text-sm font-semibold gap-2 rounded-xl transition-all",
-            profileSaved ? "bg-emerald-500 hover:bg-emerald-500 text-white" : "bg-blue-600 hover:bg-blue-700 text-white"
-          )}>
-          {profileSaved ? <><Check className="w-4 h-4" /> Saved</> : profileSaving ? "Saving…" : "Save"}
+        <Button
+          onClick={handleProfileSave}
+          disabled={profileSaving || !profile.firstName.trim()}
+          className={cn(
+            "h-10 px-6 text-sm font-semibold gap-2 rounded-xl transition-all duration-200",
+            profileSaved
+              ? "bg-emerald-500 hover:bg-emerald-500 text-white"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
+          )}
+        >
+          {profileSaved
+            ? <><Check className="w-4 h-4" /> Saved</>
+            : profileSaving
+            ? "Saving…"
+            : "Save Changes"
+          }
         </Button>
       </div>
     </div>
@@ -1539,9 +1737,385 @@ function TeamSection() {
   )
 }
 
+// ─── Sender Emails Section ────────────────────────────────────────────────────
+
+function SenderEmailsSection() {
+  const { data: senders = [], isLoading } = useSenderEmails()
+  const createSender  = useCreateSenderEmail()
+  const updateSender  = useUpdateSenderEmail()
+  const deleteSender  = useDeleteSenderEmail()
+
+  const [showForm, setShowForm]     = useState(false)
+  const [editId, setEditId]         = useState<string | null>(null)
+  const [formEmail, setFormEmail]   = useState("")
+  const [formLabel, setFormLabel]   = useState("")
+  const [formDefault, setFormDefault] = useState(false)
+  const [formError, setFormError]   = useState("")
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+
+  function openCreate() {
+    setEditId(null)
+    setFormEmail("")
+    setFormLabel("")
+    setFormDefault(false)
+    setFormError("")
+    setShowForm(true)
+  }
+
+  function openEdit(s: SenderEmail) {
+    setEditId(s.id)
+    setFormEmail(s.email)
+    setFormLabel(s.label ?? "")
+    setFormDefault(s.isDefault)
+    setFormError("")
+    setShowForm(true)
+  }
+
+  function cancelForm() {
+    setShowForm(false)
+    setEditId(null)
+    setFormError("")
+  }
+
+  function handleSave() {
+    if (!formEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formEmail)) {
+      setFormError("Enter a valid email address")
+      return
+    }
+    setFormError("")
+
+    if (editId) {
+      updateSender.mutate({ id: editId, email: formEmail.trim(), label: formLabel.trim() || null, isDefault: formDefault }, {
+        onSuccess: () => cancelForm(),
+        onError: (e) => setFormError(e instanceof Error ? e.message : "Failed to update"),
+      })
+    } else {
+      createSender.mutate({ email: formEmail.trim(), label: formLabel.trim() || undefined, isDefault: formDefault }, {
+        onSuccess: () => cancelForm(),
+        onError: (e) => setFormError(e instanceof Error ? e.message : "Failed to create"),
+      })
+    }
+  }
+
+  return (
+    <div className="p-8 max-w-2xl mx-auto w-full">
+      <SectionHeader
+        title="Sender Emails"
+        description="Choose which email addresses replies will go to when sending reservation emails. Add or remove addresses as needed."
+      />
+
+      <div className="space-y-3">
+        {isLoading ? (
+          <div className="space-y-2">
+            {[1, 2].map(i => (
+              <div key={i} className="h-16 rounded-xl bg-gray-100 animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          senders.map((s) => (
+            <div key={s.id} className="flex items-center gap-3 px-4 py-3.5 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition-colors">
+              <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                <Mail className="w-4 h-4 text-indigo-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-900 truncate">{s.email}</p>
+                {s.label && <p className="text-xs text-gray-400 mt-0.5">{s.label}</p>}
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {s.isDefault ? (
+                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-full">
+                    Default
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => updateSender.mutate({ id: s.id, isDefault: true })}
+                    className="text-[10px] font-semibold text-gray-400 hover:text-indigo-600 px-2 py-1 rounded-lg hover:bg-indigo-50 transition-colors"
+                  >
+                    Set Default
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => openEdit(s)}
+                  className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                </button>
+                {confirmDeleteId === s.id ? (
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => { deleteSender.mutate(s.id); setConfirmDeleteId(null) }}
+                      className="text-[11px] font-semibold text-red-600 px-2 py-1 rounded-lg bg-red-50 hover:bg-red-100 transition-colors"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDeleteId(null)}
+                      className="text-[11px] text-gray-400 px-2 py-1 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setConfirmDeleteId(s.id)}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Add / Edit form */}
+      {showForm ? (
+        <div className="mt-4 p-5 rounded-xl border border-gray-200 bg-gray-50/60 space-y-4">
+          <p className="text-sm font-semibold text-gray-900">{editId ? "Edit Email Address" : "Add Email Address"}</p>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs font-medium text-gray-600 mb-1.5 block">Email Address</Label>
+              <Input
+                type="email"
+                placeholder="dispatch@yourcompany.com"
+                value={formEmail}
+                onChange={e => setFormEmail(e.target.value)}
+                className="h-9"
+              />
+            </div>
+            <div>
+              <Label className="text-xs font-medium text-gray-600 mb-1.5 block">Label <span className="text-gray-400 font-normal">(optional)</span></Label>
+              <Input
+                placeholder="e.g. Dispatch, Billing"
+                value={formLabel}
+                onChange={e => setFormLabel(e.target.value)}
+                className="h-9"
+              />
+            </div>
+            <label className="flex items-center gap-2.5 cursor-pointer">
+              <div
+                onClick={() => setFormDefault(v => !v)}
+                className={cn(
+                  "w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all cursor-pointer",
+                  formDefault ? "bg-indigo-600 border-indigo-600" : "border-gray-300 bg-white"
+                )}
+              >
+                {formDefault && <Check className="w-2.5 h-2.5 text-white" />}
+              </div>
+              <span className="text-sm text-gray-700">Set as default sender email</span>
+            </label>
+          </div>
+          {formError && (
+            <p className="text-xs text-red-600">{formError}</p>
+          )}
+          <div className="flex gap-2 pt-1">
+            <Button
+              type="button"
+              className="flex-1 h-9 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm"
+              onClick={handleSave}
+              disabled={createSender.isPending || updateSender.isPending}
+            >
+              {createSender.isPending || updateSender.isPending ? "Saving…" : "Save"}
+            </Button>
+            <Button type="button" variant="outline" className="h-9 text-sm" onClick={cancelForm}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={openCreate}
+          className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed border-gray-300 text-sm text-gray-500 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50/30 transition-all"
+        >
+          <Plus className="w-4 h-4" />
+          Add Email Address
+        </button>
+      )}
+
+      <div className="mt-6 px-4 py-4 rounded-xl bg-blue-50 border border-blue-100">
+        <p className="text-xs font-semibold text-blue-700 mb-1">How this works</p>
+        <p className="text-xs text-blue-600 leading-relaxed">
+          Reservation emails are delivered from Livery Connect's platform address. Your selected sender email is set as the <strong>Reply-To</strong> so replies from drivers or clients land directly in your inbox.
+        </p>
+      </div>
+    </div>
+  )
+}
+
+// ─── PDF Branding Section ─────────────────────────────────────────────────────
+
+function PdfBrandingSection() {
+  const { data: company, isLoading } = useCompany()
+  const updateCompany = useUpdateCompany()
+
+  const [form, setForm] = useState({
+    name:    "",
+    phone:   "",
+    address: "",
+    city:    "",
+    state:   "",
+    zip:     "",
+    website: "",
+    email:   "",
+  })
+  const [saved, setSaved]   = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [error, setError]   = useState("")
+
+  useEffect(() => {
+    if (company) {
+      setForm({
+        name:    company.name    ?? "",
+        phone:   company.phone   ?? "",
+        address: company.address ?? "",
+        city:    company.city    ?? "",
+        state:   company.state   ?? "",
+        zip:     company.zip     ?? "",
+        website: company.website ?? "",
+        email:   company.email   ?? "",
+      })
+    }
+  }, [company])
+
+  function handleSave() {
+    setSaving(true)
+    setError("")
+    updateCompany.mutate({
+      name:    form.name    || undefined,
+      phone:   form.phone   || undefined,
+      address: form.address || undefined,
+      city:    form.city    || undefined,
+      state:   form.state   || undefined,
+      zip:     form.zip     || undefined,
+      website: form.website || undefined,
+    }, {
+      onSuccess: () => { setSaving(false); setSaved(true); setTimeout(() => setSaved(false), 3000) },
+      onError: (e) => { setSaving(false); setError(e instanceof Error ? e.message : "Failed to save") },
+    })
+  }
+
+  const addressPreview = [form.address, form.city, form.state, form.zip].filter(Boolean).join(", ")
+  const logoLetter     = form.name ? form.name.charAt(0).toUpperCase() : "C"
+
+  if (isLoading) {
+    return (
+      <div className="p-8">
+        <div className="space-y-4">
+          {[1, 2, 3, 4].map(i => <div key={i} className="h-10 rounded-xl bg-gray-100 animate-pulse" />)}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="p-8 max-w-2xl mx-auto w-full">
+      <SectionHeader
+        title="PDF Branding"
+        description="Company information shown on all generated PDFs — Job Orders, Reservation Confirmations, and Affiliate copies."
+      />
+
+      {/* Preview card */}
+      <div className="mb-6 rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+        <div className="bg-[#1e3a8a] px-5 py-4">
+          <div className="flex items-center gap-3">
+            {company?.logo ? (
+              <img src={company.logo} alt="logo" className="w-10 h-10 rounded-lg object-cover" />
+            ) : (
+              <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-base flex-shrink-0">
+                {logoLetter}
+              </div>
+            )}
+            <div>
+              <p className="text-white font-bold text-sm leading-tight">{form.name || "Company Name"}</p>
+              <p className="text-blue-200 text-xs mt-0.5">
+                {[form.phone ? formatPhone(form.phone) : null, form.email, form.website].filter(Boolean).join("  ·  ") || "Contact info"}
+              </p>
+            </div>
+          </div>
+          <p className="text-[10px] font-bold text-blue-300 uppercase tracking-[0.18em] mt-3">
+            Reservation Confirmation
+          </p>
+        </div>
+        <div className="bg-white px-5 py-3 border-t border-gray-100">
+          <p className="text-[11px] text-gray-400 leading-relaxed">
+            {addressPreview || "Company address"}{addressPreview && " · "}
+            {form.website || ""}
+          </p>
+        </div>
+      </div>
+
+      {/* Form */}
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="col-span-2">
+            <Label className="text-xs font-medium text-gray-600 mb-1.5 block">Company Name</Label>
+            <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="h-9" />
+          </div>
+          <div>
+            <Label className="text-xs font-medium text-gray-600 mb-1.5 block">Phone</Label>
+            <Input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} className="h-9" placeholder="(555) 000-0000" />
+          </div>
+          <div>
+            <Label className="text-xs font-medium text-gray-600 mb-1.5 block">Website</Label>
+            <Input value={form.website} onChange={e => setForm(f => ({ ...f, website: e.target.value }))} className="h-9" placeholder="www.yourcompany.com" />
+          </div>
+          <div className="col-span-2">
+            <Label className="text-xs font-medium text-gray-600 mb-1.5 block">Street Address</Label>
+            <Input value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} className="h-9" placeholder="123 Main St" />
+          </div>
+          <div>
+            <Label className="text-xs font-medium text-gray-600 mb-1.5 block">City</Label>
+            <Input value={form.city} onChange={e => setForm(f => ({ ...f, city: e.target.value }))} className="h-9" />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-xs font-medium text-gray-600 mb-1.5 block">State</Label>
+              <Input value={form.state} onChange={e => setForm(f => ({ ...f, state: e.target.value }))} className="h-9" placeholder="NY" />
+            </div>
+            <div>
+              <Label className="text-xs font-medium text-gray-600 mb-1.5 block">ZIP</Label>
+              <Input value={form.zip} onChange={e => setForm(f => ({ ...f, zip: e.target.value }))} className="h-9" placeholder="10001" />
+            </div>
+          </div>
+        </div>
+
+        {error && <p className="text-xs text-red-600">{error}</p>}
+
+        <Button
+          type="button"
+          onClick={handleSave}
+          disabled={saving}
+          className={cn(
+            "h-9 px-6 font-semibold text-sm transition-all",
+            saved
+              ? "bg-emerald-600 hover:bg-emerald-600 text-white"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
+          )}
+        >
+          {saving ? "Saving…" : saved ? <><Check className="w-3.5 h-3.5 mr-1.5" />Saved</> : "Save Branding"}
+        </Button>
+      </div>
+
+      <div className="mt-6 px-4 py-4 rounded-xl bg-gray-50 border border-gray-100">
+        <p className="text-xs font-semibold text-gray-600 mb-1">Logo on PDFs</p>
+        <p className="text-xs text-gray-400 leading-relaxed">
+          Your company logo is uploaded in the <button type="button" className="text-blue-500 hover:underline">Profile</button> section and automatically appears on all PDFs. Use a square or horizontally-compact image for best results.
+        </p>
+      </div>
+    </div>
+  )
+}
+
 // ─── Navigation config ────────────────────────────────────────────────────────
 
-type Section = "profile" | "address-book" | "service-types" | "status-actions" | "grid-columns" | "personal" | "team"
+type Section = "profile" | "address-book" | "service-types" | "status-actions" | "grid-columns" | "personal" | "team" | "sender-emails" | "pdf-branding"
 
 const NAV_GROUPS: { label: string; items: { key: Section; label: string; icon: React.ElementType }[] }[] = [
   {
@@ -1557,6 +2131,13 @@ const NAV_GROUPS: { label: string; items: { key: Section; label: string; icon: R
       { key: "service-types",   label: "Service Types",   icon: Settings2 },
       { key: "status-actions",  label: "Status Actions",  icon: Zap },
       { key: "grid-columns",    label: "Grid Columns",    icon: LayoutGrid },
+    ],
+  },
+  {
+    label: "Email & PDFs",
+    items: [
+      { key: "sender-emails", label: "Sender Emails", icon: Mail },
+      { key: "pdf-branding",  label: "PDF Branding",  icon: ExternalLink },
     ],
   },
   {
@@ -1638,6 +2219,8 @@ export default function SettingsPage() {
           {section === "service-types"  && <ServiceTypesSection />}
           {section === "status-actions" && <StatusActionsSection />}
           {section === "grid-columns"   && <GridColumnsSection />}
+          {section === "sender-emails"  && <SenderEmailsSection />}
+          {section === "pdf-branding"   && <PdfBrandingSection />}
           {section === "personal"       && <PersonalSection />}
           {section === "team"           && <TeamSection />}
         </div>

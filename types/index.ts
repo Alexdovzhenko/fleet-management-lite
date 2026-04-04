@@ -202,6 +202,8 @@ export interface Trip {
   }>
   farmedIn?: { id: string; name: string } | null
   agreedPrice?: string | null
+  createdById?: string | null
+  createdBy?: { id: string; name: string; role: string } | null
   createdAt: string
   updatedAt: string
 }
@@ -341,6 +343,33 @@ export interface FarmOut {
 }
 
 export type QuoteRequestStatus = 'NEW' | 'PENDING' | 'ACCEPTED' | 'DECLINED'
+
+// ============ EMAIL SYSTEM ============
+
+export interface SenderEmail {
+  id: string
+  companyId: string
+  email: string
+  label?: string | null
+  isDefault: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export type EmailRecipientType = 'driver' | 'client' | 'affiliate'
+export type PdfDocumentType = 'job_order' | 'reservation'
+
+export interface SendEmailPayload {
+  recipientType: EmailRecipientType
+  recipientEmail?: string       // override if no email on record
+  senderEmailId?: string        // which SenderEmail to use; defaults to company default
+}
+
+export interface SendEmailResult {
+  success: boolean
+  messageId?: string
+  error?: string
+}
 
 export interface QuoteRequest {
   id: string

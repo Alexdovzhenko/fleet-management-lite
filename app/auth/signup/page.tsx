@@ -32,6 +32,13 @@ const STYLES = `
   .d7  { animation-delay: 0.40s; }
   .d8  { animation-delay: 0.46s; }
 
+  /* Fix: respect reduced-motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .lx { animation: none !important; opacity: 1 !important; transform: none !important; }
+    .dot-pulse { animation: none !important; }
+    path[style*="animation"], circle[style*="animation"] { animation: none !important; }
+  }
+
   .f { position: relative; padding-top: 18px; }
   .f label {
     position: absolute;
@@ -44,12 +51,13 @@ const STYLES = `
     pointer-events: none;
     transition: top 0.22s ease, font-size 0.22s ease, color 0.22s ease, letter-spacing 0.22s ease;
   }
+  /* Fix: floated label font-size 0.58rem → 0.72rem (meets 12px minimum) */
   .f input:focus ~ label,
   .f input:not(:placeholder-shown) ~ label {
     top: 2px;
-    font-size: 0.58rem;
+    font-size: 0.72rem;
     color: #c9a87c;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
   }
   .fi {
@@ -68,6 +76,14 @@ const STYLES = `
   }
   .fi::placeholder { color: transparent; }
   .fi:focus { border-bottom-color: rgba(201,168,124,0.55); }
+  /* Fix: visible focus ring for keyboard navigation */
+  .fi:focus-visible {
+    outline: 2px solid rgba(201,168,124,0.35);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  /* Password field: make room for the toggle button */
+  .fi-pw { padding-right: 28px; }
   .f::after {
     content: '';
     position: absolute;
@@ -78,6 +94,49 @@ const STYLES = `
   }
   .f:focus-within::after { width: 100%; }
 
+  /* Password show/hide toggle */
+  .pw-tog {
+    position: absolute;
+    right: 0;
+    bottom: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(200,212,228,0.3);
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+  }
+  .pw-tog:hover { color: #c9a87c; }
+  .pw-tog:focus-visible {
+    outline: 2px solid rgba(201,168,124,0.35);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Required field indicator */
+  .req { color: rgba(224,96,96,0.6); margin-left: 2px; font-style: normal; }
+
+  /* Persistent helper text */
+  .field-help {
+    font-family: var(--font-outfit, system-ui);
+    font-size: 0.7rem;
+    color: rgba(200,212,228,0.28);
+    letter-spacing: 0.01em;
+    margin-top: 5px;
+    line-height: 1.4;
+  }
+  /* Per-field error text */
+  .field-error {
+    font-family: var(--font-outfit, system-ui);
+    font-size: 0.72rem;
+    color: #e06060;
+    margin-top: 5px;
+    line-height: 1.4;
+  }
+
+  /* Fix: button font-size 0.68rem → 0.78rem; letter-spacing 0.24em → 0.12em */
   .btn-primary {
     width: 100%;
     padding: 14px 24px;
@@ -86,9 +145,9 @@ const STYLES = `
     border: none;
     cursor: pointer;
     font-family: var(--font-outfit, system-ui);
-    font-size: 0.68rem;
+    font-size: 0.78rem;
     font-weight: 600;
-    letter-spacing: 0.24em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
   }
@@ -99,6 +158,10 @@ const STYLES = `
   }
   .btn-primary:active:not(:disabled) { transform: translateY(0); box-shadow: none; }
   .btn-primary:disabled { opacity: 0.28; cursor: not-allowed; }
+  .btn-primary:focus-visible {
+    outline: 2px solid rgba(201,168,124,0.5);
+    outline-offset: 3px;
+  }
 
   .lk {
     color: #c9a87c;
@@ -109,6 +172,11 @@ const STYLES = `
     padding-bottom: 1px;
   }
   .lk:hover { color: #e0c090; border-color: rgba(224,192,144,0.5); }
+  .lk:focus-visible {
+    outline: 2px solid rgba(201,168,124,0.35);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
 
   @media (max-width: 720px) {
     .map-wrap  { opacity: 0.22 !important; }
@@ -134,6 +202,23 @@ function Pin({ cx, cy, delay = "0s", size = 7 }: { cx: number; cy: number; delay
   )
 }
 
+function EyeIcon({ open }: { open: boolean }) {
+  if (open) {
+    return (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+    )
+  }
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+      <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+  )
+}
+
 export default function SignupPage() {
   const router = useRouter()
   const [form, setForm] = useState({
@@ -141,13 +226,20 @@ export default function SignupPage() {
     email: "", password: "", confirmPassword: "",
   })
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [error, setError] = useState("") // server/API errors only
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [showPw, setShowPw] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError("")
-    if (form.password !== form.confirmPassword) { setError("Passwords do not match."); return }
-    if (form.password.length < 8) { setError("Password must be at least 8 characters."); return }
+    // Per-field client validation
+    const errs: Record<string, string> = {}
+    if (form.password.length < 8) errs.password = "Must be at least 8 characters."
+    if (form.password !== form.confirmPassword) errs.confirmPassword = "Passwords do not match."
+    if (Object.keys(errs).length) { setFieldErrors(errs); return }
+    setFieldErrors({})
     setLoading(true)
     try {
       const supabase = createClient()
@@ -172,11 +264,21 @@ export default function SignupPage() {
   }
 
   function field(key: keyof typeof form) {
-    return (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, [key]: e.target.value }))
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
+      setForm(f => ({ ...f, [key]: e.target.value }))
+      // Clear field error as user corrects the value
+      setFieldErrors(fe => {
+        if (!fe[key]) return fe
+        const n = { ...fe }
+        delete n[key]
+        return n
+      })
+    }
   }
 
   return (
-    <div style={{ width: "100%", height: "100vh", position: "relative", overflow: "hidden", background: "#080c16", fontFamily: "var(--font-outfit, system-ui)" }}>
+    // Fix: 100vh → 100dvh (accounts for mobile browser chrome)
+    <div style={{ width: "100%", height: "100dvh", position: "relative", overflow: "hidden", background: "#080c16", fontFamily: "var(--font-outfit, system-ui)" }}>
       <style>{STYLES}</style>
 
       {/* ══ LAYER 1 — DARK CITY MAP ══ */}
@@ -497,58 +599,94 @@ export default function SignupPage() {
           }}>Join Livery Connect and streamline your dispatch</p>
         </div>
 
-        {/* Error */}
+        {/* Server/API error — shown above form */}
         {error && (
           <div style={{
             marginBottom: "1.25rem", paddingBottom: "0.7rem",
             borderBottom: "1px solid rgba(200,60,60,0.18)",
             display: "flex", alignItems: "center", gap: "9px",
-          }}>
+          }} role="alert">
             <div style={{ width: "3px", height: "3px", borderRadius: "50%", background: "#e06060", flexShrink: 0 }} />
             <span style={{ fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.78rem", color: "#e06060" }}>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           {/* Company */}
-          <div className="lx d3 f" style={{ marginBottom: "1.25rem" }}>
-            <input value={form.companyName} onChange={field("companyName")}
-              placeholder="Company name" required className="fi" id="s-co" />
-            <label htmlFor="s-co">Company name</label>
+          <div className="lx d3" style={{ marginBottom: "1.25rem" }}>
+            <div className="f">
+              <input value={form.companyName} onChange={field("companyName")}
+                placeholder="Company name" required className="fi" id="s-co"
+                autoComplete="organization" />
+              <label htmlFor="s-co">Company name <span className="req" aria-hidden="true">*</span></label>
+            </div>
           </div>
 
           {/* Name row */}
           <div className="lx d4" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.1rem", marginBottom: "1.25rem" }}>
             <div className="f">
               <input value={form.firstName} onChange={field("firstName")}
-                placeholder="First name" required className="fi" id="s-fn" />
-              <label htmlFor="s-fn">First name</label>
+                placeholder="First name" required className="fi" id="s-fn"
+                autoComplete="given-name" />
+              <label htmlFor="s-fn">First name <span className="req" aria-hidden="true">*</span></label>
             </div>
             <div className="f">
               <input value={form.lastName} onChange={field("lastName")}
-                placeholder="Last name" required className="fi" id="s-ln" />
-              <label htmlFor="s-ln">Last name</label>
+                placeholder="Last name" required className="fi" id="s-ln"
+                autoComplete="family-name" />
+              <label htmlFor="s-ln">Last name <span className="req" aria-hidden="true">*</span></label>
             </div>
           </div>
 
           {/* Email */}
-          <div className="lx d5 f" style={{ marginBottom: "1.25rem" }}>
-            <input type="email" value={form.email} onChange={field("email")}
-              placeholder="Business email" required autoFocus className="fi" id="s-em" />
-            <label htmlFor="s-em">Business email</label>
+          <div className="lx d5" style={{ marginBottom: "1.25rem" }}>
+            <div className="f">
+              <input type="email" value={form.email} onChange={field("email")}
+                placeholder="Business email" required className="fi" id="s-em"
+                autoComplete="email" />
+              <label htmlFor="s-em">Business email <span className="req" aria-hidden="true">*</span></label>
+            </div>
           </div>
 
           {/* Passwords */}
-          <div className="lx d6" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.1rem", marginBottom: "2rem" }}>
-            <div className="f">
-              <input type="password" value={form.password} onChange={field("password")}
-                placeholder="Password" required className="fi" id="s-pw" />
-              <label htmlFor="s-pw">Password</label>
-            </div>
-            <div className="f">
-              <input type="password" value={form.confirmPassword} onChange={field("confirmPassword")}
-                placeholder="Confirm" required className="fi" id="s-cp" />
-              <label htmlFor="s-cp">Confirm</label>
+          <div className="lx d6" style={{ marginBottom: "2rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.1rem" }}>
+              {/* Password */}
+              <div>
+                <div className="f">
+                  <input type={showPw ? "text" : "password"} value={form.password} onChange={field("password")}
+                    placeholder="Password" required className="fi fi-pw" id="s-pw"
+                    autoComplete="new-password"
+                    aria-describedby={fieldErrors.password ? "s-pw-err" : "s-pw-help"} />
+                  <button type="button" className="pw-tog" onClick={() => setShowPw(s => !s)}
+                    aria-label={showPw ? "Hide password" : "Show password"}>
+                    <EyeIcon open={showPw} />
+                  </button>
+                  <label htmlFor="s-pw">Password <span className="req" aria-hidden="true">*</span></label>
+                </div>
+                {fieldErrors.password
+                  ? <p id="s-pw-err" className="field-error" role="alert">{fieldErrors.password}</p>
+                  : <p id="s-pw-help" className="field-help">At least 8 characters</p>
+                }
+              </div>
+              {/* Confirm Password */}
+              <div>
+                <div className="f">
+                  <input type={showConfirm ? "text" : "password"} value={form.confirmPassword} onChange={field("confirmPassword")}
+                    placeholder="Confirm Password" required className="fi fi-pw" id="s-cp"
+                    autoComplete="new-password"
+                    aria-describedby={fieldErrors.confirmPassword ? "s-cp-err" : undefined} />
+                  <button type="button" className="pw-tog" onClick={() => setShowConfirm(s => !s)}
+                    aria-label={showConfirm ? "Hide password" : "Show password"}>
+                    <EyeIcon open={showConfirm} />
+                  </button>
+                  {/* Fix: "Confirm" → "Confirm Password" */}
+                  <label htmlFor="s-cp">Confirm Password <span className="req" aria-hidden="true">*</span></label>
+                </div>
+                {fieldErrors.confirmPassword && (
+                  <p id="s-cp-err" className="field-error" role="alert">{fieldErrors.confirmPassword}</p>
+                )}
+              </div>
             </div>
           </div>
 
@@ -560,7 +698,7 @@ export default function SignupPage() {
           </div>
         </form>
 
-        {/* CTA */}
+        {/* Sign-in link */}
         <div className="lx d8" style={{
           marginTop: "1.75rem",
           paddingTop: "1.4rem",
@@ -574,18 +712,19 @@ export default function SignupPage() {
           <Link href="/auth/login" className="lk" style={{
             fontSize: "0.9rem", display: "inline-flex", alignItems: "center", gap: "5px",
           }}>
-            Sign in <span style={{ fontSize: "1.05rem", lineHeight: 1 }}>→</span>
+            {/* Fix: aria-hidden on decorative arrow character */}
+            Sign in <span style={{ fontSize: "1.05rem", lineHeight: 1 }} aria-hidden="true">→</span>
           </Link>
         </div>
       </div>
 
-      {/* ══ LAYER 5 — DISPATCH STATS ══ */}
+      {/* ══ LAYER 5 — DISPATCH STATS (sample data) ══ */}
       <div className="lx d3" style={{
         position: "absolute",
         bottom: "clamp(1.5rem, 3vh, 2.5rem)",
         right: "clamp(1.5rem, 3vw, 3rem)",
         zIndex: 10, pointerEvents: "none",
-      }}>
+      }} aria-hidden>
         <div style={{
           background: "rgba(8,12,22,0.88)",
           border: "1px solid rgba(201,168,124,0.18)",
@@ -598,7 +737,8 @@ export default function SignupPage() {
             paddingBottom: "10px", marginBottom: "10px",
             borderBottom: "1px solid rgba(201,168,124,0.1)",
           }}>
-            <div style={{
+            {/* Fix: use class for dot-pulse so prefers-reduced-motion can suppress it */}
+            <div className="dot-pulse" style={{
               width: "7px", height: "7px", borderRadius: "50%",
               background: "#22c55e", flexShrink: 0,
               animation: "pulse-dot 2s ease-in-out infinite",
@@ -607,6 +747,12 @@ export default function SignupPage() {
               fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.54rem", fontWeight: 500,
               color: "rgba(200,212,228,0.38)", letterSpacing: "0.16em", textTransform: "uppercase",
             }}>Dispatch Active</span>
+            {/* Fix: clearly label as sample data */}
+            <span style={{
+              fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.44rem", fontWeight: 400,
+              color: "rgba(200,212,228,0.2)", letterSpacing: "0.1em", textTransform: "uppercase",
+              marginLeft: "auto",
+            }}>sample</span>
           </div>
           {[
             { label: "Active Routes", value: "14" },

@@ -57,6 +57,7 @@ model Company {
   appNotifications AppNotification[]
   addresses        CompanyAddress[]
   quoteRequests    QuoteRequest[]
+  senderEmails     SenderEmail[]
 }
 
 model CompanyAddress {
@@ -91,10 +92,11 @@ model User {
   phone     String?
   role      UserRole @default(DISPATCHER)
   avatarUrl String?
-  companyId String
-  company   Company  @relation(fields: [companyId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  companyId    String
+  company      Company  @relation(fields: [companyId], references: [id])
+  createdTrips Trip[]   @relation("TripCreatedBy")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([companyId])
   @@index([authId])
@@ -295,10 +297,12 @@ model Trip {
   passengerOnBoardAt DateTime?
   tripCompletedAt    DateTime?
 
-  companyId String
-  company   Company  @relation(fields: [companyId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  createdById String?
+  createdBy   User?    @relation("TripCreatedBy", fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   stops         TripStop[]
   invoice       Invoice?
@@ -598,6 +602,22 @@ model QuoteRequest {
 
   @@index([companyId])
   @@index([status])
+}
+
+// ============ SENDER EMAILS ============
+
+model SenderEmail {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  email     String
+  label     String?
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyId, email])
+  @@index([companyId])
 }
 
 model AppNotification {

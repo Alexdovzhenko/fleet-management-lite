@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  Plus, Phone, Car, UserCheck, Search, X, Upload,
+  Plus, Phone, Car, UserCheck, Search, X, Upload, Download,
   FileText, Camera, CreditCard, Pencil,
   Shield, Briefcase, IdCard, CheckCircle2, AlertCircle,
 } from "lucide-react"
@@ -105,6 +105,26 @@ function FileUploadZone({
     if (file) uploadFile(file)
   }
 
+  async function handleDownload(e: React.MouseEvent) {
+    e.stopPropagation()
+    if (!value) return
+    try {
+      const res = await fetch(value.url)
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = value.name
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch {
+      // fallback: open in new tab
+      window.open(value.url, "_blank")
+    }
+  }
+
   if (circular) {
     return (
       <div className="flex flex-col items-center gap-3">
@@ -199,13 +219,23 @@ function FileUploadZone({
             )}
           </div>
           {value ? (
-            <button
-              type="button"
-              onClick={(e) => { e.stopPropagation(); onChange(null) }}
-              className="w-6 h-6 rounded-full flex items-center justify-center text-gray-300 hover:text-red-400 hover:bg-red-50 transition-all flex-shrink-0"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <button
+                type="button"
+                onClick={handleDownload}
+                className="w-6 h-6 rounded-full flex items-center justify-center text-gray-300 hover:text-blue-500 hover:bg-blue-50 transition-all"
+                title="Download"
+              >
+                <Download className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onChange(null) }}
+                className="w-6 h-6 rounded-full flex items-center justify-center text-gray-300 hover:text-red-400 hover:bg-red-50 transition-all"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
           ) : (
             <Upload className="w-3.5 h-3.5 text-gray-300 group-hover:text-blue-400 transition-colors flex-shrink-0" />
           )}
@@ -218,54 +248,119 @@ function FileUploadZone({
 
   // Standard card zone
   return (
-    <div>
+    <div className="group/card">
       <div
         className={cn(
-          "relative flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 text-center group min-h-[100px]",
-          dragging ? "border-blue-400 bg-blue-50 scale-[1.02]" : value ? "border-gray-200 bg-gray-50/50" : "border-gray-200 hover:border-blue-300 hover:bg-blue-50/30",
+          "relative overflow-hidden rounded-2xl transition-all duration-300",
+          dragging
+            ? "ring-2 ring-blue-400 ring-offset-1 shadow-[0_0_0_4px_rgba(59,130,246,0.12)] scale-[1.01]"
+            : value
+            ? "ring-1 ring-gray-200/80 shadow-sm hover:shadow-md hover:ring-gray-300/80"
+            : "ring-1 ring-dashed ring-gray-200 hover:ring-blue-300 hover:shadow-sm cursor-pointer",
         )}
         onClick={() => !value && inputRef.current?.click()}
         onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
+        style={{ minHeight: 130 }}
       >
         {uploading ? (
-          <>
-            <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-            <p className="text-xs text-gray-400">Uploading...</p>
-          </>
+          <div className="flex flex-col items-center justify-center gap-2.5 p-6 h-full min-h-[130px] bg-gradient-to-br from-blue-50/60 to-white">
+            <div className="relative w-8 h-8">
+              <div className="absolute inset-0 rounded-full border-2 border-blue-100" />
+              <div className="absolute inset-0 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
+            </div>
+            <p className="text-[11px] font-medium text-blue-500 tracking-wide">Uploading…</p>
+          </div>
         ) : value ? (
-          <>
-            {value.isImage ? (
-              <div className="relative w-full h-24 rounded-lg overflow-hidden">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={value.url} alt={label} className="w-full h-full object-cover" />
+          value.isImage ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={value.url} alt={label} className="w-full h-full object-cover min-h-[130px] block" />
+              {/* Gradient overlay always visible at bottom */}
+              <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none" />
+              {/* Action buttons — visible on hover */}
+              <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-1.5 p-2.5 opacity-0 group-hover/card:opacity-100 transition-all duration-200 translate-y-1 group-hover/card:translate-y-0">
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onChange(null) }}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-white/15 backdrop-blur-sm border border-white/20 text-white hover:bg-red-500/80 hover:border-red-400/40 transition-all duration-150"
+                >
+                  <X className="w-3 h-3" /> Remove
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-white/15 backdrop-blur-sm border border-white/20 text-white hover:bg-white/30 transition-all duration-150"
+                >
+                  <Upload className="w-3 h-3" /> Replace
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDownload}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-white/15 backdrop-blur-sm border border-white/20 text-white hover:bg-white/30 transition-all duration-150"
+                >
+                  <Download className="w-3 h-3" /> Download
+                </button>
               </div>
-            ) : (
-              <div className="flex items-center gap-2">
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-3 p-5 min-h-[130px] bg-gradient-to-br from-blue-50/40 to-white">
+              <div className="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center">
                 <FileText className="w-5 h-5 text-blue-500" />
-                <span className="text-xs text-gray-600 font-medium truncate max-w-[140px]">{value.name}</span>
               </div>
-            )}
-            <div className="flex items-center gap-3 mt-1">
-              <button type="button" onClick={(e) => { e.stopPropagation(); onChange(null) }} className="text-[11px] text-red-400 hover:text-red-600 transition-colors">Remove</button>
-              <button type="button" onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }} className="text-[11px] text-blue-500 hover:text-blue-700 transition-colors">Replace</button>
+              <div className="text-center">
+                <p className="text-xs font-semibold text-gray-700 truncate max-w-[150px]">{value.name}</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">PDF document</p>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onChange(null) }}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-red-50 border border-red-100 text-red-500 hover:bg-red-100 transition-all duration-150"
+                >
+                  <X className="w-3 h-3" /> Remove
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); inputRef.current?.click() }}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-gray-50 border border-gray-200 text-gray-600 hover:bg-gray-100 transition-all duration-150"
+                >
+                  <Upload className="w-3 h-3" /> Replace
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDownload}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-blue-50 border border-blue-100 text-blue-600 hover:bg-blue-100 transition-all duration-150"
+                >
+                  <Download className="w-3 h-3" /> Download
+                </button>
+              </div>
             </div>
-          </>
+          )
         ) : (
-          <>
-            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-colors", "bg-gray-50 group-hover:bg-blue-50")}>
-              <Icon className="w-5 h-5 text-gray-300 group-hover:text-blue-400 transition-colors" />
+          <div className="flex flex-col items-center justify-center gap-2.5 p-6 min-h-[130px] bg-gradient-to-br from-gray-50/80 to-white group-hover/card:from-blue-50/40 transition-all duration-300">
+            <div className="w-11 h-11 rounded-2xl bg-white border border-gray-100 shadow-sm flex items-center justify-center group-hover/card:border-blue-100 group-hover/card:shadow-blue-100/50 transition-all duration-300">
+              <Icon className="w-5 h-5 text-gray-300 group-hover/card:text-blue-400 transition-colors duration-300" />
             </div>
-            <div>
-              <p className="text-xs font-semibold text-gray-600 group-hover:text-blue-600 transition-colors">{label}</p>
-              {sublabel && <p className="text-[11px] text-gray-400 mt-0.5">{sublabel}</p>}
+            <div className="text-center space-y-0.5">
+              <p className="text-xs font-semibold text-gray-600 group-hover/card:text-blue-600 transition-colors duration-200">{label}</p>
+              {sublabel && <p className="text-[11px] text-gray-400">{sublabel}</p>}
             </div>
-            <p className="text-[10px] text-gray-300">Click or drag &amp; drop</p>
-          </>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <div className="h-px w-8 bg-gray-200" />
+              <p className="text-[10px] text-gray-300 font-medium tracking-wide uppercase">Click or drag &amp; drop</p>
+              <div className="h-px w-8 bg-gray-200" />
+            </div>
+          </div>
         )}
       </div>
-      {error && <p className="text-[11px] text-red-500 mt-1.5">{error}</p>}
+      {error && (
+        <p className="flex items-center gap-1 text-[11px] text-red-500 mt-1.5 font-medium">
+          <span className="inline-block w-3.5 h-3.5 rounded-full bg-red-100 text-red-500 text-[9px] flex items-center justify-center font-bold">!</span>
+          {error}
+        </p>
+      )}
       <input ref={inputRef} type="file" accept={accept} className="hidden" onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f); e.target.value = "" }} />
     </div>
   )
