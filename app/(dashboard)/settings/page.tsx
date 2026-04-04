@@ -2182,7 +2182,7 @@ export default function SettingsPage() {
   // Update URL when section changes
   const handleSectionChange = (newSection: Section) => {
     setSection(newSection)
-    const newUrl = `/dashboard/settings?tab=${newSection}`
+    const newUrl = `/settings?tab=${newSection}`
     router.push(newUrl)
     // Also update browser history directly as backup
     window.history.replaceState(null, '', newUrl)
