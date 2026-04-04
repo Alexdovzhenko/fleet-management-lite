@@ -2156,8 +2156,19 @@ export default function SettingsPage() {
   const searchParams = useSearchParams()
   const [section, setSection] = useState<Section>("profile")
 
-  // Sync section with URL whenever searchParams changes
-  useLayoutEffect(() => {
+  // Initialize from URL on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const tab = params.get("tab") as Section | null
+    const validSections: Section[] = ["profile", "address-book", "service-types", "status-actions", "grid-columns", "personal", "team", "sender-emails", "pdf-branding"]
+
+    if (tab && validSections.includes(tab)) {
+      setSection(tab)
+    }
+  }, [])
+
+  // Also sync when searchParams hook becomes available
+  useEffect(() => {
     if (!searchParams) return
 
     const tab = searchParams.get("tab") as Section | null
