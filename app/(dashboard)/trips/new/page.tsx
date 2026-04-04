@@ -30,7 +30,7 @@ import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
 import { useServiceTypes } from "@/lib/hooks/use-service-types"
 import { useDebounce } from "@/lib/hooks/use-debounce"
-import { formatCurrency, generateConfirmationNumber, cn } from "@/lib/utils"
+import { formatCurrency, generateConfirmationNumber, formatPhone, cn } from "@/lib/utils"
 import { DatePickerInput } from "@/components/ui/date-picker"
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
 import { useUpsertAddress } from "@/lib/hooks/use-addresses"
@@ -258,7 +258,7 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
             )}
             <div className="text-sm font-semibold text-gray-900">{selected.name}</div>
             <div className="text-xs text-gray-500 truncate">
-              {selectedIsAffiliate ? "Affiliate account" : (selected.phone || selected.email || "")}
+              {selectedIsAffiliate ? "Affiliate account" : (selected.phone ? formatPhone(selected.phone) : selected.email || "")}
             </div>
           </div>
           <div className="text-right flex-shrink-0">
@@ -2418,7 +2418,7 @@ export default function NewTripPage() {
                       {selectedAccount.phone && (
                         <div>
                           <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Phone</p>
-                          <p className="text-sm text-gray-700">{selectedAccount.phone}</p>
+                          <p className="text-sm text-gray-700">{formatPhone(selectedAccount.phone)}</p>
                         </div>
                       )}
                       {selectedAccount.email && (
