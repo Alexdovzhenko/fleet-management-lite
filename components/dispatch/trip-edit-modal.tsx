@@ -665,8 +665,13 @@ function DriverPickerCard({ drivers, value, onChange }: { drivers: Driver[]; val
       {selected ? (
         <div className="group flex items-center gap-3 bg-violet-50 border border-violet-100 rounded-xl px-3 py-2.5 hover:border-violet-200 transition-colors">
           <div className="relative flex-shrink-0">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center text-[11px] font-bold text-white shadow-sm">
-              {getInitials(selected.name)}
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center text-[11px] font-bold text-white shadow-sm overflow-hidden">
+              {selected.avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={selected.avatarUrl} alt={selected.name} className="w-full h-full object-cover" />
+              ) : (
+                getInitials(selected.name)
+              )}
             </div>
             <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-white" />
           </div>
@@ -699,8 +704,13 @@ function DriverPickerCard({ drivers, value, onChange }: { drivers: Driver[]; val
                 <button key={d.id} type="button" onClick={() => { onChange(d.id); setOpen(false) }}
                   className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-violet-50/60 transition-colors">
                   <div className="relative flex-shrink-0">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center text-[10px] font-bold text-white">
-                      {getInitials(d.name)}
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden">
+                      {d.avatarUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={d.avatarUrl} alt={d.name} className="w-full h-full object-cover" />
+                      ) : (
+                        getInitials(d.name)
+                      )}
                     </div>
                     <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white" />
                   </div>
