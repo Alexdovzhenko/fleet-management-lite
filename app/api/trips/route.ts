@@ -88,9 +88,9 @@ export async function GET(request: NextRequest) {
 
     const tripInclude = {
       customer: { select: { id: true, name: true, phone: true, email: true, company: true } },
-      driver: { select: { id: true, name: true, phone: true, avatarUrl: true } },
+      driver: { select: { id: true, name: true, email: true, phone: true, avatarUrl: true } },
       vehicle: { select: { id: true, name: true, type: true } },
-      secondaryDriver: { select: { id: true, name: true, phone: true, avatarUrl: true } },
+      secondaryDriver: { select: { id: true, name: true, email: true, phone: true, avatarUrl: true } },
       secondaryVehicle: { select: { id: true, name: true, type: true } },
       createdBy: { select: { id: true, name: true, role: true } },
       stops: { orderBy: { order: "asc" as const } },
@@ -238,7 +238,7 @@ export async function POST(request: NextRequest) {
       },
       include: {
         customer: { select: { id: true, name: true, phone: true } },
-        driver: { select: { id: true, name: true } },
+        driver: { select: { id: true, name: true, email: true, phone: true, avatarUrl: true } },
         vehicle: { select: { id: true, name: true, type: true } },
       },
     })
