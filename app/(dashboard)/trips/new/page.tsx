@@ -180,7 +180,7 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
                         )}
                         <div className="text-sm font-medium text-gray-900 truncate">{c.name}</div>
                         {(c.phone || c.email) && (
-                          <div className="text-xs text-gray-400 truncate">{c.phone || c.email}</div>
+                          <div className="text-xs text-gray-400 truncate">{c.phone ? formatPhone(c.phone) : c.email}</div>
                         )}
                       </div>
                       {c.customerNumber && <span className="text-xs font-mono text-gray-300 flex-shrink-0">#{c.customerNumber}</span>}
