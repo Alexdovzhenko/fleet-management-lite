@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { createPortal } from "react-dom"
 import {
   Dialog, DialogContent,
 } from "@/components/ui/dialog"
@@ -9,11 +10,13 @@ import { Input }  from "@/components/ui/input"
 import { Label }  from "@/components/ui/label"
 import {
   User, Car, ArrowRightLeft, Mail, FileText, ChevronDown,
-  CheckCircle2, AlertTriangle, Loader2, Send, Star, X,
+  CheckCircle2, AlertTriangle, Loader2, Send, Star, X, UserCheck,
 } from "lucide-react"
 import { useSenderEmails, useSendTripEmail } from "@/lib/hooks/use-sender-emails"
+import { useDrivers } from "@/lib/hooks/use-drivers"
+import { useVehicles } from "@/lib/hooks/use-vehicles"
 import { cn } from "@/lib/utils"
-import type { Trip, SenderEmail } from "@/types"
+import type { Trip, SenderEmail, Driver, Vehicle } from "@/types"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -61,6 +64,272 @@ const TABS: TabDef[] = [
     docColor: "bg-indigo-600 text-white",
   },
 ]
+
+// ─── Helper functions ────────────────────────────────────────────────────────
+
+function getInitials(name: string) {
+  return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+}
+
+const VEHICLE_TYPE_LABEL: Record<string, string> = {
+  SEDAN: "Sedan", SUV: "SUV", STRETCH_LIMO: "Stretch Limo",
+  SPRINTER: "Sprinter", PARTY_BUS: "Party Bus", COACH: "Coach", OTHER: "Vehicle",
+}
+
+// ─── Assignment Modal Component ───────────────────────────────────────────────
+
+interface DriverAssignmentModalProps {
+  trip: Trip
+  drivers: Driver[]
+  vehicles: Vehicle[]
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onAssign: (driverId: string, vehicleId?: string) => Promise<void>
+  isLoading?: boolean
+}
+
+function DriverAssignmentModal({
+  trip,
+  drivers,
+  vehicles,
+  open,
+  onOpenChange,
+  onAssign,
+  isLoading = false,
+}: DriverAssignmentModalProps) {
+  const [selectedDriverId, setSelectedDriverId] = useState("")
+  const [selectedVehicleId, setSelectedVehicleId] = useState("")
+  const [driverDropOpen, setDriverDropOpen] = useState(false)
+  const [vehicleDropOpen, setVehicleDropOpen] = useState(false)
+  const driverRef = useRef<HTMLDivElement>(null)
+  const driverDropRef = useRef<HTMLDivElement>(null)
+  const vehicleRef = useRef<HTMLDivElement>(null)
+  const vehicleDropRef = useRef<HTMLDivElement>(null)
+
+  const selectedDriver = drivers.find((d) => d.id === selectedDriverId) ?? null
+  const selectedVehicle = vehicles.find((v) => v.id === selectedVehicleId) ?? null
+
+  useEffect(() => {
+    if (!open) {
+      setSelectedDriverId("")
+      setSelectedVehicleId("")
+      setDriverDropOpen(false)
+      setVehicleDropOpen(false)
+    }
+  }, [open])
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (
+        driverRef.current && !driverRef.current.contains(e.target as Node) &&
+        driverDropRef.current && !driverDropRef.current.contains(e.target as Node)
+      ) setDriverDropOpen(false)
+      if (
+        vehicleRef.current && !vehicleRef.current.contains(e.target as Node) &&
+        vehicleDropRef.current && !vehicleDropRef.current.contains(e.target as Node)
+      ) setVehicleDropOpen(false)
+    }
+    document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [])
+
+  async function handleAssign() {
+    if (!selectedDriverId) return
+    await onAssign(selectedDriverId, selectedVehicleId)
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="p-0 gap-0 max-w-md overflow-hidden rounded-2xl border border-gray-200 shadow-2xl">
+        {/* ── Header ── */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center">
+              <UserCheck className="w-4 h-4 text-indigo-600" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-gray-900">Assign Driver & Vehicle</h2>
+              <p className="text-[11px] text-gray-400">{trip.tripNumber}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Content ── */}
+        <div className="px-5 py-5 space-y-4">
+          {/* Driver Picker */}
+          <div ref={driverRef} className="space-y-1.5">
+            <Label className="text-xs font-medium text-gray-900">Driver</Label>
+            {selectedDriver ? (
+              <div className="flex items-center gap-2.5 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2.5">
+                <div className="w-8 h-8 rounded-full bg-indigo-200 flex items-center justify-center text-xs font-bold text-indigo-700 flex-shrink-0 overflow-hidden">
+                  {selectedDriver.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={selectedDriver.avatarUrl} alt={selectedDriver.name} className="w-full h-full object-cover" />
+                  ) : getInitials(selectedDriver.name)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold text-gray-900 truncate">{selectedDriver.name}</div>
+                  {selectedDriver.phone && <div className="text-[11px] text-gray-500 truncate">{selectedDriver.phone}</div>}
+                </div>
+                <button type="button" onClick={() => setSelectedDriverId("")} className="text-gray-300 hover:text-gray-500 transition-colors">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setDriverDropOpen(!driverDropOpen)}
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 border border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-indigo-300 hover:text-indigo-500 hover:bg-indigo-50/50 transition-all"
+              >
+                <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                  <UserCheck className="w-3.5 h-3.5 text-gray-400" />
+                </div>
+                <span className="flex-1 text-left">Select driver…</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${driverDropOpen ? "rotate-180" : ""}`} />
+              </button>
+            )}
+            {driverDropOpen && !selectedDriver && createPortal(
+              <div
+                ref={driverDropRef}
+                style={{
+                  position: "fixed",
+                  top: (driverRef.current?.getBoundingClientRect().bottom ?? 0) + 4,
+                  left: driverRef.current?.getBoundingClientRect().left ?? 0,
+                  width: driverRef.current?.getBoundingClientRect().width ?? 0,
+                  zIndex: 9999,
+                }}
+                className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden"
+              >
+                <div className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
+                  Active Drivers
+                </div>
+                <div className="max-h-44 overflow-y-auto">
+                  {drivers.length === 0 ? (
+                    <div className="px-3 py-3 text-xs text-gray-400 text-center">No active drivers</div>
+                  ) : (
+                    drivers.map((d) => (
+                      <button
+                        key={d.id}
+                        type="button"
+                        onClick={() => { setSelectedDriverId(d.id); setDriverDropOpen(false) }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-indigo-50/60 transition-colors"
+                      >
+                        <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-[11px] font-bold text-indigo-600 flex-shrink-0 overflow-hidden">
+                          {d.avatarUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={d.avatarUrl} alt={d.name} className="w-full h-full object-cover" />
+                          ) : getInitials(d.name)}
+                        </div>
+                        <div className="flex-1 min-w-0 text-left">
+                          <div className="text-sm font-medium text-gray-800">{d.name}</div>
+                          {d.phone && <div className="text-[11px] text-gray-400">{d.phone}</div>}
+                        </div>
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>,
+              document.body
+            )}
+          </div>
+
+          {/* Vehicle Picker */}
+          <div ref={vehicleRef} className="space-y-1.5">
+            <Label className="text-xs font-medium text-gray-900">Vehicle <span className="text-gray-400 font-normal">(Optional)</span></Label>
+            {selectedVehicle ? (
+              <div className="flex items-center gap-2.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                <div className="w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0">
+                  <Car className="w-4 h-4 text-slate-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold text-gray-900 truncate">{selectedVehicle.name}</div>
+                  <div className="flex items-center gap-1 text-[11px] text-gray-500">
+                    <span>{VEHICLE_TYPE_LABEL[selectedVehicle.type] ?? "Vehicle"}</span>
+                    <span className="text-gray-300">·</span>
+                    <span>{selectedVehicle.capacity} pax</span>
+                  </div>
+                </div>
+                <button type="button" onClick={() => setSelectedVehicleId("")} className="text-gray-300 hover:text-gray-500 transition-colors flex-shrink-0">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setVehicleDropOpen(!vehicleDropOpen)}
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 border border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-slate-400 hover:text-slate-600 hover:bg-slate-50/50 transition-all"
+              >
+                <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                  <Car className="w-3.5 h-3.5 text-gray-400" />
+                </div>
+                <span className="flex-1 text-left">Select vehicle…</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${vehicleDropOpen ? "rotate-180" : ""}`} />
+              </button>
+            )}
+            {vehicleDropOpen && !selectedVehicle && createPortal(
+              <div
+                ref={vehicleDropRef}
+                style={{
+                  position: "fixed",
+                  top: (vehicleRef.current?.getBoundingClientRect().bottom ?? 0) + 4,
+                  left: vehicleRef.current?.getBoundingClientRect().left ?? 0,
+                  width: vehicleRef.current?.getBoundingClientRect().width ?? 0,
+                  zIndex: 9999,
+                }}
+                className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden"
+              >
+                <div className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
+                  Available Vehicles
+                </div>
+                <div className="max-h-44 overflow-y-auto">
+                  {vehicles.length === 0 ? (
+                    <div className="px-3 py-3 text-xs text-gray-400 text-center">No active vehicles</div>
+                  ) : (
+                    vehicles.map((v) => (
+                      <button
+                        key={v.id}
+                        type="button"
+                        onClick={() => { setSelectedVehicleId(v.id); setVehicleDropOpen(false) }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-slate-50 transition-colors"
+                      >
+                        <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
+                          <Car className="w-3.5 h-3.5 text-slate-500" />
+                        </div>
+                        <div className="flex-1 min-w-0 text-left">
+                          <div className="text-sm font-medium text-gray-800">{v.name}</div>
+                          <div className="text-[11px] text-gray-400">{VEHICLE_TYPE_LABEL[v.type] ?? "Vehicle"} · {v.capacity} pax</div>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>,
+              document.body
+            )}
+          </div>
+
+          {/* Assign Button */}
+          <Button
+            type="button"
+            className="w-full h-11 font-semibold text-sm bg-indigo-600 hover:bg-indigo-700 text-white transition-all"
+            disabled={!selectedDriverId || isLoading}
+            onClick={handleAssign}
+          >
+            {isLoading ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Assigning…
+              </span>
+            ) : (
+              "Assign Driver"
+            )}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 // ─── Sender selector ──────────────────────────────────────────────────────────
 
@@ -164,8 +433,12 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
   const [recipientEmailOverride, setRecipientEmailOverride] = useState("")
   const [status, setStatus]             = useState<"idle" | "sending" | "success" | "error">("idle")
   const [errorMsg, setErrorMsg]         = useState("")
+  const [showAssignmentModal, setShowAssignmentModal] = useState(false)
+  const [isAssigning, setIsAssigning] = useState(false)
 
   const { data: senders = [] }          = useSenderEmails()
+  const { data: drivers = [] }          = useDrivers()
+  const { data: vehicles = [] }         = useVehicles()
   const sendEmail                       = useSendTripEmail()
 
   // Set default sender email when senders load
@@ -192,6 +465,12 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
   const hasAffiliate = trip.farmOuts && trip.farmOuts.length > 0
 
   async function handleSend() {
+    // Check if driver is assigned when sending to driver
+    if (activeTab === "driver" && !trip.driverId) {
+      setShowAssignmentModal(true)
+      return
+    }
+
     if (status === "sending") return
     setStatus("sending")
     setErrorMsg("")
@@ -210,7 +489,47 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
     })
   }
 
+  async function handleAssignDriver(driverId: string, vehicleId?: string) {
+    try {
+      setIsAssigning(true)
+      const response = await fetch(`/api/trips/${trip.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ driverId, vehicleId: vehicleId || null }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to assign driver")
+      }
+
+      // Update trip and close assignment modal
+      setShowAssignmentModal(false)
+      // Trigger a refetch if needed, or just close the modal and proceed
+      // The trip object passed as prop will be stale, but the email will send with the updated trip
+      // For now, just proceed to send the email
+      setStatus("sending")
+      setErrorMsg("")
+
+      sendEmail.mutate({
+        tripId:         trip.id,
+        recipientType:  "driver",
+        recipientEmail: trip.driver?.email || undefined,
+        senderEmailId:  senderEmailId || undefined,
+      }, {
+        onSuccess: () => setStatus("success"),
+        onError: (err) => {
+          setStatus("error")
+          setErrorMsg(err instanceof Error ? err.message : "Failed to send email")
+        },
+      })
+    } catch (error) {
+      setErrorMsg(error instanceof Error ? error.message : "Failed to assign driver")
+      setIsAssigning(false)
+    }
+  }
+
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="p-0 gap-0 max-w-md overflow-hidden rounded-2xl border border-gray-200 shadow-2xl">
 
@@ -398,5 +717,17 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
 
       </DialogContent>
     </Dialog>
+
+    {/* ── Driver Assignment Modal ── */}
+    <DriverAssignmentModal
+      trip={trip}
+      drivers={drivers.filter((d) => d.status === "ACTIVE")}
+      vehicles={vehicles.filter((v) => v.status === "ACTIVE")}
+      open={showAssignmentModal}
+      onOpenChange={setShowAssignmentModal}
+      onAssign={handleAssignDriver}
+      isLoading={isAssigning}
+    />
+    </>
   )
 }
