@@ -2060,7 +2060,7 @@ function PdfBrandingSection() {
           </div>
           <div>
             <Label className="text-xs font-medium text-gray-600 mb-1.5 block">Phone</Label>
-            <Input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} className="h-9" placeholder="(555) 000-0000" />
+            <Input value={formatPhone(form.phone)} onChange={e => setForm(f => ({ ...f, phone: e.target.value.replace(/\D/g, "") }))} className="h-9" placeholder="(555) 000-0000" />
           </div>
           <div>
             <Label className="text-xs font-medium text-gray-600 mb-1.5 block">Website</Label>
