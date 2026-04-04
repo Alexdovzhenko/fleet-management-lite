@@ -2173,7 +2173,7 @@ export default function SettingsPage() {
   // Update URL when section changes
   const handleSectionChange = (newSection: Section) => {
     setSection(newSection)
-    router.push(`?tab=${newSection}`)
+    router.push(`/settings?tab=${newSection}`)
   }
 
   async function handleLogout() {
