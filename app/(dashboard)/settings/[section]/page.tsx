@@ -16,7 +16,6 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useAuth } from "@/components/providers/auth-provider"
 import { useCompany, useUpdateCompany } from "@/lib/hooks/use-company"
@@ -2119,13 +2118,13 @@ type Section = "profile" | "address-book" | "service-types" | "status-actions" |
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function SettingsSectionPage({
+export default async function SettingsSectionPage({
   params,
 }: {
-  params: { section: string }
+  params: Promise<{ section: string }>
 }) {
-  const router = useRouter()
-  const sectionParam = params.section as Section
+  const { section } = await params
+  const sectionParam = section as Section
 
   // Validate section parameter
   const validSections: Section[] = ["profile", "address-book", "service-types", "status-actions", "grid-columns", "personal", "team", "sender-emails", "pdf-branding"]
