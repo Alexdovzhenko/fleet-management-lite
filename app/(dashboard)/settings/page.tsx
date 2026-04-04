@@ -2154,14 +2154,12 @@ const NAV_GROUPS: { label: string; items: { key: Section; label: string; icon: R
 export default function SettingsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const hasInitializedRef = useRef(false)
   const [section, setSection] = useState<Section>("profile")
 
-  // Initialize section from URL on first mount
+  // Sync section with URL whenever searchParams changes
   useLayoutEffect(() => {
-    if (hasInitializedRef.current || !searchParams) return
+    if (!searchParams) return
 
-    hasInitializedRef.current = true
     const tab = searchParams.get("tab") as Section | null
     const validSections: Section[] = ["profile", "address-book", "service-types", "status-actions", "grid-columns", "personal", "team", "sender-emails", "pdf-branding"]
 
