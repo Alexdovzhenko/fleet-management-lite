@@ -2165,28 +2165,32 @@ export default function SettingsPage() {
     if (tab && validSections.includes(tab)) {
       setSection(tab)
     }
+
+    // Listen for back/forward button
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search)
+      const tab = params.get("tab") as Section | null
+      if (tab && validSections.includes(tab)) {
+        setSection(tab)
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
   }, [])
 
-  // Also sync when searchParams hook becomes available
+  // Sync URL whenever section changes
   useEffect(() => {
-    if (!searchParams) return
-
-    const tab = searchParams.get("tab") as Section | null
-    const validSections: Section[] = ["profile", "address-book", "service-types", "status-actions", "grid-columns", "personal", "team", "sender-emails", "pdf-branding"]
-
-    if (tab && validSections.includes(tab)) {
-      setSection(tab)
+    if (typeof window === 'undefined') return
+    const newUrl = `/settings?tab=${section}`
+    if (window.location.search !== `?tab=${section}`) {
+      window.history.pushState({ section }, '', newUrl)
     }
-  }, [searchParams])
+  }, [section])
 
-  // Update URL when section changes
+  // Update section (URL sync is handled by useEffect)
   const handleSectionChange = (newSection: Section) => {
     setSection(newSection)
-    const newUrl = `/settings?tab=${newSection}`
-    // Update URL in browser without navigation
-    if (typeof window !== 'undefined') {
-      window.history.pushState({ section: newSection }, '', newUrl)
-    }
   }
 
   async function handleLogout() {
