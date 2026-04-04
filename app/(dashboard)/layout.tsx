@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { Toaster } from "sonner"
 import { DockNav } from "@/components/layout/dock-nav"
 import { AuthProvider, useAuth } from "@/components/providers/auth-provider"
 
@@ -30,6 +31,7 @@ export default function DashboardLayout({
 }) {
   return (
     <AuthProvider>
+      <Toaster richColors position="top-right" />
       <DashboardShell>{children}</DashboardShell>
     </AuthProvider>
   )

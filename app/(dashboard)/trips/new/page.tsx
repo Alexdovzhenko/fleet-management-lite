@@ -20,6 +20,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
+import { CreateAccountDialog } from "@/components/trips/create-account-dialog"
+import { DriverPickerCard } from "@/components/trips/driver-picker-card"
+import { VehiclePickerCard } from "@/components/trips/vehicle-picker-card"
+import { TripSuccessModal } from "@/components/trips/trip-success-modal"
 import { useCreateTrip } from "@/lib/hooks/use-trips"
 import { useCustomers, useCreateCustomer } from "@/lib/hooks/use-customers"
 import { useDrivers } from "@/lib/hooks/use-drivers"
@@ -62,108 +66,6 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-const newAccountSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName:  z.string().optional(),
-  company:   z.string().optional(),
-  phone:     z.string().optional(),
-  email:     z.string().email("Invalid email").optional().or(z.literal("")),
-})
-type NewAccountData = z.infer<typeof newAccountSchema>
-
-function CreateAccountDialog({ onClose, onCreated }: { onClose: () => void; onCreated: (c: Customer) => void }) {
-  const createCustomer = useCreateCustomer()
-  const [apiError, setApiError] = useState("")
-  const { register, handleSubmit, formState: { errors } } = useForm<NewAccountData>({
-    resolver: zodResolver(newAccountSchema) as Resolver<NewAccountData>,
-  })
-
-  function onSubmit(data: NewAccountData) {
-    setApiError("")
-    const name = [data.firstName, data.lastName].filter(Boolean).join(" ")
-    createCustomer.mutate(
-      { name, phone: data.phone || undefined, email: data.email || undefined, company: data.company || undefined },
-      {
-        onSuccess: (c) => onCreated(c),
-        onError: () => setApiError("Something went wrong while creating the account. Please try again."),
-      },
-    )
-  }
-
-  return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b">
-          <h2 className="text-base font-semibold text-gray-900">New Account</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
-          {/* Required field legend */}
-          <p className="text-[11px] text-gray-400"><span className="text-red-400 font-semibold">*</span> Required field</p>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-gray-600">First Name <span className="text-red-400">*</span></Label>
-              <Input
-                {...register("firstName")}
-                className={`h-10 text-sm ${errors.firstName ? "border-red-400 focus:ring-red-300" : ""}`}
-                placeholder="John"
-                autoFocus
-              />
-              {errors.firstName && (
-                <p className="text-xs text-red-500">{errors.firstName.message || "First name is required"}</p>
-              )}
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-gray-900">Last Name</Label>
-              <Input {...register("lastName")} className="h-10 text-sm" placeholder="Smith" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-gray-900">Phone</Label>
-              <Input {...register("phone")} type="tel" className="h-10 text-sm" placeholder="(305) 555-1234" />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-gray-900">Email</Label>
-              <Input
-                {...register("email")}
-                type="email"
-                className={`h-10 text-sm ${errors.email ? "border-red-400" : ""}`}
-                placeholder="john@example.com"
-              />
-              {errors.email && (
-                <p className="text-xs text-red-500">Please enter a valid email address</p>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label className="text-xs font-medium text-gray-900">Company Name</Label>
-            <Input {...register("company")} className="h-10 text-sm" placeholder="Acme Corp" />
-          </div>
-
-          {apiError && (
-            <div className="rounded-lg bg-red-50 border border-red-200 px-3 py-2.5 text-sm text-red-600">
-              {apiError}
-            </div>
-          )}
-
-          <div className="flex gap-2 pt-1">
-            <Button type="button" variant="ghost" onClick={onClose} className="flex-1 h-9 text-sm">Cancel</Button>
-            <Button type="submit" disabled={createCustomer.isPending} className="flex-1 h-9 text-sm bg-[#2563EB] hover:bg-blue-700 text-white">
-              {createCustomer.isPending ? "Creating…" : "Create Account"}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>,
-    document.body
-  )
-}
 
 function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) => void; onClear?: () => void; error?: string }) {
   const [query, setQuery] = useState("")
@@ -371,228 +273,6 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
   )
 }
 
-function getInitials(name: string) {
-  return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
-}
-
-function DriverPickerCard({
-  drivers, value, onChange, label = "Driver",
-}: { drivers: Driver[]; value: string; onChange: (id: string) => void; label?: string | null }) {
-  const [open, setOpen] = useState(false)
-  const [dropStyle, setDropStyle] = useState<React.CSSProperties>({})
-  const ref = useRef<HTMLDivElement>(null)
-  const dropRef = useRef<HTMLDivElement>(null)
-  const selected = drivers.find((d) => d.id === value) ?? null
-
-  useEffect(() => {
-    function handle(e: MouseEvent) {
-      if (
-        ref.current && !ref.current.contains(e.target as Node) &&
-        dropRef.current && !dropRef.current.contains(e.target as Node)
-      ) setOpen(false)
-    }
-    document.addEventListener("mousedown", handle)
-    return () => document.removeEventListener("mousedown", handle)
-  }, [])
-
-  function openDropdown() {
-    if (ref.current) {
-      const rect = ref.current.getBoundingClientRect()
-      const spaceBelow = window.innerHeight - rect.bottom
-      const style: React.CSSProperties = spaceBelow < 240
-        ? { position: "fixed", bottom: window.innerHeight - rect.top + 4, left: rect.left, width: rect.width, zIndex: 9999 }
-        : { position: "fixed", top: rect.bottom + 4, left: rect.left, width: rect.width, zIndex: 9999 }
-      setDropStyle(style)
-    }
-    setOpen(true)
-  }
-
-  return (
-    <div ref={ref} className={label ? "space-y-1.5" : ""}>
-      {label && <Label className="text-xs font-medium text-gray-900">{label}</Label>}
-      {selected ? (
-        <div className="flex items-center gap-2.5 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2.5">
-          <div className="w-8 h-8 rounded-full bg-indigo-200 flex items-center justify-center text-xs font-bold text-indigo-700 flex-shrink-0 overflow-hidden">
-            {selected.avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={selected.avatarUrl} alt={selected.name} className="w-full h-full object-cover" />
-            ) : getInitials(selected.name)}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-gray-900 truncate">{selected.name}</div>
-            {selected.phone && <div className="text-[11px] text-gray-500 truncate">{selected.phone}</div>}
-          </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-full px-1.5 py-0.5">
-              <span className="w-1 h-1 rounded-full bg-emerald-500 inline-block" />
-              Active
-            </span>
-            <button type="button" onClick={() => onChange("")} className="text-gray-300 hover:text-gray-500 transition-colors">
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={() => open ? setOpen(false) : openDropdown()}
-          className="w-full flex items-center gap-2.5 px-3 py-2.5 border border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-indigo-300 hover:text-indigo-500 hover:bg-indigo-50/50 transition-all"
-        >
-          <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-            <UserCheck className="w-3.5 h-3.5 text-gray-400" />
-          </div>
-          <span className="flex-1 text-left">Assign driver…</span>
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
-        </button>
-      )}
-      {open && !selected && createPortal(
-        <div ref={dropRef} style={dropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
-          <div className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
-            Active Drivers
-          </div>
-          <div className="max-h-44 overflow-y-auto">
-            {drivers.length === 0 ? (
-              <div className="px-3 py-3 text-xs text-gray-400 text-center">No active drivers</div>
-            ) : (
-              drivers.map((d) => (
-                <button
-                  key={d.id}
-                  type="button"
-                  onClick={() => { onChange(d.id); setOpen(false) }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-indigo-50/60 transition-colors"
-                >
-                  <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-[11px] font-bold text-indigo-600 flex-shrink-0 overflow-hidden">
-                    {d.avatarUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={d.avatarUrl} alt={d.name} className="w-full h-full object-cover" />
-                    ) : getInitials(d.name)}
-                  </div>
-                  <div className="flex-1 min-w-0 text-left">
-                    <div className="text-sm font-medium text-gray-800">{d.name}</div>
-                    {d.phone && <div className="text-[11px] text-gray-400">{d.phone}</div>}
-                  </div>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
-                </button>
-              ))
-            )}
-          </div>
-        </div>,
-        document.body
-      )}
-    </div>
-  )
-}
-
-const VEHICLE_TYPE_LABEL: Record<string, string> = {
-  SEDAN: "Sedan", SUV: "SUV", STRETCH_LIMO: "Stretch Limo",
-  SPRINTER: "Sprinter", PARTY_BUS: "Party Bus", COACH: "Coach", OTHER: "Vehicle",
-}
-
-function VehiclePickerCard({
-  vehicles, value, passengerCount, onChange,
-}: { vehicles: Vehicle[]; value: string; passengerCount: number; onChange: (id: string) => void }) {
-  const [open, setOpen] = useState(false)
-  const [dropStyle, setDropStyle] = useState<React.CSSProperties>({})
-  const ref = useRef<HTMLDivElement>(null)
-  const dropRef = useRef<HTMLDivElement>(null)
-  const selected = vehicles.find((v) => v.id === value) ?? null
-
-  useEffect(() => {
-    function handle(e: MouseEvent) {
-      if (
-        ref.current && !ref.current.contains(e.target as Node) &&
-        dropRef.current && !dropRef.current.contains(e.target as Node)
-      ) setOpen(false)
-    }
-    document.addEventListener("mousedown", handle)
-    return () => document.removeEventListener("mousedown", handle)
-  }, [])
-
-  function openDropdown() {
-    if (ref.current) {
-      const rect = ref.current.getBoundingClientRect()
-      const spaceBelow = window.innerHeight - rect.bottom
-      const style: React.CSSProperties = spaceBelow < 240
-        ? { position: "fixed", bottom: window.innerHeight - rect.top + 4, left: rect.left, width: rect.width, zIndex: 9999 }
-        : { position: "fixed", top: rect.bottom + 4, left: rect.left, width: rect.width, zIndex: 9999 }
-      setDropStyle(style)
-    }
-    setOpen(true)
-  }
-
-  return (
-    <div ref={ref} className="space-y-1.5">
-      <Label className="text-xs font-medium text-gray-900">Vehicle</Label>
-      {selected ? (
-        <div className="flex items-center gap-2.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
-          <div className="w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0">
-            <Car className="w-4 h-4 text-slate-600" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-gray-900 truncate">{selected.name}</div>
-            <div className="flex items-center gap-1 text-[11px] text-gray-500">
-              <span>{VEHICLE_TYPE_LABEL[selected.type] ?? "Vehicle"}</span>
-              <span className="text-gray-300">·</span>
-              <span>{selected.capacity} pax</span>
-              {selected.color && <><span className="text-gray-300">·</span><span>{selected.color}</span></>}
-            </div>
-          </div>
-          <button type="button" onClick={() => onChange("")} className="text-gray-300 hover:text-gray-500 transition-colors flex-shrink-0">
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={() => open ? setOpen(false) : openDropdown()}
-          className="w-full flex items-center gap-2.5 px-3 py-2.5 border border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-slate-400 hover:text-slate-600 hover:bg-slate-50/50 transition-all"
-        >
-          <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-            <Car className="w-3.5 h-3.5 text-gray-400" />
-          </div>
-          <span className="flex-1 text-left">Select vehicle…</span>
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
-        </button>
-      )}
-      {open && !selected && createPortal(
-        <div ref={dropRef} style={dropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
-          <div className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
-            Available Vehicles
-          </div>
-          <div className="max-h-44 overflow-y-auto">
-            {vehicles.length === 0 ? (
-              <div className="px-3 py-3 text-xs text-gray-400 text-center">No active vehicles</div>
-            ) : (
-              vehicles.map((v) => {
-                const tooSmall = v.capacity < passengerCount
-                return (
-                  <button
-                    key={v.id}
-                    type="button"
-                    onClick={() => { onChange(v.id); setOpen(false) }}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-slate-50 transition-colors ${tooSmall ? "opacity-60" : ""}`}
-                  >
-                    <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
-                      <Car className="w-3.5 h-3.5 text-slate-500" />
-                    </div>
-                    <div className="flex-1 min-w-0 text-left">
-                      <div className="text-sm font-medium text-gray-800">{v.name}</div>
-                      <div className="text-[11px] text-gray-400">{VEHICLE_TYPE_LABEL[v.type] ?? "Vehicle"} · {v.capacity} pax</div>
-                    </div>
-                    {tooSmall && (
-                      <span className="text-[10px] font-semibold text-amber-500 flex-shrink-0">Too small</span>
-                    )}
-                  </button>
-                )
-              })
-            )}
-          </div>
-        </div>,
-        document.body
-      )}
-    </div>
-  )
-}
 
 type StopLocationType = "address" | "airport" | "seaport" | "fbo"
 type StopRole = "pickup" | "stop" | "wait" | "drop"
@@ -2470,8 +2150,8 @@ function StepHeader({ step, icon: Icon, title, subtitle }: { step: number; icon:
 export default function NewTripPage() {
   const router = useRouter()
   const createTrip = useCreateTrip()
-  const { data: drivers } = useDrivers()
-  const { data: vehicles } = useVehicles()
+  const { data: drivers, isLoading: driversLoading } = useDrivers()
+  const { data: vehicles, isLoading: vehiclesLoading } = useVehicles()
   const { data: serviceTypes = [] } = useServiceTypes()
   const enabledTypes = serviceTypes.filter((t) => t.isEnabled)
 
@@ -2491,7 +2171,6 @@ export default function NewTripPage() {
   const [confirmationNumber] = useState(() => generateConfirmationNumber())
   const [createdConfirmation, setCreatedConfirmation] = useState<string | null>(null)
   const [createdTrip, setCreatedTrip]               = useState<Trip | null>(null)
-  const [confirmCopied, setConfirmCopied]            = useState(false)
   const [headerCopied, setHeaderCopied]              = useState(false)
   const [sendEmailOpen, setSendEmailOpen]            = useState(false)
   const [sendEmailRecipient, setSendEmailRecipient]  = useState<"driver" | "client" | "affiliate">("driver")
@@ -2617,6 +2296,7 @@ export default function NewTripPage() {
           type="button"
           onClick={() => router.push("/dispatch")}
           className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+          aria-label="Go to dispatch"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
@@ -2637,6 +2317,7 @@ export default function NewTripPage() {
           }}
           className="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg px-3 py-1.5 transition-colors group"
           title="Click to copy confirmation number"
+          aria-label="Copy confirmation number"
         >
           <div className="flex flex-col items-start leading-none">
             <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-blue-400 mb-0.5">Confirmation #</span>
@@ -3069,12 +2750,14 @@ export default function NewTripPage() {
                         drivers={drivers?.filter((d) => d.status === "ACTIVE") ?? []}
                         value={driverIdValue}
                         onChange={(id) => { setDriverIdValue(id); setValue("driverId", id) }}
+                        isLoading={driversLoading}
                       />
                       <VehiclePickerCard
                         vehicles={vehicles?.filter((v) => v.status === "ACTIVE") ?? []}
                         value={vehicleIdValue}
                         passengerCount={watch("passengerCount") || 1}
                         onChange={(id) => { setVehicleIdValue(id); setValue("vehicleId", id) }}
+                        isLoading={vehiclesLoading}
                       />
                     </>
                   ) : (
@@ -3084,12 +2767,14 @@ export default function NewTripPage() {
                         drivers={drivers?.filter((d) => d.status === "ACTIVE") ?? []}
                         value={secondaryDriverIdValue}
                         onChange={(id) => { setSecondaryDriverIdValue(id); setValue("secondaryDriverId", id) }}
+                        isLoading={driversLoading}
                       />
                       <VehiclePickerCard
                         vehicles={vehicles?.filter((v) => v.status === "ACTIVE") ?? []}
                         value={secondaryVehicleIdValue}
                         passengerCount={watch("passengerCount") || 1}
                         onChange={(id) => { setSecondaryVehicleIdValue(id); setValue("secondaryVehicleId", id) }}
+                        isLoading={vehiclesLoading}
                       />
                       {(secondaryDriverIdValue || secondaryVehicleIdValue) && (
                         <button
@@ -3275,247 +2960,25 @@ export default function NewTripPage() {
 
         {/* ─── Success Modal ─── */}
         {createdTrip && createdConfirmation && (
-          <Dialog open={!!createdConfirmation && !!createdTrip} onOpenChange={(open) => {
-            if (!open) {
+          <TripSuccessModal
+            trip={createdTrip}
+            confirmationNumber={createdConfirmation}
+            open={!!createdConfirmation && !!createdTrip}
+            onClose={() => {
               setCreatedConfirmation(null)
               setCreatedTrip(null)
-            }
-          }}>
-            <DialogContent showCloseButton={false} className="p-0 gap-0 max-w-2xl overflow-hidden rounded-2xl border border-gray-200 shadow-2xl">
-
-              {/* Header */}
-              <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center flex-shrink-0">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-bold text-gray-900">Reservation Created</h2>
-                    <p className="text-[11px] text-gray-400 font-mono">{createdConfirmation}</p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCreatedConfirmation(null)
-                    setCreatedTrip(null)
-                  }}
-                  className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Body: Two-column layout */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:divide-x md:divide-gray-100">
-
-                {/* Left: Trip Details */}
-                <div className="px-6 py-5 space-y-5">
-                  {/* Confirmation Number */}
-                  <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">Confirmation #</p>
-                    <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex items-center justify-between group">
-                      <p className="text-lg font-mono font-bold text-blue-700">{createdConfirmation}</p>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText(createdConfirmation)
-                          setConfirmCopied(true)
-                          setTimeout(() => setConfirmCopied(false), 2000)
-                        }}
-                        className="text-blue-400 hover:text-blue-600 transition-colors opacity-0 group-hover:opacity-100"
-                      >
-                        {confirmCopied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Trip Info */}
-                  <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">Trip Details</p>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <Calendar className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                        <span className="font-medium">{createdTrip.pickupDate}</span>
-                        <Clock className="w-3.5 h-3.5 text-gray-400 flex-shrink-0 ml-2" />
-                        <span className="font-medium">{createdTrip.pickupTime}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <Badge variant="secondary">{createdTrip.tripType}</Badge>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Route */}
-                  <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">Route</p>
-                    <div className="space-y-2">
-                      <div className="flex gap-2 text-sm">
-                        <ArrowUpRight className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-700 line-clamp-1" title={createdTrip.pickupAddress}>{createdTrip.pickupAddress}</span>
-                      </div>
-                      <div className="flex gap-2 text-sm">
-                        <Navigation className="w-3.5 h-3.5 text-blue-500 flex-shrink-0 mt-0.5 -rotate-180" />
-                        <span className="text-gray-700 line-clamp-1" title={createdTrip.dropoffAddress}>{createdTrip.dropoffAddress}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Passenger */}
-                  {createdTrip.passengerName && (
-                    <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">Passenger</p>
-                      <div className="text-sm text-gray-700 space-y-1">
-                        <p className="font-semibold">{createdTrip.passengerName}</p>
-                        <div className="text-xs text-gray-500 space-y-0.5">
-                          {createdTrip.passengerPhone && <p>📞 {createdTrip.passengerPhone}</p>}
-                          {createdTrip.passengerEmail && <p>📧 {createdTrip.passengerEmail}</p>}
-                          <p>👥 {createdTrip.passengerCount} {createdTrip.passengerCount === 1 ? 'passenger' : 'passengers'}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Assignment */}
-                  {(createdTrip.driver || createdTrip.vehicle) && (
-                    <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">Assignment</p>
-                      <div className="text-sm text-gray-700 space-y-1">
-                        {createdTrip.driver && <p className="font-semibold">🚗 {createdTrip.driver.name}</p>}
-                        {createdTrip.vehicle && <p className="text-xs text-gray-600">{createdTrip.vehicle.name}</p>}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Pricing */}
-                  {createdTrip.price && (() => {
-                    const basePrice = parseFloat(createdTrip.price as string)
-                    const gratuity = createdTrip.gratuity ? parseFloat(createdTrip.gratuity as string) : 0
-                    const total = createdTrip.totalPrice ? parseFloat(createdTrip.totalPrice as string) : basePrice + gratuity
-                    return (
-                      <div>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">Pricing</p>
-                        <div className="text-sm space-y-1">
-                          <div className="flex justify-between text-gray-600">
-                            <span>Base Price</span>
-                            <span className="font-medium">${basePrice.toFixed(2)}</span>
-                          </div>
-                          {gratuity > 0 && (
-                            <div className="flex justify-between text-gray-600">
-                              <span>Gratuity</span>
-                              <span className="font-medium">+${gratuity.toFixed(2)}</span>
-                            </div>
-                          )}
-                          <div className="flex justify-between pt-1 border-t border-gray-200 text-gray-900">
-                            <span className="font-semibold">Total</span>
-                            <span className="font-bold">${total.toFixed(2)}</span>
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  })()}
-
-                </div>
-
-                {/* Right: Send Confirmation Actions */}
-                <div className="px-6 py-5 space-y-3">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em]">Send Confirmation</p>
-
-                  {[
-                    {
-                      key: "driver" as const,
-                      label: "Driver",
-                      doc: "Job Order",
-                      icon: Car,
-                      color: "bg-slate-100",
-                      textColor: "text-slate-600",
-                      hasEmail: !!createdTrip.driver?.email,
-                      email: createdTrip.driver?.email,
-                    },
-                    {
-                      key: "client" as const,
-                      label: "Client",
-                      doc: "Reservation",
-                      icon: User,
-                      color: "bg-blue-50",
-                      textColor: "text-blue-600",
-                      hasEmail: !!(createdTrip.passengerEmail || createdTrip.customer?.email),
-                      email: createdTrip.passengerEmail || createdTrip.customer?.email,
-                    },
-                    {
-                      key: "affiliate" as const,
-                      label: "Affiliate",
-                      doc: "Reservation",
-                      icon: FileText,
-                      color: "bg-indigo-50",
-                      textColor: "text-indigo-600",
-                      hasEmail: !!(createdTrip.farmOuts?.[0] && (createdTrip.farmOuts[0] as { toCompany?: { email?: string } }).toCompany?.email),
-                      email: (createdTrip.farmOuts?.[0] as { toCompany?: { email?: string } })?.toCompany?.email,
-                    },
-                  ].map(({ key, label, doc, icon: Icon, color, textColor, hasEmail, email }) => (
-                    <button
-                      key={key}
-                      type="button"
-                      disabled={!hasEmail}
-                      onClick={() => {
-                        if (hasEmail) {
-                          setSendEmailRecipient(key)
-                          setSendEmailOpen(true)
-                        }
-                      }}
-                      className={cn(
-                        "w-full rounded-xl border transition-all p-3 text-left",
-                        hasEmail
-                          ? "border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 cursor-pointer"
-                          : "border-gray-100 bg-gray-50 cursor-not-allowed opacity-60"
-                      )}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0", color)}>
-                          <Icon className={cn("w-4 h-4", textColor)} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-gray-900">{label}</p>
-                          <p className="text-[11px] text-gray-500 mb-2">{doc} PDF</p>
-                          {hasEmail ? (
-                            <p className="text-xs text-gray-600 truncate">{email}</p>
-                          ) : (
-                            <p className="text-xs text-gray-400 italic">No email on file</p>
-                          )}
-                        </div>
-                        {hasEmail && <ArrowRight className="w-4 h-4 text-gray-300 flex-shrink-0 mt-1" />}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-
-              </div>
-
-              {/* Footer */}
-              <div className="flex gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="flex-1 h-10"
-                  onClick={() => {
-                    setCreatedConfirmation(null)
-                    setCreatedTrip(null)
-                    router.push("/trips/new")
-                  }}
-                >
-                  New Reservation
-                </Button>
-                <Button
-                  type="button"
-                  className="flex-1 h-10 bg-[#2563EB] hover:bg-blue-700 text-white font-semibold"
-                  onClick={() => router.push("/dispatch")}
-                >
-                  Go to Dispatch
-                </Button>
-              </div>
-
-            </DialogContent>
-          </Dialog>
+            }}
+            onNewReservation={() => {
+              setCreatedConfirmation(null)
+              setCreatedTrip(null)
+              router.push("/trips/new")
+            }}
+            onGoToDispatch={() => router.push("/dispatch")}
+            onSendEmail={(recipient) => {
+              setSendEmailRecipient(recipient)
+              setSendEmailOpen(true)
+            }}
+          />
         )}
 
         {/* ─── Email Modal ─── */}
