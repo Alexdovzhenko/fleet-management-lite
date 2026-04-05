@@ -36,8 +36,17 @@ async function createTrip(data: Partial<Trip>): Promise<Trip> {
   })
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
-    const msg = [body.error, body.detail].filter(Boolean).join(" — ")
-    throw new Error(msg || "Failed to create trip")
+    let msg = body.error || "Failed to create trip"
+
+    // Add validation details if available
+    if (body.details && Array.isArray(body.details)) {
+      const issues = body.details.map((issue: any) => issue.message).join(", ")
+      msg = `${msg}: ${issues}`
+    } else if (body.detail) {
+      msg = `${msg} — ${body.detail}`
+    }
+
+    throw new Error(msg)
   }
   return res.json()
 }

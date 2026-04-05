@@ -115,7 +115,16 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
         setSuccess({ tripNumber: newTrip.tripNumber })
       },
       onError: (error: any) => {
-        setTimeError(error?.message || "Failed to copy reservation. Please try again.")
+        // Extract detailed error message
+        let errorMsg = "Failed to copy reservation. Please try again."
+
+        if (error?.message) {
+          errorMsg = error.message
+        } else if (typeof error === 'string') {
+          errorMsg = error
+        }
+
+        setTimeError(errorMsg)
       },
     })
   }
