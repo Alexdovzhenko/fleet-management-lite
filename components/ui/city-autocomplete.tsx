@@ -83,7 +83,9 @@ export function CityAutocomplete({
       c.city.toLowerCase().includes(q) && !prefixCities.has(`${c.city}-${c.state}`)
     )
 
-    return [...prefixMatches, ...includesMatches].slice(0, 10)
+    const final = [...prefixMatches, ...includesMatches].slice(0, 10)
+    console.log(`[CityAutocomplete] query="${query}" q="${q}" results=${final.length}`, final.slice(0, 3))
+    return final
   }, [query])
 
   function openDropdown() {
@@ -111,6 +113,7 @@ export function CityAutocomplete({
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
     const v = e.target.value
+    console.log(`[CityAutocomplete] handleInputChange: "${v}"`)
     setQuery(v)
     onChange(v)
     setOpen(v.length > 0)
