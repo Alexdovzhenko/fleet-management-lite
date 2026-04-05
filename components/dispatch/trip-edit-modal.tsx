@@ -27,6 +27,7 @@ import { useTripFarmOuts, useCancelFarmOut } from "@/lib/hooks/use-farm-outs"
 import { FarmOutModal } from "@/components/dispatch/farm-out-modal"
 import { ReservationMetadata } from "@/components/trips/reservation-metadata"
 import { SendEmailModal } from "@/components/email/send-email-modal"
+import { CopyReservationModal } from "@/components/dispatch/copy-reservation-modal"
 import { formatCurrency, formatPhone, getTripStatusLabel, cn } from "@/lib/utils"
 import type { Trip, TripStatus, Driver, Vehicle, Customer } from "@/types"
 import { format, parse, isValid } from "date-fns"
@@ -876,6 +877,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
   const [farmOutOpen, setFarmOutOpen]         = useState(false)
   const [sendEmailOpen, setSendEmailOpen]     = useState(false)
+  const [copyOpen, setCopyOpen]               = useState(false)
   const { data: farmOuts } = useTripFarmOuts(isFarmedIn ? null : (trip?.id ?? null))
   const pendingFarmOut = farmOuts?.find((f) => f.status === "PENDING")
   const acceptedFarmOut = farmOuts?.find((f) => f.status === "ACCEPTED")
@@ -1137,6 +1139,15 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
             />
             {trip.customer && <span className="text-sm text-gray-400 truncate">— {trip.customer.name}</span>}
           </div>
+
+          <button
+            type="button"
+            onClick={() => setCopyOpen(true)}
+            className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
+          >
+            <Copy className="w-3.5 h-3.5" />
+            Copy
+          </button>
 
           <div className="flex-1" />
 
@@ -1750,6 +1761,13 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
         trip={trip}
         open={sendEmailOpen}
         onOpenChange={setSendEmailOpen}
+      />
+    )}
+    {trip && (
+      <CopyReservationModal
+        trip={trip}
+        open={copyOpen}
+        onClose={() => setCopyOpen(false)}
       />
     )}
     </>
