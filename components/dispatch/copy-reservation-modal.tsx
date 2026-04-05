@@ -9,8 +9,9 @@ import { DatePickerInput } from "@/components/ui/date-picker"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useCreateTrip } from "@/lib/hooks/use-trips"
+import { useVehicles } from "@/lib/hooks/use-vehicles"
 import { formatPhone, cn } from "@/lib/utils"
-import type { Trip, TripType, VehicleType } from "@/types"
+import type { Trip, TripType } from "@/types"
 
 interface CopyReservationModalProps {
   trip: Trip
@@ -19,18 +20,18 @@ interface CopyReservationModalProps {
 }
 
 const SERVICE_TYPES: TripType[] = ["ONE_WAY", "ROUND_TRIP", "HOURLY", "AIRPORT_PICKUP", "AIRPORT_DROPOFF", "MULTI_STOP", "SHUTTLE"]
-const VEHICLE_TYPES: VehicleType[] = ["SEDAN", "SUV", "STRETCH_LIMO", "SPRINTER", "PARTY_BUS", "COACH", "OTHER"]
 
 export function CopyReservationModal({ trip, open, onClose }: CopyReservationModalProps) {
   const [pickupDate, setPickupDate] = useState("")
   const [pickupTime, setPickupTime] = useState("")
   const [serviceType, setServiceType] = useState<TripType>(trip?.tripType || "ONE_WAY")
-  const [vehicleType, setVehicleType] = useState<VehicleType>("SEDAN")
+  const [vehicleId, setVehicleId] = useState("")
   const [copyNotes, setCopyNotes] = useState(true)
   const [timeError, setTimeError] = useState("")
   const [success, setSuccess] = useState<{ tripNumber: string } | null>(null)
 
   const createTrip = useCreateTrip()
+  const { data: vehicles = [] } = useVehicles()
 
   // Reset state when modal opens
   useEffect(() => {
@@ -40,14 +41,13 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
       setPickupDate(formattedDate)
       setPickupTime(trip.pickupTime)
       setServiceType(trip.tripType)
-      // Try to use vehicle type, fall back to SEDAN
-      const vType = trip.vehicle?.type as VehicleType | undefined
-      setVehicleType(vType && VEHICLE_TYPES.includes(vType) ? vType : "SEDAN")
+      // Set vehicle ID from trip, or use first available vehicle
+      setVehicleId(trip.vehicleId || vehicles[0]?.id || "")
       setCopyNotes(true)
       setTimeError("")
       setSuccess(null)
     }
-  }, [open, trip])
+  }, [open, trip, vehicles])
 
   function validateTime(time: string): boolean {
     const trimmed = time.trim()
@@ -84,6 +84,7 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
       dropoffAddress: trip.dropoffAddress,
       dropoffNotes: trip.dropoffNotes,
       passengerCount: trip.passengerCount,
+      vehicleId: vehicleId || undefined,
       luggageCount: trip.luggageCount ?? undefined,
       passengerName: trip.passengerName ?? undefined,
       passengerPhone: trip.passengerPhone ?? undefined,
@@ -118,12 +119,12 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-2xl rounded-2xl shadow-2xl p-0 overflow-hidden">
+      <DialogContent className="w-full max-w-2xl rounded-2xl shadow-2xl p-0 overflow-hidden" showCloseButton={false}>
         {/* PREMIUM HEADER - Single close button, elegant layout */}
         <div className="flex items-start justify-between px-8 py-6 border-b border-gray-100 bg-white">
           <div>
             <h2 className="text-2xl font-semibold text-gray-950">Copy Reservation</h2>
-            <p className="text-sm text-gray-500 mt-1">From <span className="font-medium text-gray-700">{trip.tripNumber}</span></p>
+            <p className="text-sm text-gray-500 mt-1">Confirmation <span className="font-medium text-gray-700">{trip.tripNumber}</span></p>
           </div>
           <button
             onClick={onClose}
@@ -214,17 +215,20 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
                   </div>
                 </div>
 
-                {/* Vehicle Type - Now editable, shows TYPE not name */}
+                {/* Vehicle - Now shows actual vehicles from fleet */}
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 block">Vehicle Type</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 block">Vehicle</label>
                   <div className="relative">
                     <select
-                      value={vehicleType}
-                      onChange={(e) => setVehicleType(e.target.value as VehicleType)}
+                      value={vehicleId}
+                      onChange={(e) => setVehicleId(e.target.value)}
                       className="w-full h-10 px-3.5 py-2 border border-gray-200 rounded-lg bg-white text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 appearance-none cursor-pointer"
                     >
-                      {VEHICLE_TYPES.map(type => (
-                        <option key={type} value={type}>{type.replace(/_/g, " ")}</option>
+                      <option value="">Select a vehicle</option>
+                      {vehicles.map(vehicle => (
+                        <option key={vehicle.id} value={vehicle.id}>
+                          {vehicle.name} ({vehicle.type})
+                        </option>
                       ))}
                     </select>
                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
