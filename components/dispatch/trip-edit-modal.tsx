@@ -1398,17 +1398,6 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
                 {/* Client Ref + Notes */}
                 <div className="space-y-4">
-                  {/* Client Reference */}
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
-                    <div className="space-y-2">
-                      <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider flex items-center gap-1.5">
-                        Client Reference #
-                        <span className="text-[10px] font-normal text-gray-400 normal-case lowercase">affiliate&apos;s confirmation number</span>
-                      </Label>
-                      <Input {...register("clientRef")} className="h-9 text-sm font-mono" placeholder="e.g. 14547002*1" />
-                    </div>
-                  </div>
-
                   {/* Trip Notes */}
                   <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
                     <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider block mb-3">Trip Notes</Label>
@@ -1584,6 +1573,13 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                     </div>
                   )}
                 </section>
+
+                {/* Client Reference */}
+                <div className="bg-gray-50 rounded-xl border border-gray-200 px-4 py-3">
+                  <Label className="text-[10px] font-semibold text-gray-600 uppercase tracking-wider mb-2 block">Client Reference</Label>
+                  <Input {...register("clientRef")} className="h-8 text-xs font-mono bg-white" placeholder="e.g. 14547002*1" />
+                  <p className="text-[9px] text-gray-400 mt-1.5">Affiliate confirmation number</p>
+                </div>
 
                 {/* Farm-Out status — shown inline after Dispatch */}
                 {!isFarmedIn && !["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
