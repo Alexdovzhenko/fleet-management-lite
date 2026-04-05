@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DatePickerInput } from "@/components/ui/date-picker"
 import { CityAutocomplete } from "@/components/ui/city-autocomplete"
+import { FBOAutocomplete } from "@/components/ui/fbo-autocomplete"
 import { useUpdateTrip } from "@/lib/hooks/use-trips"
 import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
@@ -514,8 +515,20 @@ function RouteBuilder({ stops, setStops, stopsError }: {
               <div className="grid grid-cols-[1fr_140px] gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">FBO Name *</Label>
-                  <Input value={locationName} onChange={(e) => { setLocationName(e.target.value); setAddError("") }}
-                    placeholder="Signature Flight Support, Atlantic Aviation…" className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" />
+                  <FBOAutocomplete
+                    value={locationName}
+                    onChange={(v) => { setLocationName(v); setAddError("") }}
+                    onSelect={(fbo) => {
+                      setLocationName(fbo.name)
+                      setAddress1(fbo.address)
+                      setCity(fbo.city)
+                      setStateVal(fbo.state)
+                      setZip(fbo.zip ?? "")
+                      setAddError("")
+                    }}
+                    hasError={!!addError}
+                    placeholder="Signature Aviation, Atlantic, Million Air…"
+                  />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Tail #</Label>
