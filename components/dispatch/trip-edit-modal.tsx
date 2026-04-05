@@ -8,7 +8,7 @@ import { z } from "zod"
 import {
   X, Plane, Phone, Copy, Check, User, Car, UserCheck,
   ChevronDown, MapPin, Building2, Ship, Plus, Star,
-  AlertTriangle, Baby, ArrowRightLeft, Pencil, Send,
+  AlertTriangle, Baby, ArrowRightLeft, Pencil, Send, Calendar,
 } from "lucide-react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -1163,47 +1163,62 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
           </Button>
         </div>
 
-        {/* ── Reservation Overview Strip ── */}
-        <div className="flex items-center gap-4 px-6 py-3.5 border-b border-gray-100 bg-white flex-shrink-0 text-sm text-gray-700 overflow-x-auto">
-          {/* Service Type */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-xs font-semibold">{trip.tripType?.replace(/_/g, ' ') || 'Trip'}</span>
+        {/* ── Reservation Details Card (Premium) ── */}
+        <div className="px-6 py-5 border-b border-gray-100 bg-gradient-to-br from-gray-50 to-white flex-shrink-0">
+          {/* Section Header */}
+          <div className="flex items-center gap-2 mb-4">
+            <span className="w-0.5 h-4 rounded-full bg-gray-200" />
+            <h3 className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">Reservation Details</h3>
           </div>
 
-          {/* Date & Time */}
-          <div className="flex items-center gap-1 flex-shrink-0 text-gray-600">
-            <span>{format(new Date(trip.pickupDate), 'eee, MMM d')} · {trip.pickupTime}</span>
-            <span className="text-gray-300">|</span>
-          </div>
+          {/* Content Grid */}
+          <div className="grid grid-cols-2 gap-6">
+            {/* Left: Created Date & Time */}
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Calendar className="w-5 h-5 text-blue-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Created</p>
+                <p className="text-sm font-semibold text-gray-900">
+                  {trip.createdAt ? format(new Date(trip.createdAt), 'MMM d, yyyy') : '—'}
+                </p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  {trip.createdAt ? format(new Date(trip.createdAt), 'h:mm a') : '—'}
+                </p>
+              </div>
+            </div>
 
-          {/* Route */}
-          <div className="flex-shrink-0 text-gray-600 min-w-0">
-            <span className="truncate">{trip.pickupAddress} → {trip.dropoffAddress}</span>
-            <span className="text-gray-300 mx-2">|</span>
+            {/* Right: Created By User & Role */}
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-semibold text-slate-700">
+                {trip.createdBy?.name
+                  ? trip.createdBy.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')
+                      .toUpperCase()
+                      .slice(0, 2)
+                  : '—'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Created By</p>
+                <p className="text-sm font-semibold text-gray-900 truncate">{trip.createdBy?.name || 'Unknown'}</p>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <span className={cn(
+                    "text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md whitespace-nowrap",
+                    trip.createdBy?.role === 'ADMIN'
+                      ? "bg-purple-100 text-purple-700"
+                      : trip.createdBy?.role === 'DISPATCHER'
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-gray-100 text-gray-600"
+                  )}>
+                    {trip.createdBy?.role || 'User'}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
-
-          {/* Passenger */}
-          <div className="flex-shrink-0 text-gray-600">
-            <span>{trip.passengerName || 'Passenger'} · {trip.passengerCount} pax</span>
-            <span className="text-gray-300 mx-2">|</span>
-          </div>
-
-          {/* Vehicle */}
-          <div className="flex-shrink-0">
-            {vehicleIdValue ? (
-              <span className="text-gray-700">{activeVehicles.find(v => v.id === vehicleIdValue)?.name || 'Vehicle'}</span>
-            ) : (
-              <span className="text-gray-400 italic">No vehicle</span>
-            )}
-          </div>
-
-          {/* Price */}
-          {total > 0 && (
-            <>
-              <span className="text-gray-300 mx-2">|</span>
-              <div className="flex-shrink-0 font-semibold text-gray-900">{formatCurrency(total)}</div>
-            </>
-          )}
         </div>
 
         {/* ── Body ── */}
