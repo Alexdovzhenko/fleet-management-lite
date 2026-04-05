@@ -95,7 +95,12 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
       passengerName: trip.passengerName ?? undefined,
       passengerPhone: trip.passengerPhone ?? undefined,
       passengerEmail: trip.passengerEmail ?? undefined,
-      additionalPassengers: trip.additionalPassengers ?? undefined,
+      additionalPassengers: trip.additionalPassengers ? trip.additionalPassengers.map(p => ({
+        firstName: p.firstName,
+        lastName: p.lastName,
+        phone: p.phone ?? undefined,
+        email: p.email ?? undefined,
+      })) : undefined,
       price: trip.price ? parseFloat(trip.price) : undefined,
       gratuity: trip.gratuity ? parseFloat(trip.gratuity) : undefined,
       totalPrice: trip.totalPrice ? parseFloat(trip.totalPrice) : undefined,
@@ -108,7 +113,7 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
       wheelchairAccess: trip.wheelchairAccess,
       vip: trip.vip,
       clientRef: trip.clientRef ?? undefined,
-      notes: copyNotes ? trip.notes : undefined,
+      notes: copyNotes ? (trip.notes ?? undefined) : undefined,
       internalNotes: trip.internalNotes ?? undefined,
     } as never, {
       onSuccess: (newTrip) => {
