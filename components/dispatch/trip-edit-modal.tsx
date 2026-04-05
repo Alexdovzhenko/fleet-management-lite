@@ -1163,35 +1163,27 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
           </Button>
         </div>
 
-        {/* ── Reservation Details Card (Premium) ── */}
-        <div className="px-6 py-5 border-b border-gray-100 bg-gradient-to-br from-gray-50 to-white flex-shrink-0">
-          {/* Section Header */}
-          <div className="flex items-center gap-2 mb-4">
-            <span className="w-0.5 h-4 rounded-full bg-gray-200" />
-            <h3 className="text-[11px] font-semibold uppercase tracking-widest text-gray-500">Reservation Details</h3>
-          </div>
-
-          {/* Content Grid */}
-          <div className="grid grid-cols-2 gap-6">
-            {/* Left: Created Date & Time */}
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Calendar className="w-5 h-5 text-blue-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Created</p>
-                <p className="text-sm font-semibold text-gray-900">
-                  {trip.createdAt ? format(new Date(trip.createdAt), 'MMM d, yyyy') : '—'}
-                </p>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  {trip.createdAt ? format(new Date(trip.createdAt), 'h:mm a') : '—'}
-                </p>
-              </div>
+        {/* ── Reservation Details (Compact) ── */}
+        <div className="px-6 py-3 border-b border-gray-100 bg-white flex-shrink-0">
+          <div className="flex items-center gap-4 text-sm">
+            {/* Created Date & Time */}
+            <div className="flex items-center gap-2 min-w-0">
+              <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <span className="text-gray-600 font-medium">
+                {trip.createdAt ? format(new Date(trip.createdAt), 'MMM d, yyyy') : '—'}
+              </span>
+              <span className="text-gray-400">·</span>
+              <span className="text-gray-500">
+                {trip.createdAt ? format(new Date(trip.createdAt), 'h:mm a') : '—'}
+              </span>
             </div>
 
-            {/* Right: Created By User & Role */}
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-semibold text-slate-700">
+            {/* Divider */}
+            <span className="text-gray-300">|</span>
+
+            {/* Created By User & Role */}
+            <div className="flex items-center gap-2.5 min-w-0 flex-1">
+              <div className="w-7 h-7 rounded-md bg-slate-100 flex items-center justify-center flex-shrink-0 text-[10px] font-semibold text-slate-700">
                 {trip.createdBy?.name
                   ? trip.createdBy.name
                       .split(' ')
@@ -1201,22 +1193,17 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                       .slice(0, 2)
                   : '—'}
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Created By</p>
-                <p className="text-sm font-semibold text-gray-900 truncate">{trip.createdBy?.name || 'Unknown'}</p>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <span className={cn(
-                    "text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md whitespace-nowrap",
-                    trip.createdBy?.role === 'ADMIN'
-                      ? "bg-purple-100 text-purple-700"
-                      : trip.createdBy?.role === 'DISPATCHER'
-                      ? "bg-blue-100 text-blue-700"
-                      : "bg-gray-100 text-gray-600"
-                  )}>
-                    {trip.createdBy?.role || 'User'}
-                  </span>
-                </div>
-              </div>
+              <span className="text-gray-900 font-medium truncate">{trip.createdBy?.name || 'Unknown'}</span>
+              <span className={cn(
+                "text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md flex-shrink-0 whitespace-nowrap",
+                trip.createdBy?.role === 'ADMIN'
+                  ? "bg-purple-100 text-purple-700"
+                  : trip.createdBy?.role === 'DISPATCHER'
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-100 text-gray-600"
+              )}>
+                {trip.createdBy?.role || 'User'}
+              </span>
             </div>
           </div>
         </div>
