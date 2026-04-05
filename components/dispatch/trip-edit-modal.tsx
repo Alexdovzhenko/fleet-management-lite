@@ -1200,9 +1200,11 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                   ? "bg-purple-100 text-purple-700"
                   : trip.createdBy?.role === 'DISPATCHER'
                   ? "bg-blue-100 text-blue-700"
+                  : trip.createdBy?.role === 'OWNER'
+                  ? "bg-amber-100 text-amber-700"
                   : "bg-gray-100 text-gray-600"
               )}>
-                {trip.createdBy?.role || 'User'}
+                {trip.createdBy?.role ? trip.createdBy.role.charAt(0) + trip.createdBy.role.slice(1).toLowerCase() : 'User'}
               </span>
             </div>
           </div>
