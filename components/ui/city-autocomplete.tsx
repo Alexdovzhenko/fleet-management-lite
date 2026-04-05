@@ -120,7 +120,12 @@ export function CityAutocomplete({
     console.log(`[CityAutocomplete] handleInputChange: "${v}"`)
     setQuery(v)
     onChange(v)
-    setOpen(v.length > 0)
+    if (v.length > 0) {
+      // Use setTimeout to ensure query state is updated before opening dropdown
+      setTimeout(() => openDropdown(), 0)
+    } else {
+      setOpen(false)
+    }
     setActiveIdx(-1)
   }
 
@@ -152,6 +157,8 @@ export function CityAutocomplete({
     }
   }
 
+  console.log(`[CityAutocomplete] Render: open=${open} results.length=${results.length}`)
+
   return (
     <div ref={ref} className={`relative ${className || ""}`}>
       <div className="relative">
@@ -160,7 +167,7 @@ export function CityAutocomplete({
           value={query}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          onFocus={() => query.length > 0 && results.length > 0 && openDropdown()}
+          onFocus={() => { console.log(`[CityAutocomplete] onFocus: query="${query}" results.length=${results.length}`); query.length > 0 && results.length > 0 && openDropdown() }}
           placeholder={placeholder}
           autoComplete="off"
           className="w-full h-9 text-sm border border-gray-200 rounded-md pl-2.5 pr-6 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-gray-800"
@@ -168,7 +175,7 @@ export function CityAutocomplete({
         <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
       </div>
 
-      {open && results.length > 0 && createPortal(
+      {open && results.length > 0 && (() => { console.log(`[CityAutocomplete] Rendering portal with ${results.length} results`); return true; })() && createPortal(
         <div
           ref={dropRef}
           style={dropStyle}
