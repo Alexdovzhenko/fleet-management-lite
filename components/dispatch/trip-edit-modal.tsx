@@ -25,7 +25,6 @@ import { useServiceTypes } from "@/lib/hooks/use-service-types"
 import { useCustomers } from "@/lib/hooks/use-customers"
 import { useTripFarmOuts, useCancelFarmOut } from "@/lib/hooks/use-farm-outs"
 import { FarmOutModal } from "@/components/dispatch/farm-out-modal"
-import { ReservationMetadata } from "@/components/trips/reservation-metadata"
 import { SendEmailModal } from "@/components/email/send-email-modal"
 import { CopyReservationModal } from "@/components/dispatch/copy-reservation-modal"
 import { formatCurrency, formatPhone, getTripStatusLabel, cn } from "@/lib/utils"
@@ -1762,29 +1761,6 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                   </div>
                 </section>
 
-                {/* Send Emails */}
-                <div className="border-t border-gray-100 pt-4">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2.5">Notifications</p>
-                  <button
-                    type="button"
-                    onClick={() => setSendEmailOpen(true)}
-                    className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-50/40 transition-all text-left group"
-                  >
-                    <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors">
-                      <Send className="w-3.5 h-3.5 text-blue-500" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-gray-800">Send Reservation Email</p>
-                      <p className="text-[10px] text-gray-400 leading-tight mt-0.5">Driver · Client · Affiliate</p>
-                    </div>
-                  </button>
-                </div>
-
-                {/* Reservation Metadata */}
-                <ReservationMetadata
-                  createdAt={trip.createdAt}
-                  createdByUser={trip.createdBy ?? null}
-                />
 
                 {/* Cancel Trip */}
                 {!["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
