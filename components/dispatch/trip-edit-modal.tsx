@@ -524,6 +524,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
                       setCity(fbo.city)
                       setStateVal(fbo.state)
                       setZip(fbo.zip ?? "")
+                      setCountry(fbo.country ?? "USA")
                       setAddError("")
                     }}
                     hasError={!!addError}
