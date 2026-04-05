@@ -24,6 +24,7 @@ import { CreateAccountDialog } from "@/components/trips/create-account-dialog"
 import { DriverPickerCard } from "@/components/trips/driver-picker-card"
 import { VehiclePickerCard } from "@/components/trips/vehicle-picker-card"
 import { TripSuccessModal } from "@/components/trips/trip-success-modal"
+import { CityAutocomplete } from "@/components/ui/city-autocomplete"
 import { useCreateTrip } from "@/lib/hooks/use-trips"
 import { useCustomers, useCreateCustomer } from "@/lib/hooks/use-customers"
 import { useDrivers } from "@/lib/hooks/use-drivers"
@@ -1725,8 +1726,7 @@ function RouteBuilder({
               <div className="grid grid-cols-[2fr_90px_80px_1fr] gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">City</Label>
-                  <Input value={city} onChange={(e) => setCity(e.target.value)}
-                    className="h-9 text-sm" autoComplete="off" />
+                  <CityAutocomplete value={city} onChange={setCity} onStateChange={setStateVal} placeholder="Miami" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">State</Label>
@@ -1950,8 +1950,7 @@ function RouteBuilder({
               <div className="grid grid-cols-[2fr_90px_80px_1fr] gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">City</Label>
-                  <Input value={city} onChange={(e) => setCity(e.target.value)}
-                    className="h-9 text-sm" autoComplete="off" />
+                  <CityAutocomplete value={city} onChange={setCity} onStateChange={setStateVal} placeholder="Miami" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">State</Label>

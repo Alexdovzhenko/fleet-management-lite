@@ -1786,4 +1786,70 @@ export const US_CITIES: { city: string; state: string }[] = [
   { city: "Gillette", state: "WY" },
   { city: "Rock Springs", state: "WY" },
   { city: "Teton Village", state: "WY" },
+  // Canada
+  // Alberta
+  { city: "Calgary", state: "AB" },
+  { city: "Edmonton", state: "AB" },
+  { city: "Red Deer", state: "AB" },
+  { city: "Lethbridge", state: "AB" },
+  { city: "St. Albert", state: "AB" },
+  // British Columbia
+  { city: "Vancouver", state: "BC" },
+  { city: "Victoria", state: "BC" },
+  { city: "Surrey", state: "BC" },
+  { city: "Burnaby", state: "BC" },
+  { city: "Richmond", state: "BC" },
+  { city: "Kelowna", state: "BC" },
+  { city: "Abbotsford", state: "BC" },
+  // Manitoba
+  { city: "Winnipeg", state: "MB" },
+  { city: "Brandon", state: "MB" },
+  // New Brunswick
+  { city: "Moncton", state: "NB" },
+  { city: "Saint John", state: "NB" },
+  { city: "Fredericton", state: "NB" },
+  // Newfoundland and Labrador
+  { city: "St. John's", state: "NL" },
+  { city: "Corner Brook", state: "NL" },
+  { city: "Gander", state: "NL" },
+  // Northwest Territories
+  { city: "Yellowknife", state: "NT" },
+  { city: "Hay River", state: "NT" },
+  // Nova Scotia
+  { city: "Halifax", state: "NS" },
+  { city: "Cape Breton", state: "NS" },
+  // Nunavut
+  { city: "Iqaluit", state: "NU" },
+  // Ontario
+  { city: "Toronto", state: "ON" },
+  { city: "Ottawa", state: "ON" },
+  { city: "Mississauga", state: "ON" },
+  { city: "Brampton", state: "ON" },
+  { city: "Hamilton", state: "ON" },
+  { city: "London", state: "ON" },
+  { city: "Markham", state: "ON" },
+  { city: "Vaughan", state: "ON" },
+  { city: "Kitchener", state: "ON" },
+  { city: "Windsor", state: "ON" },
+  { city: "Oshawa", state: "ON" },
+  { city: "Thunder Bay", state: "ON" },
+  { city: "Barrie", state: "ON" },
+  // Prince Edward Island
+  { city: "Charlottetown", state: "PE" },
+  { city: "Summerside", state: "PE" },
+  // Quebec
+  { city: "Montreal", state: "QC" },
+  { city: "Quebec City", state: "QC" },
+  { city: "Laval", state: "QC" },
+  { city: "Gatineau", state: "QC" },
+  { city: "Longueuil", state: "QC" },
+  { city: "Sherbrooke", state: "QC" },
+  { city: "Saguenay", state: "QC" },
+  { city: "Trois-Rivières", state: "QC" },
+  // Saskatchewan
+  { city: "Saskatoon", state: "SK" },
+  { city: "Regina", state: "SK" },
+  { city: "Prince Albert", state: "SK" },
+  // Yukon
+  { city: "Whitehorse", state: "YT" },
 ]

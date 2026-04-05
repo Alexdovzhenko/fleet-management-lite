@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DatePickerInput } from "@/components/ui/date-picker"
+import { CityAutocomplete } from "@/components/ui/city-autocomplete"
 import { useUpdateTrip } from "@/lib/hooks/use-trips"
 import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
@@ -353,7 +354,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
               <div className="grid grid-cols-[1fr_90px_90px_120px] gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">City</Label>
-                  <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Miami" className="h-9 text-sm" autoComplete="off" />
+                  <CityAutocomplete value={city} onChange={setCity} onStateChange={setStateVal} placeholder="Miami" />
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">State</Label>
@@ -529,7 +530,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">City / State</Label>
                   <div className="flex gap-2">
-                    <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Miami" className="h-9 text-sm" autoComplete="off" />
+                    <CityAutocomplete value={city} onChange={setCity} onStateChange={setStateVal} placeholder="Miami" />
                     <Input value={stateVal} onChange={(e) => setStateVal(e.target.value)} placeholder="FL" className="h-9 text-sm w-16" autoComplete="off" />
                   </div>
                 </div>
