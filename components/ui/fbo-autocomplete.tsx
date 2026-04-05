@@ -175,10 +175,21 @@ export function FBOAutocomplete({
     )
   }
 
-  // Update portal position when dropdown opens
+  // Update portal position when dropdown opens or on scroll/resize
   useEffect(() => {
-    if (open) {
-      updateDropPosition()
+    if (!open) return
+
+    updateDropPosition()
+
+    const handleScroll = () => updateDropPosition()
+    const handleResize = () => updateDropPosition()
+
+    document.addEventListener("scroll", handleScroll, true)
+    window.addEventListener("resize", handleResize)
+
+    return () => {
+      document.removeEventListener("scroll", handleScroll, true)
+      window.removeEventListener("resize", handleResize)
     }
   }, [open])
 
