@@ -1116,30 +1116,27 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       <DialogContent showCloseButton={false} className="sm:max-w-[1180px] w-[96vw] p-0 flex flex-col overflow-hidden max-h-[92vh] gap-0">
 
         {/* ── Header ── */}
-        <div className="flex items-center gap-3 px-5 py-3.5 border-b bg-white flex-shrink-0">
+        <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-100 bg-white flex-shrink-0">
+          {/* Close */}
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 flex-shrink-0 transition-colors">
             <X className="w-4 h-4" />
           </button>
 
-          <button type="button" onClick={copyConfirmation}
-            className="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg px-3 py-1.5 transition-colors group flex-shrink-0">
-            <div className="flex flex-col items-start leading-none">
-              <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-blue-400 mb-0.5">Confirmation #</span>
-              <span className="text-sm font-mono font-bold text-blue-700 tracking-wide">{trip.tripNumber}</span>
-            </div>
-            {copied
-              ? <Check className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
-              : <Copy className="w-3.5 h-3.5 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />}
+          {/* Confirmation # */}
+          <button type="button" onClick={copyConfirmation} className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors group flex-shrink-0">
+            <span className="text-sm font-mono font-semibold text-blue-700">{trip.tripNumber}</span>
+            {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />}
           </button>
 
-          <div className="flex items-center gap-2 min-w-0">
-            <StatusDropdown
-              trip={trip}
-              onUpdate={(status) => updateTrip.mutate({ id: trip.id, status })}
-            />
-            {trip.customer && <span className="text-sm text-gray-400 truncate">— {trip.customer.name}</span>}
-          </div>
+          {/* Status */}
+          <StatusDropdown
+            trip={trip}
+            onUpdate={(status) => updateTrip.mutate({ id: trip.id, status })}
+          />
 
+          <div className="flex-1" />
+
+          {/* Copy Reservation */}
           <button
             type="button"
             onClick={() => setCopyOpen(true)}
@@ -1149,115 +1146,86 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
             Copy
           </button>
 
-          <div className="flex-1" />
+          {/* Send Email */}
+          <button
+            type="button"
+            onClick={() => setSendEmailOpen(true)}
+            className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
+          >
+            <Send className="w-3.5 h-3.5" />
+            Send
+          </button>
 
+          {/* Save Changes */}
+          <Button form="trip-edit-form" type="submit" size="sm" disabled={updateTrip.isPending}
+            className="bg-blue-600 hover:bg-blue-700 text-white h-9 text-sm px-6 font-semibold">
+            {updateTrip.isPending ? "Saving…" : "Save Changes"}
+          </Button>
+        </div>
+
+        {/* ── Reservation Overview Strip ── */}
+        <div className="flex items-center gap-4 px-6 py-3.5 border-b border-gray-100 bg-white flex-shrink-0 text-sm text-gray-700 overflow-x-auto">
+          {/* Service Type */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <Button form="trip-edit-form" type="submit" size="sm" disabled={updateTrip.isPending}
-              className="bg-[#2563EB] hover:bg-blue-700 text-white h-9 text-sm px-5 font-semibold">
-              {updateTrip.isPending ? "Saving…" : "Save Changes"}
-            </Button>
+            <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-xs font-semibold">{trip.tripType?.replace(/_/g, ' ') || 'Trip'}</span>
           </div>
+
+          {/* Date & Time */}
+          <div className="flex items-center gap-1 flex-shrink-0 text-gray-600">
+            <span>{format(new Date(trip.pickupDate), 'eee, MMM d')} · {trip.pickupTime}</span>
+            <span className="text-gray-300">|</span>
+          </div>
+
+          {/* Route */}
+          <div className="flex-shrink-0 text-gray-600 min-w-0">
+            <span className="truncate">{trip.pickupAddress} → {trip.dropoffAddress}</span>
+            <span className="text-gray-300 mx-2">|</span>
+          </div>
+
+          {/* Passenger */}
+          <div className="flex-shrink-0 text-gray-600">
+            <span>{trip.passengerName || 'Passenger'} · {trip.passengerCount} pax</span>
+            <span className="text-gray-300 mx-2">|</span>
+          </div>
+
+          {/* Vehicle */}
+          <div className="flex-shrink-0">
+            {vehicleIdValue ? (
+              <span className="text-gray-700">{activeVehicles.find(v => v.id === vehicleIdValue)?.name || 'Vehicle'}</span>
+            ) : (
+              <span className="text-gray-400 italic">No vehicle</span>
+            )}
+          </div>
+
+          {/* Price */}
+          {total > 0 && (
+            <>
+              <span className="text-gray-300 mx-2">|</span>
+              <div className="flex-shrink-0 font-semibold text-gray-900">{formatCurrency(total)}</div>
+            </>
+          )}
         </div>
 
         {/* ── Body ── */}
-        <div className="overflow-y-auto flex-1 min-h-0 bg-[#f5f6f8]">
+        <div className="overflow-y-auto flex-1 min-h-0 bg-[#f5f6f8] relative">
           <form id="trip-edit-form" onSubmit={handleSubmit(onSubmit, () => {
             setSaveError("Please check required fields")
           })}>
             <div className="flex min-h-0 gap-0">
 
               {/* ── LEFT (scrollable main) ── */}
-              <div className="flex-1 p-5 space-y-4 min-w-0">
-
-                {/* Account */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
-                  <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
-                    <span className="w-1 h-3 rounded-full bg-blue-400 inline-block flex-shrink-0" />Account
-                  </p>
-                  <div ref={customerPickerRef} className="relative">
-                    {/* Current customer card + change button */}
-                    {selectedCustomer ? (
-                      <div className="flex items-center gap-3 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
-                        <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center text-xs font-bold text-blue-700 flex-shrink-0">
-                          {getInitials(selectedCustomer.name)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-semibold text-gray-900">{selectedCustomer.name}</div>
-                          {selectedCustomer.phone && <div className="text-xs text-gray-500">{formatPhone(selectedCustomer.phone)}</div>}
-                        </div>
-                        {selectedCustomer.phone && (
-                          <a href={`tel:${selectedCustomer.phone}`} onClick={(e) => e.stopPropagation()}
-                            className="flex items-center gap-1.5 text-blue-600 hover:underline text-xs flex-shrink-0">
-                            <Phone className="w-3.5 h-3.5" />{formatPhone(selectedCustomer.phone)}
-                          </a>
-                        )}
-                        <button type="button"
-                          onClick={() => { setCustomerPickerOpen(true); setCustomerSearch("") }}
-                          className="ml-1 text-[11px] text-blue-500 hover:text-blue-700 font-semibold flex-shrink-0 underline underline-offset-2">
-                          Change
-                        </button>
-                      </div>
-                    ) : (
-                      <button type="button"
-                        onClick={() => { setCustomerPickerOpen(true); setCustomerSearch("") }}
-                        className="w-full flex items-center gap-2 border border-dashed border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-400 hover:border-blue-400 hover:text-blue-500 transition-colors">
-                        <User className="w-4 h-4" />
-                        Assign an account…
-                      </button>
-                    )}
-
-                    {/* Search dropdown */}
-                    {customerPickerOpen && (
-                      <div className="absolute left-0 right-0 top-full mt-1.5 z-50 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
-                        <div className="p-2 border-b border-gray-100">
-                          <input
-                            autoFocus
-                            type="text"
-                            value={customerSearch}
-                            onChange={(e) => setCustomerSearch(e.target.value)}
-                            placeholder="Search accounts…"
-                            className="w-full text-sm px-3 py-2 rounded-lg border border-gray-200 outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400"
-                          />
-                        </div>
-                        <div className="max-h-52 overflow-y-auto">
-                          {allCustomers.length === 0 ? (
-                            <p className="text-xs text-gray-400 text-center py-4">No accounts found</p>
-                          ) : (
-                            allCustomers.map((c) => (
-                              <button key={c.id} type="button"
-                                onClick={() => { setSelectedCustomer(c); setCustomerPickerOpen(false); setCustomerSearch("") }}
-                                className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 text-left transition-colors">
-                                <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-700 flex-shrink-0">
-                                  {getInitials(c.name)}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <div className="text-sm font-medium text-gray-900 truncate">{c.name}</div>
-                                  {c.phone && <div className="text-xs text-gray-400">{c.phone}</div>}
-                                </div>
-                              </button>
-                            ))
-                          )}
-                        </div>
-                        <div className="p-2 border-t border-gray-100">
-                          <button type="button"
-                            onClick={() => { setCustomerPickerOpen(false); setCustomerSearch("") }}
-                            className="w-full text-xs text-gray-400 hover:text-gray-600 py-1">
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
+              <div className="flex-1 p-6 space-y-5 min-w-0">
 
                 {/* Schedule */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
-                  <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                    <span className="w-1 h-3 rounded-full bg-indigo-400 inline-block flex-shrink-0" />Schedule
-                  </p>
-                  <div className="grid grid-cols-[180px_160px_1fr_72px_72px] gap-3">
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Pickup Date</Label>
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-0.5 h-4 rounded-full bg-gray-200 inline-block flex-shrink-0" />
+                    <span className="text-[11px] font-semibold uppercase tracking-widest text-gray-400">Schedule</span>
+                  </div>
+                  {/* Row 1: Date · Time · Service Type */}
+                  <div className="grid grid-cols-[200px_180px_1fr] gap-4 mb-4">
+                    <div className="space-y-2">
+                      <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Pickup Date</Label>
                       <DatePickerInput
                         value={watch("pickupDate") || ""}
                         onChange={(v) => setValue("pickupDate", v, { shouldValidate: true })}
@@ -1265,8 +1233,8 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                       />
                       {errors.pickupDate && <p className="text-xs text-red-500">Required</p>}
                     </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Pickup Time</Label>
+                    <div className="space-y-2">
+                      <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Pickup Time</Label>
                       <Input
                         type="text"
                         value={watch("pickupTime") || ""}
@@ -1277,8 +1245,8 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                       />
                       {errors.pickupTime && <p className="text-xs text-red-500">Required</p>}
                     </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Service Type</Label>
+                    <div className="space-y-2">
+                      <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Service Type</Label>
                       <Select value={tripTypeValue}
                         onValueChange={(v) => { if (typeof v === "string") { setTripTypeValue(v); setValue("tripType", v) } }}>
                         <SelectTrigger className="h-9 text-sm w-full">
@@ -1291,23 +1259,34 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Pax</Label>
-                      <Input type="number" min={1} {...register("passengerCount", { valueAsNumber: true })} className="h-9 text-sm text-center" />
+                  </div>
+                  {/* Row 2: Pax & Bags with steppers */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Passengers</Label>
+                      <div className="flex items-center gap-3 h-9 px-3 border border-gray-200 rounded-lg bg-gray-50">
+                        <button type="button" onClick={() => { const curr = watch("passengerCount") || 1; if (curr > 1) setValue("passengerCount", curr - 1) }} className="text-gray-500 hover:text-gray-700 font-semibold">−</button>
+                        <span className="flex-1 text-center font-semibold text-gray-900">{watch("passengerCount") || 1}</span>
+                        <button type="button" onClick={() => { const curr = watch("passengerCount") || 1; setValue("passengerCount", curr + 1) }} className="text-gray-500 hover:text-gray-700 font-semibold">+</button>
+                      </div>
                     </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-500">Bags</Label>
-                      <Input type="number" min={0} {...register("luggageCount", { valueAsNumber: true })} className="h-9 text-sm text-center" />
+                    <div className="space-y-2">
+                      <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Bags</Label>
+                      <div className="flex items-center gap-3 h-9 px-3 border border-gray-200 rounded-lg bg-gray-50">
+                        <button type="button" onClick={() => { const curr = watch("luggageCount") || 0; if (curr > 0) setValue("luggageCount", curr - 1) }} className="text-gray-500 hover:text-gray-700 font-semibold">−</button>
+                        <span className="flex-1 text-center font-semibold text-gray-900">{watch("luggageCount") || 0}</span>
+                        <button type="button" onClick={() => { const curr = watch("luggageCount") || 0; setValue("luggageCount", curr + 1) }} className="text-gray-500 hover:text-gray-700 font-semibold">+</button>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Passenger */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
-                  <p className="text-[10px] font-bold text-purple-500 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                    <span className="w-1 h-3 rounded-full bg-purple-400 inline-block flex-shrink-0" />
-                    Passengers
-                  </p>
+                {/* Passengers */}
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-0.5 h-4 rounded-full bg-gray-200 inline-block flex-shrink-0" />
+                    <span className="text-[11px] font-semibold uppercase tracking-widest text-gray-400">Passengers</span>
+                  </div>
                   <div className="space-y-2.5">
                     {/* Primary passenger */}
                     <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl px-3.5 py-3">
@@ -1408,44 +1387,45 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                 </div>
 
                 {/* Route */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4">
-                  <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                    <span className="w-1 h-3 rounded-full bg-emerald-400 inline-block flex-shrink-0" />Route
-                  </p>
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-0.5 h-4 rounded-full bg-gray-200 inline-block flex-shrink-0" />
+                    <span className="text-[11px] font-semibold uppercase tracking-widest text-gray-400">Route</span>
+                  </div>
                   <RouteBuilder stops={stops} setStops={setStops} stopsError={stopsError} />
                 </div>
 
                 {/* Client Ref + Notes */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 space-y-4">
-                  <div className="space-y-1.5">
-                    <Label className="text-[11px] font-medium text-gray-500 flex items-center gap-1.5">
-                      Client Reference #
-                      <span className="text-[10px] font-normal text-gray-400 normal-case">— affiliate&apos;s confirmation number</span>
-                    </Label>
-                    <Input {...register("clientRef")} className="h-9 text-sm font-mono" placeholder="e.g. 14547002*1" />
+                <div className="space-y-4">
+                  {/* Client Reference */}
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
+                    <div className="space-y-2">
+                      <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider flex items-center gap-1.5">
+                        Client Reference #
+                        <span className="text-[10px] font-normal text-gray-400 normal-case lowercase">affiliate&apos;s confirmation number</span>
+                      </Label>
+                      <Input {...register("clientRef")} className="h-9 text-sm font-mono" placeholder="e.g. 14547002*1" />
+                    </div>
                   </div>
 
-                  {/* Notes tabs */}
-                  <div>
-                    <div className="flex gap-1 mb-2">
-                      {(["trip", "internal"] as const).map((tab) => (
-                        <button key={tab} type="button" onClick={() => setNotesTab(tab)}
-                          className={`px-3 py-1.5 text-[11px] font-semibold rounded-lg transition-colors ${
-                            notesTab === tab ? "bg-gray-900 text-white" : "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-                          }`}>
-                          {tab === "trip" ? "Trip Notes" : "Internal Notes"}
-                        </button>
-                      ))}
+                  {/* Trip Notes */}
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
+                    <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider block mb-3">Trip Notes</Label>
+                    <p className="text-xs text-gray-500 mb-3">Visible to driver and client</p>
+                    <textarea {...register("notes")} rows={3}
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-800 resize-none focus:outline-none focus:ring-1 focus:ring-blue-400 placeholder:text-gray-400"
+                      placeholder="Add any trip-specific notes here…" />
+                  </div>
+
+                  {/* Internal Notes */}
+                  <div className="bg-amber-50 rounded-2xl border border-amber-100 shadow-sm px-6 py-5">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Label className="text-[11px] font-semibold text-amber-900 uppercase tracking-wider">Internal Notes</Label>
+                      <span className="text-xs text-amber-700 flex items-center gap-1">🔒 Dispatcher only</span>
                     </div>
-                    {notesTab === "trip" ? (
-                      <textarea {...register("notes")} rows={3}
-                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-800 resize-none focus:outline-none focus:ring-1 focus:ring-blue-400 placeholder:text-gray-400"
-                        placeholder="Notes visible to driver and passenger…" />
-                    ) : (
-                      <textarea {...register("internalNotes")} rows={3}
-                        className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-800 resize-none focus:outline-none focus:ring-1 focus:ring-blue-400 placeholder:text-gray-400"
-                        placeholder="Dispatch notes, reminders, internal instructions…" />
-                    )}
+                    <textarea {...register("internalNotes")} rows={3}
+                      className="w-full border border-amber-200 bg-white rounded-xl px-3 py-2.5 text-sm text-gray-800 resize-none focus:outline-none focus:ring-1 focus:ring-amber-400 placeholder:text-gray-400"
+                      placeholder="Private notes, reminders, internal instructions…" />
                   </div>
                 </div>
 
@@ -1458,8 +1438,71 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
               </div>
 
               {/* ── RIGHT SIDEBAR ── */}
-              <div className="w-[300px] flex-shrink-0 border-l bg-white flex flex-col">
-              <div className="flex-1 overflow-y-auto p-5 space-y-5">
+              <div className="w-[320px] flex-shrink-0 border-l border-gray-100 bg-white flex flex-col">
+              <div className="flex-1 overflow-y-auto p-5 space-y-4">
+
+                {/* Account / Billing Contact */}
+                <div className="bg-gray-50 rounded-xl border border-gray-200 px-4 py-3.5">
+                  <Label className="text-[10px] font-semibold text-gray-600 uppercase tracking-wider mb-2.5 block">Billing Contact</Label>
+                  <div ref={customerPickerRef} className="relative">
+                    {selectedCustomer ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-blue-200 flex items-center justify-center text-[10px] font-bold text-blue-700 flex-shrink-0">
+                            {getInitials(selectedCustomer.name)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-semibold text-gray-900 truncate">{selectedCustomer.name}</div>
+                            {selectedCustomer.phone && <div className="text-[10px] text-gray-500">{formatPhone(selectedCustomer.phone)}</div>}
+                          </div>
+                        </div>
+                        <button type="button"
+                          onClick={() => { setCustomerPickerOpen(true); setCustomerSearch("") }}
+                          className="text-[11px] text-blue-600 hover:text-blue-700 font-semibold">
+                          Change
+                        </button>
+                      </div>
+                    ) : (
+                      <button type="button"
+                        onClick={() => { setCustomerPickerOpen(true); setCustomerSearch("") }}
+                        className="w-full flex items-center justify-center gap-1.5 border border-dashed border-gray-300 rounded-lg px-3 py-2 text-[11px] text-gray-400 hover:border-blue-400 hover:text-blue-600 transition-colors">
+                        <User className="w-3.5 h-3.5" />
+                        Select account
+                      </button>
+                    )}
+
+                    {/* Search dropdown */}
+                    {customerPickerOpen && (
+                      <div className="absolute left-0 right-0 top-full mt-1.5 z-50 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                        <div className="p-2 border-b border-gray-100">
+                          <input autoFocus type="text" value={customerSearch}
+                            onChange={(e) => setCustomerSearch(e.target.value)} placeholder="Search…"
+                            className="w-full text-sm px-2 py-1.5 rounded border border-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                          />
+                        </div>
+                        <div className="max-h-40 overflow-y-auto">
+                          {allCustomers.length === 0 ? (
+                            <p className="text-[11px] text-gray-400 text-center py-3">No accounts</p>
+                          ) : (
+                            allCustomers.map((c) => (
+                              <button key={c.id} type="button"
+                                onClick={() => { setSelectedCustomer(c); setCustomerPickerOpen(false); setCustomerSearch("") }}
+                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-left transition-colors border-b border-gray-50 last:border-0">
+                                <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[9px] font-bold text-blue-700 flex-shrink-0">
+                                  {getInitials(c.name)}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-xs font-medium text-gray-900 truncate">{c.name}</div>
+                                  {c.phone && <div className="text-[10px] text-gray-400">{c.phone}</div>}
+                                </div>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
                 {/* Farm-In banner */}
                 {isFarmedIn && trip.farmedIn && (
@@ -1480,7 +1523,10 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
                 {/* Dispatch */}
                 <section className="space-y-3">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Dispatch</p>
+                  <div className="flex items-center gap-2">
+                    <span className="w-0.5 h-3 rounded-full bg-gray-200 inline-block flex-shrink-0" />
+                    <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">Dispatch</span>
+                  </div>
 
                   {/* Driver label row with inline Primary/Secondary toggle */}
                   <div className="flex items-center justify-between">
@@ -1599,54 +1645,66 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
                 {/* Pricing */}
                 {!isFarmedIn && <section className="space-y-3">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pricing</p>
+                  <div className="flex items-center gap-2">
+                    <span className="w-0.5 h-3 rounded-full bg-gray-200 inline-block flex-shrink-0" />
+                    <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">Pricing</span>
+                  </div>
                   <div className="grid grid-cols-2 gap-2.5">
                     <div className="space-y-1.5">
-                      <Label className="text-xs font-medium text-gray-500">Base Fare</Label>
+                      <Label className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">Base Fare</Label>
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold">$</span>
                         <Input type="number" step="0.01" {...register("price", { valueAsNumber: true })}
-                          className="pl-6 h-9 text-sm" placeholder="0.00" />
+                          className="pl-6 h-9 text-sm font-tabular-nums" placeholder="0.00" />
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-xs font-medium text-gray-500">Gratuity %</Label>
-                      <Input type="number" min={0} max={100} {...register("gratuityPercent", { valueAsNumber: true })} className="h-9 text-sm" />
+                      <Label className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">Gratuity %</Label>
+                      <Input type="number" min={0} max={100} {...register("gratuityPercent", { valueAsNumber: true })} className="h-9 text-sm font-tabular-nums" />
                     </div>
                   </div>
-                  {price > 0 && (
-                    <div className="bg-gray-50 rounded-xl border border-gray-100 px-3 py-2.5 space-y-1.5">
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <span>Gratuity ({gratuityPercent}%)</span>
-                        <span>{formatCurrency(gratuityAmt)}</span>
-                      </div>
-                      <div className="flex justify-between text-sm font-bold text-gray-900 border-t border-gray-200 pt-1.5">
-                        <span>Total</span>
-                        <span>{formatCurrency(total)}</span>
-                      </div>
+                  <div className="bg-gray-50 rounded-lg border border-gray-100 px-3 py-3 space-y-2">
+                    <div className="flex justify-between text-[11px] text-gray-500 font-tabular-nums">
+                      <span>Base Fare</span>
+                      <span className="font-semibold text-gray-900">{formatCurrency(price || 0)}</span>
                     </div>
-                  )}
+                    {gratuityPercent > 0 && price > 0 && (
+                      <div className="flex justify-between text-[11px] text-gray-500 font-tabular-nums">
+                        <span>Gratuity ({gratuityPercent}%)</span>
+                        <span className="font-semibold text-gray-900">{formatCurrency(gratuityAmt)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-sm font-bold text-gray-900 border-t border-gray-200 pt-2 font-tabular-nums">
+                      <span>Total</span>
+                      <span>{formatCurrency(total || 0)}</span>
+                    </div>
+                  </div>
                 </section>}
 
                 <div className="border-t border-gray-100" />
 
                 {/* Extras */}
                 <section className="space-y-3">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Extras</p>
-                  <div className="grid grid-cols-2 gap-y-3 gap-x-2">
-                    {checkboxFields.map(({ name, label }) => {
+                  <div className="flex items-center gap-2">
+                    <span className="w-0.5 h-3 rounded-full bg-gray-200 inline-block flex-shrink-0" />
+                    <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">Extras</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    {[
+                      { name: "vip" as const, label: "VIP", icon: Star },
+                      { name: "meetAndGreet" as const, label: "Meet & Greet", icon: UserCheck },
+                      { name: "wheelchairAccess" as const, label: "Wheelchair", icon: null },
+                    ].map(({ name, label, icon: Icon }) => {
                       const val = watch(name)
                       return (
                         <button key={name} type="button"
                           onClick={() => setValue(name, !val)}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium transition-all ${
+                          className={`flex items-center gap-2 px-3 py-2.5 rounded-lg border text-[11px] font-medium transition-all ${
                             val
                               ? "bg-blue-50 border-blue-200 text-blue-700"
                               : "bg-gray-50 border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-100"
                           }`}>
-                          <span className={`w-4 h-4 rounded flex items-center justify-center flex-shrink-0 ${val ? "bg-blue-600" : "bg-white border border-gray-300"}`}>
-                            {val && <Check className="w-2.5 h-2.5 text-white" />}
-                          </span>
+                          {Icon && <Icon className="w-3.5 h-3.5" />}
                           {label}
                         </button>
                       )
@@ -1743,6 +1801,24 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                 )}
 
               </div>{/* end scrollable */}
+
+              {/* ── Sticky Footer ── */}
+              <div className="sticky bottom-0 flex items-center gap-3 px-6 py-4 border-t border-gray-100 bg-white flex-shrink-0">
+                <Button
+                  type="button"
+                  onClick={onClose}
+                  variant="outline"
+                  className="flex-1">
+                  Cancel
+                </Button>
+                <Button
+                  form="trip-edit-form"
+                  type="submit"
+                  disabled={updateTrip.isPending}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
+                  {updateTrip.isPending ? "Saving…" : "Save Changes"}
+                </Button>
+              </div>
               </div>
             </div>
           </form>
