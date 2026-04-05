@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect, useMemo } from "react"
 import { createPortal } from "react-dom"
 import { MapPin, ChevronDown } from "lucide-react"
-import { Input } from "@/components/ui/input"
 import { US_CITIES } from "@/lib/us-cities"
 
 interface CityAutocompleteProps {
@@ -51,6 +50,11 @@ export function CityAutocomplete({
   const [activeIdx, setActiveIdx] = useState(-1)
   const ref = useRef<HTMLDivElement>(null)
   const dropRef = useRef<HTMLDivElement>(null)
+
+  // Debug: verify component mounted and data loaded
+  useEffect(() => {
+    console.log(`[CityAutocomplete] Mounted. US_CITIES length: ${US_CITIES.length}`)
+  }, [])
 
   // Sync query from parent value prop
   useEffect(() => {
@@ -151,14 +155,15 @@ export function CityAutocomplete({
   return (
     <div ref={ref} className={`relative ${className || ""}`}>
       <div className="relative">
-        <Input
+        <input
+          type="text"
           value={query}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           onFocus={() => query.length > 0 && results.length > 0 && openDropdown()}
           placeholder={placeholder}
           autoComplete="off"
-          className="h-9 text-sm"
+          className="w-full h-9 text-sm border border-gray-200 rounded-md pl-2.5 pr-6 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-gray-800"
         />
         <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
       </div>
