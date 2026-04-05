@@ -59,6 +59,12 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
+    // Validate vehicle selection
+    if (!vehicleId) {
+      setTimeError("Please select a vehicle")
+      return
+    }
+
     if (!validateTime(pickupTime)) {
       setTimeError("Please enter time in format: HH:MM AM/PM")
       return
@@ -107,6 +113,9 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
     } as never, {
       onSuccess: (newTrip) => {
         setSuccess({ tripNumber: newTrip.tripNumber })
+      },
+      onError: (error: any) => {
+        setTimeError(error?.message || "Failed to copy reservation. Please try again.")
       },
     })
   }
@@ -217,12 +226,18 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
 
                 {/* Vehicle - Now shows actual vehicles from fleet */}
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 block">Vehicle</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 block">Vehicle <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <select
                       value={vehicleId}
-                      onChange={(e) => setVehicleId(e.target.value)}
-                      className="w-full h-10 px-3.5 py-2 border border-gray-200 rounded-lg bg-white text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 appearance-none cursor-pointer"
+                      onChange={(e) => {
+                        setVehicleId(e.target.value)
+                        if (timeError === "Please select a vehicle") setTimeError("")
+                      }}
+                      className={cn(
+                        "w-full h-10 px-3.5 py-2 border border-gray-200 rounded-lg bg-white text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 appearance-none cursor-pointer",
+                        timeError === "Please select a vehicle" && "border-red-400 focus:ring-red-300/30 focus:border-red-400"
+                      )}
                     >
                       <option value="">Select a vehicle</option>
                       {vehicles.map(vehicle => (
