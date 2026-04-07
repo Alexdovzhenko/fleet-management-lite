@@ -3,10 +3,11 @@
 import { useRef, useState } from "react"
 import { Plane, Star, Baby, Accessibility, Bell, Phone, GripVertical } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { formatTime, formatCurrency, formatPhone, getInitials, getTripStatusLabel, cn } from "@/lib/utils"
+import { formatTime, formatCurrency, formatPhone, getInitials, cn } from "@/lib/utils"
 import { format, parseISO } from "date-fns"
 import type { Trip, TripStatus, TripType } from "@/types"
 import { useColumnOrderStore } from "@/lib/stores/column-order-store"
+import { useStatusConfig } from "@/lib/hooks/use-status-config"
 
 interface TripGridProps {
   trips: Trip[]
@@ -16,44 +17,6 @@ interface TripGridProps {
   showDate?: boolean
 }
 
-const STATUS_ROW: Record<TripStatus, string> = {
-  UNASSIGNED:       "bg-gray-50/40",
-  QUOTE:            "bg-white",
-  CONFIRMED:        "bg-blue-50/60",
-  DISPATCHED:       "bg-violet-50/60",
-  DRIVER_EN_ROUTE:  "bg-amber-50/70",
-  DRIVER_ARRIVED:   "bg-yellow-50/70",
-  IN_PROGRESS:      "bg-emerald-50/70",
-  COMPLETED:        "bg-gray-50",
-  CANCELLED:        "bg-red-50/40 opacity-70",
-  NO_SHOW:          "bg-red-50/40 opacity-70",
-}
-
-const STATUS_BADGE: Record<TripStatus, string> = {
-  UNASSIGNED:       "bg-gray-200 text-gray-700",
-  QUOTE:            "bg-slate-100 text-slate-600",
-  CONFIRMED:        "bg-blue-100 text-blue-700",
-  DISPATCHED:       "bg-violet-100 text-violet-700",
-  DRIVER_EN_ROUTE:  "bg-amber-100 text-amber-700",
-  DRIVER_ARRIVED:   "bg-yellow-100 text-yellow-800",
-  IN_PROGRESS:      "bg-emerald-100 text-emerald-700",
-  COMPLETED:        "bg-gray-100 text-gray-500",
-  CANCELLED:        "bg-red-100 text-red-600",
-  NO_SHOW:          "bg-red-100 text-red-600",
-}
-
-const STATUS_DOT: Record<TripStatus, string> = {
-  UNASSIGNED:       "bg-gray-500",
-  QUOTE:            "bg-slate-400",
-  CONFIRMED:        "bg-blue-500",
-  DISPATCHED:       "bg-violet-500",
-  DRIVER_EN_ROUTE:  "bg-amber-500",
-  DRIVER_ARRIVED:   "bg-yellow-500",
-  IN_PROGRESS:      "bg-emerald-500",
-  COMPLETED:        "bg-gray-400",
-  CANCELLED:        "bg-red-500",
-  NO_SHOW:          "bg-red-400",
-}
 
 const TYPE_LABELS: Record<TripType, string> = {
   ONE_WAY:        "One Way",
@@ -97,6 +60,7 @@ const ALL_COLUMNS = [
 export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showDate }: TripGridProps) {
   const clickRef = useRef<{ timer: ReturnType<typeof setTimeout>; trip: Trip } | null>(null)
   const { columnOrder, hiddenColumns, setColumnOrder } = useColumnOrderStore()
+  const { getStatusBadgeClasses, getStatusDotClass, getStatusRowClass, getStatusLabel } = useStatusConfig()
 
   // Drag-and-drop state
   // dragKeyRef holds the active drag key without causing re-renders (prevents drag cancellation)
@@ -198,9 +162,9 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
                 Farmed Out
               </span>
             ) : (
-              <span className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full", STATUS_BADGE[trip.status])}>
-                <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", STATUS_DOT[trip.status])} />
-                {getTripStatusLabel(trip.status)}
+              <span className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full", getStatusBadgeClasses(trip.status))}>
+                <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", getStatusDotClass(trip.status))} />
+                {getStatusLabel(trip.status)}
               </span>
             )}
           </td>
@@ -419,7 +383,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
                   onDoubleClick={(e) => handleRowDoubleClick(trip, e)}
                   className={cn(
                     "border-b last:border-0 cursor-pointer transition-all select-none",
-                    STATUS_ROW[trip.status],
+                    getStatusRowClass(trip.status),
                     isSelected
                       ? "ring-2 ring-inset ring-blue-500 bg-blue-50/80"
                       : "hover:brightness-95",

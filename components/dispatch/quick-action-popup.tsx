@@ -6,110 +6,9 @@ import { X, Check, Loader2, ChevronDown, Clock } from "lucide-react"
 import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
 import { useUpdateTrip } from "@/lib/hooks/use-trips"
+import { useStatusConfig } from "@/lib/hooks/use-status-config"
 import type { Trip, TripStatus } from "@/types"
-import { cn, formatTime, getTripStatusLabel } from "@/lib/utils"
-
-// ─── Color maps (fully resolved classes so Tailwind includes them) ────────────
-
-const DOT: Record<string, string> = {
-  blue:    "bg-blue-500",
-  amber:   "bg-amber-500",
-  yellow:  "bg-yellow-400",
-  emerald: "bg-emerald-500",
-  gray:    "bg-gray-400",
-  violet:  "bg-violet-500",
-  red:     "bg-red-500",
-  teal:    "bg-teal-500",
-  pink:    "bg-pink-500",
-  indigo:  "bg-indigo-500",
-}
-
-const ACTIVE_BG: Record<string, string> = {
-  blue:    "bg-blue-50",
-  amber:   "bg-amber-50",
-  yellow:  "bg-yellow-50",
-  emerald: "bg-emerald-50",
-  gray:    "bg-gray-100",
-  violet:  "bg-violet-50",
-  red:     "bg-red-50",
-  teal:    "bg-teal-50",
-  pink:    "bg-pink-50",
-  indigo:  "bg-indigo-50",
-}
-
-const ACTIVE_TEXT: Record<string, string> = {
-  blue:    "text-blue-700",
-  amber:   "text-amber-700",
-  yellow:  "text-yellow-700",
-  emerald: "text-emerald-700",
-  gray:    "text-gray-600",
-  violet:  "text-violet-700",
-  red:     "text-red-700",
-  teal:    "text-teal-700",
-  pink:    "text-pink-700",
-  indigo:  "text-indigo-700",
-}
-
-const ACTIVE_CHECK: Record<string, string> = {
-  blue:    "text-blue-500",
-  amber:   "text-amber-500",
-  yellow:  "text-yellow-500",
-  emerald: "text-emerald-500",
-  gray:    "text-gray-400",
-  violet:  "text-violet-500",
-  red:     "text-red-500",
-  teal:    "text-teal-500",
-  pink:    "text-pink-500",
-  indigo:  "text-indigo-500",
-}
-
-const LEFT_BAR: Record<string, string> = {
-  blue:    "bg-blue-400",
-  amber:   "bg-amber-400",
-  yellow:  "bg-yellow-400",
-  emerald: "bg-emerald-400",
-  gray:    "bg-gray-400",
-  violet:  "bg-violet-400",
-  red:     "bg-red-400",
-  teal:    "bg-teal-400",
-  pink:    "bg-pink-400",
-  indigo:  "bg-indigo-400",
-}
-
-// ─── All statuses in display order ────────────────────────────────────────────
-
-const ALL_TRIP_STATUSES: TripStatus[] = [
-  "UNASSIGNED", "QUOTE", "CONFIRMED", "DISPATCHED", "DRIVER_EN_ROUTE",
-  "DRIVER_ARRIVED", "IN_PROGRESS", "COMPLETED", "CANCELLED", "NO_SHOW",
-]
-
-const STATUS_COLOR: Record<TripStatus, string> = {
-  UNASSIGNED:      "gray",
-  QUOTE:           "gray",
-  CONFIRMED:       "blue",
-  DISPATCHED:      "violet",
-  DRIVER_EN_ROUTE: "amber",
-  DRIVER_ARRIVED:  "yellow",
-  IN_PROGRESS:     "emerald",
-  COMPLETED:       "gray",
-  CANCELLED:       "red",
-  NO_SHOW:         "red",
-}
-
-// ─── Current trip status badge ────────────────────────────────────────────────
-
-const CURRENT_BADGE: Record<TripStatus, { label: string; bg: string; text: string; dot: string }> = {
-  UNASSIGNED:      { label: "Unassigned",   bg: "bg-gray-500/15",    text: "text-gray-300",   dot: "bg-gray-400" },
-  QUOTE:           { label: "Quote",        bg: "bg-slate-500/10",   text: "text-slate-300",  dot: "bg-slate-400" },
-  CONFIRMED:       { label: "Assigned",     bg: "bg-blue-500/15",    text: "text-blue-300",   dot: "bg-blue-400" },
-  DISPATCHED:      { label: "Dispatched",   bg: "bg-violet-500/15",  text: "text-violet-300", dot: "bg-violet-400" },
-  DRIVER_EN_ROUTE: { label: "On the Way",   bg: "bg-amber-500/15",   text: "text-amber-300",  dot: "bg-amber-400" },
-  DRIVER_ARRIVED:  { label: "On Location",  bg: "bg-yellow-500/15",  text: "text-yellow-300", dot: "bg-yellow-400" },
-  IN_PROGRESS:     { label: "POB",          bg: "bg-emerald-500/15", text: "text-emerald-300",dot: "bg-emerald-400" },
-  COMPLETED:       { label: "Completed",    bg: "bg-gray-500/15",    text: "text-gray-300",   dot: "bg-gray-400" },
-  CANCELLED:       { label: "Cancelled",    bg: "bg-red-500/15",     text: "text-red-300",    dot: "bg-red-400" },
-  NO_SHOW:         { label: "No Show",      bg: "bg-red-500/15",     text: "text-red-300",    dot: "bg-red-400" },
-}
+import { cn, formatTime } from "@/lib/utils"
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -124,6 +23,7 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
   const { data: drivers = [] } = useDrivers()
   const { data: vehicles = [] } = useVehicles()
   const updateTrip = useUpdateTrip()
+  const { getEnabledStatuses, getStatusDarkBadge, getStatusActiveStyle, getStatusDotClass, getStatusLabel } = useStatusConfig()
   const [appliedStatus, setAppliedStatus] = useState<TripStatus | null>(null)
   const [driverId, setDriverId] = useState(trip.driverId ?? "")
   const [vehicleId, setVehicleId] = useState(trip.vehicleId ?? "")
@@ -189,7 +89,6 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
   }
 
   const passengerName = trip.passengerName || trip.customer?.name || "—"
-  const badge = CURRENT_BADGE[trip.status]
 
   if (!mounted) return null
 
@@ -243,28 +142,28 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
               {formatTime(trip.pickupTime)}
             </span>
           )}
-          <span className={cn(
-            "inline-flex items-center gap-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full",
-            badge.bg, badge.text
-          )}>
-            <span className={cn("w-1.5 h-1.5 rounded-full", badge.dot)} />
-            {badge.label}
-          </span>
+          {(() => {
+            const darkBadge = getStatusDarkBadge(trip.status)
+            return (
+              <span className={cn(
+                "inline-flex items-center gap-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full",
+                darkBadge.bg, darkBadge.text
+              )}>
+                <span className={cn("w-1.5 h-1.5 rounded-full", darkBadge.dot)} />
+                {getStatusLabel(trip.status)}
+              </span>
+            )
+          })()}
         </div>
       </div>
 
       {/* ── Status List ───────────────────────────────────────── */}
       <div className="py-1 bg-white">
-        {ALL_TRIP_STATUSES.map((s) => {
+        {getEnabledStatuses().map((s) => {
           const isActive = trip.status === s
           const isLoading = updateTrip.isPending && appliedStatus === s
           const isDone = appliedStatus === s && !updateTrip.isPending
-          const color = STATUS_COLOR[s]
-          const dotCls = DOT[color] ?? "bg-gray-400"
-          const activeBg = ACTIVE_BG[color] ?? "bg-gray-100"
-          const activeTxt = ACTIVE_TEXT[color] ?? "text-gray-700"
-          const activeChk = ACTIVE_CHECK[color] ?? "text-gray-500"
-          const leftBar = LEFT_BAR[color] ?? "bg-gray-400"
+          const activeStyle = getStatusActiveStyle(s)
 
           return (
             <button
@@ -273,19 +172,19 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
               disabled={updateTrip.isPending}
               className={cn(
                 "w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors relative",
-                isActive ? cn(activeBg, "cursor-default") : "hover:bg-gray-50 cursor-pointer active:bg-gray-100",
+                isActive ? cn(activeStyle.bg, "cursor-default") : "hover:bg-gray-50 cursor-pointer active:bg-gray-100",
                 "disabled:opacity-60"
               )}
             >
               {isActive && (
-                <div className={cn("absolute left-0 top-0 bottom-0 w-[3px] rounded-r-full", leftBar)} />
+                <div className={cn("absolute left-0 top-0 bottom-0 w-[3px] rounded-r-full", activeStyle.leftBar)} />
               )}
-              <div className={cn("w-2 h-2 rounded-full flex-shrink-0", isActive ? dotCls : "bg-gray-200")} />
+              <div className={cn("w-2 h-2 rounded-full flex-shrink-0", isActive ? getStatusDotClass(s) : "bg-gray-200")} />
               <span className={cn(
                 "text-[13px] flex-1",
-                isActive ? cn("font-semibold", activeTxt) : "font-medium text-gray-700"
+                isActive ? cn("font-semibold", activeStyle.text) : "font-medium text-gray-700"
               )}>
-                {getTripStatusLabel(s)}
+                {getStatusLabel(s)}
               </span>
               <div className="w-4 h-4 flex items-center justify-center flex-shrink-0">
                 {isLoading ? (
@@ -293,7 +192,7 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
                 ) : isDone ? (
                   <Check className="w-3.5 h-3.5 text-emerald-500" />
                 ) : isActive ? (
-                  <Check className={cn("w-3.5 h-3.5", activeChk)} />
+                  <Check className={cn("w-3.5 h-3.5", activeStyle.check)} />
                 ) : null}
               </div>
             </button>
