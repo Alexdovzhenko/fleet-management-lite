@@ -8,7 +8,7 @@ import { z } from "zod"
 import {
   X, Plane, Phone, Copy, Check, User, Car, UserCheck,
   ChevronDown, MapPin, Building2, Ship, Plus, Star,
-  AlertTriangle, Baby, ArrowRightLeft, Pencil, Send, Calendar,
+  AlertTriangle, Baby, ArrowRightLeft, Pencil, Send, Calendar, Loader2,
 } from "lucide-react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -887,6 +887,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const cancelFarmOut = useCancelFarmOut(trip?.id ?? "")
 
   const [copied, setCopied] = useState(false)
+  const [saveSuccess, setSaveSuccess] = useState(false)
   const [statusValue, setStatusValue] = useState<TripStatus>("UNASSIGNED")
   const [driverIdValue, setDriverIdValue] = useState("")
   const [vehicleIdValue, setVehicleIdValue] = useState("")
@@ -960,6 +961,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       phone: p.phone ?? "", email: p.email ?? "",
     })))
     setSaveError("")
+    setSaveSuccess(false)
     setStopsError("")
     setChildSeatsOpen(false)
     setCustomerPickerOpen(false)
@@ -1019,6 +1021,13 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       vip:             trip.vip,
     })
   }, [trip, reset])
+
+  // Reset save success state when modal closes
+  useEffect(() => {
+    if (!open) {
+      setSaveSuccess(false)
+    }
+  }, [open])
 
   // Close customer picker on outside click
   useEffect(() => {
@@ -1106,7 +1115,10 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       wheelchairAccess: data.wheelchairAccess,
       vip:              data.vip,
     }, {
-      onSuccess: onClose,
+      onSuccess: () => {
+        setSaveSuccess(true)
+        setTimeout(() => onClose(), 1800)
+      },
       onError: (err) => setSaveError(err instanceof Error ? err.message : "Failed to save changes"),
     })
   }
@@ -1163,9 +1175,31 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
           </button>
 
           {/* Save Changes */}
-          <Button form="trip-edit-form" type="submit" size="sm" disabled={updateTrip.isPending}
-            className="bg-blue-600 hover:bg-blue-700 text-white h-9 text-sm px-6 font-semibold">
-            {updateTrip.isPending ? "Saving…" : "Save Changes"}
+          <Button
+            form="trip-edit-form"
+            type="submit"
+            size="sm"
+            disabled={updateTrip.isPending || saveSuccess}
+            className={cn(
+              "h-9 text-sm px-6 font-semibold w-[120px] flex items-center justify-center gap-2 transition-all duration-300",
+              saveSuccess
+                ? "bg-emerald-500 hover:bg-emerald-500 text-white"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            )}
+          >
+            {saveSuccess ? (
+              <>
+                <Check className="w-4 h-4" />
+                <span>Saved</span>
+              </>
+            ) : updateTrip.isPending ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Saving…</span>
+              </>
+            ) : (
+              "Save Changes"
+            )}
           </Button>
         </div>
 
