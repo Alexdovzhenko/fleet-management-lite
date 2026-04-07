@@ -13,13 +13,13 @@ import {
 
 const SAVE_BUTTON_STYLES = `
   @keyframes saveSuccessPulse {
-    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-    50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    0% { box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3), inset 0 0 0 0 rgba(16, 185, 129, 0.2); }
+    50% { box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4), inset 0 0 0 2px rgba(16, 185, 129, 0.1); }
+    100% { box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2), inset 0 0 0 0 rgba(16, 185, 129, 0); }
   }
 
   .save-button-success {
-    animation: saveSuccessPulse 2s ease-out;
+    animation: saveSuccessPulse 2.2s ease-out forwards;
   }
 `
 import { Dialog, DialogContent } from "@/components/ui/dialog"
@@ -1193,30 +1193,31 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
             type="submit"
             disabled={updateTrip.isPending || saveSuccess}
             className={cn(
-              "relative h-9 px-6 font-semibold w-[120px] flex items-center justify-center gap-2 rounded-lg overflow-hidden",
+              "relative inline-flex items-center justify-center gap-2 px-5 py-2 rounded-md",
+              "text-sm font-medium transition-all duration-250 ease-out",
               "focus:outline-none focus:ring-0 focus:shadow-none",
-              "disabled:cursor-not-allowed",
-              "transition-all duration-300 ease-out",
+              "disabled:cursor-not-allowed disabled:opacity-60",
+              "overflow-hidden",
               saveSuccess && "save-button-success",
               saveSuccess
-                ? "bg-emerald-500 text-white opacity-100"
+                ? "bg-emerald-500 text-white shadow-md"
                 : updateTrip.isPending
-                ? "bg-blue-600 text-white opacity-100"
-                : "bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg hover:shadow-blue-600/40"
+                ? "bg-blue-600 text-white shadow-md"
+                : "bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md active:shadow-sm active:scale-95"
             )}
           >
             {saveSuccess ? (
-              <div className="flex items-center justify-center gap-2">
-                <Check className="w-4 h-4 animate-none" strokeWidth={3} />
-                <span className="text-sm font-medium">Saved</span>
+              <div className="flex items-center justify-center gap-2 animate-none">
+                <Check className="w-4 h-4" strokeWidth={2.5} />
+                <span>Saved</span>
               </div>
             ) : updateTrip.isPending ? (
               <div className="flex items-center justify-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span className="text-sm font-medium">Saving…</span>
+                <span>Saving…</span>
               </div>
             ) : (
-              <span className="text-sm font-medium">Save Changes</span>
+              <span>Save Changes</span>
             )}
           </button>
         </div>
