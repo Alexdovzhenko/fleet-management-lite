@@ -42,6 +42,7 @@ import { CopyReservationModal } from "@/components/dispatch/copy-reservation-mod
 import { formatCurrency, formatPhone, getTripStatusLabel, cn } from "@/lib/utils"
 import type { Trip, TripStatus, Driver, Vehicle, Customer } from "@/types"
 import { format, parse, isValid } from "date-fns"
+import { useStatusActionsStore } from "@/lib/stores/status-actions-store"
 
 // ── Status helpers ──────────────────────────────────────────────────────────
 
@@ -76,7 +77,17 @@ const ALL_STATUSES: TripStatus[] = [
   "DRIVER_ARRIVED", "IN_PROGRESS", "COMPLETED", "CANCELLED", "NO_SHOW",
 ]
 
-function StatusDropdown({ status, onUpdate }: { status: TripStatus; onUpdate: (status: TripStatus) => void }) {
+function StatusDropdown({
+  status,
+  onUpdate,
+  getStatusDotColor,
+  getStatusBadgeColor,
+}: {
+  status: TripStatus
+  onUpdate: (status: TripStatus) => void
+  getStatusDotColor: (status: TripStatus) => string
+  getStatusBadgeColor: (status: TripStatus) => string
+}) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -97,10 +108,10 @@ function StatusDropdown({ status, onUpdate }: { status: TripStatus; onUpdate: (s
         className={cn(
           "inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full transition-all w-[140px] justify-center",
           "hover:brightness-95 active:scale-95",
-          STATUS_BADGE[status]
+          getStatusBadgeColor(status)
         )}
       >
-        <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", STATUS_DOT[status])} />
+        <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", getStatusDotColor(status))} />
         {getTripStatusLabel(status)}
         <ChevronDown className={cn("w-3 h-3 transition-transform", open && "rotate-180")} />
       </button>
@@ -119,7 +130,7 @@ function StatusDropdown({ status, onUpdate }: { status: TripStatus; onUpdate: (s
                   isActive ? "bg-gray-50 font-semibold text-gray-900" : "text-gray-700 hover:bg-gray-50"
                 )}
               >
-                <span className={cn("w-2 h-2 rounded-full flex-shrink-0", STATUS_DOT[s])} />
+                <span className={cn("w-2 h-2 rounded-full flex-shrink-0", getStatusDotColor(s))} />
                 {getTripStatusLabel(s)}
                 {isActive && <Check className="w-3 h-3 ml-auto text-gray-400" />}
               </button>
@@ -886,6 +897,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const { data: allVehicles = [] } = useVehicles()
   const { data: serviceTypes = [] } = useServiceTypes()
   const enabledTypes = serviceTypes.filter((t) => t.isEnabled)
+  const { actions: statusActions } = useStatusActionsStore()
 
   const isFarmedIn = !!trip?.farmedIn
 
@@ -954,6 +966,31 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     const iso = raw.includes("T") ? raw.split("T")[0] : raw
     const d = parse(iso, "yyyy-MM-dd", new Date())
     return isValid(d) ? format(d, "MM/dd/yyyy") : raw
+  }
+
+  // Get color for a status from the store, with fallback to defaults
+  const COLOR_DOT_MAP = {
+    blue: "bg-blue-500", amber: "bg-amber-500", yellow: "bg-yellow-500", emerald: "bg-emerald-500",
+    gray: "bg-gray-500", violet: "bg-violet-500", red: "bg-red-500", teal: "bg-teal-500",
+    pink: "bg-pink-500", indigo: "bg-indigo-500",
+  } as Record<string, string>
+
+  function getStatusDotColor(status: TripStatus): string {
+    const action = statusActions.find((a) => a.dbStatus === status)
+    return action && action.color in COLOR_DOT_MAP ? COLOR_DOT_MAP[action.color as keyof typeof COLOR_DOT_MAP] : STATUS_DOT[status]
+  }
+
+  function getStatusBadgeColor(status: TripStatus): string {
+    const action = statusActions.find((a) => a.dbStatus === status)
+    if (!action) return STATUS_BADGE[status]
+    // Map store color to badge classes
+    const badgeMap: Record<string, string> = {
+      blue: "bg-blue-100 text-blue-700", amber: "bg-amber-100 text-amber-700", yellow: "bg-yellow-100 text-yellow-800",
+      emerald: "bg-emerald-100 text-emerald-700", gray: "bg-gray-200 text-gray-700", violet: "bg-violet-100 text-violet-700",
+      red: "bg-red-100 text-red-600", teal: "bg-teal-100 text-teal-700", pink: "bg-pink-100 text-pink-700",
+      indigo: "bg-indigo-100 text-indigo-700",
+    }
+    return badgeMap[action.color as keyof typeof badgeMap] || STATUS_BADGE[status]
   }
 
   useEffect(() => {
@@ -1163,6 +1200,8 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
           <StatusDropdown
             status={statusValue}
             onUpdate={(status) => { setStatusValue(status); setValue("status", status) }}
+            getStatusDotColor={getStatusDotColor}
+            getStatusBadgeColor={getStatusBadgeColor}
           />
 
           <div className="flex-1" />
