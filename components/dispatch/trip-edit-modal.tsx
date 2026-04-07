@@ -1117,7 +1117,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     }, {
       onSuccess: () => {
         setSaveSuccess(true)
-        setTimeout(() => onClose(), 1800)
+        setTimeout(() => setSaveSuccess(false), 2000)
       },
       onError: (err) => setSaveError(err instanceof Error ? err.message : "Failed to save changes"),
     })
