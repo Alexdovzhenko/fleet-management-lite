@@ -1144,6 +1144,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     <>
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent showCloseButton={false} className="sm:max-w-[1180px] w-[96vw] p-0 flex flex-col overflow-hidden max-h-[92vh] gap-0">
+        <style>{SAVE_BUTTON_STYLES}</style>
 
         {/* ── Header ── */}
         <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-100 bg-white flex-shrink-0">
@@ -1187,7 +1188,6 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
           </button>
 
           {/* Save Changes */}
-          <style>{SAVE_BUTTON_STYLES}</style>
           <button
             form="trip-edit-form"
             type="submit"
