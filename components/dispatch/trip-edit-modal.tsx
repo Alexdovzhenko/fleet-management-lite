@@ -10,6 +10,18 @@ import {
   ChevronDown, MapPin, Building2, Ship, Plus, Star,
   AlertTriangle, Baby, ArrowRightLeft, Pencil, Send, Calendar, Loader2,
 } from "lucide-react"
+
+const SAVE_BUTTON_STYLES = `
+  @keyframes saveSuccessPulse {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  }
+
+  .save-button-success {
+    animation: saveSuccessPulse 2s ease-out;
+  }
+`
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -1175,32 +1187,38 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
           </button>
 
           {/* Save Changes */}
-          <Button
+          <style>{SAVE_BUTTON_STYLES}</style>
+          <button
             form="trip-edit-form"
             type="submit"
-            size="sm"
             disabled={updateTrip.isPending || saveSuccess}
             className={cn(
-              "h-9 text-sm px-6 font-semibold w-[120px] flex items-center justify-center gap-2 transition-all duration-300",
+              "relative h-9 px-6 font-semibold w-[120px] flex items-center justify-center gap-2 rounded-lg overflow-hidden",
+              "focus:outline-none focus:ring-0 focus:shadow-none",
+              "disabled:cursor-not-allowed",
+              "transition-all duration-300 ease-out",
+              saveSuccess && "save-button-success",
               saveSuccess
-                ? "bg-emerald-500 hover:bg-emerald-500 text-white"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
+                ? "bg-emerald-500 text-white opacity-100"
+                : updateTrip.isPending
+                ? "bg-blue-600 text-white opacity-100"
+                : "bg-blue-600 hover:bg-blue-700 text-white hover:shadow-lg hover:shadow-blue-600/40"
             )}
           >
             {saveSuccess ? (
-              <>
-                <Check className="w-4 h-4" />
-                <span>Saved</span>
-              </>
+              <div className="flex items-center justify-center gap-2">
+                <Check className="w-4 h-4 animate-none" strokeWidth={3} />
+                <span className="text-sm font-medium">Saved</span>
+              </div>
             ) : updateTrip.isPending ? (
-              <>
+              <div className="flex items-center justify-center gap-2">
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Saving…</span>
-              </>
+                <span className="text-sm font-medium">Saving…</span>
+              </div>
             ) : (
-              "Save Changes"
+              <span className="text-sm font-medium">Save Changes</span>
             )}
-          </Button>
+          </button>
         </div>
 
         {/* ── Reservation Details (Compact) ── */}
