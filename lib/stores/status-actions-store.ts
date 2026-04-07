@@ -73,6 +73,19 @@ export const useStatusActionsStore = create<StatusActionsStore>()(
     {
       name: "fleet-status-actions",
       partialize: (state) => ({ actions: state.actions }),
+      migrate: (persistedState: any) => {
+        // Migrate: ensure UNASSIGNED and QUOTE are present
+        let actions = persistedState.actions || DEFAULT_STATUS_ACTIONS
+        const actionIds = new Set(actions.map((a: StatusAction) => a.id))
+
+        // Add missing default statuses at the beginning
+        const missing = DEFAULT_STATUS_ACTIONS.filter((a) => !actionIds.has(a.id))
+        if (missing.length > 0) {
+          actions = [...missing, ...actions]
+        }
+
+        return { actions }
+      },
     }
   )
 )
