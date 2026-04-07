@@ -79,7 +79,7 @@ const LEFT_BAR: Record<string, string> = {
 // ─── All statuses in display order ────────────────────────────────────────────
 
 const ALL_TRIP_STATUSES: TripStatus[] = [
-  "QUOTE", "CONFIRMED", "DISPATCHED", "DRIVER_EN_ROUTE",
+  "UNASSIGNED", "QUOTE", "CONFIRMED", "DISPATCHED", "DRIVER_EN_ROUTE",
   "DRIVER_ARRIVED", "IN_PROGRESS", "COMPLETED", "CANCELLED", "NO_SHOW",
 ]
 

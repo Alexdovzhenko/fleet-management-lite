@@ -12,6 +12,8 @@ export interface StatusAction {
 }
 
 export const DEFAULT_STATUS_ACTIONS: StatusAction[] = [
+  { id: "unassigned",  label: "Unassigned",  dbStatus: "UNASSIGNED",      color: "gray",    isEnabled: false, isBuiltIn: true },
+  { id: "quote",       label: "Quote",       dbStatus: "QUOTE",           color: "gray",    isEnabled: false, isBuiltIn: true },
   { id: "confirmed",   label: "Assigned",    dbStatus: "CONFIRMED",       color: "blue",    isEnabled: true,  isBuiltIn: true },
   { id: "dispatched",  label: "Dispatched",  dbStatus: "DISPATCHED",      color: "violet",  isEnabled: false, isBuiltIn: true },
   { id: "en_route",    label: "On the Way",  dbStatus: "DRIVER_EN_ROUTE", color: "amber",   isEnabled: true,  isBuiltIn: true },

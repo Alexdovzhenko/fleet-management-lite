@@ -5,7 +5,7 @@ import { createNotification } from "@/lib/create-notification"
 import { z } from "zod"
 
 const updateTripSchema = z.object({
-  status: z.enum(["QUOTE", "CONFIRMED", "DISPATCHED", "DRIVER_EN_ROUTE", "DRIVER_ARRIVED", "IN_PROGRESS", "COMPLETED", "CANCELLED", "NO_SHOW"]).optional(),
+  status: z.enum(["UNASSIGNED", "QUOTE", "CONFIRMED", "DISPATCHED", "DRIVER_EN_ROUTE", "DRIVER_ARRIVED", "IN_PROGRESS", "COMPLETED", "CANCELLED", "NO_SHOW"]).optional(),
   tripType: z.string().optional(),
   pickupDate: z.string().optional(),
   pickupTime: z.string().optional(),
