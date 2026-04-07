@@ -64,7 +64,7 @@ const ALL_STATUSES: TripStatus[] = [
   "DRIVER_ARRIVED", "IN_PROGRESS", "COMPLETED", "CANCELLED", "NO_SHOW",
 ]
 
-function StatusDropdown({ trip, onUpdate }: { trip: Trip; onUpdate: (status: TripStatus) => void }) {
+function StatusDropdown({ status, onUpdate }: { status: TripStatus; onUpdate: (status: TripStatus) => void }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -83,20 +83,20 @@ function StatusDropdown({ trip, onUpdate }: { trip: Trip; onUpdate: (status: Tri
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full transition-all",
+          "inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full transition-all w-[140px] justify-center",
           "hover:brightness-95 active:scale-95",
-          STATUS_BADGE[trip.status]
+          STATUS_BADGE[status]
         )}
       >
-        <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", STATUS_DOT[trip.status])} />
-        {getTripStatusLabel(trip.status)}
+        <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", STATUS_DOT[status])} />
+        {getTripStatusLabel(status)}
         <ChevronDown className={cn("w-3 h-3 transition-transform", open && "rotate-180")} />
       </button>
 
       {open && (
         <div className="absolute left-0 top-full mt-1.5 z-50 bg-white border border-gray-200 rounded-xl shadow-lg py-1 min-w-[160px]">
           {ALL_STATUSES.map((s) => {
-            const isActive = s === trip.status
+            const isActive = s === status
             return (
               <button
                 key={s}
@@ -839,6 +839,7 @@ function VehiclePickerCard({ vehicles, value, onChange }: { vehicles: Vehicle[];
 // ── Form schema ──────────────────────────────────────────────────────────────
 
 const schema = z.object({
+  status:          z.string() as unknown as z.ZodType<TripStatus>,
   tripType:        z.string(),
   pickupDate:      z.string().min(1, "Required"),
   pickupTime:      z.string().min(1, "Required"),
@@ -886,6 +887,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const cancelFarmOut = useCancelFarmOut(trip?.id ?? "")
 
   const [copied, setCopied] = useState(false)
+  const [statusValue, setStatusValue] = useState<TripStatus>("UNASSIGNED")
   const [driverIdValue, setDriverIdValue] = useState("")
   const [vehicleIdValue, setVehicleIdValue] = useState("")
   const [secondaryDriverIdValue, setSecondaryDriverIdValue] = useState("")
@@ -944,6 +946,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   useEffect(() => {
     if (!trip) return
     const displayDate = toDisplayDate(trip.pickupDate ?? "")
+    setStatusValue(trip.status)
     setTripTypeValue(trip.tripType ?? "ONE_WAY")
     setDriverIdValue(trip.driverId ?? "")
     setVehicleIdValue(trip.vehicleId ?? "")
@@ -994,6 +997,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     setStops(initialStops)
 
     reset({
+      status:          trip.status,
       tripType:        trip.tripType,
       pickupDate:      displayDate,
       pickupTime:      trip.pickupTime,
@@ -1064,6 +1068,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
     updateTrip.mutate({
       id: trip.id,
+      status:           data.status,
       customerId:       selectedCustomer?.id ?? trip.customerId,
       tripType:         tripTypeValue as never,
       pickupDate:       isoDate,
@@ -1131,8 +1136,8 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
           {/* Status */}
           <StatusDropdown
-            trip={trip}
-            onUpdate={(status) => updateTrip.mutate({ id: trip.id, status })}
+            status={statusValue}
+            onUpdate={(status) => { setStatusValue(status); setValue("status", status) }}
           />
 
           <div className="flex-1" />
