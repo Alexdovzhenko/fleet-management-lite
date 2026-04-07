@@ -1837,19 +1837,20 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
               </div>{/* end scrollable */}
 
               {/* ── Sticky Footer ── */}
-              <div className="sticky bottom-0 flex items-center gap-3 px-6 py-4 border-t border-gray-100 bg-white flex-shrink-0">
+              <div className="sticky bottom-0 flex items-center gap-3 px-6 py-3 border-t border-gray-100 bg-white flex-shrink-0">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 px-4 py-2 rounded-md border border-gray-200 text-gray-700 font-medium text-sm transition-all hover:bg-gray-50 active:bg-gray-100">
+                  className="px-4 py-1.5 rounded-md border border-gray-200 text-gray-700 font-medium text-sm transition-all hover:bg-gray-50 active:bg-gray-100 active:scale-95">
                   Cancel
                 </button>
+                <div className="flex-1" />
                 <button
                   form="trip-edit-form"
                   type="submit"
                   disabled={updateTrip.isPending || saveSuccess}
                   className={cn(
-                    "flex-1 relative inline-flex items-center justify-center gap-2 px-5 py-2 rounded-md",
+                    "relative inline-flex items-center justify-center gap-2 px-6 py-1.5 rounded-md",
                     "text-sm font-medium transition-all duration-250 ease-out",
                     "focus:outline-none focus:ring-0 focus:shadow-none",
                     "disabled:cursor-not-allowed disabled:opacity-60",
