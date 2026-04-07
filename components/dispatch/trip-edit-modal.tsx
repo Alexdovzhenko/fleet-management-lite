@@ -1577,7 +1577,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                   <div className="bg-gray-50/60 rounded-lg border border-gray-200/70 px-3.5 py-3 -mx-3 px-3">
                     <Label className="text-[10px] font-semibold text-gray-600 uppercase tracking-wider mb-2.5 block">Client Reference</Label>
                     <Input {...register("clientRef")} className="h-8 text-xs font-mono bg-white border-gray-200 placeholder:text-gray-300" placeholder="e.g. 14547002*1" />
-                    <p className="text-[8px] text-gray-400 mt-1.5 leading-tight">Affiliate or external system reference</p>
+                    <p className="text-xs text-gray-900 mt-1.5">Affiliate or external system reference</p>
                   </div>
                 </section>
 
