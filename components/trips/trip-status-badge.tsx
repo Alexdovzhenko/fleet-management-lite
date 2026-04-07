@@ -7,6 +7,7 @@ interface TripStatusBadgeProps {
 }
 
 const statusDotColor: Record<TripStatus, string> = {
+  UNASSIGNED: "bg-gray-500",
   QUOTE: "bg-purple-500",
   CONFIRMED: "bg-blue-500",
   DISPATCHED: "bg-amber-500",

@@ -34,6 +34,7 @@ import { format, parse, isValid } from "date-fns"
 // ── Status helpers ──────────────────────────────────────────────────────────
 
 const STATUS_BADGE: Record<TripStatus, string> = {
+  UNASSIGNED:       "bg-gray-200 text-gray-700",
   QUOTE:            "bg-slate-100 text-slate-600",
   CONFIRMED:        "bg-blue-100 text-blue-700",
   DISPATCHED:       "bg-violet-100 text-violet-700",
@@ -46,6 +47,7 @@ const STATUS_BADGE: Record<TripStatus, string> = {
 }
 
 const STATUS_DOT: Record<TripStatus, string> = {
+  UNASSIGNED:       "bg-gray-500",
   QUOTE:            "bg-slate-400",
   CONFIRMED:        "bg-blue-500",
   DISPATCHED:       "bg-violet-500",
@@ -58,7 +60,7 @@ const STATUS_DOT: Record<TripStatus, string> = {
 }
 
 const ALL_STATUSES: TripStatus[] = [
-  "QUOTE", "CONFIRMED", "DISPATCHED", "DRIVER_EN_ROUTE",
+  "UNASSIGNED", "QUOTE", "CONFIRMED", "DISPATCHED", "DRIVER_EN_ROUTE",
   "DRIVER_ARRIVED", "IN_PROGRESS", "COMPLETED", "CANCELLED", "NO_SHOW",
 ]
 

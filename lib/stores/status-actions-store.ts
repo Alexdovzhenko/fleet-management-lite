@@ -26,6 +26,7 @@ export const ALL_COLORS = ["blue", "amber", "yellow", "emerald", "gray", "violet
 export type ActionColor = typeof ALL_COLORS[number]
 
 export const STATUS_LABEL_MAP: Record<TripStatus, string> = {
+  UNASSIGNED:      "Unassigned",
   QUOTE:           "Quote",
   CONFIRMED:       "Confirmed",
   DISPATCHED:      "Dispatched",

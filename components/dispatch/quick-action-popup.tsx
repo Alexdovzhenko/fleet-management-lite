@@ -84,6 +84,7 @@ const ALL_TRIP_STATUSES: TripStatus[] = [
 ]
 
 const STATUS_COLOR: Record<TripStatus, string> = {
+  UNASSIGNED:      "gray",
   QUOTE:           "gray",
   CONFIRMED:       "blue",
   DISPATCHED:      "violet",
@@ -98,6 +99,7 @@ const STATUS_COLOR: Record<TripStatus, string> = {
 // ─── Current trip status badge ────────────────────────────────────────────────
 
 const CURRENT_BADGE: Record<TripStatus, { label: string; bg: string; text: string; dot: string }> = {
+  UNASSIGNED:      { label: "Unassigned",   bg: "bg-gray-500/15",    text: "text-gray-300",   dot: "bg-gray-400" },
   QUOTE:           { label: "Quote",        bg: "bg-slate-500/10",   text: "text-slate-300",  dot: "bg-slate-400" },
   CONFIRMED:       { label: "Assigned",     bg: "bg-blue-500/15",    text: "text-blue-300",   dot: "bg-blue-400" },
   DISPATCHED:      { label: "Dispatched",   bg: "bg-violet-500/15",  text: "text-violet-300", dot: "bg-violet-400" },

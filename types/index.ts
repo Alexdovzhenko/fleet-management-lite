@@ -1,4 +1,5 @@
 export type TripStatus =
+  | 'UNASSIGNED'
   | 'QUOTE'
   | 'CONFIRMED'
   | 'DISPATCHED'

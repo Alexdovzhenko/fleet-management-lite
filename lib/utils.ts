@@ -69,6 +69,7 @@ export function generateInvoiceNumber(): string {
 
 export function getTripStatusLabel(status: TripStatus): string {
   const labels: Record<TripStatus, string> = {
+    UNASSIGNED:      "Unassigned",
     QUOTE:           "Quote",
     CONFIRMED:       "Assigned",
     DISPATCHED:      "Dispatched",
@@ -84,6 +85,7 @@ export function getTripStatusLabel(status: TripStatus): string {
 
 export function getTripStatusClass(status: TripStatus): string {
   const classes: Record<TripStatus, string> = {
+    UNASSIGNED: "status-unassigned",
     QUOTE: "status-quote",
     CONFIRMED: "status-confirmed",
     DISPATCHED: "status-dispatched",

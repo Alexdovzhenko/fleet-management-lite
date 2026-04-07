@@ -240,7 +240,7 @@ model Customer {
 model Trip {
   id           String     @id @default(cuid())
   tripNumber   String     @unique
-  status       TripStatus @default(QUOTE)
+  status       TripStatus @default(UNASSIGNED)
   tripType     String     @default("ONE_WAY")
   pickupDate   DateTime
   pickupTime   String
@@ -332,6 +332,7 @@ model TripStop {
 }
 
 enum TripStatus {
+  UNASSIGNED
   QUOTE
   CONFIRMED
   DISPATCHED
