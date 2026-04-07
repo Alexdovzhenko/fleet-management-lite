@@ -1572,14 +1572,14 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                       )}
                     </div>
                   )}
-                </section>
 
-                {/* Client Reference */}
-                <div className="bg-gray-50 rounded-xl border border-gray-200 px-4 py-3">
-                  <Label className="text-[10px] font-semibold text-gray-600 uppercase tracking-wider mb-2 block">Client Reference</Label>
-                  <Input {...register("clientRef")} className="h-8 text-xs font-mono bg-white" placeholder="e.g. 14547002*1" />
-                  <p className="text-[9px] text-gray-400 mt-1.5">Affiliate confirmation number</p>
-                </div>
+                  {/* Client Reference — Metadata field under Dispatch */}
+                  <div className="bg-gray-50/60 rounded-lg border border-gray-200/70 px-3.5 py-3 -mx-3 px-3">
+                    <Label className="text-[10px] font-semibold text-gray-600 uppercase tracking-wider mb-2.5 block">Client Reference</Label>
+                    <Input {...register("clientRef")} className="h-8 text-xs font-mono bg-white border-gray-200 placeholder:text-gray-300" placeholder="e.g. 14547002*1" />
+                    <p className="text-[8px] text-gray-400 mt-1.5 leading-tight">Affiliate or external system reference</p>
+                  </div>
+                </section>
 
                 {/* Farm-Out status — shown inline after Dispatch */}
                 {!isFarmedIn && !["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
