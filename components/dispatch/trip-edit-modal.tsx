@@ -1292,6 +1292,12 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       ]) : undefined,
       wheelchairAccess: data.wheelchairAccess,
       vip:              data.vip,
+      stops: stops.map((stop, idx) => ({
+        order: idx,
+        address: stop.address,
+        notes: stop.notes || null,
+        arrivalTime: stop.timeIn || null,
+      })) as never,
     }, {
       onSuccess: () => {
         setSaveSuccess(true)

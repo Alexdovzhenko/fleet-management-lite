@@ -51,6 +51,13 @@ const updateTripSchema = z.object({
   driverArrivedAt: z.string().optional().nullable(),
   passengerOnBoardAt: z.string().optional().nullable(),
   tripCompletedAt: z.string().optional().nullable(),
+  stops: z.array(z.object({
+    id: z.string().optional(),
+    order: z.number().int().min(0),
+    address: z.string(),
+    notes: z.string().optional().nullable(),
+    arrivalTime: z.string().optional().nullable(),
+  })).optional(),
 })
 
 export async function GET(
@@ -176,6 +183,27 @@ export async function PUT(
         secondaryVehicle: { select: { id: true, name: true, type: true } },
       },
     })
+
+    // Handle stops update if provided
+    if (data.stops !== undefined && isOwned) {
+      // Delete all existing stops for this trip
+      await prisma.tripStop.deleteMany({
+        where: { tripId },
+      })
+
+      // Create new stops
+      if (data.stops.length > 0) {
+        await prisma.tripStop.createMany({
+          data: data.stops.map((stop, idx) => ({
+            tripId,
+            order: idx,
+            address: stop.address,
+            notes: stop.notes ?? null,
+            arrivalTime: stop.arrivalTime ?? null,
+          })),
+        })
+      }
+    }
 
     // ── Notification triggers ────────────────────────────────────────────
     // Determine which company to notify: if the updater is the owner, notify
