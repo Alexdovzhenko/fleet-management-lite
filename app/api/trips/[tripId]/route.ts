@@ -295,8 +295,9 @@ export async function PUT(
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: "Validation failed", details: error.issues }, { status: 400 })
     }
-    console.error("PUT /api/trips/[id] error:", error)
-    return NextResponse.json({ error: "Failed to update trip" }, { status: 500 })
+    const errorMsg = error instanceof Error ? error.message : String(error)
+    console.error("PUT /api/trips/[id] error:", errorMsg, error)
+    return NextResponse.json({ error: "Failed to update trip", details: errorMsg }, { status: 500 })
   }
 }
 
