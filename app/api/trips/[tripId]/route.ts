@@ -153,7 +153,7 @@ export async function PUT(
     // Farm-in trips: only allow updating dispatch fields and status
     const updateData = isOwned
       ? (() => {
-          const { customerId, additionalPassengers, ...restData } = data
+          const { customerId, additionalPassengers, stops, ...restData } = data
           return {
             ...restData,
             ...extraData,
