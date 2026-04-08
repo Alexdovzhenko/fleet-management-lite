@@ -5,6 +5,7 @@ import { createPortal } from "react-dom"
 import { X, Check, Loader2, ChevronDown, Clock } from "lucide-react"
 import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
+import { useVehicleTypes } from "@/lib/hooks/use-vehicle-types"
 import { useUpdateTrip } from "@/lib/hooks/use-trips"
 import { useStatusConfig } from "@/lib/hooks/use-status-config"
 import type { Trip, TripStatus } from "@/types"
@@ -22,10 +23,12 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
   const popupRef = useRef<HTMLDivElement>(null)
   const { data: drivers = [] } = useDrivers()
   const { data: vehicles = [] } = useVehicles()
+  const { data: vehicleTypes = [] } = useVehicleTypes()
   const updateTrip = useUpdateTrip()
   const { getEnabledStatuses, getStatusDarkBadge, getStatusActiveStyle, getStatusDotClass, getStatusLabel } = useStatusConfig()
   const [appliedStatus, setAppliedStatus] = useState<TripStatus | null>(null)
   const [driverId, setDriverId] = useState(trip.driverId ?? "")
+  const [vehicleTypeValue, setVehicleTypeValue] = useState(trip.vehicleType ?? "")
   const [vehicleId, setVehicleId] = useState(trip.vehicleId ?? "")
   const [mounted, setMounted] = useState(false)
   const [visible, setVisible] = useState(false)
@@ -81,6 +84,11 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
   function handleDriverChange(newId: string) {
     setDriverId(newId)
     updateTrip.mutate({ id: trip.id, driverId: newId || undefined })
+  }
+
+  function handleVehicleTypeChange(newType: string) {
+    setVehicleTypeValue(newType)
+    updateTrip.mutate({ id: trip.id, vehicleType: (newType || undefined) as never })
   }
 
   function handleVehicleChange(newId: string) {
@@ -200,7 +208,7 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
         })}
       </div>
 
-      {/* ── Driver / Vehicle ──────────────────────────────────── */}
+      {/* ── Driver / Vehicle Type / Vehicle ──────────────────── */}
       <div className="bg-gray-50 border-t border-gray-100 px-3.5 py-3 space-y-2">
         {/* Driver */}
         <div className="flex items-center gap-2.5">
@@ -214,6 +222,24 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
               <option value="">Unassigned</option>
               {drivers.map((d) => (
                 <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Vehicle Type */}
+        <div className="flex items-center gap-2.5">
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex-shrink-0" style={{ width: "50px" }}>Type</span>
+          <div className="relative flex-1">
+            <select
+              value={vehicleTypeValue}
+              onChange={(e) => handleVehicleTypeChange(e.target.value)}
+              className="w-full h-8 pl-3 pr-7 text-xs border border-gray-200 rounded-lg bg-white text-gray-800 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-50 transition-all appearance-none font-medium"
+            >
+              <option value="">Select type...</option>
+              {vehicleTypes.map((type) => (
+                <option key={type.value} value={type.value}>{type.label}</option>
               ))}
             </select>
             <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 pointer-events-none" />
