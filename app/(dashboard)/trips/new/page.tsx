@@ -11,8 +11,26 @@ import {
   User, Users, Calendar, MapPin, Car, Building2,
   Star, Baby, Accessibility, UserCheck, ChevronDown, Ship,
   FileText, AlertTriangle, CheckCircle2, Copy, Check, Pencil,
-  Clock, Navigation, ArrowRight, ArrowUpRight, DollarSign,
+  Clock, Navigation, ArrowRight, ArrowUpRight, DollarSign, GripVertical,
 } from "lucide-react"
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  type DragStartEvent,
+  type DragEndEvent,
+} from "@dnd-kit/core"
+import {
+  SortableContext,
+  useSortable,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -1438,6 +1456,140 @@ function FlightTrackingBadge({ tracking }: { tracking: NonNullable<FlightTrackin
   )
 }
 
+// ── SortableStopRow ──────────────────────────────────────────────────────────
+
+interface SortableStopRowProps {
+  stop: StopEntry
+  isEditing: boolean
+  onEdit: (stop: StopEntry) => void
+  onDelete: (id: string) => void
+  isDragOverlay?: boolean
+}
+
+function SortableStopRow({
+  stop,
+  isEditing,
+  onEdit,
+  onDelete,
+  isDragOverlay = false,
+}: SortableStopRowProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: stop.id, disabled: isEditing })
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition: transition ?? "transform 200ms ease-out",
+    opacity: isDragging && !isDragOverlay ? 0 : 1,
+  }
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`group flex items-start gap-3 px-3 py-2.5 border-b last:border-b-0 border-gray-100 transition-colors ${ROLE_ROW_BG[stop.role]} ${
+        isDragOverlay
+          ? "shadow-lg ring-1 ring-blue-200 rounded-xl scale-[1.02] bg-white cursor-grabbing"
+          : isEditing
+          ? "opacity-40 cursor-not-allowed"
+          : "cursor-pointer hover:brightness-95"
+      }`}
+      onClick={() => { if (!isEditing && !isDragOverlay) onEdit(stop) }}
+    >
+      {/* Drag handle — hidden when editing */}
+      {!isEditing && (
+        <button
+          type="button"
+          className={`flex-shrink-0 mt-0.5 touch-none ${
+            isDragOverlay ? "cursor-grabbing" : "cursor-grab"
+          } text-gray-300 hover:text-gray-500 transition-colors`}
+          aria-label="Drag to reorder"
+          {...attributes}
+          {...listeners}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <GripVertical className="w-3.5 h-3.5" />
+        </button>
+      )}
+      {/* Role prefix — left-aligned, mono */}
+      <span className="text-[11px] font-bold font-mono flex-shrink-0 mt-0.5 w-6">
+        {ROLE_PREFIX[stop.role]}:
+      </span>
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        {stop.locationName && (
+          <div className="text-xs font-semibold truncate">{stop.locationName}</div>
+        )}
+        <div className="text-sm font-medium truncate">{stop.address}</div>
+        {stop.tailNumber && (
+          <div className="text-[11px] opacity-70">Tail: {stop.tailNumber}</div>
+        )}
+        {stop.flightNumber && (
+          <div className="text-[11px] opacity-70">
+            Flight: {stop.flightNumber}
+            {stop.arrDep ? ` · ${stop.arrDep}` : ""}
+            {stop.terminalGate ? ` · Gate ${stop.terminalGate}` : ""}
+          </div>
+        )}
+        {stop.etaEtd && (
+          <div className="text-[11px] opacity-60">ETA/ETD: {stop.etaEtd}</div>
+        )}
+        {stop.flightTracking && (
+          <FlightTrackingBadge tracking={stop.flightTracking} />
+        )}
+        {stop.cruiseShipName && (
+          <div className="text-[11px] opacity-70">
+            Ship: {stop.cruiseShipName}
+            {stop.cruiseLineName ? ` · ${stop.cruiseLineName}` : ""}
+          </div>
+        )}
+        {stop.arrivingDepartingTo && (
+          <div className="text-[11px] opacity-60">{stop.arrivingDepartingTo}</div>
+        )}
+        {stop.seaportInstructions && (
+          <div className="text-[11px] opacity-60">{stop.seaportInstructions}</div>
+        )}
+        {stop.notes && (
+          <div className="text-[11px] opacity-60 truncate">{stop.notes}</div>
+        )}
+        {(stop.phone || stop.timeIn) && (
+          <div className="text-[11px] opacity-60">
+            {stop.phone && <span>{stop.phone}</span>}
+            {stop.phone && stop.timeIn && <span className="mx-1">·</span>}
+            {stop.timeIn && <span>Time In: {stop.timeIn}</span>}
+          </div>
+        )}
+      </div>
+      {/* Action buttons */}
+      <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
+        {!isEditing && !isDragOverlay && (
+          <span className="opacity-0 group-hover:opacity-100 transition-opacity">
+            <Pencil className="w-3 h-3 text-gray-400" />
+          </span>
+        )}
+        {!isDragOverlay && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              if (!isEditing) onDelete(stop.id)
+            }}
+            disabled={isEditing}
+            className="text-gray-300 hover:text-red-400 transition-colors disabled:pointer-events-none"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function RouteBuilder({
   stops, setStops, stopsError, pickupDate,
 }: {
@@ -1482,6 +1634,28 @@ function RouteBuilder({
   const [seaportInstructions, setSeaportInstructions] = useState("")
   const [addError, setAddError] = useState("")
   const [isEditing, setIsEditing] = useState(false)
+  const [activeId, setActiveId] = useState<string | null>(null)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
+
+  function handleDragStart(event: DragStartEvent) {
+    setActiveId(event.active.id as string)
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    setActiveId(null)
+    if (over && active.id !== over.id) {
+      setStops((prev) => {
+        const oldIndex = prev.findIndex((s) => s.id === active.id)
+        const newIndex = prev.findIndex((s) => s.id === over.id)
+        return arrayMove(prev, oldIndex, newIndex)
+      })
+    }
+  }
 
   const fetchFlightData = useCallback(async (stopId: string, flightNum: string) => {
     if (!flightNum.trim()) return
@@ -2040,60 +2214,35 @@ function RouteBuilder({
 
       {/* Route list */}
       {stops.length > 0 ? (
-        <div className="rounded-xl border border-gray-200 overflow-hidden">
-          <div className="px-3 py-2 bg-gray-50 border-b border-gray-100">
-            <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Routing Information</p>
-          </div>
-          {stops.map((stop) => (
-            <div
-              key={stop.id}
-              onClick={() => { if (!isEditing) editStop(stop) }}
-              className={`group flex items-start gap-3 px-3 py-2.5 border-b last:border-b-0 border-gray-100 transition-all ${ROLE_ROW_BG[stop.role]} ${isEditing ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:brightness-95"}`}
-            >
-              <span className="text-[11px] font-bold font-mono flex-shrink-0 mt-0.5 w-6">{ROLE_PREFIX[stop.role]}:</span>
-              <div className="flex-1 min-w-0">
-                {stop.locationName && <div className="text-xs font-semibold truncate">{stop.locationName}</div>}
-                <div className="text-sm font-medium truncate">{stop.address}</div>
-                {stop.tailNumber && <div className="text-[11px] opacity-70">Tail: {stop.tailNumber}</div>}
-                {stop.flightNumber && (
-                  <div className="text-[11px] opacity-70">
-                    Flight: {stop.flightNumber}{stop.arrDep ? ` · ${stop.arrDep}` : ""}{stop.terminalGate ? ` · Gate ${stop.terminalGate}` : ""}
-                  </div>
-                )}
-                {stop.etaEtd && <div className="text-[11px] opacity-60">ETA/ETD: {stop.etaEtd}</div>}
-                {stop.flightTracking && (
-                  <FlightTrackingBadge tracking={stop.flightTracking} />
-                )}
-                {stop.cruiseShipName && <div className="text-[11px] opacity-70">Ship: {stop.cruiseShipName}{stop.cruiseLineName ? ` · ${stop.cruiseLineName}` : ""}</div>}
-                {stop.arrivingDepartingTo && <div className="text-[11px] opacity-60">{stop.arrivingDepartingTo}</div>}
-                {stop.seaportInstructions && <div className="text-[11px] opacity-60">{stop.seaportInstructions}</div>}
-                {stop.notes && <div className="text-[11px] opacity-60 truncate">{stop.notes}</div>}
-                {(stop.phone || stop.timeIn) && (
-                  <div className="text-[11px] opacity-60">
-                    {stop.phone && <span>{stop.phone}</span>}
-                    {stop.phone && stop.timeIn && <span className="mx-1">·</span>}
-                    {stop.timeIn && <span>Time In: {stop.timeIn}</span>}
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
-                {!isEditing && (
-                  <span className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Pencil className="w-3 h-3 text-gray-400" />
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); if (!isEditing) setStops(prev => prev.filter(s => s.id !== stop.id)) }}
-                  disabled={isEditing}
-                  className="text-gray-300 hover:text-red-400 transition-colors disabled:pointer-events-none"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
+        <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+          <div className="rounded-xl border border-gray-200 overflow-hidden">
+            <div className="px-3 py-2 bg-gray-50 border-b border-gray-100">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Routing Information</p>
             </div>
-          ))}
-        </div>
+            <SortableContext items={stops.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+              {stops.map((stop) => (
+                <SortableStopRow
+                  key={stop.id}
+                  stop={stop}
+                  isEditing={isEditing}
+                  onEdit={editStop}
+                  onDelete={(id) => setStops((prev) => prev.filter((s) => s.id !== id))}
+                />
+              ))}
+            </SortableContext>
+          </div>
+          <DragOverlay dropAnimation={{ duration: 150, easing: "ease-out" }}>
+            {activeId ? (
+              <SortableStopRow
+                stop={stops.find((s) => s.id === activeId)!}
+                isEditing={false}
+                onEdit={() => {}}
+                onDelete={() => {}}
+                isDragOverlay
+              />
+            ) : null}
+          </DragOverlay>
+        </DndContext>
       ) : (
         <div className="text-xs text-gray-400 text-center py-6 border border-dashed border-gray-200 rounded-xl">
           Add locations above to build the trip itinerary
