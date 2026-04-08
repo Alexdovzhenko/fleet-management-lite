@@ -8,7 +8,7 @@ import { z } from "zod"
 import {
   X, Plane, Phone, Copy, Check, User, Car, UserCheck,
   ChevronDown, MapPin, Building2, Ship, Plus, Star,
-  AlertTriangle, Baby, ArrowRightLeft, Pencil, Send, Calendar, Loader2,
+  AlertTriangle, Baby, ArrowRightLeft, Pencil, Send, Calendar, Loader2, ArrowLeftRight,
 } from "lucide-react"
 
 const SAVE_BUTTON_STYLES = `
@@ -39,6 +39,7 @@ import { useTripFarmOuts, useCancelFarmOut } from "@/lib/hooks/use-farm-outs"
 import { FarmOutModal } from "@/components/dispatch/farm-out-modal"
 import { SendEmailModal } from "@/components/email/send-email-modal"
 import { CopyReservationModal } from "@/components/dispatch/copy-reservation-modal"
+import { RoundTripModal } from "@/components/dispatch/round-trip-modal"
 import { formatCurrency, formatPhone, getTripStatusLabel, cn } from "@/lib/utils"
 import type { Trip, TripStatus, Driver, Vehicle, Customer } from "@/types"
 import { format, parse, isValid } from "date-fns"
@@ -872,6 +873,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const [farmOutOpen, setFarmOutOpen]         = useState(false)
   const [sendEmailOpen, setSendEmailOpen]     = useState(false)
   const [copyOpen, setCopyOpen]               = useState(false)
+  const [roundTripOpen, setRoundTripOpen]     = useState(false)
   const { data: farmOuts } = useTripFarmOuts(isFarmedIn ? null : (trip?.id ?? null))
   const pendingFarmOut = farmOuts?.find((f) => f.status === "PENDING")
   const acceptedFarmOut = farmOuts?.find((f) => f.status === "ACCEPTED")
@@ -1156,6 +1158,16 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
           >
             <Copy className="w-3.5 h-3.5" />
             Copy
+          </button>
+
+          {/* Round Trip */}
+          <button
+            type="button"
+            onClick={() => setRoundTripOpen(true)}
+            className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
+          >
+            <ArrowLeftRight className="w-3.5 h-3.5" />
+            Round Trip
           </button>
 
           {/* Send Email */}
@@ -1884,6 +1896,13 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
         trip={trip}
         open={copyOpen}
         onClose={() => setCopyOpen(false)}
+      />
+    )}
+    {trip && (
+      <RoundTripModal
+        trip={trip}
+        open={roundTripOpen}
+        onClose={() => setRoundTripOpen(false)}
       />
     )}
     </>
