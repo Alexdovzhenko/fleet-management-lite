@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useCreateTrip } from "@/lib/hooks/use-trips"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
-import { formatPhone, cn } from "@/lib/utils"
+import { formatPhone, formatTime, cn } from "@/lib/utils"
 import { format, parse, isValid } from "date-fns"
 import type { Trip, TripType } from "@/types"
 
@@ -342,6 +342,7 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                         setPickupTime(e.target.value)
                         if (timeError) setTimeError("")
                       }}
+                      onBlur={(e) => setPickupTime(formatTime(e.target.value))}
                       placeholder="HH:MM AM/PM"
                       className={cn(
                         "h-10 text-sm",

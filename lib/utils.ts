@@ -21,9 +21,24 @@ export function formatDateTime(date: string | Date): string {
 
 export function formatTime(time: string | null | undefined): string {
   if (!time) return ""
-  // Already includes AM/PM — return as-is (trim any extra whitespace)
-  if (/[AaPp][Mm]/.test(time)) return time.trim()
-  const [hours, minutes] = time.split(":").map(Number)
+  const trimmed = time.trim()
+
+  // Check if it has AM/PM
+  if (/[AaPp][Mm]/.test(trimmed)) {
+    // If it already has a colon, return as-is
+    if (trimmed.includes(':')) {
+      return trimmed
+    }
+    // If no colon (e.g., "2PM"), add ":00" before AM/PM
+    const match = trimmed.match(/^(\d{1,2})\s*([APap][Mm])$/)
+    if (match) {
+      return `${match[1]}:00 ${match[2].toUpperCase()}`
+    }
+    return trimmed
+  }
+
+  // No AM/PM, try parsing 24-hour format (HH:MM)
+  const [hours, minutes] = trimmed.split(":").map(Number)
   if (isNaN(hours) || isNaN(minutes)) return time
   const period = hours >= 12 ? "PM" : "AM"
   const displayHours = hours % 12 || 12
