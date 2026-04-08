@@ -2397,6 +2397,15 @@ export default function NewTripPage() {
     const gratuity = data.price ? Math.round(data.price * ((data.gratuityPercent || 0) / 100) * 100) / 100 : undefined
     const totalPrice = data.price && gratuity ? data.price + gratuity : data.price
 
+    const stopsData = stops.map((stop, idx) => ({
+      order: idx,
+      address: stop.address,
+      locationName: stop.locationName || null,
+      role: stop.role || null,
+      notes: stop.notes || null,
+      arrivalTime: stop.timeIn || null,
+    }))
+
     createTrip.mutate({
       tripNumber:       confirmationNumber,
       customerId:       data.customerId,
@@ -2435,6 +2444,7 @@ export default function NewTripPage() {
       ]) : undefined,
       wheelchairAccess: false,
       vip:              data.vip,
+      stops: stopsData as never,
     } as never, {
       onSuccess: (trip) => { setCreatedConfirmation(confirmationNumber); setCreatedTrip(trip) },
       onError: (err) => setSubmitError(err instanceof Error ? err.message : "Failed to save reservation. Please check your information and try again."),
