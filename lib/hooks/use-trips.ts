@@ -57,7 +57,20 @@ async function updateTrip({ id, ...data }: Partial<Trip> & { id: string }): Prom
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   })
-  if (!res.ok) throw new Error("Failed to update trip")
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    let msg = body.error || "Failed to update trip"
+
+    // Add validation details if available
+    if (body.details && Array.isArray(body.details)) {
+      const issues = body.details.map((issue: any) => issue.message).join(", ")
+      msg = `${msg}: ${issues}`
+    } else if (body.detail) {
+      msg = `${msg} — ${body.detail}`
+    }
+
+    throw new Error(msg)
+  }
   return res.json()
 }
 
