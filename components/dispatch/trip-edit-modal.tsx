@@ -40,6 +40,8 @@ import { FarmOutModal } from "@/components/dispatch/farm-out-modal"
 import { SendEmailModal } from "@/components/email/send-email-modal"
 import { CopyReservationModal } from "@/components/dispatch/copy-reservation-modal"
 import { RoundTripModal } from "@/components/dispatch/round-trip-modal"
+import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
+import { useUpsertAddress, type CompanyAddress } from "@/lib/hooks/use-addresses"
 import { formatCurrency, formatPhone, getTripStatusLabel, cn } from "@/lib/utils"
 import type { Trip, TripStatus, Driver, Vehicle, Customer } from "@/types"
 import { format, parse, isValid } from "date-fns"
@@ -224,6 +226,16 @@ function RouteBuilder({ stops, setStops, stopsError }: {
   const [seaportInstructions, setSeaportInstructions] = useState("")
   const [addError, setAddError] = useState("")
   const [isEditing, setIsEditing] = useState(false)
+  const upsertAddress = useUpsertAddress()
+
+  function handleAddressBookSelect(addr: CompanyAddress) {
+    if (addr.name)     setLocationName(addr.name)
+    if (addr.address1) { setAddress1(addr.address1); setAddError("") }
+    if (addr.address2) setAddress2(addr.address2)
+    if (addr.city)     setCity(addr.city)
+    if (addr.state)    setStateVal(addr.state)
+    if (addr.zip)      setZip(addr.zip)
+  }
 
   function resetForm() {
     setIsEditing(false)
@@ -290,6 +302,18 @@ function RouteBuilder({ stops, setStops, stopsError }: {
       formattedAddress = [portName || seaportCode, seaportCode && portName ? `(${seaportCode})` : ""].filter(Boolean).join(" ") || seaportCode || portName
     }
 
+    // Auto-save address to address book for address-type stops
+    if (locType === "address" && address1.trim()) {
+      upsertAddress.mutate({
+        name:     locationName || undefined,
+        address1: address1.trim(),
+        address2: address2 || undefined,
+        city:     city || undefined,
+        state:    stateVal || undefined,
+        zip:      zip || undefined,
+      })
+    }
+
     setIsEditing(false)
     setStops(prev => [...prev, {
       id: `s${Date.now()}`, locType, role,
@@ -333,8 +357,13 @@ function RouteBuilder({ stops, setStops, stopsError }: {
             <>
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Location Name</Label>
-                <Input value={locationName} onChange={(e) => setLocationName(e.target.value)}
-                  placeholder="Hotel, office, venue name…" className="h-9 text-sm" autoComplete="off" />
+                <AddressAutocomplete
+                  value={locationName}
+                  onChange={(v) => setLocationName(v)}
+                  onSelect={handleAddressBookSelect}
+                  placeholder="Hotel, office, venue name…"
+                  inputClassName="h-9 text-sm"
+                />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Address 1 *</Label>

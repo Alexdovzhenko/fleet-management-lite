@@ -1706,8 +1706,13 @@ function RouteBuilder({
             <>
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Location Description / Name</Label>
-                <Input value={locationName} onChange={(e) => setLocationName(e.target.value)}
-                  className="h-9 text-sm" autoComplete="off" />
+                <AddressAutocomplete
+                  value={locationName}
+                  onChange={(v) => setLocationName(v)}
+                  onSelect={handleAddressBookSelect}
+                  placeholder=""
+                  inputClassName="h-9 text-sm"
+                />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Address 1 *</Label>

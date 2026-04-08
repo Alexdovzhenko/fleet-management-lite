@@ -16,6 +16,8 @@ import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
 import { calculateTotal, formatCurrency } from "@/lib/utils"
 import { cn } from "@/lib/utils"
+import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
+import { useUpsertAddress } from "@/lib/hooks/use-addresses"
 
 const tripSchema = z.object({
   customerId: z.string().min(1, "Customer is required"),
@@ -163,6 +165,7 @@ export function TripForm({ onSubmit, onCancel, isLoading }: TripFormProps) {
   const { data: customers } = useCustomers()
   const { data: drivers } = useDrivers()
   const { data: vehicles } = useVehicles()
+  const upsertAddress = useUpsertAddress()
 
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<TripFormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -220,8 +223,16 @@ export function TripForm({ onSubmit, onCancel, isLoading }: TripFormProps) {
     }
   }, [aiText, setValue])
 
+  const handleFormSubmit = useCallback((data: TripFormData) => {
+    // Auto-save addresses to address book
+    if (data.pickupAddress)  upsertAddress.mutate({ address1: data.pickupAddress })
+    if (data.dropoffAddress) upsertAddress.mutate({ address1: data.dropoffAddress })
+    // Call the parent onSubmit handler
+    onSubmit(data)
+  }, [onSubmit, upsertAddress])
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5">
       {/* AI Smart Field */}
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
         <div className="flex items-center gap-2 mb-2">
@@ -306,7 +317,17 @@ export function TripForm({ onSubmit, onCancel, isLoading }: TripFormProps) {
       {/* Pickup */}
       <div className="space-y-1.5">
         <Label>Pickup Address *</Label>
-        <Input {...register("pickupAddress")} placeholder="123 Main St, Miami FL 33101" />
+        <AddressAutocomplete
+          value={watch("pickupAddress") || ""}
+          onChange={(v) => setValue("pickupAddress", v)}
+          onSelect={(addr) => {
+            const formatted = [addr.name, addr.address1, addr.city, addr.state, addr.zip].filter(Boolean).join(", ")
+            setValue("pickupAddress", formatted, { shouldValidate: true })
+            upsertAddress.mutate({ name: addr.name || undefined, address1: addr.address1, city: addr.city || undefined, state: addr.state || undefined, zip: addr.zip || undefined })
+          }}
+          error={!!errors.pickupAddress}
+          placeholder="123 Main St, Miami FL 33101"
+        />
         {errors.pickupAddress && <p className="text-xs text-red-500">{errors.pickupAddress.message}</p>}
         <Input {...register("pickupNotes")} placeholder="Notes (optional): Meet at baggage claim..." className="text-sm" />
       </div>
@@ -314,7 +335,17 @@ export function TripForm({ onSubmit, onCancel, isLoading }: TripFormProps) {
       {/* Dropoff */}
       <div className="space-y-1.5">
         <Label>Dropoff Address *</Label>
-        <Input {...register("dropoffAddress")} placeholder="456 Ocean Drive, Miami Beach FL" />
+        <AddressAutocomplete
+          value={watch("dropoffAddress") || ""}
+          onChange={(v) => setValue("dropoffAddress", v)}
+          onSelect={(addr) => {
+            const formatted = [addr.name, addr.address1, addr.city, addr.state, addr.zip].filter(Boolean).join(", ")
+            setValue("dropoffAddress", formatted, { shouldValidate: true })
+            upsertAddress.mutate({ name: addr.name || undefined, address1: addr.address1, city: addr.city || undefined, state: addr.state || undefined, zip: addr.zip || undefined })
+          }}
+          error={!!errors.dropoffAddress}
+          placeholder="456 Ocean Drive, Miami Beach FL"
+        />
         {errors.dropoffAddress && <p className="text-xs text-red-500">{errors.dropoffAddress.message}</p>}
         <Input {...register("dropoffNotes")} placeholder="Notes (optional)" className="text-sm" />
       </div>
