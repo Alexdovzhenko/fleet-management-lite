@@ -532,8 +532,14 @@ function RouteBuilder({ stops, setStops, stopsError }: {
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Address 1 *</Label>
-                <Input value={address1} onChange={(e) => { setAddress1(e.target.value); setAddError("") }}
-                  placeholder="123 Main St" className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" />
+                <AddressAutocomplete
+                  value={address1}
+                  onChange={(v) => { setAddress1(v); setAddError("") }}
+                  onSelect={handleAddressBookSelect}
+                  placeholder="123 Main St"
+                  inputClassName="h-9 text-sm"
+                  error={!!addError}
+                />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Address 2</Label>
@@ -1178,6 +1184,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
           locType: "address",
           role,
           address: stop.address,
+          locationName: stop.locationName ?? undefined,
           notes: stop.notes ?? "",
           flightNumber: "",
         })
@@ -1287,6 +1294,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     const stopsData = stops.map((stop, idx) => ({
       order: idx,
       address: stop.address,
+      locationName: stop.locationName || null,
       notes: stop.notes || null,
       arrivalTime: stop.timeIn || null,
     }))

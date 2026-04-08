@@ -318,15 +318,16 @@ model Trip {
 }
 
 model TripStop {
-  id          String  @id @default(cuid())
-  tripId      String
-  trip        Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
-  order       Int
-  address     String
-  lat         Float?
-  lng         Float?
-  notes       String?
-  arrivalTime String?
+  id           String  @id @default(cuid())
+  tripId       String
+  trip         Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  order        Int
+  address      String
+  locationName String?  // e.g. "Signature Aviation", "Hotel Miami Beach"
+  lat          Float?
+  lng          Float?
+  notes        String?
+  arrivalTime  String?
 
   @@index([tripId])
 }
