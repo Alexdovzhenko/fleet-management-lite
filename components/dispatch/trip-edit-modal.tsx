@@ -1162,17 +1162,35 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
     // Initialise stops from existing trip data
     const initialStops: StopEntry[] = []
-    if (trip.pickupAddress) {
-      initialStops.push({
-        id: "init-pickup", locType: "address", role: "pickup",
-        address: trip.pickupAddress, notes: trip.pickupNotes ?? "", flightNumber: trip.flightNumber ?? "",
+
+    // Add intermediate stops if they exist (from trip.stops array)
+    if (trip.stops && Array.isArray(trip.stops) && trip.stops.length > 0) {
+      trip.stops.forEach((stop: any, idx: number) => {
+        const totalStops = (trip.stops as any[]).length
+        initialStops.push({
+          id: stop.id,
+          locType: "address",
+          role: idx === 0 && !initialStops.some(s => s.role === "pickup") ? "pickup" :
+                idx === totalStops - 1 ? "drop" : "stop",
+          address: stop.address,
+          notes: stop.notes ?? "",
+          flightNumber: "",
+        })
       })
-    }
-    if (trip.dropoffAddress) {
-      initialStops.push({
-        id: "init-drop", locType: "address", role: "drop",
-        address: trip.dropoffAddress, notes: trip.dropoffNotes ?? "", flightNumber: "",
-      })
+    } else {
+      // Fallback to old pickup/dropoff if no stops array (for old data)
+      if (trip.pickupAddress) {
+        initialStops.push({
+          id: "init-pickup", locType: "address", role: "pickup",
+          address: trip.pickupAddress, notes: trip.pickupNotes ?? "", flightNumber: trip.flightNumber ?? "",
+        })
+      }
+      if (trip.dropoffAddress) {
+        initialStops.push({
+          id: "init-drop", locType: "address", role: "drop",
+          address: trip.dropoffAddress, notes: trip.dropoffNotes ?? "", flightNumber: "",
+        })
+      }
     }
     setStops(initialStops)
 
