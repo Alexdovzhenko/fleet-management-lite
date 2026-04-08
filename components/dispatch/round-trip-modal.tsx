@@ -43,7 +43,7 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
   useEffect(() => {
     if (open && trip) {
       setPickupDate("")
-      setPickupTime(trip.pickupTime)
+      setPickupTime("")
       // Reverse the routing
       setPickupAddress(trip.dropoffAddress)
       setPickupNotes(trip.dropoffNotes ?? "")
