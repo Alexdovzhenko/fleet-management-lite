@@ -209,10 +209,10 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
       </div>
 
       {/* ── Driver / Vehicle Type / Vehicle ──────────────────── */}
-      <div className="bg-gray-50 border-t border-gray-100 px-3.5 py-3 space-y-2">
+      <div className="bg-gray-50 border-t border-gray-100 px-3.5 py-3 space-y-2.5">
         {/* Driver */}
-        <div className="flex items-center gap-2.5">
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider w-14 flex-shrink-0">Driver</span>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider text-right w-16 flex-shrink-0">Driver</span>
           <div className="relative flex-1">
             <select
               value={driverId}
@@ -229,8 +229,8 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
         </div>
 
         {/* Vehicle Type */}
-        <div className="flex items-center gap-2.5">
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex-shrink-0" style={{ width: "50px" }}>Type</span>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider text-right w-16 flex-shrink-0">Type</span>
           <div className="relative flex-1">
             <select
               value={vehicleTypeValue}
@@ -247,8 +247,8 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
         </div>
 
         {/* Vehicle */}
-        <div className="flex items-center gap-2.5">
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider w-14 flex-shrink-0">Vehicle</span>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider text-right w-16 flex-shrink-0">Vehicle</span>
           <div className="relative flex-1">
             <select
               value={vehicleId}
