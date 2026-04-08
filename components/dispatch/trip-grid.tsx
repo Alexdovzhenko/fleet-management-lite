@@ -49,6 +49,7 @@ const ALL_COLUMNS = [
   { key: "pickup",    label: "Pickup",    width: "w-48" },
   { key: "dropoff",   label: "Dropoff",   width: "w-48" },
   { key: "driver",    label: "Driver",    width: "w-36" },
+  { key: "vehicle-type", label: "Veh Type", width: "w-24" },
   { key: "vehicle",   label: "Vehicle",   width: "w-32" },
   { key: "affiliate", label: "Affiliate", width: "w-36" },
   { key: "pax",       label: "Pax",       width: "w-12" },
@@ -255,6 +256,18 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
               </div>
             ) : (
               <span className="text-xs text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full">Unassigned</span>
+            )}
+          </td>
+        )
+      case "vehicle-type":
+        return (
+          <td key={key} className="px-3 py-2.5 whitespace-nowrap">
+            {trip.vehicleType ? (
+              <span className="text-xs font-medium text-gray-700 bg-gray-100 px-2 py-1 rounded-full">
+                {trip.vehicleType.replace(/_/g, " ")}
+              </span>
+            ) : (
+              <span className="text-xs text-gray-300">—</span>
             )}
           </td>
         )

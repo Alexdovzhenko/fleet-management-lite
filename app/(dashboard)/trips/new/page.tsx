@@ -48,6 +48,7 @@ import { useCreateTrip } from "@/lib/hooks/use-trips"
 import { useCustomers, useCreateCustomer } from "@/lib/hooks/use-customers"
 import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
+import { useVehicleTypes } from "@/lib/hooks/use-vehicle-types"
 import { useServiceTypes } from "@/lib/hooks/use-service-types"
 import { useDebounce } from "@/lib/hooks/use-debounce"
 import { formatCurrency, generateConfirmationNumber, formatPhone, cn } from "@/lib/utils"
@@ -72,6 +73,7 @@ const schema = z.object({
   passengerCount:       z.number().int().min(1),
   luggageCount:         z.number().int().min(0).optional(),
   driverId:             z.string().optional(),
+  vehicleType:          z.enum(["SEDAN", "SUV", "STRETCH_LIMO", "SPRINTER", "PARTY_BUS", "COACH", "OTHER"]).optional(),
   vehicleId:            z.string().optional(),
   secondaryDriverId:    z.string().optional(),
   secondaryVehicleId:   z.string().optional(),
@@ -2319,12 +2321,14 @@ export default function NewTripPage() {
   const createTrip = useCreateTrip()
   const { data: drivers, isLoading: driversLoading } = useDrivers()
   const { data: vehicles, isLoading: vehiclesLoading } = useVehicles()
+  const { data: vehicleTypes = [], isLoading: vehicleTypesLoading } = useVehicleTypes()
   const { data: serviceTypes = [] } = useServiceTypes()
   const enabledTypes = serviceTypes.filter((t) => t.isEnabled)
 
   const [selectedAccount, setSelectedAccount] = useState<Customer | null>(null)
   const [tripTypeValue, setTripTypeValue] = useState("")
   const [driverIdValue, setDriverIdValue] = useState("")
+  const [vehicleTypeValue, setVehicleTypeValue] = useState("")
   const [vehicleIdValue, setVehicleIdValue] = useState("")
   const [secondaryDriverIdValue, setSecondaryDriverIdValue] = useState("")
   const [secondaryVehicleIdValue, setSecondaryVehicleIdValue] = useState("")
@@ -2427,6 +2431,7 @@ export default function NewTripPage() {
         : undefined,
       luggageCount:     data.luggageCount ?? undefined,
       driverId:         data.driverId || undefined,
+      vehicleType:      data.vehicleType || undefined,
       vehicleId:        data.vehicleId || undefined,
       secondaryDriverId:  data.secondaryDriverId || undefined,
       secondaryVehicleId: data.secondaryVehicleId || undefined,
@@ -2929,6 +2934,30 @@ export default function NewTripPage() {
                         onChange={(id) => { setDriverIdValue(id); setValue("driverId", id) }}
                         isLoading={driversLoading}
                       />
+                      {/* Vehicle Type Dropdown */}
+                      <div>
+                        <Label htmlFor="vehicle-type" className="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-2">Vehicle Type</Label>
+                        <Select
+                          value={vehicleTypeValue}
+                          onValueChange={(value) => {
+                            if (typeof value === "string") {
+                              setVehicleTypeValue(value)
+                              setValue("vehicleType", value as any)
+                            }
+                          }}
+                        >
+                          <SelectTrigger id="vehicle-type" className="w-full">
+                            <SelectValue placeholder="Select vehicle type..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {vehicleTypes.map((type) => (
+                              <SelectItem key={type.value} value={type.value}>
+                                {type.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                       <VehiclePickerCard
                         vehicles={vehicles?.filter((v) => v.status === "ACTIVE") ?? []}
                         value={vehicleIdValue}

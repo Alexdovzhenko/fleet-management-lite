@@ -29,6 +29,7 @@ const updateTripSchema = z.object({
   })).optional().nullable(),
   customerId: z.string().optional().nullable(),
   driverId: z.string().optional().nullable(),
+  vehicleType: z.enum(["SEDAN", "SUV", "STRETCH_LIMO", "SPRINTER", "PARTY_BUS", "COACH", "OTHER"]).optional().nullable(),
   vehicleId: z.string().optional().nullable(),
   secondaryDriverId: z.string().optional().nullable(),
   secondaryVehicleId: z.string().optional().nullable(),
@@ -169,6 +170,7 @@ export async function PUT(
           // Receiving company can only update dispatch + status
           ...(data.status !== undefined ? { status: data.status, ...extraData } : {}),
           ...(data.driverId !== undefined ? { driverId: data.driverId } : {}),
+          ...(data.vehicleType !== undefined ? { vehicleType: data.vehicleType } : {}),
           ...(data.vehicleId !== undefined ? { vehicleId: data.vehicleId } : {}),
           ...(data.secondaryDriverId !== undefined ? { secondaryDriverId: data.secondaryDriverId } : {}),
           ...(data.secondaryVehicleId !== undefined ? { secondaryVehicleId: data.secondaryVehicleId } : {}),

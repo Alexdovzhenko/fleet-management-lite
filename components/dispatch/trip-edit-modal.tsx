@@ -51,6 +51,7 @@ import { FBOAutocomplete } from "@/components/ui/fbo-autocomplete"
 import { useUpdateTrip } from "@/lib/hooks/use-trips"
 import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
+import { useVehicleTypes } from "@/lib/hooks/use-vehicle-types"
 import { useServiceTypes } from "@/lib/hooks/use-service-types"
 import { useCustomers } from "@/lib/hooks/use-customers"
 import { useTripFarmOuts, useCancelFarmOut } from "@/lib/hooks/use-farm-outs"
@@ -1053,6 +1054,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const updateTrip = useUpdateTrip()
   const { data: allDrivers = [] } = useDrivers()
   const { data: allVehicles = [] } = useVehicles()
+  const { data: vehicleTypes = [] } = useVehicleTypes()
   const { data: serviceTypes = [] } = useServiceTypes()
   const enabledTypes = serviceTypes.filter((t) => t.isEnabled)
   const { actions: statusActions } = useStatusActionsStore()
@@ -1073,6 +1075,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [statusValue, setStatusValue] = useState<TripStatus>("UNASSIGNED")
   const [driverIdValue, setDriverIdValue] = useState("")
+  const [vehicleTypeValue, setVehicleTypeValue] = useState("")
   const [vehicleIdValue, setVehicleIdValue] = useState("")
   const [secondaryDriverIdValue, setSecondaryDriverIdValue] = useState("")
   const [secondaryVehicleIdValue, setSecondaryVehicleIdValue] = useState("")
@@ -1134,6 +1137,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     setStatusValue(trip.status)
     setTripTypeValue(trip.tripType ?? "ONE_WAY")
     setDriverIdValue(trip.driverId ?? "")
+    setVehicleTypeValue(trip.vehicleType ?? "")
     setVehicleIdValue(trip.vehicleId ?? "")
     setSecondaryDriverIdValue(trip.secondaryDriverId ?? "")
     setSecondaryVehicleIdValue(trip.secondaryVehicleId ?? "")
@@ -1327,6 +1331,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
         ...(email ? { email } : {}),
       })) as never,
       driverId:         driverIdValue || undefined,
+      vehicleType:      (vehicleTypeValue || undefined) as never,
       vehicleId:        vehicleIdValue || undefined,
       secondaryDriverId:  secondaryDriverIdValue || undefined,
       secondaryVehicleId: secondaryVehicleIdValue || undefined,
@@ -1845,6 +1850,29 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                   {dispatchTab === "primary" ? (
                     <>
                       <DriverPickerCard drivers={activeDrivers} value={driverIdValue} onChange={setDriverIdValue} />
+                      {/* Vehicle Type Dropdown */}
+                      <div>
+                        <Label htmlFor="vehicle-type" className="text-[10px] font-semibold text-gray-600 uppercase tracking-wide block mb-2">Vehicle Type</Label>
+                        <Select
+                          value={vehicleTypeValue}
+                          onValueChange={(value) => {
+                            if (typeof value === "string") {
+                              setVehicleTypeValue(value)
+                            }
+                          }}
+                        >
+                          <SelectTrigger id="vehicle-type" className="w-full">
+                            <SelectValue placeholder="Select vehicle type..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {vehicleTypes.map((type) => (
+                              <SelectItem key={type.value} value={type.value}>
+                                {type.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                       <VehiclePickerCard vehicles={activeVehicles} value={vehicleIdValue} onChange={setVehicleIdValue} />
                     </>
                   ) : (

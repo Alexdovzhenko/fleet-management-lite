@@ -169,6 +169,7 @@ export interface Trip {
   additionalPassengers?: Array<{ firstName: string; lastName: string; phone?: string; email?: string }> | null
   driverId?: string
   driver?: Driver
+  vehicleType?: VehicleType
   vehicleId?: string
   vehicle?: Vehicle
   secondaryDriverId?: string

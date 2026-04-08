@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware"
 
 export const DEFAULT_COLUMN_ORDER = [
   "status", "time", "conf", "company", "passenger", "phone", "type",
-  "pickup", "dropoff", "driver", "vehicle", "pax", "price", "flags",
+  "pickup", "dropoff", "driver", "vehicle-type", "vehicle", "pax", "price", "flags",
 ]
 
 export const DEFAULT_HIDDEN_COLUMNS: string[] = []
@@ -20,6 +20,7 @@ export const COLUMN_DEFS = [
   { key: "pickup",    label: "Pickup",       description: "Pickup address" },
   { key: "dropoff",   label: "Dropoff",      description: "Dropoff address" },
   { key: "driver",    label: "Driver",       description: "Assigned driver" },
+  { key: "vehicle-type", label: "Vehicle Type", description: "Booked vehicle type/category" },
   { key: "vehicle",   label: "Vehicle",      description: "Assigned vehicle" },
   { key: "affiliate", label: "Affiliate",    description: "Farm-out partner company" },
   { key: "pax",       label: "Pax",          description: "Passenger count" },

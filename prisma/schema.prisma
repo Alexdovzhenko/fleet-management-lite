@@ -265,10 +265,11 @@ model Trip {
   passengerEmail       String?
   additionalPassengers Json?
 
-  driverId  String?
-  driver    Driver?  @relation("PrimaryDriver", fields: [driverId], references: [id])
-  vehicleId String?
-  vehicle   Vehicle? @relation("PrimaryVehicle", fields: [vehicleId], references: [id])
+  driverId      String?
+  driver        Driver?  @relation("PrimaryDriver", fields: [driverId], references: [id])
+  vehicleType   VehicleType?
+  vehicleId     String?
+  vehicle       Vehicle? @relation("PrimaryVehicle", fields: [vehicleId], references: [id])
 
   secondaryDriverId  String?
   secondaryDriver    Driver?  @relation("SecondaryDriver", fields: [secondaryDriverId], references: [id])
