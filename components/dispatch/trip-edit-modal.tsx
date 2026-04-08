@@ -1164,14 +1164,16 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     const initialStops: StopEntry[] = []
 
     // Add intermediate stops if they exist (from trip.stops array)
+    // Sort by order field to ensure correct sequence
     if (trip.stops && Array.isArray(trip.stops) && trip.stops.length > 0) {
-      trip.stops.forEach((stop: any, idx: number) => {
-        const totalStops = (trip.stops as any[]).length
+      const sortedStops = [...(trip.stops as any[])].sort((a, b) => a.order - b.order)
+      sortedStops.forEach((stop: any) => {
         initialStops.push({
           id: stop.id,
           locType: "address",
-          role: idx === 0 && !initialStops.some(s => s.role === "pickup") ? "pickup" :
-                idx === totalStops - 1 ? "drop" : "stop",
+          // Assign role: first is pickup, last is drop, middle are stops
+          role: initialStops.length === 0 ? "pickup" :
+                initialStops.length === sortedStops.length - 1 ? "drop" : "stop",
           address: stop.address,
           notes: stop.notes ?? "",
           flightNumber: "",
