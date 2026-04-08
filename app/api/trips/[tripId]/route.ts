@@ -56,6 +56,7 @@ const updateTripSchema = z.object({
     order: z.number().int().min(0),
     address: z.string(),
     locationName: z.string().optional().nullable(),
+    role: z.enum(["pickup", "drop", "stop", "wait"]).optional().nullable(),
     notes: z.string().optional().nullable(),
     arrivalTime: z.string().optional().nullable(),
   })).optional(),
@@ -205,6 +206,7 @@ export async function PUT(
               order: idx,
               address,
               locationName: stop.locationName && typeof stop.locationName === "string" ? stop.locationName.trim() : null,
+              role: stop.role && typeof stop.role === "string" ? stop.role : null,
               notes: stop.notes && typeof stop.notes === "string" ? stop.notes.trim() : null,
               arrivalTime: stop.arrivalTime && typeof stop.arrivalTime === "string" ? stop.arrivalTime.trim() : null,
             }

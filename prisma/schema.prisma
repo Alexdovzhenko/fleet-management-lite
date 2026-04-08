@@ -324,6 +324,7 @@ model TripStop {
   order        Int
   address      String
   locationName String?  // e.g. "Signature Aviation", "Hotel Miami Beach"
+  role         String?  // "pickup", "drop", "stop", "wait"
   lat          Float?
   lng          Float?
   notes        String?
