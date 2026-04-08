@@ -1168,12 +1168,15 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     if (trip.stops && Array.isArray(trip.stops) && trip.stops.length > 0) {
       const sortedStops = [...(trip.stops as any[])].sort((a, b) => a.order - b.order)
       sortedStops.forEach((stop: any) => {
+        // Infer role by matching address to pickupAddress/dropoffAddress
+        let role: StopRole = "stop"
+        if (stop.address === trip.pickupAddress) role = "pickup"
+        else if (stop.address === trip.dropoffAddress) role = "drop"
+
         initialStops.push({
           id: stop.id,
           locType: "address",
-          // Assign role: first is pickup, last is drop, middle are stops
-          role: initialStops.length === 0 ? "pickup" :
-                initialStops.length === sortedStops.length - 1 ? "drop" : "stop",
+          role,
           address: stop.address,
           notes: stop.notes ?? "",
           flightNumber: "",
