@@ -2065,49 +2065,6 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                 )}
 
               </div>{/* end scrollable */}
-
-              {/* ── Sticky Footer ── */}
-              <div className="sticky bottom-0 flex items-center gap-3 px-6 py-3 border-t border-gray-100 bg-white flex-shrink-0">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-4 py-1.5 rounded-md border border-gray-200 text-gray-700 font-medium text-sm transition-all hover:bg-gray-50 active:bg-gray-100 active:scale-95">
-                  Cancel
-                </button>
-                <div className="flex-1" />
-                <button
-                  form="trip-edit-form"
-                  type="submit"
-                  disabled={updateTrip.isPending || saveSuccess}
-                  className={cn(
-                    "relative inline-flex items-center justify-center gap-2 px-6 py-1.5 rounded-md",
-                    "text-sm font-medium transition-all duration-250 ease-out",
-                    "focus:outline-none focus:ring-0 focus:shadow-none",
-                    "disabled:cursor-not-allowed disabled:opacity-60",
-                    "overflow-hidden",
-                    saveSuccess && "save-button-success",
-                    saveSuccess
-                      ? "bg-emerald-500 text-white shadow-md"
-                      : updateTrip.isPending
-                      ? "bg-blue-600 text-white shadow-md"
-                      : "bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md active:shadow-sm active:scale-95"
-                  )}
-                >
-                  {saveSuccess ? (
-                    <div className="flex items-center justify-center gap-2 animate-none">
-                      <Check className="w-4 h-4" strokeWidth={2.5} />
-                      <span>Saved</span>
-                    </div>
-                  ) : updateTrip.isPending ? (
-                    <div className="flex items-center justify-center gap-2">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Saving…</span>
-                    </div>
-                  ) : (
-                    <span>Save Changes</span>
-                  )}
-                </button>
-              </div>
               </div>
             </div>
           </form>
