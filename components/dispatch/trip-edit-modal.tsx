@@ -1131,11 +1131,6 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
         {/* ── Header ── */}
         <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-100 bg-white flex-shrink-0">
-          {/* Close */}
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 flex-shrink-0 transition-colors">
-            <X className="w-4 h-4" />
-          </button>
-
           {/* Confirmation # */}
           <button type="button" onClick={copyConfirmation} className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors group flex-shrink-0">
             <span className="text-sm font-mono font-semibold text-blue-700">{trip.tripNumber}</span>
@@ -1212,6 +1207,11 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
             ) : (
               <span>Save Changes</span>
             )}
+          </button>
+
+          {/* Close */}
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 flex-shrink-0 transition-colors">
+            <X className="w-4 h-4" />
           </button>
         </div>
 
