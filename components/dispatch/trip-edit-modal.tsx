@@ -927,6 +927,87 @@ function DriverPickerCard({ drivers, value, onChange }: { drivers: Driver[]; val
   )
 }
 
+// ── VehicleTypePickerCard ────────────────────────────────────────────────────
+
+function VehicleTypePickerCard({ vehicleTypes, value, onChange }: { vehicleTypes: Array<{ value: string; label: string }>; value: string; onChange: (type: string) => void }) {
+  const [open, setOpen] = useState(false)
+  const [dropStyle, setDropStyle] = useState<React.CSSProperties>({})
+  const ref = useRef<HTMLDivElement>(null)
+  const dropRef = useRef<HTMLDivElement>(null)
+  const selected = vehicleTypes.find((t) => t.value === value) ?? null
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node) &&
+          dropRef.current && !dropRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener("mousedown", handle)
+    return () => document.removeEventListener("mousedown", handle)
+  }, [])
+
+  function openDropdown() {
+    if (ref.current) {
+      const rect = ref.current.getBoundingClientRect()
+      const spaceBelow = window.innerHeight - rect.bottom
+      setDropStyle(spaceBelow < 240
+        ? { position: "fixed", bottom: window.innerHeight - rect.top + 4, left: rect.left, width: rect.width, zIndex: 9999 }
+        : { position: "fixed", top: rect.bottom + 4, left: rect.left, width: rect.width, zIndex: 9999 })
+    }
+    setOpen(true)
+  }
+
+  return (
+    <div ref={ref} className="space-y-1.5">
+      <Label className="text-xs font-medium text-gray-500">Vehicle Type</Label>
+      {selected ? (
+        <div className="flex items-center gap-2.5 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2.5">
+          <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+            <Car className="w-4 h-4 text-blue-600" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-semibold text-gray-900">{selected.label}</div>
+            <div className="text-[11px] text-gray-500">Booked category</div>
+          </div>
+          <button type="button" onClick={() => onChange("")} className="text-gray-300 hover:text-gray-500 transition-colors flex-shrink-0" aria-label="Remove vehicle type">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      ) : (
+        <button type="button" onClick={() => open ? setOpen(false) : openDropdown()}
+          className="w-full flex items-center gap-2.5 px-3 py-2.5 border border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-slate-400 hover:text-slate-600 hover:bg-slate-50/50 transition-all">
+          <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+            <Car className="w-3.5 h-3.5 text-gray-400" />
+          </div>
+          <span className="flex-1 text-left">Select type…</span>
+          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+        </button>
+      )}
+      {open && !selected && createPortal(
+        <div ref={dropRef} style={dropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+          <div className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">Vehicle Categories</div>
+          <div className="max-h-48 overflow-y-auto">
+            {vehicleTypes.length === 0
+              ? <div className="px-3 py-3 text-xs text-gray-400 text-center">No vehicle types</div>
+              : vehicleTypes.map((t) => (
+                <button key={t.value} type="button" onClick={() => { onChange(t.value); setOpen(false) }}
+                  className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-slate-50 transition-colors">
+                  <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                    <Car className="w-3.5 h-3.5 text-blue-600" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="text-sm font-medium text-gray-800">{t.label}</div>
+                  </div>
+                </button>
+              ))
+            }
+          </div>
+        </div>,
+        document.body
+      )}
+    </div>
+  )
+}
+
 // ── VehiclePickerCard ────────────────────────────────────────────────────────
 
 const VEHICLE_TYPE_LABEL: Record<string, string> = {
@@ -1850,29 +1931,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                   {dispatchTab === "primary" ? (
                     <>
                       <DriverPickerCard drivers={activeDrivers} value={driverIdValue} onChange={setDriverIdValue} />
-                      {/* Vehicle Type Dropdown */}
-                      <div>
-                        <Label htmlFor="vehicle-type" className="text-[10px] font-semibold text-gray-600 uppercase tracking-wide block mb-2">Vehicle Type</Label>
-                        <Select
-                          value={vehicleTypeValue}
-                          onValueChange={(value) => {
-                            if (typeof value === "string") {
-                              setVehicleTypeValue(value)
-                            }
-                          }}
-                        >
-                          <SelectTrigger id="vehicle-type" className="w-full">
-                            <SelectValue placeholder="Select vehicle type..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {vehicleTypes.map((type) => (
-                              <SelectItem key={type.value} value={type.value}>
-                                {type.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      <VehicleTypePickerCard vehicleTypes={vehicleTypes} value={vehicleTypeValue} onChange={setVehicleTypeValue} />
                       <VehiclePickerCard vehicles={activeVehicles} value={vehicleIdValue} onChange={setVehicleIdValue} />
                     </>
                   ) : (
