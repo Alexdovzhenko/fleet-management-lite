@@ -1254,11 +1254,19 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
 
   function onSubmit(data: FormData) {
+    console.log("onSubmit called with stops:", stops)
     if (!trip) return
     const pickupStop = stops.find(s => s.role === "pickup")
     const dropStop = [...stops].reverse().find(s => s.role === "drop")
-    if (!pickupStop?.address.trim()) { setStopsError("A pickup location is required"); return }
-    if (!dropStop?.address.trim()) { setStopsError("A drop-off location is required"); return }
+    console.log("pickupStop:", pickupStop, "dropStop:", dropStop)
+    if (!pickupStop?.address.trim()) {
+      console.log("ERROR: No pickup stop")
+      setStopsError("A pickup location is required"); return
+    }
+    if (!dropStop?.address.trim()) {
+      console.log("ERROR: No dropoff stop")
+      setStopsError("A drop-off location is required"); return
+    }
     setStopsError("")
     setSaveError("")
 
