@@ -293,7 +293,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
 
     let formattedAddress = ""
     if (locType === "address") {
-      formattedAddress = [locationName || address1, address2, city, stateVal ? `${stateVal}${zip ? " " + zip : ""}` : zip].filter(Boolean).join(", ")
+      formattedAddress = [address1, address2, city, stateVal ? `${stateVal}${zip ? " " + zip : ""}` : zip].filter(Boolean).join(", ")
     } else if (locType === "fbo") {
       formattedAddress = [locationName || address1, city, stateVal].filter(Boolean).join(", ")
     } else if (locType === "airport") {
