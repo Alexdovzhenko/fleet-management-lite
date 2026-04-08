@@ -186,22 +186,36 @@ export async function PUT(
 
     // Handle stops update if provided
     if (data.stops !== undefined && isOwned) {
-      // Delete all existing stops for this trip
-      await prisma.tripStop.deleteMany({
-        where: { tripId },
-      })
+      try {
+        // Delete all existing stops for this trip
+        await prisma.tripStop.deleteMany({
+          where: { tripId },
+        })
 
-      // Create new stops
-      if (data.stops.length > 0) {
-        await prisma.tripStop.createMany({
-          data: data.stops.map((stop, idx) => ({
+        // Create new stops
+        if (data.stops && Array.isArray(data.stops) && data.stops.length > 0) {
+          // Validate that all stops have addresses
+          for (let i = 0; i < data.stops.length; i++) {
+            const stop = data.stops[i]
+            if (!stop.address || typeof stop.address !== "string" || !stop.address.trim()) {
+              throw new Error(`Stop ${i + 1} has an invalid or empty address`)
+            }
+          }
+
+          const stopsToCreate = data.stops.map((stop: any, idx: number) => ({
             tripId,
             order: idx,
-            address: stop.address,
-            notes: stop.notes ?? null,
-            arrivalTime: stop.arrivalTime ?? null,
-          })),
-        })
+            address: stop.address.trim(),
+            notes: stop.notes ? (typeof stop.notes === "string" ? stop.notes.trim() : null) : null,
+            arrivalTime: stop.arrivalTime ? (typeof stop.arrivalTime === "string" ? stop.arrivalTime.trim() : null) : null,
+          }))
+          await prisma.tripStop.createMany({
+            data: stopsToCreate,
+          })
+        }
+      } catch (stopsError) {
+        console.error("Error handling stops:", stopsError)
+        throw stopsError
       }
     }
 
