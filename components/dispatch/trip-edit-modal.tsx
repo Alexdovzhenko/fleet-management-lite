@@ -1271,6 +1271,14 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     const parsed = parse(data.pickupDate, "MM/dd/yyyy", new Date())
     if (isValid(parsed)) isoDate = format(parsed, "yyyy-MM-dd")
 
+    const stopsData = stops.map((stop, idx) => ({
+      order: idx,
+      address: stop.address,
+      notes: stop.notes || null,
+      arrivalTime: stop.timeIn || null,
+    }))
+    console.log("Saving trip with stops:", stopsData)
+
     updateTrip.mutate({
       id: trip.id,
       status:           data.status,
@@ -1310,12 +1318,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       ]) : undefined,
       wheelchairAccess: data.wheelchairAccess,
       vip:              data.vip,
-      stops: stops.map((stop, idx) => ({
-        order: idx,
-        address: stop.address,
-        notes: stop.notes || null,
-        arrivalTime: stop.timeIn || null,
-      })) as never,
+      stops: stopsData as never,
     }, {
       onSuccess: () => {
         setSaveSuccess(true)
