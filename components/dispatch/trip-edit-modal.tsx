@@ -2190,23 +2190,23 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
         onClose={() => setFarmOutOpen(false)}
       />
     )}
-    {trip && (
+    {currentTrip && (
       <SendEmailModal
-        trip={trip}
+        trip={currentTrip}
         open={sendEmailOpen}
         onOpenChange={setSendEmailOpen}
       />
     )}
-    {trip && (
+    {currentTrip && (
       <CopyReservationModal
-        trip={trip}
+        trip={currentTrip}
         open={copyOpen}
         onClose={() => setCopyOpen(false)}
       />
     )}
-    {trip && (
+    {currentTrip && (
       <RoundTripModal
-        trip={trip}
+        trip={currentTrip}
         open={roundTripOpen}
         onClose={() => setRoundTripOpen(false)}
       />
