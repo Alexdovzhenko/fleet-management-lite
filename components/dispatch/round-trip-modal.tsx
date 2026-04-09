@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
-import { X, Check, Loader2, ChevronDown, AlertCircle, ArrowLeftRight } from "lucide-react"
+import { X, Check, Loader2, ChevronDown, AlertCircle, ArrowLeftRight, ImageIcon, FileText, FileCode, File } from "lucide-react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { DatePickerInput } from "@/components/ui/date-picker"
@@ -13,6 +13,22 @@ import { useVehicles } from "@/lib/hooks/use-vehicles"
 import { formatPhone, formatTime, cn } from "@/lib/utils"
 import { format, parse, isValid } from "date-fns"
 import type { Trip, TripType } from "@/types"
+
+// ── File icon helper ──────────────────────────────────────────────────────
+
+function getFileIcon(mimeType: string) {
+  if (mimeType.startsWith("image/")) return ImageIcon
+  if (mimeType === "application/pdf") return FileText
+  if (mimeType === "text/plain") return FileCode
+  if (mimeType.includes("word")) return FileText
+  return File
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
 
 interface RoundTripModalProps {
   trip: Trip
@@ -33,6 +49,7 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
   const [vehicleId, setVehicleId] = useState("")
   const [notes, setNotes] = useState("")
   const [copyNotes, setCopyNotes] = useState(true)
+  const [selectedAttachmentIds, setSelectedAttachmentIds] = useState<Set<string>>(new Set())
   const [timeError, setTimeError] = useState("")
   const [success, setSuccess] = useState<{ tripNumber: string } | null>(null)
 
@@ -53,6 +70,8 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
       setVehicleId(trip.vehicleId || "")
       setNotes(trip.notes ?? "")
       setCopyNotes(true)
+      // Initialize all attachments as selected by default
+      setSelectedAttachmentIds(new Set(trip.attachments?.map(a => a.id) ?? []))
       setTimeError("")
       setSuccess(null)
     }
@@ -94,6 +113,19 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
     }
     const pickupDateStr = format(parsed, "yyyy-MM-dd")
 
+    // Build attachments array from selected attachments
+    const attachmentsToCopy = trip.attachments
+      ? trip.attachments
+          .filter((a) => selectedAttachmentIds.has(a.id))
+          .map((a) => ({
+            url: a.url,
+            storagePath: a.storagePath,
+            name: a.name,
+            mimeType: a.mimeType,
+            size: a.size,
+          }))
+      : undefined
+
     createTrip.mutate(
       {
         customerId: trip.customerId,
@@ -132,6 +164,7 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
         clientRef: trip.clientRef ?? undefined,
         notes: copyNotes ? (notes || undefined) : undefined,
         internalNotes: trip.internalNotes ?? undefined,
+        attachments: attachmentsToCopy,
       } as never,
       {
         onSuccess: (newTrip) => {
@@ -376,6 +409,52 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                     </div>
                   </div>
                 </div>
+
+                {/* Attached Files Section */}
+                {trip.attachments && trip.attachments.length > 0 && (
+                  <div>
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Attached Files</h3>
+                    <div className="space-y-2 border-t border-gray-100 pt-3">
+                      {trip.attachments.map((attachment) => {
+                        const Icon = getFileIcon(attachment.mimeType)
+                        const isSelected = selectedAttachmentIds.has(attachment.id)
+                        return (
+                          <label
+                            key={attachment.id}
+                            className={cn(
+                              "flex items-center gap-3 px-3.5 py-2.5 rounded-lg border transition-colors cursor-pointer",
+                              isSelected
+                                ? "bg-blue-50/50 border-blue-100 hover:bg-blue-50"
+                                : "bg-gray-50 border-gray-100 hover:bg-gray-75"
+                            )}
+                          >
+                            <Checkbox
+                              checked={isSelected}
+                              onCheckedChange={(checked) => {
+                                setSelectedAttachmentIds((prev) => {
+                                  const next = new Set(prev)
+                                  if (checked) {
+                                    next.add(attachment.id)
+                                  } else {
+                                    next.delete(attachment.id)
+                                  }
+                                  return next
+                                })
+                              }}
+                            />
+                            <div className="w-6 h-6 rounded-md bg-gray-100 flex items-center justify-center flex-shrink-0">
+                              <Icon className="w-3.5 h-3.5 text-gray-500" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium text-gray-800 truncate">{attachment.name}</p>
+                              <p className="text-[11px] text-gray-400">{formatFileSize(attachment.size)}</p>
+                            </div>
+                          </label>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
