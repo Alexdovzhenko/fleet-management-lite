@@ -1472,14 +1472,14 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
           {/* Right: Action buttons + Close button */}
           <div className="flex items-center gap-1.5 w-full sm:w-auto justify-between sm:justify-end">
             {/* Secondary actions (wrap on mobile) */}
-            <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-center gap-1 flex-wrap">
               {/* Copy Reservation */}
               <button
                 type="button"
                 onClick={() => setCopyOpen(true)}
-                className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium px-2 sm:px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
+                className="inline-flex items-center justify-center h-9 gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-3.5 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 transition-colors duration-150 flex-shrink-0"
               >
-                <Copy className="w-3.5 h-3.5" />
+                <Copy className="w-4 h-4" />
                 <span className="hidden sm:inline">Copy</span>
               </button>
 
@@ -1487,9 +1487,9 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
               <button
                 type="button"
                 onClick={() => setRoundTripOpen(true)}
-                className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium px-2 sm:px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
+                className="inline-flex items-center justify-center h-9 gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-3.5 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 transition-colors duration-150 flex-shrink-0"
               >
-                <ArrowLeftRight className="w-3.5 h-3.5" />
+                <ArrowLeftRight className="w-4 h-4" />
                 <span className="hidden sm:inline">Round Trip</span>
               </button>
 
@@ -1497,53 +1497,53 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
               <button
                 type="button"
                 onClick={() => setSendEmailOpen(true)}
-                className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium px-2 sm:px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
+                className="inline-flex items-center justify-center h-9 gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-3.5 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 transition-colors duration-150 flex-shrink-0"
               >
-                <Send className="w-3.5 h-3.5" />
+                <Send className="w-4 h-4" />
                 <span className="hidden sm:inline">Send</span>
               </button>
             </div>
 
             {/* Primary action + Close button */}
-            <div className="flex items-center gap-1.5 ml-1.5 sm:ml-2">
+            <div className="flex items-center gap-1 ml-1 sm:ml-1.5">
               {/* Save Changes */}
-            <button
-              form="trip-edit-form"
-              type="submit"
-              disabled={updateTrip.isPending || saveSuccess}
-              className={cn(
-                "relative inline-flex items-center justify-center gap-2 px-3 sm:px-5 py-2 rounded-md",
-                "text-xs sm:text-sm font-medium transition-all duration-250 ease-out",
-                "focus:outline-none focus:ring-0 focus:shadow-none",
-                "disabled:cursor-not-allowed disabled:opacity-60",
-                "overflow-hidden",
-                saveSuccess && "save-button-success",
-                saveSuccess
-                  ? "bg-emerald-500 text-white shadow-md"
-                  : updateTrip.isPending
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md active:shadow-sm active:scale-95"
-              )}
-            >
-              {saveSuccess ? (
-                <div className="flex items-center justify-center gap-2 animate-none">
-                  <Check className="w-4 h-4" strokeWidth={2.5} />
-                  <span className="hidden sm:inline">Saved</span>
-                </div>
-              ) : updateTrip.isPending ? (
-                <div className="flex items-center justify-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="hidden sm:inline">Saving…</span>
-                </div>
-              ) : (
-                <span>Save</span>
-              )}
+              <button
+                form="trip-edit-form"
+                type="submit"
+                disabled={updateTrip.isPending || saveSuccess}
+                className={cn(
+                  "relative inline-flex items-center justify-center h-9 gap-2 px-4 sm:px-5 rounded-lg",
+                  "text-xs sm:text-sm font-semibold transition-all duration-150 ease-out",
+                  "focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-0",
+                  "disabled:cursor-not-allowed disabled:opacity-50",
+                  "overflow-hidden flex-shrink-0",
+                  saveSuccess && "save-button-success",
+                  saveSuccess
+                    ? "bg-emerald-500 text-white shadow-sm"
+                    : updateTrip.isPending
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md active:shadow-sm active:scale-95"
+                )}
+              >
+                {saveSuccess ? (
+                  <div className="flex items-center justify-center gap-2 animate-none">
+                    <Check className="w-4 h-4" strokeWidth={2.5} />
+                    <span className="hidden sm:inline">Saved</span>
+                  </div>
+                ) : updateTrip.isPending ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="hidden sm:inline">Saving</span>
+                  </div>
+                ) : (
+                  <span>Save</span>
+                )}
               </button>
 
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="inline-flex items-center justify-center w-9 h-9 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors flex-shrink-0"
+                className="inline-flex items-center justify-center h-9 w-9 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-150 flex-shrink-0"
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />
