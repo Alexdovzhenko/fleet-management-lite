@@ -96,6 +96,7 @@ export async function GET(
           take: 1,
           select: { fromCompany: { select: { id: true, name: true } } },
         },
+        attachments: { orderBy: { createdAt: "asc" } },
       },
     })
 

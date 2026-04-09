@@ -142,6 +142,27 @@ export interface TripStop {
   arrivalTime?: string
 }
 
+export interface TripAttachment {
+  id: string
+  tripId: string
+  companyId: string
+  name: string
+  url: string
+  mimeType: string
+  size: number
+  storagePath: string
+  createdAt: string
+}
+
+export interface PendingFile {
+  id: string
+  file: File
+  localUrl: string
+  name: string
+  mimeType: string
+  size: number
+}
+
 export interface Trip {
   id: string
   tripNumber: string
@@ -196,6 +217,7 @@ export interface Trip {
   tripCompletedAt?: string
   companyId: string
   stops?: TripStop[]
+  attachments?: TripAttachment[]
   farmOuts?: Array<{
     id: string
     status: FarmOutStatus

@@ -58,6 +58,13 @@ const createTripSchema = z.object({
   clientRef: z.string().optional(),
   notes: z.string().optional(),
   internalNotes: z.string().optional(),
+  attachments: z.array(z.object({
+    url: z.string().url(),
+    storagePath: z.string(),
+    name: z.string(),
+    mimeType: z.string(),
+    size: z.number().int().positive(),
+  })).max(5).optional(),
 })
 
 export async function GET(request: NextRequest) {
@@ -242,6 +249,21 @@ export async function POST(request: NextRequest) {
         vehicle: { select: { id: true, name: true, type: true } },
       },
     })
+
+    // Create attachment records if provided
+    if (data.attachments && data.attachments.length > 0) {
+      await prisma.tripAttachment.createMany({
+        data: data.attachments.map((a) => ({
+          tripId: trip.id,
+          companyId,
+          name: a.name,
+          url: a.url,
+          mimeType: a.mimeType,
+          size: a.size,
+          storagePath: a.storagePath,
+        })),
+      })
+    }
 
     return NextResponse.json(trip, { status: 201 })
   } catch (error) {

@@ -45,6 +45,7 @@ import { TripSuccessModal } from "@/components/trips/trip-success-modal"
 import { CityAutocomplete } from "@/components/ui/city-autocomplete"
 import { FBOAutocomplete } from "@/components/ui/fbo-autocomplete"
 import { useCreateTrip } from "@/lib/hooks/use-trips"
+import { preUploadAttachment } from "@/lib/hooks/use-attachments"
 import { useCustomers, useCreateCustomer } from "@/lib/hooks/use-customers"
 import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
@@ -57,7 +58,8 @@ import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
 import { useUpsertAddress } from "@/lib/hooks/use-addresses"
 import { ReservationMetadata } from "@/components/trips/reservation-metadata"
 import { SendEmailModal } from "@/components/email/send-email-modal"
-import type { Customer, Driver, Vehicle, AffiliateSearchResult, Trip } from "@/types"
+import { TripAttachmentsSection } from "@/components/dispatch/trip-attachments"
+import type { Customer, Driver, Vehicle, AffiliateSearchResult, Trip, PendingFile } from "@/types"
 
 const schema = z.object({
   customerId:           z.string().min(1, "Customer is required"),
@@ -2345,6 +2347,8 @@ export default function NewTripPage() {
   const [headerCopied, setHeaderCopied]              = useState(false)
   const [sendEmailOpen, setSendEmailOpen]            = useState(false)
   const [sendEmailRecipient, setSendEmailRecipient]  = useState<"driver" | "client" | "affiliate">("driver")
+  const [pendingAttachments, setPendingAttachments]  = useState<PendingFile[]>([])
+  const [isFormSubmitting, setIsFormSubmitting]      = useState(false)
 
   type AdditionalPax = { id: string; firstName: string; lastName: string; phone: string; email: string }
   const [additionalPassengers, setAdditionalPassengers] = useState<AdditionalPax[]>([])
@@ -2382,78 +2386,97 @@ export default function NewTripPage() {
   const meetAndGreet = watch("meetAndGreet")
   const totalChildSeats = childSeats.forward + childSeats.rear + childSeats.booster
 
-  function onSubmit(data: FormData) {
-    const pickupStop = stops.find(s => s.role === "pickup")
-    const dropStop = [...stops].reverse().find(s => s.role === "drop")
+  async function onSubmit(data: FormData) {
+    setIsFormSubmitting(true)
+    try {
+      const pickupStop = stops.find(s => s.role === "pickup")
+      const dropStop = [...stops].reverse().find(s => s.role === "drop")
 
-    if (!pickupStop?.address.trim()) {
-      setStopsError("A pickup location with an address is required")
-      return
+      if (!pickupStop?.address.trim()) {
+        setStopsError("A pickup location with an address is required")
+        return
+      }
+      if (!dropStop?.address.trim()) {
+        setStopsError("A drop-off location with an address is required")
+        return
+      }
+      setStopsError("")
+      setSubmitError("")
+
+      // Pre-upload any pending attachments
+      let uploadedAttachments: Array<{ url: string; storagePath: string; name: string; mimeType: string; size: number }> = []
+      if (pendingAttachments.length > 0) {
+        try {
+          uploadedAttachments = await Promise.all(
+            pendingAttachments.map((pf) => preUploadAttachment(pf.file))
+          )
+        } catch (err) {
+          setSubmitError(err instanceof Error ? err.message : "Failed to upload attachments")
+          return
+        }
+      }
+
+      const airportStop = stops.find(s => s.locType === "airport" && s.flightNumber)
+      const gratuity = data.price ? Math.round(data.price * ((data.gratuityPercent || 0) / 100) * 100) / 100 : undefined
+      const totalPrice = data.price && gratuity ? data.price + gratuity : data.price
+
+      const stopsData = stops.map((stop, idx) => ({
+        order: idx,
+        address: stop.address,
+        locationName: stop.locationName || null,
+        role: stop.role || null,
+        notes: stop.notes || null,
+        arrivalTime: stop.timeIn || null,
+      }))
+
+      createTrip.mutate({
+        tripNumber:       confirmationNumber,
+        customerId:       data.customerId,
+        clientRef:        data.clientRef || undefined,
+        tripType:         data.tripType,
+        pickupDate:       data.pickupDate,
+        pickupTime:       data.pickupTime,
+        pickupAddress:    pickupStop.address,
+        pickupNotes:      pickupStop.notes || undefined,
+        dropoffAddress:   dropStop.address,
+        dropoffNotes:     dropStop.notes || undefined,
+        flightNumber:     airportStop?.flightNumber || undefined,
+        passengerName:    [data.passengerFirstName, data.passengerLastName].filter(Boolean).join(" ") || undefined,
+        passengerPhone:   data.passengerPhone || undefined,
+        passengerEmail:   data.passengerEmail || undefined,
+        passengerCount:   data.passengerCount,
+        additionalPassengers: additionalPassengers.length > 0
+          ? additionalPassengers.map(({ firstName, lastName, phone, email }) => ({ firstName, lastName, phone: phone || undefined, email: email || undefined }))
+          : undefined,
+        luggageCount:     data.luggageCount ?? undefined,
+        driverId:         data.driverId || undefined,
+        vehicleType:      data.vehicleType || undefined,
+        vehicleId:        data.vehicleId || undefined,
+        secondaryDriverId:  data.secondaryDriverId || undefined,
+        secondaryVehicleId: data.secondaryVehicleId || undefined,
+        price:            data.price as never,
+        gratuity:         gratuity as never,
+        totalPrice:       totalPrice as never,
+        notes:            data.tripNotes || undefined,
+        internalNotes:    data.internalNotes || undefined,
+        attachments:      uploadedAttachments.length > 0 ? uploadedAttachments : undefined,
+        meetAndGreet:     data.meetAndGreet,
+        childSeat:        totalChildSeats > 0,
+        childSeatDetails: totalChildSeats > 0 ? JSON.stringify([
+          ...(childSeats.forward > 0 ? [{ type: "FORWARD_FACING", count: childSeats.forward }] : []),
+          ...(childSeats.rear    > 0 ? [{ type: "REAR_FACING",    count: childSeats.rear    }] : []),
+          ...(childSeats.booster > 0 ? [{ type: "BOOSTER",        count: childSeats.booster }] : []),
+        ]) : undefined,
+        wheelchairAccess: false,
+        vip:              data.vip,
+        stops: stopsData as never,
+      } as never, {
+        onSuccess: (trip) => { setCreatedConfirmation(confirmationNumber); setCreatedTrip(trip) },
+        onError: (err) => setSubmitError(err instanceof Error ? err.message : "Failed to save reservation. Please check your information and try again."),
+      })
+    } finally {
+      setIsFormSubmitting(false)
     }
-    if (!dropStop?.address.trim()) {
-      setStopsError("A drop-off location with an address is required")
-      return
-    }
-    setStopsError("")
-    setSubmitError("")
-
-    const airportStop = stops.find(s => s.locType === "airport" && s.flightNumber)
-    const gratuity = data.price ? Math.round(data.price * ((data.gratuityPercent || 0) / 100) * 100) / 100 : undefined
-    const totalPrice = data.price && gratuity ? data.price + gratuity : data.price
-
-    const stopsData = stops.map((stop, idx) => ({
-      order: idx,
-      address: stop.address,
-      locationName: stop.locationName || null,
-      role: stop.role || null,
-      notes: stop.notes || null,
-      arrivalTime: stop.timeIn || null,
-    }))
-
-    createTrip.mutate({
-      tripNumber:       confirmationNumber,
-      customerId:       data.customerId,
-      clientRef:        data.clientRef || undefined,
-      tripType:         data.tripType,
-      pickupDate:       data.pickupDate,
-      pickupTime:       data.pickupTime,
-      pickupAddress:    pickupStop.address,
-      pickupNotes:      pickupStop.notes || undefined,
-      dropoffAddress:   dropStop.address,
-      dropoffNotes:     dropStop.notes || undefined,
-      flightNumber:     airportStop?.flightNumber || undefined,
-      passengerName:    [data.passengerFirstName, data.passengerLastName].filter(Boolean).join(" ") || undefined,
-      passengerPhone:   data.passengerPhone || undefined,
-      passengerEmail:   data.passengerEmail || undefined,
-      passengerCount:   data.passengerCount,
-      additionalPassengers: additionalPassengers.length > 0
-        ? additionalPassengers.map(({ firstName, lastName, phone, email }) => ({ firstName, lastName, phone: phone || undefined, email: email || undefined }))
-        : undefined,
-      luggageCount:     data.luggageCount ?? undefined,
-      driverId:         data.driverId || undefined,
-      vehicleType:      data.vehicleType || undefined,
-      vehicleId:        data.vehicleId || undefined,
-      secondaryDriverId:  data.secondaryDriverId || undefined,
-      secondaryVehicleId: data.secondaryVehicleId || undefined,
-      price:            data.price as never,
-      gratuity:         gratuity as never,
-      totalPrice:       totalPrice as never,
-      notes:            data.tripNotes || undefined,
-      internalNotes:    data.internalNotes || undefined,
-      meetAndGreet:     data.meetAndGreet,
-      childSeat:        totalChildSeats > 0,
-      childSeatDetails: totalChildSeats > 0 ? JSON.stringify([
-        ...(childSeats.forward > 0 ? [{ type: "FORWARD_FACING", count: childSeats.forward }] : []),
-        ...(childSeats.rear    > 0 ? [{ type: "REAR_FACING",    count: childSeats.rear    }] : []),
-        ...(childSeats.booster > 0 ? [{ type: "BOOSTER",        count: childSeats.booster }] : []),
-      ]) : undefined,
-      wheelchairAccess: false,
-      vip:              data.vip,
-      stops: stopsData as never,
-    } as never, {
-      onSuccess: (trip) => { setCreatedConfirmation(confirmationNumber); setCreatedTrip(trip) },
-      onError: (err) => setSubmitError(err instanceof Error ? err.message : "Failed to save reservation. Please check your information and try again."),
-    })
   }
 
   const simpleAddons = [
@@ -2879,6 +2902,12 @@ export default function NewTripPage() {
                   )}
                 </div>
               </div>
+
+              {/* ── Card 5: Attachments ── */}
+              <TripAttachmentsSection
+                mode="create"
+                onPendingFilesChange={setPendingAttachments}
+              />
 
             </div>
 

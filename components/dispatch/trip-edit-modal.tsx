@@ -59,6 +59,7 @@ import { FarmOutModal } from "@/components/dispatch/farm-out-modal"
 import { SendEmailModal } from "@/components/email/send-email-modal"
 import { CopyReservationModal } from "@/components/dispatch/copy-reservation-modal"
 import { RoundTripModal } from "@/components/dispatch/round-trip-modal"
+import { TripAttachmentsSection } from "@/components/dispatch/trip-attachments"
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
 import { useUpsertAddress, type CompanyAddress } from "@/lib/hooks/use-addresses"
 import { formatCurrency, formatPhone, getTripStatusLabel, cn } from "@/lib/utils"
@@ -1808,6 +1809,13 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                       placeholder="Private notes, reminders, internal instructions…" />
                   </div>
                 </div>
+
+                {/* Attachments */}
+                <TripAttachmentsSection
+                  mode="edit"
+                  tripId={trip.id}
+                  existingAttachments={trip.attachments ?? []}
+                />
 
                 {saveError && (
                   <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600 flex items-start gap-2">

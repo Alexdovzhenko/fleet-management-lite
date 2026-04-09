@@ -309,6 +309,7 @@ model Trip {
   invoice       Invoice?
   notifications TripNotification[]
   farmOuts      FarmOut[]
+  attachments   TripAttachment[]
 
   @@index([companyId])
   @@index([status])
@@ -640,4 +641,20 @@ model AppNotification {
   @@index([companyId])
   @@index([companyId, readAt])
   @@index([createdAt])
+}
+
+model TripAttachment {
+  id          String   @id @default(cuid())
+  tripId      String
+  trip        Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  companyId   String
+  name        String
+  url         String
+  mimeType    String
+  size        Int
+  storagePath String
+  createdAt   DateTime @default(now())
+
+  @@index([tripId])
+  @@index([companyId])
 }
