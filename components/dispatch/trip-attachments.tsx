@@ -236,6 +236,13 @@ interface TripAttachmentsSectionProps {
   onPendingFilesChange?: (files: PendingFile[]) => void
 }
 
+interface UploadingFile {
+  id: string
+  name: string
+  mimeType: string
+  size: number
+}
+
 export function TripAttachmentsSection({
   mode,
   tripId,
@@ -250,12 +257,16 @@ export function TripAttachmentsSection({
   // Create mode state
   const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([])
 
+  // Edit mode: track files currently being uploaded (with unique client-side IDs)
+  const [uploadingFiles, setUploadingFiles] = useState<Map<string, UploadingFile>>(new Map())
+
   // Edit mode mutations
   const uploadMutation = useUploadAttachment(tripId ?? "")
   const deleteMutation = useDeleteAttachment(tripId ?? "")
 
-  const totalCount =
-    mode === "create" ? pendingFiles.length : existingAttachments.length
+  const totalCount = mode === "create"
+    ? pendingFiles.length
+    : existingAttachments.length + uploadingFiles.size
 
   const handleFileSelect = useCallback(
     (files: FileList | null) => {
@@ -296,7 +307,38 @@ export function TripAttachmentsSection({
             return next
           })
         } else if (mode === "edit" && tripId) {
-          uploadMutation.mutate(file)
+          // Create a client-side tracking ID immediately
+          const uploadId = crypto.randomUUID()
+          const uploadingFile: UploadingFile = {
+            id: uploadId,
+            name: file.name,
+            mimeType: file.type,
+            size: file.size,
+          }
+
+          // Show file immediately in UI while uploading
+          setUploadingFiles((prev) => new Map(prev).set(uploadId, uploadingFile))
+
+          // Start the upload
+          uploadMutation.mutate(file, {
+            onSuccess: () => {
+              // Remove from local tracking once confirmed by API
+              setUploadingFiles((prev) => {
+                const next = new Map(prev)
+                next.delete(uploadId)
+                return next
+              })
+            },
+            onError: (err) => {
+              // Remove from tracking and show error
+              setUploadingFiles((prev) => {
+                const next = new Map(prev)
+                next.delete(uploadId)
+                return next
+              })
+              setError(err instanceof Error ? err.message : "Upload failed")
+            },
+          })
         }
       }
 
@@ -381,14 +423,6 @@ export function TripAttachmentsSection({
           </p>
         )}
 
-        {/* Upload loading indicator for edit mode */}
-        {mode === "edit" && uploadMutation.isPending && (
-          <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-violet-100 bg-violet-50">
-            <Loader2 className="w-3.5 h-3.5 animate-spin text-violet-400" />
-            <span className="text-xs text-violet-600">Uploading…</span>
-          </div>
-        )}
-
         {/* Existing attachments (edit mode) */}
         {mode === "edit" &&
           existingAttachments.map((att) => (
@@ -400,6 +434,20 @@ export function TripAttachmentsSection({
               isDeleting={deletingIds.has(att.id)}
               onPreview={() => setPreviewTarget(att)}
               onRemove={() => handleRemoveExisting(att.id)}
+            />
+          ))}
+
+        {/* Currently uploading files (edit mode) - shown immediately with spinner */}
+        {mode === "edit" &&
+          Array.from(uploadingFiles.values()).map((uploadingFile) => (
+            <AttachmentCard
+              key={uploadingFile.id}
+              name={uploadingFile.name}
+              mimeType={uploadingFile.mimeType}
+              size={uploadingFile.size}
+              isUploading={true}
+              onPreview={() => {}} // Disabled during upload
+              onRemove={() => {}} // Disabled during upload
             />
           ))}
 
@@ -417,7 +465,7 @@ export function TripAttachmentsSection({
           ))}
 
         {/* Empty state */}
-        {totalCount === 0 && !uploadMutation.isPending && (
+        {totalCount === 0 && (
           <p className="text-center text-[11px] text-gray-400 py-4">
             No attachments yet
           </p>
