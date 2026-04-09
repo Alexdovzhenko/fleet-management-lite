@@ -385,7 +385,7 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
                         const Icon = getFileIcon(attachment.mimeType)
                         const isSelected = selectedAttachmentIds.has(attachment.id)
                         return (
-                          <div
+                          <label
                             key={attachment.id}
                             className={cn(
                               "flex items-center gap-3 px-3.5 py-2.5 rounded-lg border transition-colors cursor-pointer",
@@ -393,17 +393,6 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
                                 ? "bg-blue-50/50 border-blue-100 hover:bg-blue-50"
                                 : "bg-gray-50 border-gray-100 hover:bg-gray-75"
                             )}
-                            onClick={() => {
-                              setSelectedAttachmentIds((prev) => {
-                                const next = new Set(prev)
-                                if (next.has(attachment.id)) {
-                                  next.delete(attachment.id)
-                                } else {
-                                  next.add(attachment.id)
-                                }
-                                return next
-                              })
-                            }}
                           >
                             <Checkbox
                               checked={isSelected}
@@ -426,7 +415,7 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
                               <p className="text-xs font-medium text-gray-800 truncate">{attachment.name}</p>
                               <p className="text-[11px] text-gray-400">{formatFileSize(attachment.size)}</p>
                             </div>
-                          </div>
+                          </label>
                         )
                       })}
                     </div>
