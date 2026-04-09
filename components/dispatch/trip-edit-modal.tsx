@@ -1454,7 +1454,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
         {/* ── Header ── */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 bg-white flex-shrink-0">
-          {/* Row 1: Confirmation # + Status, then Close */}
+          {/* Left: Confirmation # + Status */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {/* Confirmation # */}
             <button type="button" onClick={copyConfirmation} className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors group flex-shrink-0">
@@ -1469,44 +1469,44 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
             />
           </div>
 
-          {/* Close button (always top right) */}
-          <button onClick={onClose} className="absolute sm:relative top-3 sm:top-auto right-4 sm:right-auto text-gray-400 hover:text-gray-600 flex-shrink-0 transition-colors">
-            <X className="w-4 h-4" />
-          </button>
+          {/* Right: Action buttons + Close button */}
+          <div className="flex items-center gap-1.5 w-full sm:w-auto justify-between sm:justify-end">
+            {/* Secondary actions (wrap on mobile) */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {/* Copy Reservation */}
+              <button
+                type="button"
+                onClick={() => setCopyOpen(true)}
+                className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium px-2 sm:px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
+              >
+                <Copy className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Copy</span>
+              </button>
 
-          {/* Row 2: Action buttons */}
-          <div className="flex items-center gap-1.5 flex-wrap w-full sm:w-auto sm:justify-end">
-            {/* Copy Reservation */}
-            <button
-              type="button"
-              onClick={() => setCopyOpen(true)}
-              className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium px-2 sm:px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
-            >
-              <Copy className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Copy</span>
-            </button>
+              {/* Round Trip */}
+              <button
+                type="button"
+                onClick={() => setRoundTripOpen(true)}
+                className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium px-2 sm:px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
+              >
+                <ArrowLeftRight className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Round Trip</span>
+              </button>
 
-            {/* Round Trip */}
-            <button
-              type="button"
-              onClick={() => setRoundTripOpen(true)}
-              className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium px-2 sm:px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
-            >
-              <ArrowLeftRight className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Round Trip</span>
-            </button>
+              {/* Send Email */}
+              <button
+                type="button"
+                onClick={() => setSendEmailOpen(true)}
+                className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium px-2 sm:px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Send</span>
+              </button>
+            </div>
 
-            {/* Send Email */}
-            <button
-              type="button"
-              onClick={() => setSendEmailOpen(true)}
-              className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium px-2 sm:px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
-            >
-              <Send className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Send</span>
-            </button>
-
-            {/* Save Changes */}
+            {/* Primary action + Close button */}
+            <div className="flex items-center gap-1.5 ml-1.5 sm:ml-2">
+              {/* Save Changes */}
             <button
               form="trip-edit-form"
               type="submit"
@@ -1538,7 +1538,17 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
               ) : (
                 <span>Save</span>
               )}
-            </button>
+              </button>
+
+              {/* Close button */}
+              <button
+                onClick={onClose}
+                className="inline-flex items-center justify-center w-9 h-9 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors flex-shrink-0"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
 
