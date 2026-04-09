@@ -958,7 +958,7 @@ function VehicleTypePickerCard({ vehicleTypes, value, onChange }: { vehicleTypes
 
   return (
     <div ref={ref} className="space-y-1.5">
-      <Label className="text-xs font-medium text-gray-500">Vehicle Type</Label>
+      <Label className="text-xs font-medium text-gray-500">Type</Label>
       {selected ? (
         <div className="flex items-center gap-2.5 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2.5">
           <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">

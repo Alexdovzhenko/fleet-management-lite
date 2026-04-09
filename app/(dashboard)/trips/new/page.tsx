@@ -2934,9 +2934,9 @@ export default function NewTripPage() {
                         onChange={(id) => { setDriverIdValue(id); setValue("driverId", id) }}
                         isLoading={driversLoading}
                       />
-                      {/* Vehicle Type Dropdown */}
+                      {/* Type Dropdown */}
                       <div>
-                        <Label htmlFor="vehicle-type" className="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-2">Vehicle Type</Label>
+                        <Label htmlFor="vehicle-type" className="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-2">Type</Label>
                         <Select
                           value={vehicleTypeValue}
                           onValueChange={(value) => {

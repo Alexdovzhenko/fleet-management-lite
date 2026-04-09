@@ -210,7 +210,7 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
         })}
       </div>
 
-      {/* ── Driver / Vehicle Type / Vehicle ──────────────────── */}
+      {/* ── Driver / Type / Vehicle ──────────────────── */}
       <div className="bg-gray-50 border-t border-gray-100 px-3.5 py-3 space-y-2.5">
         {/* Driver */}
         <div className="flex items-center gap-3">
@@ -230,7 +230,7 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
           </div>
         </div>
 
-        {/* Vehicle Type */}
+        {/* Type */}
         <div className="flex items-center gap-3">
           <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider text-right w-16 flex-shrink-0">Type</span>
           <div className="relative flex-1">

@@ -20,7 +20,7 @@ export const COLUMN_DEFS = [
   { key: "pickup",    label: "Pickup",       description: "Pickup address" },
   { key: "dropoff",   label: "Dropoff",      description: "Dropoff address" },
   { key: "driver",    label: "Driver",       description: "Assigned driver" },
-  { key: "vehicle-type", label: "Vehicle Type", description: "Booked vehicle type/category" },
+  { key: "vehicle-type", label: "Type", description: "Booked vehicle type/category" },
   { key: "vehicle",   label: "Vehicle",      description: "Assigned vehicle" },
   { key: "affiliate", label: "Affiliate",    description: "Farm-out partner company" },
   { key: "pax",       label: "Pax",          description: "Passenger count" },

@@ -296,7 +296,7 @@ export function FarmOutModal({ trip, open, onClose }: FarmOutModalProps) {
             {/* Vehicle type */}
             <div>
               <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-1.5">
-                Vehicle Type Required
+                Type Required
               </label>
               <div className="relative">
                 <select

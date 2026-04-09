@@ -548,7 +548,7 @@ function VehicleForm({
 
           <div className="space-y-2.5 flex-1">
             <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">
-              Vehicle Type <span className="text-red-400">*</span>
+              Type <span className="text-red-400">*</span>
             </label>
             <div className="grid grid-cols-4 gap-2">
               {vehicleTypes.map((t) => {

@@ -493,7 +493,7 @@ function VehicleTypeFilter({
   }, [])
 
   const label = selected.length === 0
-    ? "Vehicle Type"
+    ? "Type"
     : selected.length === 1
       ? VEHICLE_FILTERS.find((f) => f.value === selected[0])?.label ?? "1 selected"
       : `${selected.length} types`

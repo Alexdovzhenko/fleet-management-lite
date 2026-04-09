@@ -913,7 +913,7 @@ function QuoteForm({ companyId, companyName, vehicles, onClose }: QuoteFormProps
                     </div>
                   </div>
                   <div>
-                    <label className={labelCls}>Vehicle Type</label>
+                    <label className={labelCls}>Type</label>
                     <div className="relative">
                       <select value={vehicle} onChange={e => setVehicle(e.target.value)}
                         className={`${fieldCls} appearance-none pr-8 cursor-pointer`}>
