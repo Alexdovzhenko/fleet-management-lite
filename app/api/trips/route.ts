@@ -247,6 +247,7 @@ export async function POST(request: NextRequest) {
         customer: { select: { id: true, name: true, phone: true } },
         driver: { select: { id: true, name: true, email: true, phone: true, avatarUrl: true } },
         vehicle: { select: { id: true, name: true, type: true } },
+        attachments: { orderBy: { createdAt: "asc" } },
       },
     })
 
