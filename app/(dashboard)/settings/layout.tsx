@@ -62,10 +62,43 @@ export default function SettingsLayout({
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="flex bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden min-h-[calc(100vh-10rem)]">
+      <div className="flex flex-col md:flex-row bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden min-h-[calc(100vh-10rem)]">
 
-        {/* ── Sidebar ── */}
-        <aside className="w-[200px] shrink-0 border-r border-gray-100 flex flex-col bg-gray-50/40">
+        {/* ── Mobile Tab Bar (hidden on md+) ── */}
+        <div className="md:hidden border-b border-gray-100 overflow-x-auto">
+          <div className="flex px-2 py-2 gap-0.5 min-w-max">
+            {NAV_GROUPS.flatMap((group) =>
+              group.items.map((item) => (
+                <button
+                  key={item.key}
+                  onClick={() => handleSectionChange(item.key)}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-all whitespace-nowrap flex-shrink-0",
+                    currentSection === item.key
+                      ? "bg-blue-50 text-blue-700"
+                      : "text-gray-500 hover:bg-gray-50"
+                  )}
+                >
+                  <item.icon className={cn("w-[13px] h-[13px] flex-shrink-0", currentSection === item.key ? "text-blue-600" : "text-gray-400")} />
+                  <span className="hidden xs:inline">{item.label}</span>
+                </button>
+              ))
+            )}
+          </div>
+          {/* Mobile logout */}
+          <div className="border-t border-gray-100 px-2 py-2">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-gray-500 hover:bg-red-50 hover:text-red-600 transition-all"
+            >
+              <LogOut className="w-[13px] h-[13px]" />
+              <span className="hidden xs:inline">Sign Out</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ── Desktop Sidebar (hidden on mobile) ── */}
+        <aside className="hidden md:flex md:w-[200px] md:shrink-0 md:border-r md:border-gray-100 md:flex-col md:bg-gray-50/40">
           <div className="px-5 py-[18px] border-b border-gray-100">
             <p className="text-[13px] font-bold text-gray-900 tracking-tight">Settings</p>
           </div>

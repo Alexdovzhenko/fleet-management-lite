@@ -180,7 +180,7 @@ function DispatchPageInner() {
       <div className="bg-white border border-gray-100 rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.03)] shrink-0">
 
         {/* Top row: icon + title + stat boxes */}
-        <div className="flex items-center justify-between gap-4 px-6 pt-5 pb-5">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 px-4 sm:px-6 pt-4 sm:pt-5 pb-4 sm:pb-5">
           <div className="flex items-center gap-3.5 min-w-0">
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
@@ -189,10 +189,10 @@ function DispatchPageInner() {
               <Grid3X3 className="w-[17px] h-[17px] text-white" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-[15px] font-bold text-gray-900 leading-tight">
+              <h1 className="text-sm sm:text-[15px] font-bold text-gray-900 leading-tight">
                 {isSearching ? "Search Results" : "Dispatch"}
               </h1>
-              <p className="text-[12px] text-gray-400 mt-0.5 leading-tight">
+              <p className="text-[11px] sm:text-[12px] text-gray-400 mt-0.5 leading-tight truncate">
                 {isSearching
                   ? `${counts.all} reservation${counts.all !== 1 ? "s" : ""} found`
                   : isLoading ? "Loading…" : format(selectedDate, "EEEE, MMMM d, yyyy")}
@@ -206,11 +206,11 @@ function DispatchPageInner() {
               { label: "Active",     value: counts.inProgress, dot: "bg-emerald-500" },
               { label: "Unassigned", value: counts.unassigned, dot: "bg-amber-400" },
             ]).map((stat) => (
-              <div key={stat.label} className="flex flex-col items-center justify-center px-5 py-3 min-w-[80px]">
-                <span className="text-[22px] font-bold leading-none tracking-tight text-gray-800">{stat.value}</span>
-                <span className="flex items-center gap-1.5 mt-1.5">
-                  <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", stat.dot)} />
-                  <span className="text-[11px] text-gray-400 font-medium leading-none whitespace-nowrap">{stat.label}</span>
+              <div key={stat.label} className="flex flex-col items-center justify-center px-3 sm:px-5 py-2 sm:py-3 min-w-[64px] sm:min-w-[80px]">
+                <span className="text-lg sm:text-[22px] font-bold leading-none tracking-tight text-gray-800">{stat.value}</span>
+                <span className="flex items-center gap-1 sm:gap-1.5 mt-1">
+                  <span className={cn("w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full shrink-0", stat.dot)} />
+                  <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium leading-none whitespace-nowrap">{stat.label}</span>
                 </span>
               </div>
             ))}
@@ -219,12 +219,13 @@ function DispatchPageInner() {
 
         <div className="h-px bg-gradient-to-r from-transparent via-gray-100 to-transparent mx-6" />
 
-        {/* Bottom row: date nav + filters + search + CTA */}
-        <div className="flex items-center gap-2.5 px-6 py-4">
-
-          {/* Date navigator */}
-          {!isSearching && (
-            <div className="flex items-center gap-0.5 bg-gray-50 border border-gray-100 rounded-xl px-1 py-1 shrink-0">
+        {/* Bottom rows: date nav + filters + search + CTA (two rows on mobile) */}
+        <div className="flex flex-col gap-2 px-4 sm:px-6 py-3 sm:py-4">
+          {/* Row 1: Date navigator + Search + New Trip */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Date navigator */}
+            {!isSearching && (
+              <div className="flex items-center gap-0.5 bg-gray-50 border border-gray-100 rounded-xl px-1 py-1 shrink-0">
               <button
                 onClick={() => setSelectedDate((d) => subDays(d, 1))}
                 className="w-7 h-7 rounded-lg hover:bg-white hover:shadow-sm flex items-center justify-center transition-all"
@@ -313,11 +314,58 @@ function DispatchPageInner() {
             </div>
           )}
 
-          {/* Vertical divider */}
-          {!isSearching && <div className="w-px h-5 bg-gray-200 shrink-0" />}
+          {/* Search */}
+          <div className="relative flex-1 min-w-0">
+            <Search className={cn(
+              "absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none transition-colors duration-150",
+              committed ? "text-blue-500" : "text-gray-400"
+            )} />
+            <input
+              ref={searchRef}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") setCommitted(search) }}
+              placeholder="Search by name, address…"
+              className={cn(
+                "h-9 pl-8 w-full text-xs sm:text-[12px] rounded-xl border outline-none transition-all duration-200 text-gray-700 placeholder:text-gray-400",
+                committed
+                  ? "pr-14 bg-white border-blue-300 ring-2 ring-blue-500/15"
+                  : "pr-8 bg-gray-50 border-gray-100 hover:border-gray-200 focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-500/15"
+              )}
+            />
+            {committed ? (
+              <button
+                onClick={() => { setSearch(""); setCommitted(""); searchRef.current?.focus() }}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[11px] font-semibold text-blue-500 hover:text-blue-700 transition-colors"
+              >
+                <X className="w-3 h-3" />
+                <span className="hidden sm:inline">Clear</span>
+              </button>
+            ) : search ? (
+              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                <kbd className="text-[10px] font-mono text-gray-400 bg-gray-100 border border-gray-100 rounded px-1.5 py-0.5 leading-none">↵</kbd>
+              </div>
+            ) : null}
+          </div>
+
+          <Button
+            onClick={() => router.push("/trips/new")}
+            className="h-9 text-xs sm:text-sm font-semibold text-white gap-1 sm:gap-1.5 px-2.5 sm:px-4 shrink-0 whitespace-nowrap"
+            style={{ background: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)", boxShadow: "0 2px 8px rgba(37,99,235,0.25)" }}
+          >
+            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">New Trip</span>
+            <span className="sm:hidden">+</span>
+          </Button>
+          </div>
+
+          {/* Row 2: Status filters + customize + driver filter (scrollable on mobile) */}
+          <div className="flex items-center gap-1 p-1 bg-gray-50 rounded-xl border border-gray-100 overflow-x-auto">
+            {/* Vertical divider (hidden on mobile) */}
+            {!isSearching && <div className="w-px h-5 bg-gray-200 shrink-0 hidden sm:block" />}
 
           {/* Status filter tabs + customize */}
-          <div className="flex items-center gap-1 p-1 bg-gray-50 rounded-xl border border-gray-100">
+          <div className="flex items-center gap-1 shrink-0">
             {/* "All" tab — always visible */}
             <button
               onClick={() => setStatusFilter("all")}
@@ -399,74 +447,30 @@ function DispatchPageInner() {
             )}
           </div>
 
-          {/* Driver filter */}
-          <div className="relative shrink-0">
-            <select
-              value={driverFilter}
-              onChange={(e) => setDriverFilter(e.target.value)}
-              className={cn(
-                "appearance-none h-9 pl-3 pr-7 rounded-xl border text-[12px] font-semibold cursor-pointer transition-all outline-none",
-                driverFilter !== "all"
-                  ? "bg-blue-600 border-blue-600 text-white"
-                  : "bg-gray-50 border-gray-100 text-gray-600 hover:border-gray-200"
-              )}
-            >
-              <option value="all">All Drivers</option>
-              <option value="unassigned">Unassigned</option>
-              {drivers?.map((d) => (
-                <option key={d.id} value={d.id}>{d.name}</option>
-              ))}
-            </select>
-            <ChevronRight className={cn(
-              "absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none rotate-90",
-              driverFilter !== "all" ? "text-white/80" : "text-gray-400"
-            )} />
-          </div>
-
-          {/* Search */}
-          <div className="relative shrink-0">
-            <Search className={cn(
-              "absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none transition-colors duration-150",
-              committed ? "text-blue-500" : "text-gray-400"
-            )} />
-            <input
-              ref={searchRef}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") setCommitted(search) }}
-              placeholder="Search by name, address, conf #…"
-              className={cn(
-                "h-9 pl-8 text-[12px] rounded-xl border outline-none transition-all duration-200 text-gray-700 placeholder:text-gray-400",
-                committed
-                  ? "w-64 pr-14 bg-white border-blue-300 ring-2 ring-blue-500/15"
-                  : "w-56 pr-8 bg-gray-50 border-gray-100 hover:border-gray-200 focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-500/15 focus:w-64"
-              )}
-            />
-            {committed ? (
-              <button
-                onClick={() => { setSearch(""); setCommitted(""); searchRef.current?.focus() }}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[11px] font-semibold text-blue-500 hover:text-blue-700 transition-colors"
+            {/* Driver filter */}
+            <div className="relative shrink-0">
+              <select
+                value={driverFilter}
+                onChange={(e) => setDriverFilter(e.target.value)}
+                className={cn(
+                  "appearance-none h-8 pl-2.5 pr-6 rounded-lg border text-[11px] sm:text-[12px] font-semibold cursor-pointer transition-all outline-none",
+                  driverFilter !== "all"
+                    ? "bg-blue-600 border-blue-600 text-white"
+                    : "bg-gray-50 border-gray-100 text-gray-600 hover:border-gray-200"
+                )}
               >
-                <X className="w-3 h-3" />
-                Clear
-              </button>
-            ) : search ? (
-              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                <kbd className="text-[10px] font-mono text-gray-400 bg-gray-100 border border-gray-100 rounded px-1.5 py-0.5 leading-none">↵</kbd>
-              </div>
-            ) : null}
+                <option value="all">All Drivers</option>
+                <option value="unassigned">Unassigned</option>
+                {drivers?.map((d) => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+              <ChevronRight className={cn(
+                "absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none rotate-90",
+                driverFilter !== "all" ? "text-white/80" : "text-gray-400"
+              )} />
+            </div>
           </div>
-
-          <div className="flex-1" />
-
-          <Button
-            onClick={() => router.push("/trips/new")}
-            className="h-9 text-sm font-semibold text-white gap-1.5 px-4 shrink-0"
-            style={{ background: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)", boxShadow: "0 2px 8px rgba(37,99,235,0.25)" }}
-          >
-            <Plus className="w-4 h-4" />
-            New Trip
-          </Button>
         </div>
       </div>
 

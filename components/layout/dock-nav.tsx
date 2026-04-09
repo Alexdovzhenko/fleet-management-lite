@@ -90,7 +90,7 @@ export function DockNav() {
   }
 
   return (
-    <div className="fixed bottom-0 inset-x-0 flex flex-col items-center pb-5 z-50 pointer-events-none">
+    <div className="fixed bottom-0 inset-x-0 flex flex-col items-center z-50 pointer-events-none" style={{ paddingBottom: "max(20px, env(safe-area-inset-bottom))" }}>
 
       {/* Add panel */}
       <AnimatePresence>

@@ -2532,10 +2532,10 @@ export default function NewTripPage() {
           const missing = Object.keys(errs).map(k => labels[k] || k).join(", ")
           setSubmitError(`Please fill in required fields: ${missing}`)
         })}>
-          <div className="max-w-[1300px] mx-auto p-5 flex gap-5 items-start">
+          <div className="max-w-[1300px] mx-auto p-4 sm:p-5 flex flex-col lg:flex-row gap-5 items-start">
 
             {/* ─── Left: Main content ─── */}
-            <div className="flex-1 min-w-0 space-y-4">
+            <div className="flex-1 min-w-0 space-y-4 w-full">
 
               {/* ── Card 1: Bill To & Passenger ── */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -2627,7 +2627,7 @@ export default function NewTripPage() {
                         <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-500 text-white text-[9px] font-bold shadow-sm shadow-indigo-200">1</span>
                         <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Primary</span>
                       </div>
-                      <div className="grid grid-cols-4 gap-3 mb-2.5">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-2.5">
                         <div className="space-y-1.5">
                           <Label className="text-[11px] font-medium text-gray-500">First Name</Label>
                           <Input {...register("passengerFirstName")} className="h-9 text-sm bg-white" />
@@ -2682,7 +2682,7 @@ export default function NewTripPage() {
                             <X className="w-3.5 h-3.5" />
                           </button>
                         </div>
-                        <div className="grid grid-cols-4 gap-3">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                           <div className="space-y-1.5">
                             <Label className="text-[11px] font-medium text-gray-500">First Name</Label>
                             <Input value={pax.firstName} onChange={(e) => updateAdditionalPassenger(pax.id, "firstName", e.target.value)} className="h-9 text-sm" />
@@ -2738,8 +2738,8 @@ export default function NewTripPage() {
                   </div>
                   <h3 className="text-sm font-semibold text-gray-800">Schedule</h3>
                 </div>
-                <div className="px-5 py-4">
-                  <div className="grid grid-cols-[180px_160px_1fr_72px_72px] gap-3">
+                <div className="px-4 sm:px-5 py-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-[180px_160px_1fr_72px_72px] gap-2 sm:gap-3">
                     <div className="space-y-1.5">
                       <Label className="text-[11px] font-medium text-gray-900">Pickup Date</Label>
                       <DatePickerInput
@@ -2883,7 +2883,7 @@ export default function NewTripPage() {
             </div>
 
             {/* ─── Right: Sticky sidebar ─── */}
-            <div className="w-[288px] flex-shrink-0 sticky top-5 space-y-4">
+            <div className="w-full lg:w-[288px] lg:flex-shrink-0 lg:sticky lg:top-5 space-y-4">
 
               {/* Dispatch card */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">

@@ -547,7 +547,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
                 <Input value={address2} onChange={(e) => setAddress2(e.target.value)}
                   placeholder="Suite, floor, apt…" className="h-9 text-sm" autoComplete="off" />
               </div>
-              <div className="grid grid-cols-[1fr_90px_90px_120px] gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-[1fr_90px_90px_120px] gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">City</Label>
                   <CityAutocomplete value={city} onChange={setCity} onStateChange={setStateVal} placeholder="Miami" />
@@ -610,7 +610,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
                   <Input value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)} placeholder="AA 123" className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
-              <div className="grid grid-cols-[120px_120px_1fr_120px] gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-[120px_120px_1fr_120px] gap-2">
                 <div className="space-y-1.5">
                   <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Arr/Dep</Label>
                   <select value={arrDep} onChange={(e) => setArrDep(e.target.value)}
@@ -1453,89 +1453,93 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
         <style>{SAVE_BUTTON_STYLES}</style>
 
         {/* ── Header ── */}
-        <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-100 bg-white flex-shrink-0">
-          {/* Confirmation # */}
-          <button type="button" onClick={copyConfirmation} className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors group flex-shrink-0">
-            <span className="text-sm font-mono font-semibold text-blue-700">{trip.tripNumber}</span>
-            {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />}
-          </button>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 bg-white flex-shrink-0">
+          {/* Row 1: Confirmation # + Status, then Close */}
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            {/* Confirmation # */}
+            <button type="button" onClick={copyConfirmation} className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors group flex-shrink-0">
+              <span className="text-xs sm:text-sm font-mono font-semibold text-blue-700">{trip.tripNumber}</span>
+              {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />}
+            </button>
 
-          {/* Status */}
-          <StatusDropdown
-            status={statusValue}
-            onUpdate={(status) => { setStatusValue(status); setValue("status", status) }}
-          />
+            {/* Status */}
+            <StatusDropdown
+              status={statusValue}
+              onUpdate={(status) => { setStatusValue(status); setValue("status", status) }}
+            />
+          </div>
 
-          <div className="flex-1" />
-
-          {/* Copy Reservation */}
-          <button
-            type="button"
-            onClick={() => setCopyOpen(true)}
-            className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
-          >
-            <Copy className="w-3.5 h-3.5" />
-            Copy
-          </button>
-
-          {/* Round Trip */}
-          <button
-            type="button"
-            onClick={() => setRoundTripOpen(true)}
-            className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
-          >
-            <ArrowLeftRight className="w-3.5 h-3.5" />
-            Round Trip
-          </button>
-
-          {/* Send Email */}
-          <button
-            type="button"
-            onClick={() => setSendEmailOpen(true)}
-            className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
-          >
-            <Send className="w-3.5 h-3.5" />
-            Send
-          </button>
-
-          {/* Save Changes */}
-          <button
-            form="trip-edit-form"
-            type="submit"
-            disabled={updateTrip.isPending || saveSuccess}
-            className={cn(
-              "relative inline-flex items-center justify-center gap-2 px-5 py-2 rounded-md",
-              "text-sm font-medium transition-all duration-250 ease-out",
-              "focus:outline-none focus:ring-0 focus:shadow-none",
-              "disabled:cursor-not-allowed disabled:opacity-60",
-              "overflow-hidden",
-              saveSuccess && "save-button-success",
-              saveSuccess
-                ? "bg-emerald-500 text-white shadow-md"
-                : updateTrip.isPending
-                ? "bg-blue-600 text-white shadow-md"
-                : "bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md active:shadow-sm active:scale-95"
-            )}
-          >
-            {saveSuccess ? (
-              <div className="flex items-center justify-center gap-2 animate-none">
-                <Check className="w-4 h-4" strokeWidth={2.5} />
-                <span>Saved</span>
-              </div>
-            ) : updateTrip.isPending ? (
-              <div className="flex items-center justify-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Saving…</span>
-              </div>
-            ) : (
-              <span>Save Changes</span>
-            )}
-          </button>
-
-          {/* Close */}
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 flex-shrink-0 transition-colors">
+          {/* Close button (always top right) */}
+          <button onClick={onClose} className="absolute sm:relative top-3 sm:top-auto right-4 sm:right-auto text-gray-400 hover:text-gray-600 flex-shrink-0 transition-colors">
             <X className="w-4 h-4" />
           </button>
+
+          {/* Row 2: Action buttons */}
+          <div className="flex items-center gap-1.5 flex-wrap w-full sm:w-auto sm:justify-end">
+            {/* Copy Reservation */}
+            <button
+              type="button"
+              onClick={() => setCopyOpen(true)}
+              className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium px-2 sm:px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
+            >
+              <Copy className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Copy</span>
+            </button>
+
+            {/* Round Trip */}
+            <button
+              type="button"
+              onClick={() => setRoundTripOpen(true)}
+              className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium px-2 sm:px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
+            >
+              <ArrowLeftRight className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Round Trip</span>
+            </button>
+
+            {/* Send Email */}
+            <button
+              type="button"
+              onClick={() => setSendEmailOpen(true)}
+              className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium px-2 sm:px-2.5 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex-shrink-0"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Send</span>
+            </button>
+
+            {/* Save Changes */}
+            <button
+              form="trip-edit-form"
+              type="submit"
+              disabled={updateTrip.isPending || saveSuccess}
+              className={cn(
+                "relative inline-flex items-center justify-center gap-2 px-3 sm:px-5 py-2 rounded-md",
+                "text-xs sm:text-sm font-medium transition-all duration-250 ease-out",
+                "focus:outline-none focus:ring-0 focus:shadow-none",
+                "disabled:cursor-not-allowed disabled:opacity-60",
+                "overflow-hidden",
+                saveSuccess && "save-button-success",
+                saveSuccess
+                  ? "bg-emerald-500 text-white shadow-md"
+                  : updateTrip.isPending
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md active:shadow-sm active:scale-95"
+              )}
+            >
+              {saveSuccess ? (
+                <div className="flex items-center justify-center gap-2 animate-none">
+                  <Check className="w-4 h-4" strokeWidth={2.5} />
+                  <span className="hidden sm:inline">Saved</span>
+                </div>
+              ) : updateTrip.isPending ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="hidden sm:inline">Saving…</span>
+                </div>
+              ) : (
+                <span>Save</span>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* ── Reservation Details (Compact) ── */}
@@ -1588,10 +1592,10 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
           <form id="trip-edit-form" onSubmit={handleSubmit(onSubmit, () => {
             setSaveError("Please check required fields")
           })}>
-            <div className="flex min-h-0 gap-0">
+            <div className="flex flex-col lg:flex-row min-h-0 gap-0">
 
               {/* ── LEFT (scrollable main) ── */}
-              <div className="flex-1 p-6 space-y-5 min-w-0">
+              <div className="flex-1 p-4 sm:p-6 space-y-5 min-w-0">
 
                 {/* Schedule */}
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
@@ -1600,7 +1604,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                     <span className="text-[11px] font-semibold uppercase tracking-widest text-gray-400">Schedule</span>
                   </div>
                   {/* Row 1: Date · Time · Service Type */}
-                  <div className="grid grid-cols-[200px_180px_1fr] gap-4 mb-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-[200px_180px_1fr] gap-4 mb-4">
                     <div className="space-y-2">
                       <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Pickup Date</Label>
                       <DatePickerInput
@@ -1804,7 +1808,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
               </div>
 
               {/* ── RIGHT SIDEBAR ── */}
-              <div className="w-[320px] flex-shrink-0 border-l border-gray-100 bg-white flex flex-col">
+              <div className="w-full lg:w-[320px] lg:flex-shrink-0 border-t lg:border-t-0 lg:border-l border-gray-100 bg-white flex flex-col">
               <div className="flex-1 overflow-y-auto p-5 space-y-4">
 
                 {/* Account / Billing Contact */}

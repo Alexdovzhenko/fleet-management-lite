@@ -113,8 +113,10 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
         transition: "opacity 0.16s cubic-bezier(0.16,1,0.3,1), transform 0.16s cubic-bezier(0.16,1,0.3,1)",
         transformOrigin: "top center",
         boxShadow: "0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.06)",
+        maxWidth: "calc(100vw - 24px)",
+        width: "min(288px, calc(100vw - 24px))",
       }}
-      className="w-72 rounded-2xl overflow-hidden"
+      className="rounded-2xl overflow-hidden"
       onDoubleClick={(e) => e.stopPropagation()}
     >
       {/* ── Header ────────────────────────────────────────────── */}

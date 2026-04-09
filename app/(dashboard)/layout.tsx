@@ -18,7 +18,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <main className="px-4 md:px-6 pt-4 md:pt-6 pb-[121px]">{children}</main>
+      <main className="px-4 md:px-6 pt-4 md:pt-6" style={{ paddingBottom: "max(121px, calc(121px + env(safe-area-inset-bottom)))" }}>{children}</main>
       <DockNav />
     </div>
   )
