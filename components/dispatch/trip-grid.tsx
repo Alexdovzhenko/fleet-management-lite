@@ -49,7 +49,7 @@ const ALL_COLUMNS = [
   { key: "pickup",    label: "Pickup",    width: "w-48" },
   { key: "dropoff",   label: "Dropoff",   width: "w-48" },
   { key: "driver",    label: "Driver",    width: "w-36" },
-  { key: "vehicle-type", label: "Veh Type", width: "w-24" },
+  { key: "vehicle-type", label: "Type", width: "w-24" },
   { key: "vehicle",   label: "Vehicle",   width: "w-32" },
   { key: "affiliate", label: "Affiliate", width: "w-36" },
   { key: "pax",       label: "Pax",       width: "w-12" },
