@@ -48,7 +48,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DatePickerInput } from "@/components/ui/date-picker"
 import { CityAutocomplete } from "@/components/ui/city-autocomplete"
 import { FBOAutocomplete } from "@/components/ui/fbo-autocomplete"
-import { useUpdateTrip } from "@/lib/hooks/use-trips"
+import { useUpdateTrip, useTrip } from "@/lib/hooks/use-trips"
 import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
 import { useVehicleTypes } from "@/lib/hooks/use-vehicle-types"
@@ -1134,6 +1134,9 @@ interface TripEditModalProps {
 
 export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const updateTrip = useUpdateTrip()
+  const { data: freshTrip } = useTrip(trip?.id ?? "")
+  // Use the fresh trip data if available (so attachments update), otherwise fall back to prop
+  const currentTrip = freshTrip ?? trip
   const { data: allDrivers = [] } = useDrivers()
   const { data: allVehicles = [] } = useVehicles()
   const { data: vehicleTypes = [] } = useVehicleTypes()
@@ -1141,17 +1144,17 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const enabledTypes = serviceTypes.filter((t) => t.isEnabled)
   const { actions: statusActions } = useStatusActionsStore()
 
-  const isFarmedIn = !!trip?.farmedIn
+  const isFarmedIn = !!currentTrip?.farmedIn
 
   const [farmOutOpen, setFarmOutOpen]         = useState(false)
   const [sendEmailOpen, setSendEmailOpen]     = useState(false)
   const [copyOpen, setCopyOpen]               = useState(false)
   const [roundTripOpen, setRoundTripOpen]     = useState(false)
-  const { data: farmOuts } = useTripFarmOuts(isFarmedIn ? null : (trip?.id ?? null))
+  const { data: farmOuts } = useTripFarmOuts(isFarmedIn ? null : (currentTrip?.id ?? null))
   const pendingFarmOut = farmOuts?.find((f) => f.status === "PENDING")
   const acceptedFarmOut = farmOuts?.find((f) => f.status === "ACCEPTED")
   const activeFarmOut = acceptedFarmOut || pendingFarmOut
-  const cancelFarmOut = useCancelFarmOut(trip?.id ?? "")
+  const cancelFarmOut = useCancelFarmOut(currentTrip?.id ?? "")
 
   const [copied, setCopied] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
@@ -1214,17 +1217,17 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
 
   useEffect(() => {
-    if (!trip) return
-    const displayDate = toDisplayDate(trip.pickupDate ?? "")
-    setStatusValue(trip.status)
-    setTripTypeValue(trip.tripType ?? "ONE_WAY")
-    setDriverIdValue(trip.driverId ?? "")
-    setVehicleTypeValue(trip.vehicleType ?? "")
-    setVehicleIdValue(trip.vehicleId ?? "")
-    setSecondaryDriverIdValue(trip.secondaryDriverId ?? "")
-    setSecondaryVehicleIdValue(trip.secondaryVehicleId ?? "")
+    if (!currentTrip) return
+    const displayDate = toDisplayDate(currentTrip.pickupDate ?? "")
+    setStatusValue(currentTrip.status)
+    setTripTypeValue(currentTrip.tripType ?? "ONE_WAY")
+    setDriverIdValue(currentTrip.driverId ?? "")
+    setVehicleTypeValue(currentTrip.vehicleType ?? "")
+    setVehicleIdValue(currentTrip.vehicleId ?? "")
+    setSecondaryDriverIdValue(currentTrip.secondaryDriverId ?? "")
+    setSecondaryVehicleIdValue(currentTrip.secondaryVehicleId ?? "")
     setDispatchTab("primary")
-    const existing = Array.isArray(trip.additionalPassengers) ? trip.additionalPassengers : []
+    const existing = Array.isArray(currentTrip.additionalPassengers) ? currentTrip.additionalPassengers : []
     setAdditionalPassengers(existing.map((p: { firstName?: string; lastName?: string; phone?: string; email?: string }) => ({
       id: Math.random().toString(36).slice(2),
       firstName: p.firstName ?? "", lastName: p.lastName ?? "",
@@ -1236,13 +1239,13 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     setChildSeatsOpen(false)
     setCustomerPickerOpen(false)
     setCustomerSearch("")
-    setSelectedCustomer(trip.customer ?? null)
+    setSelectedCustomer(currentTrip.customer ?? null)
 
     // Parse existing child seat details
     const parsedSeats = { forward: 0, rear: 0, booster: 0 }
-    if (trip.childSeatDetails) {
+    if (currentTrip.childSeatDetails) {
       try {
-        const details = JSON.parse(trip.childSeatDetails) as Array<{ type: string; count: number }>
+        const details = JSON.parse(currentTrip.childSeatDetails) as Array<{ type: string; count: number }>
         details.forEach(({ type, count }) => {
           if (type === "FORWARD_FACING") parsedSeats.forward = count
           if (type === "REAR_FACING")    parsedSeats.rear = count
@@ -1255,10 +1258,10 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     // Initialise stops from existing trip data
     const initialStops: StopEntry[] = []
 
-    // Add intermediate stops if they exist (from trip.stops array)
+    // Add intermediate stops if they exist (from currentTrip.stops array)
     // Sort by order field to ensure correct sequence
-    if (trip.stops && Array.isArray(trip.stops) && trip.stops.length > 0) {
-      const sortedStops = [...(trip.stops as any[])].sort((a, b) => a.order - b.order)
+    if (currentTrip.stops && Array.isArray(currentTrip.stops) && currentTrip.stops.length > 0) {
+      const sortedStops = [...(currentTrip.stops as any[])].sort((a, b) => a.order - b.order)
       sortedStops.forEach((stop: any) => {
         // Use stored role, falling back to inference for legacy data
         let role: StopRole = "stop"
@@ -1266,8 +1269,8 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
           role = stop.role as StopRole
         } else {
           // Legacy data: infer role by matching address to pickupAddress/dropoffAddress
-          if (stop.address === trip.pickupAddress) role = "pickup"
-          else if (stop.address === trip.dropoffAddress) role = "drop"
+          if (stop.address === currentTrip.pickupAddress) role = "pickup"
+          else if (stop.address === currentTrip.dropoffAddress) role = "drop"
         }
 
         initialStops.push({
@@ -1282,42 +1285,42 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       })
     } else {
       // Fallback to old pickup/dropoff if no stops array (for old data)
-      if (trip.pickupAddress) {
+      if (currentTrip.pickupAddress) {
         initialStops.push({
           id: "init-pickup", locType: "address", role: "pickup",
-          address: trip.pickupAddress, notes: trip.pickupNotes ?? "", flightNumber: trip.flightNumber ?? "",
+          address: currentTrip.pickupAddress, notes: currentTrip.pickupNotes ?? "", flightNumber: currentTrip.flightNumber ?? "",
         })
       }
-      if (trip.dropoffAddress) {
+      if (currentTrip.dropoffAddress) {
         initialStops.push({
           id: "init-drop", locType: "address", role: "drop",
-          address: trip.dropoffAddress, notes: trip.dropoffNotes ?? "", flightNumber: "",
+          address: currentTrip.dropoffAddress, notes: currentTrip.dropoffNotes ?? "", flightNumber: "",
         })
       }
     }
     setStops(initialStops)
 
     reset({
-      status:          trip.status,
-      tripType:        trip.tripType,
+      status:          currentTrip.status,
+      tripType:        currentTrip.tripType,
       pickupDate:      displayDate,
-      pickupTime:      trip.pickupTime,
-      passengerName:   trip.passengerName ?? "",
-      passengerPhone:  trip.passengerPhone ? formatPhone(trip.passengerPhone) : "",
-      passengerEmail:  trip.passengerEmail ?? "",
-      passengerCount:  trip.passengerCount,
-      luggageCount:    trip.luggageCount ?? 0,
-      price:           trip.price ? parseFloat(String(trip.price)) : undefined,
-      gratuityPercent: trip.price && trip.gratuity
-        ? Math.round((parseFloat(String(trip.gratuity)) / parseFloat(String(trip.price))) * 100)
+      pickupTime:      currentTrip.pickupTime,
+      passengerName:   currentTrip.passengerName ?? "",
+      passengerPhone:  currentTrip.passengerPhone ? formatPhone(currentTrip.passengerPhone) : "",
+      passengerEmail:  currentTrip.passengerEmail ?? "",
+      passengerCount:  currentTrip.passengerCount,
+      luggageCount:    currentTrip.luggageCount ?? 0,
+      price:           currentTrip.price ? parseFloat(String(currentTrip.price)) : undefined,
+      gratuityPercent: currentTrip.price && currentTrip.gratuity
+        ? Math.round((parseFloat(String(currentTrip.gratuity)) / parseFloat(String(currentTrip.price))) * 100)
         : 20,
-      clientRef:       trip.clientRef ?? "",
-      notes:           trip.notes ?? "",
-      internalNotes:   trip.internalNotes ?? "",
-      meetAndGreet:    trip.meetAndGreet,
-      childSeat:       trip.childSeat,
-      wheelchairAccess:trip.wheelchairAccess,
-      vip:             trip.vip,
+      clientRef:       currentTrip.clientRef ?? "",
+      notes:           currentTrip.notes ?? "",
+      internalNotes:   currentTrip.internalNotes ?? "",
+      meetAndGreet:    currentTrip.meetAndGreet,
+      childSeat:       currentTrip.childSeat,
+      wheelchairAccess:currentTrip.wheelchairAccess,
+      vip:             currentTrip.vip,
     })
   }, [trip, reset])
 
@@ -1342,13 +1345,13 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   }, [customerPickerOpen])
 
   const copyConfirmation = useCallback(() => {
-    if (!trip) return
-    navigator.clipboard.writeText(trip.tripNumber)
+    if (!currentTrip) return
+    navigator.clipboard.writeText(currentTrip.tripNumber)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
-  }, [trip?.tripNumber])
+  }, [currentTrip?.tripNumber])
 
-  if (!trip) return null
+  if (!currentTrip) return null
 
   const price = watch("price") || 0
   const gratuityPercent = watch("gratuityPercent") || 0
@@ -1358,7 +1361,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
   function onSubmit(data: FormData) {
     console.log("onSubmit called with stops:", stops)
-    if (!trip) return
+    if (!currentTrip) return
     const pickupStop = stops.find(s => s.role === "pickup")
     const dropStop = [...stops].reverse().find(s => s.role === "drop")
     console.log("pickupStop:", pickupStop, "dropStop:", dropStop)
@@ -1393,9 +1396,9 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     console.log("Saving trip with stops:", stopsData)
 
     updateTrip.mutate({
-      id: trip.id,
+      id: currentTrip.id,
       status:           data.status,
-      customerId:       selectedCustomer?.id ?? trip.customerId,
+      customerId:       selectedCustomer?.id ?? currentTrip.customerId,
       tripType:         tripTypeValue as never,
       pickupDate:       isoDate,
       pickupTime:       data.pickupTime,
@@ -1459,7 +1462,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {/* Confirmation # */}
             <button type="button" onClick={copyConfirmation} className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors group flex-shrink-0">
-              <span className="text-xs sm:text-sm font-mono font-semibold text-blue-700">{trip.tripNumber}</span>
+              <span className="text-xs sm:text-sm font-mono font-semibold text-blue-700">{currentTrip.tripNumber}</span>
               {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />}
             </button>
 
@@ -1560,11 +1563,11 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
             <div className="flex items-center gap-2 min-w-0">
               <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
               <span className="text-gray-600 font-medium">
-                {trip.createdAt ? format(new Date(trip.createdAt), 'MMM d, yyyy') : '—'}
+                {currentTrip.createdAt ? format(new Date(currentTrip.createdAt), 'MMM d, yyyy') : '—'}
               </span>
               <span className="text-gray-400">·</span>
               <span className="text-gray-500">
-                {trip.createdAt ? format(new Date(trip.createdAt), 'h:mm a') : '—'}
+                {currentTrip.createdAt ? format(new Date(currentTrip.createdAt), 'h:mm a') : '—'}
               </span>
             </div>
 
@@ -1574,8 +1577,8 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
             {/* Created By User & Role */}
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
               <div className="w-7 h-7 rounded-md bg-slate-100 flex items-center justify-center flex-shrink-0 text-[10px] font-semibold text-slate-700">
-                {trip.createdBy?.name
-                  ? trip.createdBy.name
+                {currentTrip.createdBy?.name
+                  ? currentTrip.createdBy.name
                       .split(' ')
                       .map((n) => n[0])
                       .join('')
@@ -1583,15 +1586,15 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                       .slice(0, 2)
                   : '—'}
               </div>
-              <span className="text-gray-900 font-medium truncate">{trip.createdBy?.name || 'Unknown'}</span>
-              {(trip.createdBy?.role === 'ADMIN' || trip.createdBy?.role === 'DISPATCHER') && (
+              <span className="text-gray-900 font-medium truncate">{currentTrip.createdBy?.name || 'Unknown'}</span>
+              {(currentTrip.createdBy?.role === 'ADMIN' || currentTrip.createdBy?.role === 'DISPATCHER') && (
                 <span className={cn(
                   "text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md flex-shrink-0 whitespace-nowrap",
-                  trip.createdBy.role === 'ADMIN'
+                  currentTrip.createdBy.role === 'ADMIN'
                     ? "bg-purple-100 text-purple-700"
                     : "bg-blue-100 text-blue-700"
                 )}>
-                  {trip.createdBy.role === 'ADMIN' ? 'Admin' : 'Dispatcher'}
+                  {currentTrip.createdBy.role === 'ADMIN' ? 'Admin' : 'Dispatcher'}
                 </span>
               )}
             </div>
@@ -1813,8 +1816,8 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                 {/* Attachments */}
                 <TripAttachmentsSection
                   mode="edit"
-                  tripId={trip.id}
-                  existingAttachments={trip.attachments ?? []}
+                  tripId={currentTrip.id}
+                  existingAttachments={currentTrip.attachments ?? []}
                 />
 
                 {saveError && (
@@ -1893,17 +1896,17 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                 </div>
 
                 {/* Farm-In banner */}
-                {isFarmedIn && trip.farmedIn && (
+                {isFarmedIn && currentTrip.farmedIn && (
                   <div className="flex items-center gap-2.5 px-3 py-2.5 bg-indigo-50 border border-indigo-100 rounded-xl">
                     <ArrowRightLeft className="w-4 h-4 text-indigo-500 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-indigo-800">Farm-In</p>
-                      <p className="text-xs text-indigo-600 truncate">{trip.farmedIn.name}</p>
+                      <p className="text-xs text-indigo-600 truncate">{currentTrip.farmedIn.name}</p>
                     </div>
-                    {trip.agreedPrice && (
+                    {currentTrip.agreedPrice && (
                       <div className="text-right flex-shrink-0">
                         <p className="text-[10px] text-indigo-500 font-medium">Agreed Rate</p>
-                        <p className="text-sm font-bold text-indigo-800">{formatCurrency(trip.agreedPrice)}</p>
+                        <p className="text-sm font-bold text-indigo-800">{formatCurrency(currentTrip.agreedPrice)}</p>
                       </div>
                     )}
                   </div>
@@ -1981,7 +1984,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                 </section>
 
                 {/* Farm-Out status — shown inline after Dispatch */}
-                {!isFarmedIn && !["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
+                {!isFarmedIn && !["COMPLETED", "CANCELLED", "NO_SHOW"].includes(currentTrip.status) && (
                   <div className="space-y-1.5">
                     {acceptedFarmOut ? (
                       <>
@@ -2158,14 +2161,14 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
 
                 {/* Cancel Trip */}
-                {!["COMPLETED", "CANCELLED", "NO_SHOW"].includes(trip.status) && (
+                {!["COMPLETED", "CANCELLED", "NO_SHOW"].includes(currentTrip.status) && (
                   <>
                     <div className="border-t border-gray-100" />
                     <Button type="button" variant="ghost"
                       className="w-full text-red-500 hover:bg-red-50 hover:text-red-600 text-sm h-9 border border-red-200"
                       onClick={() => {
                         if (trip && window.confirm("Cancel this trip?")) {
-                          updateTrip.mutate({ id: trip.id, status: "CANCELLED" }, { onSuccess: onClose })
+                          updateTrip.mutate({ id: currentTrip.id, status: "CANCELLED" }, { onSuccess: onClose })
                         }
                       }}>
                       Cancel Trip
