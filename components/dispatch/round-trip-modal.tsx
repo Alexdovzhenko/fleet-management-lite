@@ -411,9 +411,9 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                 </div>
 
                 {/* Attached Files Section */}
-                {trip.attachments && trip.attachments.length > 0 && (
-                  <div>
-                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Attached Files</h3>
+                <div>
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Attached Files</h3>
+                  {trip.attachments && trip.attachments.length > 0 ? (
                     <div className="space-y-2 border-t border-gray-100 pt-3">
                       {trip.attachments.map((attachment) => {
                         const Icon = getFileIcon(attachment.mimeType)
@@ -453,8 +453,10 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                         )
                       })}
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <p className="text-xs text-gray-500 italic">No attachments on original reservation</p>
+                  )}
+                </div>
               </div>
             </div>
 
