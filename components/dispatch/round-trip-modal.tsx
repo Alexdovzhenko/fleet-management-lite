@@ -411,10 +411,10 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                 </div>
 
                 {/* Attached Files Section */}
-                <div>
+                <div className="border border-gray-200 rounded-xl p-4 bg-white hover:bg-gray-50/50 transition-colors">
                   <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Attached Files</h3>
-                  {trip.attachments && trip.attachments.length > 0 ? (
-                    <div className="space-y-2 border-t border-gray-100 pt-3">
+                  {trip?.attachments && trip.attachments.length > 0 ? (
+                    <div className="space-y-2">
                       {trip.attachments.map((attachment) => {
                         const Icon = getFileIcon(attachment.mimeType)
                         const isSelected = selectedAttachmentIds.has(attachment.id)
