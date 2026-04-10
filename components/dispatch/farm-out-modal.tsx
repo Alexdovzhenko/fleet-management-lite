@@ -117,7 +117,7 @@ export function FarmOutModal({ trip, open, onClose }: FarmOutModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[520px] p-0 gap-0 overflow-hidden rounded-2xl">
+      <DialogContent className="sm:max-w-[520px] p-0 gap-0 overflow-hidden rounded-2xl" showCloseButton={false}>
         {/* Header */}
         <div className="px-6 pt-6 pb-4 border-b border-gray-100">
           <div className="flex items-center justify-between mb-1">
@@ -125,7 +125,9 @@ export function FarmOutModal({ trip, open, onClose }: FarmOutModalProps) {
               {step === "confirm" && !successId && (
                 <button
                   onClick={handleBack}
+                  type="button"
                   className="text-gray-400 hover:text-gray-600 transition-colors mr-1"
+                  aria-label="Go back to affiliate selection"
                 >
                   <ChevronRight className="w-4 h-4 rotate-180" />
                 </button>
@@ -134,8 +136,13 @@ export function FarmOutModal({ trip, open, onClose }: FarmOutModalProps) {
                 {successId ? "Farm-Out Sent" : step === "select" ? "Farm Out Trip" : "Confirm Farm-Out"}
               </h2>
             </div>
-            <button onClick={handleClose} className="text-gray-400 hover:text-gray-600 transition-colors">
-              <X className="w-4 h-4" />
+            <button
+              onClick={handleClose}
+              type="button"
+              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0 -mr-2"
+              aria-label="Close modal"
+            >
+              <X className="w-5 h-5" strokeWidth={2} />
             </button>
           </div>
           <p className="text-xs text-gray-500">
