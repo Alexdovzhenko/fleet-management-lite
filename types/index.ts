@@ -206,7 +206,7 @@ export interface Trip {
   meetAndGreet: boolean
   childSeat: boolean
   childSeatDetails?: string
-  wheelchairAccess: boolean
+  curbsidePickup: boolean
   vip: boolean
   clientRef?: string
   notes?: string
@@ -351,7 +351,7 @@ export type FarmOutStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'CANCELLED'
 export interface FarmOut {
   id: string
   tripId: string
-  trip?: Pick<Trip, 'id' | 'tripNumber' | 'pickupDate' | 'pickupTime' | 'pickupAddress' | 'dropoffAddress' | 'passengerCount' | 'vehicleId' | 'price' | 'totalPrice' | 'notes' | 'vip' | 'meetAndGreet' | 'childSeat' | 'wheelchairAccess' | 'passengerName' | 'passengerPhone' | 'flightNumber' | 'airportCode' | 'stops'>
+  trip?: Pick<Trip, 'id' | 'tripNumber' | 'pickupDate' | 'pickupTime' | 'pickupAddress' | 'dropoffAddress' | 'passengerCount' | 'vehicleId' | 'price' | 'totalPrice' | 'notes' | 'vip' | 'meetAndGreet' | 'childSeat' | 'curbsidePickup' | 'passengerName' | 'passengerPhone' | 'flightNumber' | 'airportCode' | 'stops'>
   fromCompanyId: string
   fromCompany?: Pick<Company, 'id' | 'name' | 'phone' | 'email' | 'logo' | 'city' | 'state'>
   toCompanyId: string

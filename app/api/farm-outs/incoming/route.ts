@@ -22,7 +22,7 @@ const SANITIZED_TRIP_SELECT = {
   meetAndGreet: true,
   childSeat: true,
   childSeatDetails: true,
-  wheelchairAccess: true,
+  curbsidePickup: true,
   tripType: true,
   stops: { orderBy: { order: "asc" as const } },
   // NEVER: customer, internalNotes, customerId

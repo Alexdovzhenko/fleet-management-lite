@@ -1119,7 +1119,7 @@ const schema = z.object({
   internalNotes:   z.string().optional(),
   meetAndGreet:    z.boolean(),
   childSeat:       z.boolean(),
-  wheelchairAccess:z.boolean(),
+  curbsidePickup:  z.boolean(),
   vip:             z.boolean(),
 })
 type FormData = z.infer<typeof schema>
@@ -1319,7 +1319,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       internalNotes:   currentTrip.internalNotes ?? "",
       meetAndGreet:    currentTrip.meetAndGreet,
       childSeat:       currentTrip.childSeat,
-      wheelchairAccess:currentTrip.wheelchairAccess,
+      curbsidePickup:  currentTrip.curbsidePickup,
       vip:             currentTrip.vip,
     })
   }, [trip, reset])
@@ -1433,7 +1433,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
         ...(childSeats.rear    > 0 ? [{ type: "REAR_FACING",    count: childSeats.rear    }] : []),
         ...(childSeats.booster > 0 ? [{ type: "BOOSTER",        count: childSeats.booster }] : []),
       ]) : undefined,
-      wheelchairAccess: data.wheelchairAccess,
+      curbsidePickup: data.curbsidePickup,
       vip:              data.vip,
       stops: stopsData as never,
     }, {
@@ -2092,7 +2092,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                     {[
                       { name: "vip" as const, label: "VIP", icon: Star },
                       { name: "meetAndGreet" as const, label: "Meet & Greet", icon: UserCheck },
-                      { name: "wheelchairAccess" as const, label: "Wheelchair", icon: null },
+                      { name: "curbsidePickup" as const, label: "Curbside Pickup", icon: MapPin },
                     ].map(({ name, label, icon: Icon }) => {
                       const val = watch(name)
                       return (

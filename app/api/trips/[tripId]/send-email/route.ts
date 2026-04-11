@@ -147,7 +147,7 @@ export async function POST(
     vehicleName:     trip.vehicle?.name ?? null,
     meetAndGreet:    trip.meetAndGreet,
     childSeat:       trip.childSeat,
-    wheelchairAccess: trip.wheelchairAccess,
+    curbsidePickup: trip.curbsidePickup,
     vip:             trip.vip,
     notes:           trip.notes,
     price:           trip.price ? String(trip.price) : null,

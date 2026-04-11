@@ -1,6 +1,6 @@
 "use client"
 
-import { Plane, Star, Baby, Accessibility, Bell, Phone, ChevronRight } from "lucide-react"
+import { Plane, Star, Baby, MapPin, Bell, Phone, ChevronRight } from "lucide-react"
 import { TripStatusDot } from "@/components/trips/trip-status-badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { formatTime, truncateAddress, getInitials, cn } from "@/lib/utils"
@@ -43,7 +43,7 @@ export function TripCard({ trip, isSelected, onClick }: TripCardProps) {
           {trip.meetAndGreet && <Bell className="w-3.5 h-3.5 text-purple-400" />}
           {trip.vip && <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />}
           {trip.childSeat && <Baby className="w-3.5 h-3.5 text-pink-400" />}
-          {trip.wheelchairAccess && <Accessibility className="w-3.5 h-3.5 text-blue-400" />}
+          {trip.curbsidePickup && <MapPin className="w-3.5 h-3.5 text-blue-400" />}
           {isUrgent && <span className="text-[10px] font-bold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">UNASSIGNED</span>}
         </div>
       </div>

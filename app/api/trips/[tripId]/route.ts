@@ -43,7 +43,7 @@ const updateTripSchema = z.object({
   meetAndGreet: z.boolean().optional(),
   childSeat: z.boolean().optional(),
   childSeatDetails: z.string().optional().nullable(),
-  wheelchairAccess: z.boolean().optional(),
+  curbsidePickup: z.boolean().optional(),
   vip: z.boolean().optional(),
   clientRef: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),

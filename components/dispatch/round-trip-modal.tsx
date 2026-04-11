@@ -159,7 +159,7 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
         meetAndGreet: trip.meetAndGreet,
         childSeat: trip.childSeat,
         childSeatDetails: trip.childSeatDetails ?? undefined,
-        wheelchairAccess: trip.wheelchairAccess,
+        curbsidePickup: trip.curbsidePickup,
         vip: trip.vip,
         clientRef: trip.clientRef ?? undefined,
         notes: copyNotes ? (notes || undefined) : undefined,

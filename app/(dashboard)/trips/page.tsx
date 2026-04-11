@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, Search, Plane, Star, Baby, Accessibility, Users } from "lucide-react"
+import { Plus, Search, Plane, Star, Baby, MapPin, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
@@ -128,7 +128,7 @@ function TripRow({ trip }: { trip: Trip }) {
         {trip.flightNumber && <Plane className="w-3.5 h-3.5 text-blue-400" aria-label="Flight tracking" />}
         {trip.vip && <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" aria-label="VIP" />}
         {trip.childSeat && <Baby className="w-3.5 h-3.5 text-pink-400" aria-label="Child seat" />}
-        {trip.wheelchairAccess && <Accessibility className="w-3.5 h-3.5 text-blue-400" aria-label="Wheelchair accessible" />}
+        {trip.curbsidePickup && <MapPin className="w-3.5 h-3.5 text-blue-400" aria-label="Curbside pickup" />}
       </div>
 
       <div className="flex items-center gap-3 flex-shrink-0">

@@ -40,7 +40,7 @@ export interface PdfTripData {
   vehicleName?: string | null
   meetAndGreet: boolean
   childSeat: boolean
-  wheelchairAccess: boolean
+  curbsidePickup: boolean
   vip: boolean
   notes?: string | null
   internalNotes?: string | null
@@ -110,7 +110,7 @@ function DriverJobOrderDoc({ trip, company }: { trip: PdfTripData; company: PdfC
     trip.vip          && "VIP",
     trip.meetAndGreet && "Meet & Greet",
     trip.childSeat    && "Child Seat",
-    trip.wheelchairAccess && "Wheelchair",
+    trip.curbsidePickup && "Wheelchair",
   ].filter(Boolean) as string[]
 
   return (
@@ -290,7 +290,7 @@ function ReservationDoc({ trip, company, isAffiliate = false }: { trip: PdfTripD
     trip.vip          && "VIP",
     trip.meetAndGreet && "Meet & Greet",
     trip.childSeat    && "Child Seat",
-    trip.wheelchairAccess && "Wheelchair Accessible",
+    trip.curbsidePickup && "Wheelchair Accessible",
   ].filter(Boolean) as string[]
 
   const companyAddress = [company.address, company.city, company.state, company.zip].filter(Boolean).join(", ")

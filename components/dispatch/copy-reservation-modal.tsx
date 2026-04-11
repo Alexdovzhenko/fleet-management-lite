@@ -146,7 +146,7 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
       meetAndGreet: trip.meetAndGreet,
       childSeat: trip.childSeat,
       childSeatDetails: trip.childSeatDetails ?? undefined,
-      wheelchairAccess: trip.wheelchairAccess,
+      curbsidePickup: trip.curbsidePickup,
       vip: trip.vip,
       clientRef: trip.clientRef ?? undefined,
       notes: copyNotes ? (trip.notes ?? undefined) : undefined,

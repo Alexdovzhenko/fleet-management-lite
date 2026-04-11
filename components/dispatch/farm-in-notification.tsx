@@ -147,7 +147,7 @@ function FarmInCard({ farmOut, onRespond }: { farmOut: FarmOut; onRespond: (id: 
                 {trip.vip && <span className="text-[10px] font-medium bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full">VIP</span>}
                 {trip.meetAndGreet && <span className="text-[10px] font-medium bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">Meet & Greet</span>}
                 {trip.childSeat && <span className="text-[10px] font-medium bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">Child Seat</span>}
-                {trip.wheelchairAccess && <span className="text-[10px] font-medium bg-green-50 text-green-700 px-2 py-0.5 rounded-full">Wheelchair</span>}
+                {trip.curbsidePickup && <span className="text-[10px] font-medium bg-green-50 text-green-700 px-2 py-0.5 rounded-full">Curbside Pickup</span>}
               </div>
             </div>
           </motion.div>

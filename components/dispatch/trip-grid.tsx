@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { Plane, Star, Baby, Accessibility, Bell, Phone, GripVertical } from "lucide-react"
+import { Plane, Star, Baby, MapPin, Bell, Phone, GripVertical } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { formatTime, formatCurrency, formatPhone, getInitials, cn } from "@/lib/utils"
 import { format, parseISO } from "date-fns"
@@ -328,7 +328,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
               {trip.vip && <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />}
               {trip.meetAndGreet && <Bell className="w-3.5 h-3.5 text-purple-400" />}
               {trip.childSeat && <Baby className="w-3.5 h-3.5 text-pink-400" />}
-              {trip.wheelchairAccess && <Accessibility className="w-3.5 h-3.5 text-blue-400" />}
+              {trip.curbsidePickup && <MapPin className="w-3.5 h-3.5 text-blue-400" />}
             </div>
           </td>
         )

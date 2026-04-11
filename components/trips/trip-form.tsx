@@ -41,7 +41,7 @@ const tripSchema = z.object({
   flightNumber: z.string().optional(),
   meetAndGreet: z.boolean(),
   childSeat: z.boolean(),
-  wheelchairAccess: z.boolean(),
+  curbsidePickup: z.boolean(),
   vip: z.boolean(),
   internalNotes: z.string().optional(),
 })
@@ -176,7 +176,7 @@ export function TripForm({ onSubmit, onCancel, isLoading }: TripFormProps) {
       gratuityPercent: 20,
       meetAndGreet: false,
       childSeat: false,
-      wheelchairAccess: false,
+      curbsidePickup: false,
       vip: false,
       pickupDate: "",
       pickupTime: "",
@@ -517,7 +517,7 @@ export function TripForm({ onSubmit, onCancel, isLoading }: TripFormProps) {
               {[
                 { name: "meetAndGreet" as const, label: "Meet & Greet (driver holds sign)" },
                 { name: "childSeat" as const, label: "Child seat needed" },
-                { name: "wheelchairAccess" as const, label: "Wheelchair accessible" },
+                { name: "curbsidePickup" as const, label: "Wheelchair accessible" },
                 { name: "vip" as const, label: "VIP — priority handling" },
               ].map(({ name, label }) => (
                 <div key={name} className="flex items-center gap-2">

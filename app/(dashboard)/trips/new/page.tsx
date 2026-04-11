@@ -2467,7 +2467,7 @@ export default function NewTripPage() {
           ...(childSeats.rear    > 0 ? [{ type: "REAR_FACING",    count: childSeats.rear    }] : []),
           ...(childSeats.booster > 0 ? [{ type: "BOOSTER",        count: childSeats.booster }] : []),
         ]) : undefined,
-        wheelchairAccess: false,
+        curbsidePickup: false,
         vip:              data.vip,
         stops: stopsData as never,
       } as never, {
