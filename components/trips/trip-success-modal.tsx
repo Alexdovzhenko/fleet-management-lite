@@ -6,6 +6,7 @@ import { ArrowRight, ArrowUpRight, Calendar, Car, Check, CheckCircle2, Clock, Co
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
+import { FarmOutModal } from "@/components/dispatch/farm-out-modal"
 import { cn } from "@/lib/utils"
 import type { Trip } from "@/types"
 
@@ -28,6 +29,7 @@ export function TripSuccessModal({
 }) {
   const router = useRouter()
   const [confirmCopied, setConfirmCopied] = useState(false)
+  const [farmOutOpen, setFarmOutOpen] = useState(false)
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose() }}>
@@ -175,8 +177,25 @@ export function TripSuccessModal({
           </div>
 
           {/* Right: Send Confirmation Actions */}
-          <div className="px-6 py-5 space-y-3">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em]">Send Confirmation</p>
+          <div className="px-6 py-5 space-y-5">
+            {/* Farm Out Action */}
+            <div>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">Farm Out</p>
+              <button
+                type="button"
+                onClick={() => setFarmOutOpen(true)}
+                className="w-full rounded-xl border border-gray-200 bg-white hover:bg-blue-50 hover:border-blue-300 hover:shadow-sm transition-all p-3 text-left group"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-900 group-hover:text-blue-700">Farm Out to Affiliate</span>
+                  <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-blue-400 transition-colors" />
+                </div>
+              </button>
+            </div>
+
+            {/* Send Confirmation Section */}
+            <div className="space-y-3">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em]">Send Confirmation</p>
 
             {[
               {
@@ -244,9 +263,19 @@ export function TripSuccessModal({
                 </div>
               </button>
             ))}
+            </div>
           </div>
 
         </div>
+
+        {/* Farm Out Modal */}
+        {farmOutOpen && (
+          <FarmOutModal
+            trip={trip}
+            open={farmOutOpen}
+            onClose={() => setFarmOutOpen(false)}
+          />
+        )}
 
         {/* Footer */}
         <div className="flex gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50">
