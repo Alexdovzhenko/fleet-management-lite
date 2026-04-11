@@ -85,6 +85,7 @@ const schema = z.object({
   internalNotes:        z.string().optional(),
   meetAndGreet:         z.boolean(),
   childSeat:            z.boolean(),
+  curbsidePickup:       z.boolean(),
   vip:                  z.boolean(),
 })
 
@@ -2373,6 +2374,7 @@ export default function NewTripPage() {
       gratuityPercent:  20,
       meetAndGreet:     false,
       childSeat:        false,
+      curbsidePickup:   false,
       vip:              false,
     },
   })
@@ -2384,6 +2386,7 @@ export default function NewTripPage() {
 
   const vip = watch("vip")
   const meetAndGreet = watch("meetAndGreet")
+  const curbsidePickup = watch("curbsidePickup")
   const totalChildSeats = childSeats.forward + childSeats.rear + childSeats.booster
 
   async function onSubmit(data: FormData) {
@@ -2467,7 +2470,7 @@ export default function NewTripPage() {
           ...(childSeats.rear    > 0 ? [{ type: "REAR_FACING",    count: childSeats.rear    }] : []),
           ...(childSeats.booster > 0 ? [{ type: "BOOSTER",        count: childSeats.booster }] : []),
         ]) : undefined,
-        curbsidePickup: false,
+        curbsidePickup: data.curbsidePickup,
         vip:              data.vip,
         stops: stopsData as never,
       } as never, {
@@ -2482,6 +2485,7 @@ export default function NewTripPage() {
   const simpleAddons = [
     { name: "vip" as const,          label: "VIP",          icon: Star,      active: vip },
     { name: "meetAndGreet" as const, label: "Meet & Greet", icon: UserCheck, active: meetAndGreet },
+    { name: "curbsidePickup" as const, label: "Curbside Pickup", icon: MapPin, active: curbsidePickup },
   ]
 
   const CHILD_SEAT_TYPES = [
