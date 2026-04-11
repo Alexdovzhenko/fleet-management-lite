@@ -59,6 +59,7 @@ import { useUpsertAddress } from "@/lib/hooks/use-addresses"
 import { ReservationMetadata } from "@/components/trips/reservation-metadata"
 import { SendEmailModal } from "@/components/email/send-email-modal"
 import { TripAttachmentsSection } from "@/components/dispatch/trip-attachments"
+import { FarmOutPartnerCard } from "@/components/trips/farm-out-partner-card"
 import type { Customer, Driver, Vehicle, AffiliateSearchResult, Trip, PendingFile } from "@/types"
 
 const schema = z.object({
@@ -2348,6 +2349,7 @@ export default function NewTripPage() {
   const [sendEmailOpen, setSendEmailOpen]            = useState(false)
   const [sendEmailRecipient, setSendEmailRecipient]  = useState<"driver" | "client" | "affiliate">("driver")
   const [pendingAttachments, setPendingAttachments]  = useState<PendingFile[]>([])
+  const [selectedPartnerId, setSelectedPartnerId]    = useState<string | null>(null)
   const [isFormSubmitting, setIsFormSubmitting]      = useState(false)
 
   type AdditionalPax = { id: string; firstName: string; lastName: string; phone: string; email: string }
@@ -3029,6 +3031,12 @@ export default function NewTripPage() {
                   )}
                 </div>
               </div>
+
+              {/* Farm Out Partner Card */}
+              <FarmOutPartnerCard
+                selectedPartnerId={selectedPartnerId}
+                onSelectPartner={setSelectedPartnerId}
+              />
 
               {/* Pricing card */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
