@@ -53,32 +53,31 @@ export function FarmOutPartnerCard({ selectedPartnerId, onSelectPartner }: FarmO
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
-        <Building2 className="w-3.5 h-3.5 text-gray-400" />
-        <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Farm Out Partner</h4>
-        <span className="ml-auto text-[10px] text-gray-400 font-medium">Optional</span>
+      {/* Header */}
+      <div className="px-4 py-3 border-b border-gray-100">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Farm Out Partner</p>
       </div>
 
-      <div className="px-4 py-3.5 space-y-3">
+      <div className="px-4 py-3.5 space-y-4">
         {selectedPartner ? (
-          // Selected partner preview
-          <div className="space-y-2.5">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-100">
+          <>
+            {/* Selected affiliate */}
+            <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl">
               {selectedPartner.logo ? (
                 <img
                   src={selectedPartner.logo}
                   alt={selectedPartner.name}
-                  className="w-9 h-9 rounded-lg object-cover flex-shrink-0"
+                  className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
                 />
               ) : (
-                <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center flex-shrink-0 shadow-sm border border-blue-200">
-                  <Building2 className="w-4 h-4 text-blue-500" />
+                <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <Building2 className="w-5 h-5 text-blue-500" />
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-900 truncate">{selectedPartner.name}</p>
+                <p className="text-sm font-semibold text-gray-900">{selectedPartner.name}</p>
                 {(selectedPartner.city || selectedPartner.state) && (
-                  <p className="text-xs text-gray-600 truncate">
+                  <p className="text-xs text-gray-500 mt-0.5">
                     {[selectedPartner.city, selectedPartner.state].filter(Boolean).join(", ")}
                   </p>
                 )}
@@ -90,7 +89,7 @@ export function FarmOutPartnerCard({ selectedPartnerId, onSelectPartner }: FarmO
                   setSearch("")
                   setSearchOpen(false)
                 }}
-                className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0 -mr-1"
                 aria-label="Remove selected partner"
               >
                 <X className="w-4 h-4" />
@@ -101,17 +100,17 @@ export function FarmOutPartnerCard({ selectedPartnerId, onSelectPartner }: FarmO
             <button
               type="button"
               onClick={() => setSearchOpen(!searchOpen)}
-              className="w-full text-xs text-gray-500 hover:text-blue-600 transition-colors text-center py-1.5 font-medium"
+              className="w-full text-xs text-gray-500 hover:text-blue-600 transition-colors text-center py-2 font-medium"
             >
               Change partner
             </button>
-          </div>
+          </>
         ) : (
-          // Search/select state
           <>
+            {/* Search input */}
             <div className="relative">
               <Input
-                placeholder="Search by name or location..."
+                placeholder="Search by name, city, or code..."
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value)
@@ -154,23 +153,30 @@ export function FarmOutPartnerCard({ selectedPartnerId, onSelectPartner }: FarmO
                           setSearchOpen(false)
                           setSearch("")
                         }}
-                        className="w-full px-3 py-2.5 text-left hover:bg-blue-50 transition-colors flex items-center gap-2.5"
+                        className="w-full px-3 py-3 text-left hover:bg-gray-50 transition-colors flex items-center gap-3"
                       >
                         {partner.logo ? (
                           <img
                             src={partner.logo}
                             alt={partner.name}
-                            className="w-8 h-8 rounded-lg object-cover flex-shrink-0"
+                            className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
                           />
                         ) : (
-                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                            <Building2 className="w-3.5 h-3.5 text-gray-400" />
+                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center flex-shrink-0">
+                            <Building2 className="w-5 h-5 text-blue-500" />
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-gray-900">{partner.name}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-medium text-gray-900 truncate">{partner.name}</p>
+                            {partner.affiliateCode && (
+                              <span className="text-[10px] font-mono bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full flex-shrink-0">
+                                {partner.affiliateCode}
+                              </span>
+                            )}
+                          </div>
                           {(partner.city || partner.state) && (
-                            <p className="text-[11px] text-gray-500">
+                            <p className="text-xs text-gray-500 mt-0.5">
                               {[partner.city, partner.state].filter(Boolean).join(", ")}
                             </p>
                           )}
@@ -191,7 +197,7 @@ export function FarmOutPartnerCard({ selectedPartnerId, onSelectPartner }: FarmO
               />
             )}
 
-            <p className="text-[11px] text-gray-500 leading-relaxed">
+            <p className="text-xs text-gray-500 leading-relaxed">
               Select an affiliate partner to farm out this reservation. You can change this anytime.
             </p>
           </>
