@@ -3085,81 +3085,88 @@ export default function NewTripPage() {
                 </div>
               </div>
 
-              {/* Add-ons card */}
+              {/* ADD-ONS — Refined Modern Design (Matching Edit Modal) */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
-                  <Star className="w-3.5 h-3.5 text-gray-400" />
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Add-ons</h4>
-                </div>
-                <div className="px-4 py-3.5 space-y-2.5">
+                <div className="px-4 py-3.5 space-y-4">
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-1 h-4 rounded-full bg-gradient-to-b from-blue-500 to-blue-400" />
+                      <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-gray-700">ADD-ONS</h3>
+                    </div>
+                  </div>
 
-                  {/* VIP + Meet & Greet */}
-                  <div className="grid grid-cols-2 gap-2">
+                  {/* Main Add-ons — 3-Column Symmetric Grid */}
+                  <div className="grid grid-cols-3 gap-2.5">
                     {simpleAddons.map(({ name, label, icon: Icon, active }) => (
                       <button
                         key={name}
                         type="button"
                         onClick={() => setValue(name, !active)}
-                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold border transition-all duration-150 ${
-                          active
-                            ? "bg-blue-600 border-blue-600 text-white shadow-sm"
-                            : "bg-white border-gray-200 text-gray-500 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
-                        }`}
+                        className={`
+                          flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-xl
+                          border-2 transition-all duration-150 group
+                          ${active
+                            ? "bg-blue-50 border-blue-300 shadow-sm"
+                            : "bg-white border-gray-200 hover:border-blue-200 hover:bg-blue-50/30"
+                          }
+                        `}
                       >
-                        <Icon className="w-3.5 h-3.5 flex-shrink-0" />
-                        {label}
+                        <Icon className={`w-5 h-5 transition-colors ${active ? "text-blue-600" : "text-gray-400 group-hover:text-blue-500"}`} />
+                        <span className={`text-[11px] font-semibold text-center leading-tight transition-colors ${active ? "text-blue-700" : "text-gray-600"}`}>
+                          {label}
+                        </span>
                       </button>
                     ))}
                   </div>
 
-                  {/* Child Seats — expandable */}
-                  <div
-                    className="rounded-xl border overflow-hidden transition-colors"
-                    style={{
-                      borderColor: totalChildSeats > 0 ? "rgba(37,99,235,0.25)" : "rgb(229,231,235)",
-                    }}
-                  >
+                  {/* Child Seats — Integrated Cohesively */}
+                  <div className="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
                     <button
                       type="button"
                       onClick={() => setChildSeatsOpen((o) => !o)}
-                      className="w-full flex items-center gap-2.5 px-3 py-2.5"
-                      style={{ background: totalChildSeats > 0 ? "rgba(37,99,235,0.03)" : "white" }}
+                      className={`
+                        w-full flex items-center justify-between px-4 py-3 transition-all
+                        ${totalChildSeats > 0 ? "bg-blue-50/50 border-b border-blue-100" : "hover:bg-gray-100"}
+                      `}
                     >
-                      <Baby className={`w-3.5 h-3.5 flex-shrink-0 ${totalChildSeats > 0 ? "text-blue-500" : "text-gray-400"}`} />
-                      <span className={`text-xs font-semibold flex-1 text-left ${totalChildSeats > 0 ? "text-blue-700" : "text-gray-500"}`}>
-                        Child Seats
-                      </span>
-                      {totalChildSeats > 0 ? (
-                        <span className="text-[10px] font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">
-                          {totalChildSeats} seat{totalChildSeats !== 1 ? "s" : ""}
+                      <div className="flex items-center gap-3">
+                        <Baby className={`w-5 h-5 flex-shrink-0 transition-colors ${totalChildSeats > 0 ? "text-blue-600" : "text-gray-400"}`} />
+                        <span className={`text-sm font-semibold transition-colors ${totalChildSeats > 0 ? "text-blue-700" : "text-gray-700"}`}>
+                          Child Seats
                         </span>
-                      ) : (
-                        <span className="text-[10px] text-gray-400">None</span>
-                      )}
-                      <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform flex-shrink-0 ${childSeatsOpen ? "rotate-180" : ""}`} />
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        {totalChildSeats > 0 && (
+                          <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                            {totalChildSeats}
+                          </span>
+                        )}
+                        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${childSeatsOpen ? "rotate-180" : ""}`} />
+                      </div>
                     </button>
 
                     {childSeatsOpen && (
-                      <div className="border-t border-gray-100 divide-y divide-gray-50">
+                      <div className="divide-y divide-gray-200">
                         {CHILD_SEAT_TYPES.map(({ key, label }) => (
-                          <div key={key} className="flex items-center gap-3 px-3 py-2.5 bg-gray-50/60">
-                            <span className="text-xs text-gray-700 flex-1 font-medium">{label}</span>
-                            <div className="flex items-center gap-2">
+                          <div key={key} className="flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 transition-colors">
+                            <span className="text-sm font-medium text-gray-700">{label}</span>
+                            <div className="flex items-center gap-2.5">
                               <button
                                 type="button"
                                 onClick={() => setChildSeats((s) => ({ ...s, [key]: Math.max(0, s[key] - 1) }))}
                                 disabled={childSeats[key] === 0}
-                                className="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:border-blue-300 hover:text-blue-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm leading-none"
+                                className="w-7 h-7 rounded-lg border border-gray-300 bg-white flex items-center justify-center text-gray-600 hover:text-blue-600 hover:border-blue-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-base leading-none font-light"
                               >
                                 −
                               </button>
-                              <span className={`w-5 text-center text-sm font-bold tabular-nums ${childSeats[key] > 0 ? "text-blue-700" : "text-gray-400"}`}>
+                              <span className={`w-6 text-center text-sm font-bold tabular-nums ${childSeats[key] > 0 ? "text-blue-700" : "text-gray-400"}`}>
                                 {childSeats[key]}
                               </span>
                               <button
                                 type="button"
                                 onClick={() => setChildSeats((s) => ({ ...s, [key]: s[key] + 1 }))}
-                                className="w-6 h-6 rounded-md border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:border-blue-300 hover:text-blue-600 transition-colors text-sm leading-none"
+                                className="w-7 h-7 rounded-lg border border-gray-300 bg-white flex items-center justify-center text-gray-600 hover:text-blue-600 hover:border-blue-300 transition-all text-base leading-none"
                               >
                                 +
                               </button>
@@ -3169,7 +3176,6 @@ export default function NewTripPage() {
                       </div>
                     )}
                   </div>
-
                 </div>
               </div>
 
