@@ -251,19 +251,22 @@ export function BillingModalEnhanced({
     tap: { scale: 0.98 },
   }
 
+  // Sub-section state for Services (Primary, Secondary, Farm-out)
+  const [activeServiceTab, setActiveServiceTab] = useState<'primary' | 'secondary' | 'farmout'>('primary')
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl w-full max-h-[90vh] p-0 overflow-hidden flex flex-col bg-white">
+      <DialogContent className="max-w-5xl w-full max-h-[90vh] p-0 overflow-hidden flex flex-col bg-white">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="border-b border-slate-100 px-8 py-6 flex items-center justify-between"
+          className="border-b border-slate-100 px-6 py-4 flex items-center justify-between"
         >
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Trip Billing</h1>
+            <h1 className="text-xl font-bold text-slate-900">Trip Billing</h1>
             {trip && (
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 mt-0.5">
                 {trip.tripNumber} · {trip.customer?.name}
               </p>
             )}
@@ -272,7 +275,7 @@ export function BillingModalEnhanced({
             <Button
               onClick={handleSave}
               disabled={isSaving}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium h-11 px-8"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium h-10 px-6 text-sm"
             >
               Save & Close
             </Button>
@@ -287,9 +290,9 @@ export function BillingModalEnhanced({
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="px-8 py-6 border-b border-slate-100"
+              className="px-6 py-4 border-b border-slate-100 bg-slate-50"
             >
-              <div className="flex gap-2">
+              <div className="flex gap-1">
                 {(['services', 'adjustments', 'payments'] as const).map((section, idx) => (
                   <motion.button
                     key={section}
@@ -298,10 +301,10 @@ export function BillingModalEnhanced({
                     whileTap={{ scale: 0.98 }}
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0, transition: { delay: idx * 0.1 } }}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all text-sm ${
+                    className={`px-3 py-1.5 rounded-md font-medium transition-all text-xs ${
                       activeSection === section
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'text-slate-600 hover:bg-slate-100'
+                        ? 'bg-blue-600 text-white'
+                        : 'text-slate-600 hover:bg-slate-200'
                     }`}
                   >
                     {section.charAt(0).toUpperCase() + section.slice(1)}
@@ -311,7 +314,7 @@ export function BillingModalEnhanced({
             </motion.div>
 
             {/* Content Area */}
-            <div className="px-8 py-6">
+            <div className="px-6 py-4">
               <AnimatePresence mode="wait">
                 {/* Services Section */}
                 {activeSection === 'services' && (
@@ -321,45 +324,39 @@ export function BillingModalEnhanced({
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    className="space-y-8"
+                    className="space-y-4"
                   >
-                    {/* Primary Services */}
-                    <ServiceCategory
-                      title="Primary Services"
-                      subtitle="Main charges for this trip"
-                      items={primaryItems}
-                      category="primary"
-                      onAdd={() => addLineItem('primary')}
-                      onUpdate={updateLineItem}
-                      onDelete={deleteLineItem}
-                      onDuplicate={duplicateLineItem}
-                      sensors={sensors}
-                      onDragEnd={handleDragEnd}
-                      allItems={billingData.lineItems}
-                    />
+                    {/* Service Sub-tabs */}
+                    <div className="flex gap-1 pb-3 border-b border-slate-200">
+                      {[
+                        { key: 'primary' as const, label: 'Primary', items: primaryItems },
+                        { key: 'secondary' as const, label: 'Secondary', items: secondaryItems },
+                        { key: 'farmout' as const, label: 'Farm-out', items: farmoutItems },
+                      ].map(tab => (
+                        <button
+                          key={tab.key}
+                          onClick={() => setActiveServiceTab(tab.key)}
+                          className={`px-3 py-1.5 rounded text-xs font-medium transition-all ${
+                            activeServiceTab === tab.key
+                              ? 'bg-blue-600 text-white'
+                              : 'text-slate-600 hover:bg-slate-100'
+                          }`}
+                        >
+                          {tab.label}
+                          {tab.items.length > 0 && (
+                            <span className="ml-1.5 text-xs font-semibold">${totals[tab.key === 'primary' ? 'primaryTotal' : tab.key === 'secondary' ? 'secondaryTotal' : 'farmoutTotal'].toFixed(2)}</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
 
-                    {/* Secondary Services */}
+                    {/* Service Category - Only show active tab */}
                     <ServiceCategory
-                      title="Secondary Services"
-                      subtitle="Additional charges"
-                      items={secondaryItems}
-                      category="secondary"
-                      onAdd={() => addLineItem('secondary')}
-                      onUpdate={updateLineItem}
-                      onDelete={deleteLineItem}
-                      onDuplicate={duplicateLineItem}
-                      sensors={sensors}
-                      onDragEnd={handleDragEnd}
-                      allItems={billingData.lineItems}
-                    />
-
-                    {/* Farm-out Costs */}
-                    <ServiceCategory
-                      title="Farm-out Costs"
-                      subtitle="Third-party vendor charges"
-                      items={farmoutItems}
-                      category="farmout"
-                      onAdd={() => addLineItem('farmout')}
+                      title={activeServiceTab === 'primary' ? 'Primary Services' : activeServiceTab === 'secondary' ? 'Secondary Services' : 'Farm-out Costs'}
+                      subtitle={activeServiceTab === 'primary' ? 'Main charges for this trip' : activeServiceTab === 'secondary' ? 'Additional charges' : 'Third-party vendor charges'}
+                      items={activeServiceTab === 'primary' ? primaryItems : activeServiceTab === 'secondary' ? secondaryItems : farmoutItems}
+                      category={activeServiceTab}
+                      onAdd={() => addLineItem(activeServiceTab)}
                       onUpdate={updateLineItem}
                       onDelete={deleteLineItem}
                       onDuplicate={duplicateLineItem}
@@ -378,186 +375,164 @@ export function BillingModalEnhanced({
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    className="space-y-4"
+                    className="space-y-3"
                   >
-                    <p className="text-sm text-slate-600 mb-6">
-                      Fees, discounts, taxes, and gratuity. Toggle each item to enable.
-                    </p>
+                    <p className="text-xs text-slate-600 mb-3">Toggle each fee to enable, then enter the amount.</p>
 
-                    {/* Discount */}
-                    <AdjustmentItem
-                      label="Discount"
-                      isExpanded={expandedAdjustments.has('discount')}
-                      onToggle={() => toggleAdjustment('discount')}
-                      isEnabled={billingData.adjustments.discountEnabled}
-                      onEnabledChange={(enabled) => setBillingData(prev => ({
-                        ...prev,
-                        adjustments: { ...prev.adjustments, discountEnabled: enabled },
-                      }))}
-                    >
-                      <div className="space-y-4">
-                        <div>
-                          <label className="text-sm font-medium text-slate-700 block mb-2">Type</label>
-                          <select
-                            value={billingData.adjustments.discountType}
-                            onChange={(e) => setBillingData(prev => ({
-                              ...prev,
-                              adjustments: { ...prev.adjustments, discountType: e.target.value as 'flat' | 'percent' },
-                            }))}
-                            disabled={!billingData.adjustments.discountEnabled}
-                            className="w-full h-10 text-sm border border-slate-200 rounded-lg px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-all"
-                          >
-                            <option value="flat">Flat Amount ($)</option>
-                            <option value="percent">Percentage (%)</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium text-slate-700 block mb-2">Amount</label>
-                          <Input
-                            type="number"
-                            value={billingData.adjustments.discountAmount}
-                            onChange={(e) => setBillingData(prev => ({
-                              ...prev,
-                              adjustments: { ...prev.adjustments, discountAmount: parseFloat(e.target.value) || 0 },
-                            }))}
-                            disabled={!billingData.adjustments.discountEnabled}
-                            placeholder="0.00"
-                            className="text-sm"
-                          />
-                        </div>
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          className="pt-2 border-t border-slate-200"
-                        >
-                          <p className="text-sm text-slate-600">
-                            Amount: <span className="font-semibold text-slate-900">{formatCurrency(totals.discount)}</span>
-                          </p>
-                        </motion.div>
-                      </div>
-                    </AdjustmentItem>
-
-                    {/* Gratuity */}
-                    <AdjustmentItem
-                      label="Gratuity"
-                      isExpanded={expandedAdjustments.has('gratuity')}
-                      onToggle={() => toggleAdjustment('gratuity')}
-                      isEnabled={billingData.adjustments.gratuityEnabled}
-                      onEnabledChange={(enabled) => setBillingData(prev => ({
-                        ...prev,
-                        adjustments: { ...prev.adjustments, gratuityEnabled: enabled },
-                      }))}
-                    >
-                      <div>
-                        <label className="text-sm font-medium text-slate-700 block mb-2">Percentage (%)</label>
-                        <Input
-                          type="number"
-                          value={billingData.adjustments.gratuityPercent}
+                    {/* Discount - Inline */}
+                    <div className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all">
+                      <div className="flex-shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={billingData.adjustments.discountEnabled}
                           onChange={(e) => setBillingData(prev => ({
                             ...prev,
-                            adjustments: { ...prev.adjustments, gratuityPercent: parseFloat(e.target.value) || 0 },
+                            adjustments: { ...prev.adjustments, discountEnabled: e.target.checked },
                           }))}
-                          disabled={!billingData.adjustments.gratuityEnabled}
-                          placeholder="0"
-                          className="text-sm"
+                          className="w-4 h-4 rounded"
                         />
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          className="mt-3 pt-3 border-t border-slate-200"
-                        >
-                          <p className="text-sm text-slate-600">
-                            Amount: <span className="font-semibold text-slate-900">{formatCurrency(totals.gratuityAmt)}</span>
-                          </p>
-                        </motion.div>
                       </div>
-                    </AdjustmentItem>
+                      <div className="flex-1 min-w-0">
+                        <label className="text-xs font-medium text-slate-700 block">Discount</label>
+                      </div>
+                      <select
+                        value={billingData.adjustments.discountType}
+                        onChange={(e) => setBillingData(prev => ({
+                          ...prev,
+                          adjustments: { ...prev.adjustments, discountType: e.target.value as 'flat' | 'percent' },
+                        }))}
+                        disabled={!billingData.adjustments.discountEnabled}
+                        className="w-20 h-8 text-xs border border-slate-200 rounded px-2 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                      >
+                        <option value="flat">Flat ($)</option>
+                        <option value="percent">% Pct</option>
+                      </select>
+                      <Input
+                        type="number"
+                        value={billingData.adjustments.discountAmount}
+                        onChange={(e) => setBillingData(prev => ({
+                          ...prev,
+                          adjustments: { ...prev.adjustments, discountAmount: parseFloat(e.target.value) || 0 },
+                        }))}
+                        disabled={!billingData.adjustments.discountEnabled}
+                        placeholder="0"
+                        className="text-xs h-8 w-20"
+                      />
+                      <span className="text-xs font-semibold text-slate-900 whitespace-nowrap">{formatCurrency(totals.discount)}</span>
+                    </div>
 
-                    {/* Tolls */}
-                    <AdjustmentItem
-                      label="Tolls"
-                      isExpanded={expandedAdjustments.has('tolls')}
-                      onToggle={() => toggleAdjustment('tolls')}
-                      isEnabled={billingData.adjustments.tollsEnabled}
-                      onEnabledChange={(enabled) => setBillingData(prev => ({
-                        ...prev,
-                        adjustments: { ...prev.adjustments, tollsEnabled: enabled },
-                      }))}
-                    >
-                      <div>
-                        <label className="text-sm font-medium text-slate-700 block mb-2">Amount</label>
-                        <Input
-                          type="number"
-                          value={billingData.adjustments.tollsAmount}
+                    {/* Gratuity - Inline */}
+                    <div className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all">
+                      <div className="flex-shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={billingData.adjustments.gratuityEnabled}
                           onChange={(e) => setBillingData(prev => ({
                             ...prev,
-                            adjustments: { ...prev.adjustments, tollsAmount: parseFloat(e.target.value) || 0 },
+                            adjustments: { ...prev.adjustments, gratuityEnabled: e.target.checked },
                           }))}
-                          disabled={!billingData.adjustments.tollsEnabled}
-                          placeholder="0.00"
-                          className="text-sm"
+                          className="w-4 h-4 rounded"
                         />
                       </div>
-                    </AdjustmentItem>
+                      <div className="flex-1">
+                        <label className="text-xs font-medium text-slate-700 block">Gratuity</label>
+                      </div>
+                      <Input
+                        type="number"
+                        value={billingData.adjustments.gratuityPercent}
+                        onChange={(e) => setBillingData(prev => ({
+                          ...prev,
+                          adjustments: { ...prev.adjustments, gratuityPercent: parseFloat(e.target.value) || 0 },
+                        }))}
+                        disabled={!billingData.adjustments.gratuityEnabled}
+                        placeholder="0"
+                        className="text-xs h-8 w-16"
+                      />
+                      <span className="text-xs text-slate-600 w-6">%</span>
+                      <span className="text-xs font-semibold text-slate-900 whitespace-nowrap">{formatCurrency(totals.gratuityAmt)}</span>
+                    </div>
 
-                    {/* Parking */}
-                    <AdjustmentItem
-                      label="Parking"
-                      isExpanded={expandedAdjustments.has('parking')}
-                      onToggle={() => toggleAdjustment('parking')}
-                      isEnabled={billingData.adjustments.parkingEnabled}
-                      onEnabledChange={(enabled) => setBillingData(prev => ({
-                        ...prev,
-                        adjustments: { ...prev.adjustments, parkingEnabled: enabled },
-                      }))}
-                    >
-                      <div>
-                        <label className="text-sm font-medium text-slate-700 block mb-2">Amount</label>
-                        <Input
-                          type="number"
-                          value={billingData.adjustments.parkingAmount}
+                    {/* Tolls - Inline */}
+                    <div className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all">
+                      <div className="flex-shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={billingData.adjustments.tollsEnabled}
                           onChange={(e) => setBillingData(prev => ({
                             ...prev,
-                            adjustments: { ...prev.adjustments, parkingAmount: parseFloat(e.target.value) || 0 },
+                            adjustments: { ...prev.adjustments, tollsEnabled: e.target.checked },
                           }))}
-                          disabled={!billingData.adjustments.parkingEnabled}
-                          placeholder="0.00"
-                          className="text-sm"
+                          className="w-4 h-4 rounded"
                         />
                       </div>
-                    </AdjustmentItem>
+                      <div className="flex-1">
+                        <label className="text-xs font-medium text-slate-700 block">Tolls</label>
+                      </div>
+                      <Input
+                        type="number"
+                        value={billingData.adjustments.tollsAmount}
+                        onChange={(e) => setBillingData(prev => ({
+                          ...prev,
+                          adjustments: { ...prev.adjustments, tollsAmount: parseFloat(e.target.value) || 0 },
+                        }))}
+                        disabled={!billingData.adjustments.tollsEnabled}
+                        placeholder="0.00"
+                        className="text-xs h-8 w-20"
+                      />
+                      <span className="text-xs font-semibold text-slate-900 whitespace-nowrap">{formatCurrency(billingData.adjustments.tollsAmount)}</span>
+                    </div>
 
-                    {/* Tax */}
-                    <AdjustmentItem
-                      label="Tax"
-                      isExpanded={expandedAdjustments.has('tax')}
-                      onToggle={() => toggleAdjustment('tax')}
-                      isEnabled={true}
-                      onEnabledChange={() => {}}
-                    >
-                      <div>
-                        <label className="text-sm font-medium text-slate-700 block mb-2">Tax Rate (%)</label>
-                        <Input
-                          type="number"
-                          value={billingData.adjustments.taxPercent}
+                    {/* Parking - Inline */}
+                    <div className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all">
+                      <div className="flex-shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={billingData.adjustments.parkingEnabled}
                           onChange={(e) => setBillingData(prev => ({
                             ...prev,
-                            adjustments: { ...prev.adjustments, taxPercent: parseFloat(e.target.value) || 0 },
+                            adjustments: { ...prev.adjustments, parkingEnabled: e.target.checked },
                           }))}
-                          placeholder="0"
-                          className="text-sm"
+                          className="w-4 h-4 rounded"
                         />
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          className="mt-3 pt-3 border-t border-slate-200"
-                        >
-                          <p className="text-sm text-slate-600">
-                            Amount: <span className="font-semibold text-slate-900">{formatCurrency(totals.taxAmt)}</span>
-                          </p>
-                        </motion.div>
                       </div>
-                    </AdjustmentItem>
+                      <div className="flex-1">
+                        <label className="text-xs font-medium text-slate-700 block">Parking</label>
+                      </div>
+                      <Input
+                        type="number"
+                        value={billingData.adjustments.parkingAmount}
+                        onChange={(e) => setBillingData(prev => ({
+                          ...prev,
+                          adjustments: { ...prev.adjustments, parkingAmount: parseFloat(e.target.value) || 0 },
+                        }))}
+                        disabled={!billingData.adjustments.parkingEnabled}
+                        placeholder="0.00"
+                        className="text-xs h-8 w-20"
+                      />
+                      <span className="text-xs font-semibold text-slate-900 whitespace-nowrap">{formatCurrency(billingData.adjustments.parkingAmount)}</span>
+                    </div>
+
+                    {/* Tax - Always Enabled */}
+                    <div className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all">
+                      <div className="flex-shrink-0">
+                        <div className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1">
+                        <label className="text-xs font-medium text-slate-700 block">Tax</label>
+                      </div>
+                      <Input
+                        type="number"
+                        value={billingData.adjustments.taxPercent}
+                        onChange={(e) => setBillingData(prev => ({
+                          ...prev,
+                          adjustments: { ...prev.adjustments, taxPercent: parseFloat(e.target.value) || 0 },
+                        }))}
+                        placeholder="0"
+                        className="text-xs h-8 w-16"
+                      />
+                      <span className="text-xs text-slate-600 w-6">%</span>
+                      <span className="text-xs font-semibold text-slate-900 whitespace-nowrap">{formatCurrency(totals.taxAmt)}</span>
+                    </div>
                   </motion.div>
                 )}
 
@@ -715,40 +690,50 @@ export function BillingModalEnhanced({
             </div>
           </div>
 
-          {/* Right Panel - 30% Sticky Summary */}
+          {/* Right Panel - Sticky Summary */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="w-96 bg-gradient-to-b from-slate-50 to-slate-100 border-l border-slate-200 p-8 flex flex-col overflow-y-auto"
+            className="w-64 bg-gradient-to-b from-slate-50 to-slate-100 border-l border-slate-200 p-4 flex flex-col overflow-y-auto"
           >
-            <h3 className="text-lg font-bold text-slate-900 mb-8">Billing Summary</h3>
+            <h3 className="text-sm font-bold text-slate-900 mb-4">Billing Summary</h3>
 
             {/* Subtotals Section */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1, transition: { delay: 0.1 } }}
-              className="space-y-3 pb-6 border-b border-slate-300"
+              className="space-y-1.5 pb-3 border-b border-slate-300"
             >
-              <SummaryRow
-                label="Primary"
-                value={formatCurrency(totals.primaryTotal)}
-                isTotal={false}
-              />
-              <SummaryRow
-                label="Secondary"
-                value={formatCurrency(totals.secondaryTotal)}
-                isTotal={false}
-              />
-              <SummaryRow
-                label="Farm-out"
-                value={formatCurrency(totals.farmoutTotal)}
-                isTotal={false}
-              />
-              <div className="pt-2">
+              {totals.primaryTotal > 0 && (
+                <SummaryRow
+                  label="Primary"
+                  value={formatCurrency(totals.primaryTotal)}
+                  isTotal={false}
+                  compact
+                />
+              )}
+              {totals.secondaryTotal > 0 && (
+                <SummaryRow
+                  label="Secondary"
+                  value={formatCurrency(totals.secondaryTotal)}
+                  isTotal={false}
+                  compact
+                />
+              )}
+              {totals.farmoutTotal > 0 && (
+                <SummaryRow
+                  label="Farm-out"
+                  value={formatCurrency(totals.farmoutTotal)}
+                  isTotal={false}
+                  compact
+                />
+              )}
+              <div className="pt-1">
                 <SummaryRow
                   label="Subtotal"
                   value={formatCurrency(totals.subtotal)}
                   isTotal={true}
+                  compact
                 />
               </div>
             </motion.div>
@@ -762,13 +747,14 @@ export function BillingModalEnhanced({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1, transition: { delay: 0.2 } }}
                   exit={{ opacity: 0 }}
-                  className="space-y-3 py-6 border-b border-slate-300"
+                  className="space-y-1.5 py-3 border-b border-slate-300"
                 >
                   {totals.discount > 0 && (
                     <SummaryRow
                       label="Discount"
                       value={`−${formatCurrency(totals.discount)}`}
                       isAdjustment={true}
+                      compact
                     />
                   )}
                   {totals.gratuityAmt > 0 && (
@@ -776,6 +762,7 @@ export function BillingModalEnhanced({
                       label={`Gratuity (${billingData.adjustments.gratuityPercent}%)`}
                       value={`+${formatCurrency(totals.gratuityAmt)}`}
                       isAdjustment={true}
+                      compact
                     />
                   )}
                   {billingData.adjustments.tollsEnabled && billingData.adjustments.tollsAmount > 0 && (
@@ -783,6 +770,7 @@ export function BillingModalEnhanced({
                       label="Tolls"
                       value={`+${formatCurrency(billingData.adjustments.tollsAmount)}`}
                       isAdjustment={true}
+                      compact
                     />
                   )}
                   {billingData.adjustments.parkingEnabled && billingData.adjustments.parkingAmount > 0 && (
@@ -790,6 +778,7 @@ export function BillingModalEnhanced({
                       label="Parking"
                       value={`+${formatCurrency(billingData.adjustments.parkingAmount)}`}
                       isAdjustment={true}
+                      compact
                     />
                   )}
                   {totals.taxAmt > 0 && (
@@ -797,6 +786,7 @@ export function BillingModalEnhanced({
                       label={`Tax (${billingData.adjustments.taxPercent}%)`}
                       value={`+${formatCurrency(totals.taxAmt)}`}
                       isAdjustment={true}
+                      compact
                     />
                   )}
                 </motion.div>
@@ -807,17 +797,17 @@ export function BillingModalEnhanced({
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1, transition: { delay: 0.3 } }}
-              className="py-6 border-b border-slate-300"
+              className="py-3 border-b border-slate-300"
             >
+              <p className="text-xs text-slate-500 uppercase tracking-wide font-medium mb-1">Total</p>
               <motion.div
                 key={totals.total}
                 initial={{ scale: 0.95 }}
                 animate={{ scale: 1 }}
-                className="text-3xl font-bold text-slate-900"
+                className="text-2xl font-bold text-slate-900"
               >
                 {formatCurrency(totals.total)}
               </motion.div>
-              <p className="text-xs text-slate-500 mt-1 uppercase tracking-wide font-medium">Total Amount</p>
             </motion.div>
 
             {/* Payments Made (Edit Mode) */}
@@ -825,10 +815,10 @@ export function BillingModalEnhanced({
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1, transition: { delay: 0.4 } }}
-                className="py-6 border-b border-slate-300"
+                className="py-3 border-b border-slate-300"
               >
-                <p className="text-xs text-slate-600 uppercase tracking-wide font-medium mb-2">Payments Made</p>
-                <p className="text-2xl font-bold text-slate-900 font-mono">
+                <p className="text-xs text-slate-600 uppercase tracking-wide font-medium mb-1">Paid</p>
+                <p className="text-lg font-bold text-slate-900 font-mono">
                   −{formatCurrency(totals.totalPaid)}
                 </p>
               </motion.div>
@@ -839,22 +829,22 @@ export function BillingModalEnhanced({
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0, transition: { delay: 0.5 } }}
-                className={`mt-6 p-4 rounded-xl transition-colors ${
+                className={`mt-4 p-3 rounded-lg transition-colors ${
                   totals.balance > 0.01
                     ? 'bg-red-50 border border-red-200'
                     : 'bg-green-50 border border-green-200'
                 }`}
               >
-                <p className={`text-xs font-bold uppercase tracking-wide mb-2 ${
+                <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${
                   totals.balance > 0.01 ? 'text-red-700' : 'text-green-700'
                 }`}>
-                  {totals.balance > 0.01 ? 'Balance Due' : 'Paid in Full'}
+                  {totals.balance > 0.01 ? 'Due' : 'Paid'}
                 </p>
                 <motion.p
                   key={totals.balance}
                   initial={{ scale: 0.95 }}
                   animate={{ scale: 1 }}
-                  className={`text-2xl font-bold ${
+                  className={`text-xl font-bold ${
                     totals.balance > 0.01 ? 'text-red-600' : 'text-green-600'
                   }`}
                 >
@@ -900,19 +890,19 @@ function ServiceCategory({
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-4"
+        className="mb-3"
       >
-        <h3 className="text-lg font-bold text-slate-900">{title}</h3>
-        <p className="text-sm text-slate-600 mt-1">{subtitle}</p>
+        <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
+        <p className="text-xs text-slate-600 mt-0.5">{subtitle}</p>
       </motion.div>
 
       {items.length === 0 ? (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col items-center justify-center py-12 px-6 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200"
+          className="flex flex-col items-center justify-center py-6 px-4 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200"
         >
-          <p className="text-sm text-slate-500 mb-4">No services added yet</p>
+          <p className="text-xs text-slate-500 mb-3">No services added</p>
           <motion.div whileHover="hover" whileTap="tap" variants={{
             hover: { scale: 1.05 },
             tap: { scale: 0.95 },
@@ -920,9 +910,9 @@ function ServiceCategory({
             <Button
               onClick={onAdd}
               size="sm"
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-xs h-8"
             >
-              <Plus className="w-4 h-4 mr-2" /> Add Service
+              <Plus className="w-3 h-3 mr-1" /> Add Service
             </Button>
           </motion.div>
         </motion.div>
@@ -932,7 +922,7 @@ function ServiceCategory({
           collisionDetection={closestCenter}
           onDragEnd={onDragEnd}
         >
-          <div className="space-y-3 mb-4">
+          <div className="space-y-2 mb-3">
             <SortableContext
               items={items.map(i => i.id)}
               strategy={verticalListSortingStrategy}
@@ -967,9 +957,9 @@ function ServiceCategory({
             onClick={onAdd}
             variant="outline"
             size="sm"
-            className="w-full border-slate-300 text-slate-700 hover:bg-slate-50"
+            className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 text-xs h-8"
           >
-            <Plus className="w-4 h-4 mr-2" /> Add Another Service
+            <Plus className="w-3 h-3 mr-1" /> Add Another
           </Button>
         </motion.div>
       )}
@@ -1054,131 +1044,110 @@ function ServiceCard({
 
   return (
     <motion.div
-      whileHover={{ y: -2 }}
+      whileHover={{ y: -1 }}
       whileTap={{ y: 0 }}
-      className={`group p-5 bg-white rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all space-y-4 ${
-        isDragging ? 'opacity-50 shadow-lg' : ''
+      className={`group p-3 bg-white rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all space-y-2 ${
+        isDragging ? 'opacity-50 shadow-md' : ''
       }`}
     >
-      {/* Header with drag handle and actions */}
-      <div className="flex items-start justify-between gap-3">
+      {/* Row 1: Service Type, Description, Total */}
+      <div className="flex items-center gap-2">
         <motion.div
           {...dragAttributes}
           {...dragListeners}
-          className="flex-shrink-0 mt-1 p-1 text-slate-300 hover:text-slate-500 cursor-grab active:cursor-grabbing transition-colors"
+          className="flex-shrink-0 p-0.5 text-slate-300 hover:text-slate-500 cursor-grab active:cursor-grabbing transition-colors"
           whileHover={{ scale: 1.1 }}
         >
-          <GripVertical className="w-4 h-4" />
+          <GripVertical className="w-3 h-3" />
         </motion.div>
 
-        <div className="flex-1">
-          <select
-            value={item.serviceType || ""}
-            onChange={(e) => onUpdate(item.id, { serviceType: e.target.value })}
-            className="text-sm font-medium text-slate-900 bg-white border-0 p-0 focus:outline-none focus:ring-0 cursor-pointer hover:text-blue-600 transition-colors"
-          >
-            <option value="">Select Service Type</option>
-            {SERVICE_TYPES.map(type => (
-              <option key={type} value={type}>{type}</option>
-            ))}
-          </select>
-        </div>
+        <select
+          value={item.serviceType || ""}
+          onChange={(e) => onUpdate(item.id, { serviceType: e.target.value })}
+          className="flex-shrink-0 text-xs font-medium text-slate-900 bg-white border border-slate-200 px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-slate-300 w-32"
+        >
+          <option value="">Select Type</option>
+          {SERVICE_TYPES.map(type => (
+            <option key={type} value={type}>{type}</option>
+          ))}
+        </select>
 
-        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Input
+          value={item.description}
+          onChange={(e) => onUpdate(item.id, { description: e.target.value })}
+          placeholder="Description"
+          className="text-xs flex-1 h-8"
+        />
+
+        <motion.span
+          key={lineTotal}
+          initial={{ scale: 0.95 }}
+          animate={{ scale: 1 }}
+          className="text-xs font-bold text-slate-900 font-mono whitespace-nowrap w-16 text-right"
+        >
+          {formatCurrency(lineTotal)}
+        </motion.span>
+
+        <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => onDuplicate(item.id)}
-            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            className="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
             title="Duplicate"
           >
-            <Copy className="w-4 h-4" />
+            <Copy className="w-3 h-3" />
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => onDelete(item.id)}
-            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
             title="Delete"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3 h-3" />
           </motion.button>
         </div>
       </div>
 
-      {/* Description */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <label className="text-xs font-medium text-slate-600 block mb-1.5">Description</label>
-        <Input
-          value={item.description}
-          onChange={(e) => onUpdate(item.id, { description: e.target.value })}
-          placeholder="e.g., Downtown to Airport"
-          className="text-sm"
-        />
-      </motion.div>
-
-      {/* Rate, Quantity, Unit */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-3 gap-3"
-      >
-        <div>
-          <label className="text-xs font-medium text-slate-600 block mb-1.5">Rate</label>
+      {/* Row 2: Rate, Quantity, Unit */}
+      <div className="flex items-center gap-2 ml-5">
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <label className="text-xs text-slate-600">$</label>
           <Input
             type="number"
             step="0.01"
             value={item.rate}
             onChange={(e) => onUpdate(item.id, { rate: parseFloat(e.target.value) || 0 })}
             placeholder="0.00"
-            className="text-sm"
+            className="text-xs h-7 w-16"
           />
         </div>
-        <div>
-          <label className="text-xs font-medium text-slate-600 block mb-1.5">Quantity</label>
+
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <label className="text-xs text-slate-600">×</label>
           <Input
             type="number"
             step="0.1"
             value={item.qty}
             onChange={(e) => onUpdate(item.id, { qty: parseFloat(e.target.value) || 1 })}
             placeholder="1"
-            className="text-sm"
+            className="text-xs h-7 w-14"
           />
         </div>
-        <div>
-          <label className="text-xs font-medium text-slate-600 block mb-1.5">Unit</label>
-          <select
-            value={item.unit}
-            onChange={(e) => onUpdate(item.id, { unit: e.target.value as any })}
-            className="w-full h-10 text-sm border border-slate-200 rounded-lg px-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            {UNITS.map(unit => (
-              <option key={unit} value={unit}>
-                {unit === 'flat' ? 'Flat' : unit.charAt(0).toUpperCase() + unit.slice(1)}
-              </option>
-            ))}
-          </select>
-        </div>
-      </motion.div>
 
-      {/* Line Total */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.15 }}
-        className="pt-2 border-t border-slate-200 flex justify-between items-center"
-      >
-        <span className="text-sm text-slate-600">Line Total</span>
-        <motion.span
-          key={lineTotal}
-          initial={{ scale: 0.95 }}
-          animate={{ scale: 1 }}
-          className="text-lg font-bold text-slate-900 font-mono"
+        <select
+          value={item.unit}
+          onChange={(e) => onUpdate(item.id, { unit: e.target.value as any })}
+          className="text-xs h-7 border border-slate-200 rounded px-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 flex-shrink-0 w-20"
         >
-          {formatCurrency(lineTotal)}
-        </motion.span>
-      </motion.div>
+          {UNITS.map(unit => (
+            <option key={unit} value={unit}>
+              {unit === 'flat' ? 'Flat' : unit.charAt(0).toUpperCase() + unit.slice(1)}
+            </option>
+          ))}
+        </select>
+      </div>
     </motion.div>
   )
 }
@@ -1257,23 +1226,24 @@ interface SummaryRowProps {
   value: string
   isTotal?: boolean
   isAdjustment?: boolean
+  compact?: boolean
 }
 
-function SummaryRow({ label, value, isTotal, isAdjustment }: SummaryRowProps) {
+function SummaryRow({ label, value, isTotal, isAdjustment, compact }: SummaryRowProps) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className={`flex justify-between items-baseline ${isTotal ? 'pt-2' : ''}`}
+      className={`flex justify-between items-baseline ${compact ? '' : isTotal ? 'pt-2' : ''}`}
     >
-      <span className={isTotal ? 'font-semibold text-slate-900' : isAdjustment ? 'text-sm text-slate-600' : 'text-sm text-slate-700'}>
+      <span className={`${compact ? 'text-xs' : 'text-sm'} ${isTotal ? 'font-semibold text-slate-900' : isAdjustment ? 'text-slate-600' : 'text-slate-700'}`}>
         {label}
       </span>
       <motion.span
         key={value}
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
-        className={`font-mono ${isTotal ? 'text-lg font-bold text-slate-900' : isAdjustment ? 'text-sm text-slate-600' : 'font-medium text-slate-900'}`}
+        className={`font-mono ${compact ? 'text-xs font-semibold' : isTotal ? 'text-lg font-bold text-slate-900' : isAdjustment ? 'text-sm text-slate-600' : 'font-medium text-slate-900'} text-slate-900`}
       >
         {value}
       </motion.span>
