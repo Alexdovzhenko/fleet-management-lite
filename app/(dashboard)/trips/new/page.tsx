@@ -59,7 +59,7 @@ import { useUpsertAddress } from "@/lib/hooks/use-addresses"
 import { ReservationMetadata } from "@/components/trips/reservation-metadata"
 import { SendEmailModal } from "@/components/email/send-email-modal"
 import { TripAttachmentsSection } from "@/components/dispatch/trip-attachments"
-import { BillingModal } from "@/components/dispatch/billing-modal"
+import { BillingModalEnhanced as BillingModal } from "@/components/dispatch/billing-modal-enhanced"
 import { BillingTriggerButton } from "@/components/dispatch/billing-trigger-button"
 import type { Customer, Driver, Vehicle, AffiliateSearchResult, Trip, PendingFile, BillingData } from "@/types"
 
