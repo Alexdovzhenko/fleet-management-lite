@@ -169,3 +169,79 @@ export function calculateTotal(
   const gratuity = Math.round(price * (gratuityPercent / 100) * 100) / 100
   return { gratuity, total: price + gratuity }
 }
+
+export interface BillingTotals {
+  primaryTotal: number
+  secondaryTotal: number
+  farmoutTotal: number
+  subtotal: number
+  discount: number
+  gratuityAmt: number
+  adjustmentsTotal: number
+  taxAmt: number
+  total: number
+  totalPaid: number
+  balance: number
+}
+
+export function computeBillingTotals(
+  billingData: any | null | undefined,
+  payments: { amount: string | number }[] = []
+): BillingTotals {
+  const lineItems = billingData?.lineItems ?? []
+  const adj = billingData?.adjustments ?? {}
+
+  // Sum by tab
+  const primaryTotal = lineItems
+    .filter((item: any) => item.tab === 'primary')
+    .reduce((sum: number, item: any) => sum + (item.rate * item.qty), 0)
+  const secondaryTotal = lineItems
+    .filter((item: any) => item.tab === 'secondary')
+    .reduce((sum: number, item: any) => sum + (item.rate * item.qty), 0)
+  const farmoutTotal = lineItems
+    .filter((item: any) => item.tab === 'farmout')
+    .reduce((sum: number, item: any) => sum + (item.rate * item.qty), 0)
+  const subtotal = primaryTotal + secondaryTotal + farmoutTotal
+
+  // Discount
+  const discount = adj.discountEnabled
+    ? adj.discountType === 'flat'
+      ? adj.discountAmount ?? 0
+      : subtotal * ((adj.discountAmount ?? 0) / 100)
+    : 0
+  const afterDiscount = subtotal - discount
+
+  // Gratuity (applied after discount)
+  const gratuityAmt = adj.gratuityEnabled ? afterDiscount * ((adj.gratuityPercent ?? 0) / 100) : 0
+
+  // Other adjustments
+  const tollsAmt = adj.tollsEnabled ? adj.tollsAmount ?? 0 : 0
+  const parkingAmt = adj.parkingEnabled ? adj.parkingAmount ?? 0 : 0
+  const miscAmt = adj.miscEnabled ? adj.miscAmount ?? 0 : 0
+  const adjustmentsTotal = gratuityAmt + tollsAmt + parkingAmt + miscAmt
+
+  // Tax (on subtotal + adjustments - discount)
+  const taxBase = afterDiscount + adjustmentsTotal
+  const taxAmt = taxBase * ((adj.taxPercent ?? 0) / 100)
+
+  // Total
+  const total = taxBase + taxAmt
+
+  // Payments
+  const totalPaid = payments.reduce((sum, p) => sum + parseFloat(String(p.amount)), 0)
+  const balance = total - totalPaid
+
+  return {
+    primaryTotal: Math.round(primaryTotal * 100) / 100,
+    secondaryTotal: Math.round(secondaryTotal * 100) / 100,
+    farmoutTotal: Math.round(farmoutTotal * 100) / 100,
+    subtotal: Math.round(subtotal * 100) / 100,
+    discount: Math.round(discount * 100) / 100,
+    gratuityAmt: Math.round(gratuityAmt * 100) / 100,
+    adjustmentsTotal: Math.round(adjustmentsTotal * 100) / 100,
+    taxAmt: Math.round(taxAmt * 100) / 100,
+    total: Math.round(total * 100) / 100,
+    totalPaid: Math.round(totalPaid * 100) / 100,
+    balance: Math.round(balance * 100) / 100,
+  }
+}

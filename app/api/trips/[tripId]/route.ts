@@ -37,6 +37,7 @@ const updateTripSchema = z.object({
   gratuity: z.number().optional().nullable(),
   totalPrice: z.number().optional().nullable(),
   pricingNotes: z.string().optional().nullable(),
+  billingData: z.any().optional().nullable(),
   flightNumber: z.string().optional().nullable(),
   flightArrival: z.string().optional().nullable(),
   airportCode: z.string().optional().nullable(),
@@ -157,12 +158,13 @@ export async function PUT(
     // Farm-in trips: only allow updating dispatch fields and status
     const updateData = isOwned
       ? (() => {
-          const { customerId, additionalPassengers, stops, ...restData } = data
+          const { customerId, additionalPassengers, stops, billingData, ...restData } = data
           return {
             ...restData,
             ...extraData,
             ...(customerId ? { customerId } : {}),
             ...(additionalPassengers !== undefined ? { additionalPassengers: additionalPassengers ?? [] } : {}),
+            ...(billingData !== undefined ? { billingData } : {}),
             pickupDate: data.pickupDate ? new Date(data.pickupDate) : undefined,
             flightArrival: data.flightArrival ? new Date(data.flightArrival) : undefined,
           }
@@ -186,6 +188,7 @@ export async function PUT(
         vehicle: { select: { id: true, name: true, type: true } },
         secondaryDriver: { select: { id: true, name: true, email: true, phone: true, avatarUrl: true } },
         secondaryVehicle: { select: { id: true, name: true, type: true } },
+        payments: { orderBy: { paidAt: "desc" } },
       },
     })
 

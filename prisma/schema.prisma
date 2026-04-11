@@ -283,6 +283,7 @@ model Trip {
   gratuity     Decimal? @db.Decimal(10, 2)
   totalPrice   Decimal? @db.Decimal(10, 2)
   pricingNotes String?
+  billingData  Json?
 
   meetAndGreet     Boolean @default(false)
   childSeat        Boolean @default(false)
@@ -310,6 +311,7 @@ model Trip {
   notifications TripNotification[]
   farmOuts      FarmOut[]
   attachments   TripAttachment[]
+  payments      TripPayment[]
 
   @@index([companyId])
   @@index([status])
@@ -333,6 +335,21 @@ model TripStop {
   arrivalTime  String?
 
   @@index([tripId])
+}
+
+model TripPayment {
+  id        String   @id @default(cuid())
+  tripId    String
+  trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  companyId String
+  amount    Decimal  @db.Decimal(10, 2)
+  method    String
+  notes     String?
+  paidAt    DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  @@index([tripId])
+  @@index([companyId])
 }
 
 enum TripStatus {

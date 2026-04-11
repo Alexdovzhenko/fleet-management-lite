@@ -60,6 +60,8 @@ import { SendEmailModal } from "@/components/email/send-email-modal"
 import { CopyReservationModal } from "@/components/dispatch/copy-reservation-modal"
 import { RoundTripModal } from "@/components/dispatch/round-trip-modal"
 import { TripAttachmentsSection } from "@/components/dispatch/trip-attachments"
+import { BillingModal } from "@/components/dispatch/billing-modal"
+import { BillingTriggerButton } from "@/components/dispatch/billing-trigger-button"
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
 import { useUpsertAddress, type CompanyAddress } from "@/lib/hooks/use-addresses"
 import { formatCurrency, formatPhone, getTripStatusLabel, cn } from "@/lib/utils"
@@ -1150,6 +1152,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const [sendEmailOpen, setSendEmailOpen]     = useState(false)
   const [copyOpen, setCopyOpen]               = useState(false)
   const [roundTripOpen, setRoundTripOpen]     = useState(false)
+  const [billingOpen, setBillingOpen]         = useState(false)
   const { data: farmOuts } = useTripFarmOuts(isFarmedIn ? null : (currentTrip?.id ?? null))
   const pendingFarmOut = farmOuts?.find((f) => f.status === "PENDING")
   const acceptedFarmOut = farmOuts?.find((f) => f.status === "ACCEPTED")
@@ -2042,43 +2045,24 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
 
                 {!isFarmedIn && <div className="border-t border-gray-100" />}
 
-                {/* Pricing */}
-                {!isFarmedIn && <section className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <span className="w-0.5 h-3 rounded-full bg-gray-200 inline-block flex-shrink-0" />
-                    <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">Pricing</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">Base Fare</Label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold">$</span>
-                        <Input type="number" step="0.01" {...register("price", { valueAsNumber: true })}
-                          className="pl-6 h-9 text-sm font-tabular-nums" placeholder="0.00" />
-                      </div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">Gratuity %</Label>
-                      <Input type="number" min={0} max={100} {...register("gratuityPercent", { valueAsNumber: true })} className="h-9 text-sm font-tabular-nums" />
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 rounded-lg border border-gray-100 px-3 py-3 space-y-2">
-                    <div className="flex justify-between text-[11px] text-gray-500 font-tabular-nums">
-                      <span>Base Fare</span>
-                      <span className="font-semibold text-gray-900">{formatCurrency(price || 0)}</span>
-                    </div>
-                    {gratuityPercent > 0 && price > 0 && (
-                      <div className="flex justify-between text-[11px] text-gray-500 font-tabular-nums">
-                        <span>Gratuity ({gratuityPercent}%)</span>
-                        <span className="font-semibold text-gray-900">{formatCurrency(gratuityAmt)}</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between text-sm font-bold text-gray-900 border-t border-gray-200 pt-2 font-tabular-nums">
-                      <span>Total</span>
-                      <span>{formatCurrency(total || 0)}</span>
-                    </div>
-                  </div>
-                </section>}
+                {/* Billing Modal Trigger */}
+                {!isFarmedIn && (
+                  <>
+                    <BillingTriggerButton
+                      billingData={currentTrip?.billingData}
+                      payments={currentTrip?.payments}
+                      onClick={() => setBillingOpen(true)}
+                    />
+                    <BillingModal
+                      open={billingOpen}
+                      onClose={() => setBillingOpen(false)}
+                      mode="edit"
+                      tripId={currentTrip?.id}
+                      trip={currentTrip}
+                      initialData={currentTrip?.billingData ?? undefined}
+                    />
+                  </>
+                )}
 
                 <div className="border-t border-gray-100" />
 

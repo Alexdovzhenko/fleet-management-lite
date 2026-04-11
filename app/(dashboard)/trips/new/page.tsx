@@ -59,7 +59,9 @@ import { useUpsertAddress } from "@/lib/hooks/use-addresses"
 import { ReservationMetadata } from "@/components/trips/reservation-metadata"
 import { SendEmailModal } from "@/components/email/send-email-modal"
 import { TripAttachmentsSection } from "@/components/dispatch/trip-attachments"
-import type { Customer, Driver, Vehicle, AffiliateSearchResult, Trip, PendingFile } from "@/types"
+import { BillingModal } from "@/components/dispatch/billing-modal"
+import { BillingTriggerButton } from "@/components/dispatch/billing-trigger-button"
+import type { Customer, Driver, Vehicle, AffiliateSearchResult, Trip, PendingFile, BillingData } from "@/types"
 
 const schema = z.object({
   customerId:           z.string().min(1, "Customer is required"),
@@ -2349,6 +2351,8 @@ export default function NewTripPage() {
   const [sendEmailOpen, setSendEmailOpen]            = useState(false)
   const [sendEmailRecipient, setSendEmailRecipient]  = useState<"driver" | "client" | "affiliate">("driver")
   const [pendingAttachments, setPendingAttachments]  = useState<PendingFile[]>([])
+  const [billingOpen, setBillingOpen]               = useState(false)
+  const [billingData, setBillingData]              = useState<BillingData | undefined>(undefined)
   const [isFormSubmitting, setIsFormSubmitting]      = useState(false)
 
   type AdditionalPax = { id: string; firstName: string; lastName: string; phone: string; email: string }
@@ -3035,55 +3039,19 @@ export default function NewTripPage() {
               </div>
 
 
-              {/* Pricing card */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100">
-                  <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Pricing</h4>
-                </div>
-                <div className="px-4 py-3.5 space-y-3">
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-900">Base Fare</Label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">$</span>
-                        <Input
-                          type="number" step="0.01"
-                          {...register("price", { valueAsNumber: true })}
-                          className="pl-6 h-9 text-sm"
-                          placeholder="0.00"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-900">Gratuity %</Label>
-                      <Input
-                        type="number" min={0} max={100}
-                        {...register("gratuityPercent", { valueAsNumber: true })}
-                        className="h-9 text-sm"
-                      />
-                    </div>
-                  </div>
-                  <div className="rounded-xl border border-gray-100 px-4 py-3.5 space-y-2" style={{ background: "linear-gradient(to bottom, #f9fafb, #ffffff)" }}>
-                    <div className="flex justify-between text-xs text-gray-400">
-                      <span>Base Fare</span>
-                      <span>{price > 0 ? formatCurrency(price) : "—"}</span>
-                    </div>
-                    <div className="flex justify-between text-xs text-gray-400">
-                      <span>Gratuity ({gratuityPercent}%)</span>
-                      <span>{price > 0 ? formatCurrency(gratuityAmt) : "—"}</span>
-                    </div>
-                    <div className="border-t border-gray-200 pt-2.5 flex justify-between items-center">
-                      <span className="text-sm font-semibold text-gray-600">Total</span>
-                      <span className={`text-2xl font-bold tracking-tight ${price > 0 ? "text-gray-900" : "text-gray-200"}`}>
-                        {price > 0 ? formatCurrency(total) : "$0.00"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {/* Billing Modal Trigger */}
+              <BillingTriggerButton
+                billingData={billingData}
+                payments={[]}
+                onClick={() => setBillingOpen(true)}
+              />
+              <BillingModal
+                open={billingOpen}
+                onClose={() => setBillingOpen(false)}
+                mode="create"
+                initialData={billingData}
+                onSave={(data) => { setBillingData(data); setBillingOpen(false) }}
+              />
 
               {/* ADD-ONS — Refined Modern Design (Matching Edit Modal) */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">

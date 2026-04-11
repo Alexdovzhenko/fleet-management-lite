@@ -163,6 +163,49 @@ export interface PendingFile {
   size: number
 }
 
+export interface BillingLineItem {
+  id: string
+  tab: 'primary' | 'secondary' | 'farmout'
+  order: number
+  serviceType: string
+  description: string
+  rate: number
+  qty: number
+  unit: 'flat' | 'hours' | 'miles' | 'days'
+}
+
+export interface BillingAdjustments {
+  discountEnabled: boolean
+  discountType: 'flat' | 'percent'
+  discountAmount: number
+  gratuityEnabled: boolean
+  gratuityPercent: number
+  tollsEnabled: boolean
+  tollsAmount: number
+  parkingEnabled: boolean
+  parkingAmount: number
+  miscEnabled: boolean
+  miscAmount: number
+  miscLabel: string
+  taxPercent: number
+}
+
+export interface BillingData {
+  lineItems: BillingLineItem[]
+  adjustments: BillingAdjustments
+}
+
+export interface TripPayment {
+  id: string
+  tripId: string
+  companyId: string
+  amount: string
+  method: string
+  notes?: string
+  paidAt: string
+  createdAt: string
+}
+
 export interface Trip {
   id: string
   tripNumber: string
@@ -203,6 +246,7 @@ export interface Trip {
   gratuity?: string
   totalPrice?: string
   pricingNotes?: string
+  billingData?: BillingData | null
   meetAndGreet: boolean
   childSeat: boolean
   childSeatDetails?: string
@@ -218,6 +262,7 @@ export interface Trip {
   companyId: string
   stops?: TripStop[]
   attachments?: TripAttachment[]
+  payments?: TripPayment[]
   farmOuts?: Array<{
     id: string
     status: FarmOutStatus
