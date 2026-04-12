@@ -256,7 +256,7 @@ export function BillingModalEnhanced({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl w-full max-h-[90vh] p-0 overflow-hidden flex flex-col bg-white">
+      <DialogContent className="max-w-6xl w-full max-h-[90vh] p-0 overflow-hidden flex flex-col bg-white">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -694,15 +694,15 @@ export function BillingModalEnhanced({
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="w-96 bg-gradient-to-b from-slate-50 to-slate-100 border-l border-slate-200 p-6 flex flex-col overflow-y-auto"
+            className="w-72 bg-gradient-to-b from-slate-50 to-slate-100 border-l border-slate-200 p-5 flex flex-col overflow-y-auto"
           >
-            <h3 className="text-base font-bold text-slate-900 mb-6">Billing Summary</h3>
+            <h3 className="text-sm font-bold text-slate-900 mb-4">Billing Summary</h3>
 
             {/* Subtotals Section */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1, transition: { delay: 0.1 } }}
-              className="space-y-2 pb-4 border-b border-slate-300"
+              className="space-y-1.5 pb-3 border-b border-slate-300"
             >
               {totals.primaryTotal > 0 && (
                 <SummaryRow
