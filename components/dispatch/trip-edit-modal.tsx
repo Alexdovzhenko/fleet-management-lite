@@ -1456,7 +1456,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   return (
     <>
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent showCloseButton={false} className="sm:max-w-[1180px] w-[96vw] p-0 flex flex-col overflow-hidden max-h-[92vh] gap-0">
+      <DialogContent showCloseButton={false} className={cn("sm:max-w-[1180px] w-[96vw] p-0 flex flex-col overflow-hidden max-h-[92vh] gap-0 transition-all duration-200", billingOpen && "blur-sm")}>
         <style>{SAVE_BUTTON_STYLES}</style>
 
         {/* ── Header ── */}
