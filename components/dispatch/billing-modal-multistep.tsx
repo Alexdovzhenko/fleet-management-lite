@@ -60,13 +60,13 @@ const DEFAULT_CHARGES = {
 }
 
 const STEPS = [
-  { id: "base", title: "Base Charges" },
+  { id: "base", title: "Base" },
   { id: "adjustments", title: "Adjustments" },
-  { id: "additional", title: "Additional Items" },
-  { id: "calculated", title: "Calculated Fields" },
-  { id: "special", title: "Special Charges" },
-  { id: "taxes", title: "Taxes & Discount" },
-  { id: "review", title: "Review & Save" },
+  { id: "additional", title: "Items" },
+  { id: "calculated", title: "Calculated" },
+  { id: "special", title: "Special" },
+  { id: "taxes", title: "Taxes" },
+  { id: "review", title: "Review" },
 ]
 
 const fadeInUp = {
@@ -126,7 +126,7 @@ export function BillingModalMultistep({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white max-h-[90vh] flex flex-col">
+      <DialogContent className="max-w-3xl p-0 overflow-hidden bg-white max-h-[88vh] flex flex-col">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -156,7 +156,7 @@ export function BillingModalMultistep({
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="flex justify-between mb-2 gap-1">
+          <div className="flex justify-between mb-2 gap-2">
             {STEPS.map((step, index) => (
               <motion.div
                 key={index}
@@ -165,7 +165,7 @@ export function BillingModalMultistep({
               >
                 <motion.div
                   className={cn(
-                    "w-8 h-8 rounded-full cursor-pointer flex items-center justify-center transition-colors duration-300 text-xs font-semibold",
+                    "w-9 h-9 rounded-full cursor-pointer flex items-center justify-center transition-colors duration-300 text-sm font-semibold",
                     index < currentStep
                       ? "bg-blue-600 text-white"
                       : index === currentStep
@@ -180,14 +180,14 @@ export function BillingModalMultistep({
                   whileTap={{ scale: 0.95 }}
                 >
                   {index < currentStep ? (
-                    <Check size={16} />
+                    <Check size={18} />
                   ) : (
                     index + 1
                   )}
                 </motion.div>
                 <motion.span
                   className={cn(
-                    "text-xs mt-1 text-center hidden sm:block leading-tight max-w-[60px]",
+                    "text-xs mt-1 text-center hidden sm:block leading-tight truncate w-full px-1",
                     index === currentStep
                       ? "text-blue-600 font-medium"
                       : "text-slate-600",
@@ -213,7 +213,7 @@ export function BillingModalMultistep({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="p-6"
+            className="px-8 py-6"
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -228,10 +228,11 @@ export function BillingModalMultistep({
                 {currentStep === 0 && (
                   <>
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900 mb-4">Base Charges</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <h3 className="text-xl font-semibold text-slate-900 mb-5 border-l-4 border-blue-500 pl-3">Base Charges</h3>
+                      <div className="bg-slate-50/60 border border-slate-100 rounded-2xl p-5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <motion.div variants={fadeInUp} className="space-y-2">
-                          <Label htmlFor="rate">Rate ($)</Label>
+                          <Label htmlFor="rate" className="text-sm font-medium text-slate-700">Rate ($)</Label>
                           <Input
                             id="rate"
                             type="number"
@@ -270,6 +271,7 @@ export function BillingModalMultistep({
                             onChange={(e) => updateCharge('gratuityPercent', parseFloat(e.target.value) || 0)}
                           />
                         </motion.div>
+                        </div>
                       </div>
                     </div>
                   </>
@@ -279,8 +281,9 @@ export function BillingModalMultistep({
                 {currentStep === 1 && (
                   <>
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900 mb-4">Trip Adjustments</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <h3 className="text-xl font-semibold text-slate-900 mb-5 border-l-4 border-blue-500 pl-3">Trip Adjustments</h3>
+                      <div className="bg-slate-50/60 border border-slate-100 rounded-2xl p-5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <motion.div variants={fadeInUp} className="space-y-2">
                           <Label htmlFor="stc">STC ($)</Label>
                           <Input
@@ -341,6 +344,7 @@ export function BillingModalMultistep({
                             onChange={(e) => updateCharge('airportFee', parseFloat(e.target.value) || 0)}
                           />
                         </motion.div>
+                        </div>
                       </div>
                     </div>
                   </>
@@ -350,8 +354,9 @@ export function BillingModalMultistep({
                 {currentStep === 2 && (
                   <>
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900 mb-4">Additional Items</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <h3 className="text-xl font-semibold text-slate-900 mb-5 border-l-4 border-blue-500 pl-3">Additional Items</h3>
+                      <div className="bg-slate-50/60 border border-slate-100 rounded-2xl p-5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <motion.div variants={fadeInUp} className="space-y-2">
                           <Label htmlFor="fuelSurcharge">Fuel Surcharge ($)</Label>
                           <Input
@@ -412,6 +417,7 @@ export function BillingModalMultistep({
                             onChange={(e) => updateCharge('miscFee3', parseFloat(e.target.value) || 0)}
                           />
                         </motion.div>
+                        </div>
                       </div>
                     </div>
                   </>
@@ -421,8 +427,9 @@ export function BillingModalMultistep({
                 {currentStep === 3 && (
                   <>
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900 mb-4">Calculated Fields (Qty × Rate = Total)</h3>
-                      <div className="space-y-4">
+                      <h3 className="text-xl font-semibold text-slate-900 mb-5 border-l-4 border-blue-500 pl-3">Calculated Fields (Qty × Rate = Total)</h3>
+                      <div className="bg-slate-50/60 border border-slate-100 rounded-2xl p-5">
+                        <div className="space-y-5">
                         <CalculatedField
                           title="Voucher"
                           qtyValue={charges.voucherQty}
@@ -453,6 +460,7 @@ export function BillingModalMultistep({
                           onRateChange={(v) => updateCharge('perPassRate', v)}
                           qtyLabel="Passes"
                         />
+                        </div>
                       </div>
                     </div>
                   </>
@@ -462,8 +470,9 @@ export function BillingModalMultistep({
                 {currentStep === 4 && (
                   <>
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900 mb-4">Special Charges</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <h3 className="text-xl font-semibold text-slate-900 mb-5 border-l-4 border-blue-500 pl-3">Special Charges</h3>
+                      <div className="bg-slate-50/60 border border-slate-100 rounded-2xl p-5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <motion.div variants={fadeInUp} className="space-y-2">
                           <Label htmlFor="holidayCharge">Holiday Charge ($)</Label>
                           <Input
@@ -484,6 +493,7 @@ export function BillingModalMultistep({
                             onChange={(e) => updateCharge('lateEarlyCharge', parseFloat(e.target.value) || 0)}
                           />
                         </motion.div>
+                        </div>
                       </div>
                     </div>
                   </>
@@ -493,8 +503,9 @@ export function BillingModalMultistep({
                 {currentStep === 5 && (
                   <>
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900 mb-4">Taxes & Discount</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <h3 className="text-xl font-semibold text-slate-900 mb-5 border-l-4 border-blue-500 pl-3">Taxes & Discount</h3>
+                      <div className="bg-slate-50/60 border border-slate-100 rounded-2xl p-5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <motion.div variants={fadeInUp} className="space-y-2">
                           <Label htmlFor="discountType">Discount Type</Label>
                           <Select
@@ -542,6 +553,7 @@ export function BillingModalMultistep({
                             onChange={(e) => updateCharge('stateTaxPercent', parseFloat(e.target.value) || 0)}
                           />
                         </motion.div>
+                        </div>
                       </div>
                     </div>
                   </>
@@ -551,8 +563,9 @@ export function BillingModalMultistep({
                 {currentStep === 6 && (
                   <>
                     <div>
-                      <h3 className="text-lg font-semibold text-slate-900 mb-4">Billing Summary</h3>
-                      <div className="grid grid-cols-2 gap-4">
+                      <h3 className="text-xl font-semibold text-slate-900 mb-5 border-l-4 border-blue-500 pl-3">Billing Summary</h3>
+                      <div className="bg-slate-50/60 border border-slate-100 rounded-2xl p-5">
+                        <div className="grid grid-cols-2 gap-5">
                         <SummaryLine label="Subtotal" value={formatCurrency(totals.subtotal)} />
                         <SummaryLine label="Discount" value={formatCurrency(-totals.discount)} />
                         <SummaryLine label="Gratuity" value={formatCurrency(totals.gratuityAmt)} />
@@ -563,6 +576,7 @@ export function BillingModalMultistep({
                           bold
                           highlight
                         />
+                        </div>
                       </div>
                     </div>
                   </>
@@ -572,9 +586,24 @@ export function BillingModalMultistep({
           </motion.div>
         </div>
 
+        {/* Mini Totals Strip */}
+        {currentStep < STEPS.length - 1 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="border-t border-slate-100 bg-slate-50 px-8 py-3 flex items-center gap-4 text-sm"
+          >
+            <span className="text-slate-500">Subtotal</span>
+            <span className="font-mono font-semibold text-slate-900">{formatCurrency(totals.subtotal)}</span>
+            <span className="text-slate-300">|</span>
+            <span className="text-slate-500">Total</span>
+            <span className="font-mono font-semibold text-blue-600">{formatCurrency(totals.total)}</span>
+          </motion.div>
+        )}
+
         {/* Footer */}
         <motion.div
-          className="sticky bottom-0 border-t border-slate-200 bg-white px-6 py-4 flex justify-between gap-3"
+          className="sticky bottom-0 border-t border-slate-200 bg-white px-8 py-4 flex justify-between items-center gap-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
@@ -589,6 +618,9 @@ export function BillingModalMultistep({
               <ChevronLeft className="h-4 w-4 mr-1" /> Back
             </Button>
           </motion.div>
+          <span className="text-sm text-slate-400 flex-1 text-center">
+            Step {currentStep + 1} of {STEPS.length}
+          </span>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
               type="button"
