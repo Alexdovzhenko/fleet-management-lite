@@ -69,6 +69,11 @@ const SERVICE_TYPES = [
 const UNITS = ['flat', 'hours', 'miles', 'days']
 const PAYMENT_METHODS = ['Cash', 'Credit Card', 'Check', 'Wire Transfer', 'ACH', 'Venmo', 'Other']
 
+// Easing curves - Emil Kowalski design philosophy (using Framer Motion easing)
+const EASE_OUT = 'easeOut' as const         // Strong, snappy
+const EASE_IN_OUT = 'easeInOut' as const    // On-screen movement
+const EASE_DRAWER = 'easeOut' as const      // iOS-like drawer
+
 interface Payment {
   id: string
   method: string
@@ -236,19 +241,19 @@ export function BillingModalEnhanced({
 
   const sectionVariants = {
     hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
-    exit: { opacity: 0, y: -10, transition: { duration: 0.2 } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: EASE_OUT } },
+    exit: { opacity: 0, y: -10, transition: { duration: 0.15, ease: EASE_OUT } },
   }
 
   const itemVariants = {
     hidden: { opacity: 0, x: -20 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.2 } },
-    exit: { opacity: 0, x: 20, transition: { duration: 0.15 } },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.2, ease: EASE_OUT } },
+    exit: { opacity: 0, x: 20, transition: { duration: 0.15, ease: EASE_OUT } },
   }
 
   const buttonVariants = {
-    hover: { scale: 1.02, transition: { duration: 0.2 } },
-    tap: { scale: 0.98 },
+    hover: { scale: 1.02, transition: { duration: 0.14, ease: EASE_OUT } },
+    tap: { scale: 0.96, transition: { duration: 0.12, ease: EASE_OUT } },
   }
 
   // Sub-section state for Services (Primary, Secondary, Farm-out)
@@ -259,9 +264,10 @@ export function BillingModalEnhanced({
       <DialogContent className="max-w-[90vw] lg:max-w-7xl w-full max-h-[90vh] p-0 overflow-hidden flex flex-col bg-white">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="border-b border-slate-100 px-8 py-6 flex items-center justify-between"
+          transition={{ duration: 0.35, ease: EASE_OUT }}
+          className="border-b border-slate-100 px-8 py-6 flex items-center justify-between bg-gradient-to-r from-white to-slate-50"
         >
           <div>
             <h1 className="text-xl font-bold text-slate-900">Trip Billing</h1>
@@ -297,11 +303,11 @@ export function BillingModalEnhanced({
                   <motion.button
                     key={section}
                     onClick={() => setActiveSection(section)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={{ scale: 1.02, transition: { duration: 0.14, ease: EASE_OUT } }}
+                    whileTap={{ scale: 0.96, transition: { duration: 0.12, ease: EASE_OUT } }}
                     initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0, transition: { delay: idx * 0.1 } }}
-                    className={`px-3 py-1.5 rounded-md font-medium transition-all text-xs ${
+                    animate={{ opacity: 1, y: 0, transition: { delay: idx * 0.08, duration: 0.3, ease: EASE_OUT } }}
+                    className={`px-3 py-1.5 rounded-md font-medium active:scale-[0.96] transition-[background-color,border-color] 150ms ease-out text-xs ${
                       activeSection === section
                         ? 'bg-blue-600 text-white'
                         : 'text-slate-600 hover:bg-slate-200'
@@ -380,7 +386,7 @@ export function BillingModalEnhanced({
                     <p className="text-xs text-slate-600 mb-3">Toggle each fee to enable, then enter the amount.</p>
 
                     {/* Discount - Inline */}
-                    <div className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all">
+                    <div className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-[border-color,background-color] 150ms ease-out">
                       <div className="flex-shrink-0">
                         <input
                           type="checkbox"
@@ -422,7 +428,7 @@ export function BillingModalEnhanced({
                     </div>
 
                     {/* Gratuity - Inline */}
-                    <div className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all">
+                    <div className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-[border-color,background-color] 150ms ease-out">
                       <div className="flex-shrink-0">
                         <input
                           type="checkbox"
@@ -453,7 +459,7 @@ export function BillingModalEnhanced({
                     </div>
 
                     {/* Tolls - Inline */}
-                    <div className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all">
+                    <div className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-[border-color,background-color] 150ms ease-out">
                       <div className="flex-shrink-0">
                         <input
                           type="checkbox"
@@ -483,7 +489,7 @@ export function BillingModalEnhanced({
                     </div>
 
                     {/* Parking - Inline */}
-                    <div className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all">
+                    <div className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-[border-color,background-color] 150ms ease-out">
                       <div className="flex-shrink-0">
                         <input
                           type="checkbox"
@@ -513,7 +519,7 @@ export function BillingModalEnhanced({
                     </div>
 
                     {/* Tax - Always Enabled */}
-                    <div className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-all">
+                    <div className="flex items-end gap-3 p-3 bg-slate-50 rounded-lg border border-slate-200 hover:border-slate-300 transition-[border-color,background-color] 150ms ease-out">
                       <div className="flex-shrink-0">
                         <div className="w-4 h-4" />
                       </div>
@@ -556,14 +562,15 @@ export function BillingModalEnhanced({
                         {payments.length > 0 && (
                           <div className="space-y-3">
                             <h3 className="text-sm font-semibold text-slate-900">Payments Received</h3>
-                            <AnimatePresence>
+                            <AnimatePresence mode="popLayout">
                               {payments.map((payment, idx) => (
                                 <motion.div
                                   key={payment.id}
+                                  layout
                                   initial={{ opacity: 0, x: -20 }}
-                                  animate={{ opacity: 1, x: 0, transition: { delay: idx * 0.05 } }}
-                                  exit={{ opacity: 0, x: 20 }}
-                                  className="flex items-center justify-between p-4 bg-emerald-50 border border-emerald-200 rounded-lg hover:shadow-md transition-shadow"
+                                  animate={{ opacity: 1, x: 0, transition: { delay: idx * 0.05, duration: 0.2, ease: EASE_OUT } }}
+                                  exit={{ scale: 0.9, opacity: 0, transition: { duration: 0.15, ease: EASE_OUT } }}
+                                  className="flex items-center justify-between p-4 bg-emerald-50 border border-emerald-200 rounded-lg hover:shadow-md transition-[box-shadow] 150ms ease-out"
                                 >
                                   <div className="flex-1">
                                     <p className="font-medium text-slate-900">
@@ -579,10 +586,10 @@ export function BillingModalEnhanced({
                                       {formatCurrency(payment.amount)}
                                     </span>
                                     <motion.button
-                                      whileHover={{ scale: 1.1 }}
-                                      whileTap={{ scale: 0.95 }}
+                                      whileHover={{ scale: 1.15, transition: { duration: 0.12, ease: EASE_OUT } }}
+                                      whileTap={{ scale: 0.95, transition: { duration: 0.1, ease: EASE_OUT } }}
                                       onClick={() => deletePayment(payment.id)}
-                                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-[color,background-color] 150ms ease-out"
                                     >
                                       <Trash2 className="w-4 h-4" />
                                     </motion.button>
@@ -596,10 +603,10 @@ export function BillingModalEnhanced({
                         {/* Add Payment Form */}
                         {!showAddPayment ? (
                           <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
+                            whileHover={{ scale: 1.02, transition: { duration: 0.14, ease: EASE_OUT } }}
+                            whileTap={{ scale: 0.96, transition: { duration: 0.12, ease: EASE_OUT } }}
                             onClick={() => setShowAddPayment(true)}
-                            className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-200 rounded-lg text-slate-600 hover:border-blue-300 hover:text-blue-600 transition-colors"
+                            className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-200 rounded-lg text-slate-600 hover:border-blue-300 hover:text-blue-600 transition-[border-color,color] 150ms ease-out active:scale-[0.96]"
                           >
                             <Plus className="w-4 h-4" />
                             Add Payment
@@ -608,6 +615,7 @@ export function BillingModalEnhanced({
                           <motion.div
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.25, ease: EASE_OUT }}
                             className="space-y-4 p-4 bg-blue-50 border border-blue-200 rounded-lg"
                           >
                             <div>
@@ -694,6 +702,7 @@ export function BillingModalEnhanced({
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.35, ease: EASE_OUT }}
             className="w-96 bg-gradient-to-b from-slate-50 to-slate-100 border-l border-slate-200 p-6 flex flex-col overflow-y-auto"
           >
             <h3 className="text-base font-bold text-slate-900 mb-6">Billing Summary</h3>
@@ -1044,9 +1053,8 @@ function ServiceCard({
 
   return (
     <motion.div
-      whileHover={{ y: -1 }}
-      whileTap={{ y: 0 }}
-      className={`group p-3 bg-white rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all space-y-2 ${
+      whileHover={{ scale: 1.01, transition: { duration: 0.12, ease: EASE_OUT } }}
+      className={`group p-3 bg-white rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-[border-color,box-shadow] 150ms ease-out space-y-2 ${
         isDragging ? 'opacity-50 shadow-md' : ''
       }`}
     >
@@ -1055,8 +1063,8 @@ function ServiceCard({
         <motion.div
           {...dragAttributes}
           {...dragListeners}
-          className="flex-shrink-0 p-0.5 text-slate-300 hover:text-slate-500 cursor-grab active:cursor-grabbing transition-colors"
-          whileHover={{ scale: 1.1 }}
+          className="flex-shrink-0 p-0.5 text-slate-300 hover:text-slate-500 cursor-grab active:cursor-grabbing transition-colors 150ms ease-out"
+          whileHover={{ scale: 1.15, transition: { duration: 0.12, ease: EASE_OUT } }}
         >
           <GripVertical className="w-3 h-3" />
         </motion.div>
@@ -1088,10 +1096,15 @@ function ServiceCard({
           {formatCurrency(lineTotal)}
         </motion.span>
 
-        <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+        <motion.div
+          className="flex gap-0.5 flex-shrink-0"
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileHover={{ opacity: 1, scale: 1, transition: { duration: 0.15, ease: EASE_OUT } }}
+          exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.1 } }}
+        >
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.15, transition: { duration: 0.12, ease: EASE_OUT } }}
+            whileTap={{ scale: 0.95, transition: { duration: 0.1, ease: EASE_OUT } }}
             onClick={() => onDuplicate(item.id)}
             className="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
             title="Duplicate"
@@ -1099,15 +1112,15 @@ function ServiceCard({
             <Copy className="w-3 h-3" />
           </motion.button>
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.15, transition: { duration: 0.12, ease: EASE_OUT } }}
+            whileTap={{ scale: 0.95, transition: { duration: 0.1, ease: EASE_OUT } }}
             onClick={() => onDelete(item.id)}
-            className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+            className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors 150ms ease-out"
             title="Delete"
           >
             <Trash2 className="w-3 h-3" />
           </motion.button>
-        </div>
+        </motion.div>
       </div>
 
       {/* Row 2: Rate, Quantity, Unit */}
@@ -1174,6 +1187,7 @@ function AdjustmentItem({
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: EASE_OUT }}
       className="border border-slate-200 rounded-xl overflow-hidden"
     >
       <motion.button
@@ -1181,8 +1195,8 @@ function AdjustmentItem({
           onToggle()
           if (!isEnabled) onEnabledChange(true)
         }}
-        whileHover={{ backgroundColor: '#f8fafc' }}
-        className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors"
+        whileHover={{ backgroundColor: '#f8fafc', transition: { duration: 0.12, ease: EASE_OUT } }}
+        className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-[background-color] 150ms ease-out"
       >
         <div className="flex items-center gap-3">
           <input
@@ -1198,7 +1212,7 @@ function AdjustmentItem({
         </div>
         <motion.div
           animate={{ rotate: isExpanded ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.25, ease: EASE_OUT }}
         >
           <ChevronDown className="w-4 h-4 text-slate-400" />
         </motion.div>
@@ -1208,8 +1222,8 @@ function AdjustmentItem({
         {isExpanded && isEnabled && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto', transition: { duration: 0.2 } }}
-            exit={{ opacity: 0, height: 0, transition: { duration: 0.15 } }}
+            animate={{ opacity: 1, height: 'auto', transition: { duration: 0.25, ease: EASE_OUT } }}
+            exit={{ opacity: 0, height: 0, transition: { duration: 0.15, ease: EASE_OUT } }}
             className="px-4 py-4 bg-slate-50 border-t border-slate-200"
           >
             {children}
