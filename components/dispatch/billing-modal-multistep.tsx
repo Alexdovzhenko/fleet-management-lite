@@ -163,9 +163,10 @@ export function BillingModalMultistep({
                 className="flex-1 flex flex-col items-center"
                 whileHover={{ scale: 1.05 }}
               >
-                <motion.div
+                <motion.button
+                  type="button"
                   className={cn(
-                    "w-9 h-9 rounded-full cursor-pointer flex items-center justify-center transition-colors duration-300 text-sm font-semibold",
+                    "w-9 h-9 rounded-full cursor-pointer flex items-center justify-center transition-colors duration-300 text-sm font-semibold border-0 p-0",
                     index < currentStep
                       ? "bg-blue-600 text-white"
                       : index === currentStep
@@ -180,7 +181,7 @@ export function BillingModalMultistep({
                   ) : (
                     index + 1
                   )}
-                </motion.div>
+                </motion.button>
                 <motion.span
                   className={cn(
                     "text-xs mt-1 text-center hidden sm:block leading-tight truncate w-full px-1",
