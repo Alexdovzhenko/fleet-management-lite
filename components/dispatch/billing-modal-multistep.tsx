@@ -172,11 +172,7 @@ export function BillingModalMultistep({
                         ? "bg-blue-600 text-white ring-4 ring-blue-100"
                         : "bg-slate-200 text-slate-600",
                   )}
-                  onClick={() => {
-                    if (index <= currentStep) {
-                      setCurrentStep(index)
-                    }
-                  }}
+                  onClick={() => setCurrentStep(index)}
                   whileTap={{ scale: 0.95 }}
                 >
                   {index < currentStep ? (
