@@ -361,7 +361,7 @@ export function BillingModalRedesigned({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl p-0 overflow-hidden bg-white">
+      <DialogContent className="max-w-6xl p-0 overflow-hidden bg-white">
         {/* Header - Apple-inspired gradient */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -387,9 +387,11 @@ export function BillingModalRedesigned({
           </div>
         </motion.div>
 
-        {/* Main content - scrollable */}
+        {/* Main content - scrollable, two-column layout */}
         <div className="overflow-y-auto max-h-[calc(100vh-280px)] px-8 py-6">
-          <div className="space-y-8">
+          <div className="grid grid-cols-3 gap-8">
+            {/* LEFT COLUMN: BASE RATE + ADJUSTMENTS */}
+            <div className="col-span-1 space-y-8">
             {/* BASE RATE SECTION */}
             <motion.section
               initial={{ opacity: 0 }}
@@ -479,7 +481,10 @@ export function BillingModalRedesigned({
                 />
               </div>
             </motion.section>
+            </div>
 
+            {/* RIGHT COLUMN: ADDITIONAL CHARGES */}
+            <div className="col-span-2">
             {/* ADDITIONAL CHARGES SECTION */}
             <motion.section
               initial={{ opacity: 0 }}
@@ -538,6 +543,7 @@ export function BillingModalRedesigned({
                 </SortableContext>
               </DndContext>
             </motion.section>
+            </div>
           </div>
         </div>
 
