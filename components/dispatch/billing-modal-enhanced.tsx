@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useCallback } from "react"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { X, Plus, Copy, Trash2, ChevronDown, GripVertical } from "lucide-react"
@@ -255,8 +255,8 @@ export function BillingModalEnhanced({
   const [activeServiceTab, setActiveServiceTab] = useState<'primary' | 'secondary' | 'farmout'>('primary')
 
   return (
-    <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:w-[90vw] lg:w-[85vw] max-w-5xl p-0 overflow-hidden flex flex-col bg-white border-l border-slate-200" showCloseButton={true}>
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-[90vw] lg:max-w-7xl w-full max-h-[90vh] p-0 overflow-hidden flex flex-col bg-white">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -854,8 +854,8 @@ export function BillingModalEnhanced({
             )}
           </motion.div>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   )
 }
 
