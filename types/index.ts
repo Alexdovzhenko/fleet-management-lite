@@ -174,21 +174,59 @@ export interface BillingLineItem {
   unit: 'flat' | 'hours' | 'miles' | 'days'
 }
 
-export interface BillingAdjustments {
-  discountEnabled: boolean
+export interface BillingCharges {
+  // Base charges
+  rate: number
+  setupFee: number
+  gratuity: number
+  gratuityPercent: number
+
+  // Adjustments
+  stc: number
+  stops: number
+  tolls: number
+  parking: number
+  waiting: number
+  airportFee: number
+  fuelSurcharge: number
+  meetGreet: number
+  phone: number
+
+  // Additional fees
+  miscFee1: number
+  miscFee2: number
+  miscFee3: number
+
+  // Voucher (qty × rate)
+  voucherQty: number
+  voucherRate: number
+
+  // Per Unit (qty × rate)
+  perUnitQty: number
+  perUnitRate: number
+
+  // Per Mile (qty × rate)
+  perMileQty: number
+  perMileRate: number
+
+  // Per Pass (qty × rate)
+  perPassQty: number
+  perPassRate: number
+
+  // Holiday & Special
+  holidayCharge: number
+  lateEarlyCharge: number
+
+  // Discount
   discountType: 'flat' | 'percent'
   discountAmount: number
-  gratuityEnabled: boolean
-  gratuityPercent: number
-  tollsEnabled: boolean
-  tollsAmount: number
-  parkingEnabled: boolean
-  parkingAmount: number
-  miscEnabled: boolean
-  miscAmount: number
-  miscLabel: string
-  taxPercent: number
+
+  // Taxes
+  stdTax1Percent: number
+  stateTaxPercent: number
 }
+
+export interface BillingAdjustments extends BillingCharges {}
 
 export interface BillingData {
   lineItems: BillingLineItem[]

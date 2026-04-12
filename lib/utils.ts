@@ -189,9 +189,9 @@ export function computeBillingTotals(
   payments: { amount: string | number }[] = []
 ): BillingTotals {
   const lineItems = billingData?.lineItems ?? []
-  const adj = billingData?.adjustments ?? {}
+  const charges = billingData?.adjustments ?? {}
 
-  // Sum by tab
+  // Sum line items by tab
   const primaryTotal = lineItems
     .filter((item: any) => item.tab === 'primary')
     .reduce((sum: number, item: any) => sum + (item.rate * item.qty), 0)
@@ -201,28 +201,76 @@ export function computeBillingTotals(
   const farmoutTotal = lineItems
     .filter((item: any) => item.tab === 'farmout')
     .reduce((sum: number, item: any) => sum + (item.rate * item.qty), 0)
-  const subtotal = primaryTotal + secondaryTotal + farmoutTotal
+
+  // Calculate all charges
+  const rate = charges.rate ?? 0
+  const setupFee = charges.setupFee ?? 0
+  const stc = charges.stc ?? 0
+  const stops = charges.stops ?? 0
+  const tolls = charges.tolls ?? 0
+  const parking = charges.parking ?? 0
+  const waiting = charges.waiting ?? 0
+  const airportFee = charges.airportFee ?? 0
+  const fuelSurcharge = charges.fuelSurcharge ?? 0
+  const meetGreet = charges.meetGreet ?? 0
+  const phone = charges.phone ?? 0
+  const miscFee1 = charges.miscFee1 ?? 0
+  const miscFee2 = charges.miscFee2 ?? 0
+  const miscFee3 = charges.miscFee3 ?? 0
+  const voucherTotal = (charges.voucherQty ?? 0) * (charges.voucherRate ?? 0)
+  const perUnitTotal = (charges.perUnitQty ?? 0) * (charges.perUnitRate ?? 0)
+  const perMileTotal = (charges.perMileQty ?? 0) * (charges.perMileRate ?? 0)
+  const perPassTotal = (charges.perPassQty ?? 0) * (charges.perPassRate ?? 0)
+  const holidayCharge = charges.holidayCharge ?? 0
+  const lateEarlyCharge = charges.lateEarlyCharge ?? 0
+
+  // Subtotal = all base charges before discount and tax
+  const subtotal =
+    primaryTotal +
+    secondaryTotal +
+    farmoutTotal +
+    rate +
+    setupFee +
+    stc +
+    stops +
+    tolls +
+    parking +
+    waiting +
+    airportFee +
+    fuelSurcharge +
+    meetGreet +
+    phone +
+    miscFee1 +
+    miscFee2 +
+    miscFee3 +
+    voucherTotal +
+    perUnitTotal +
+    perMileTotal +
+    perPassTotal +
+    holidayCharge +
+    lateEarlyCharge
 
   // Discount
-  const discount = adj.discountEnabled
-    ? adj.discountType === 'flat'
-      ? adj.discountAmount ?? 0
-      : subtotal * ((adj.discountAmount ?? 0) / 100)
-    : 0
+  const discountType = charges.discountType ?? 'flat'
+  const discountAmount = charges.discountAmount ?? 0
+  const discount =
+    discountType === 'flat' ? discountAmount : subtotal * (discountAmount / 100)
   const afterDiscount = subtotal - discount
 
   // Gratuity (applied after discount)
-  const gratuityAmt = adj.gratuityEnabled ? afterDiscount * ((adj.gratuityPercent ?? 0) / 100) : 0
+  const gratuityPercent = charges.gratuityPercent ?? 0
+  const gratuityAmt = afterDiscount * (gratuityPercent / 100)
 
-  // Other adjustments
-  const tollsAmt = adj.tollsEnabled ? adj.tollsAmount ?? 0 : 0
-  const parkingAmt = adj.parkingEnabled ? adj.parkingAmount ?? 0 : 0
-  const miscAmt = adj.miscEnabled ? adj.miscAmount ?? 0 : 0
-  const adjustmentsTotal = gratuityAmt + tollsAmt + parkingAmt + miscAmt
+  // All adjustments total (excluding taxes)
+  const adjustmentsTotal = gratuityAmt
 
-  // Tax (on subtotal + adjustments - discount)
-  const taxBase = afterDiscount + adjustmentsTotal
-  const taxAmt = taxBase * ((adj.taxPercent ?? 0) / 100)
+  // Tax base = after discount + gratuity
+  const taxBase = afterDiscount + gratuityAmt
+
+  // Taxes
+  const stdTax1 = taxBase * ((charges.stdTax1Percent ?? 0) / 100)
+  const stateTax = taxBase * ((charges.stateTaxPercent ?? 0) / 100)
+  const taxAmt = stdTax1 + stateTax
 
   // Total
   const total = taxBase + taxAmt
