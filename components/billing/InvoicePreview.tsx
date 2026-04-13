@@ -281,9 +281,10 @@ export function InvoicePreview({
             </div>
           ) : (
             <div className="flex-1 flex items-center justify-center text-center px-8 py-12">
-              <div className="text-slate-400">
-                <div className="text-lg font-medium mb-2">No charges added</div>
-                <div className="text-sm">Add charges on the left to build your invoice</div>
+              <div>
+                <div className="text-lg font-semibold text-slate-600 mb-2">No charges added yet</div>
+                <div className="text-sm text-slate-500 mb-4">Add your first charge on the left to build your invoice →</div>
+                <div className="text-xs text-slate-400">Your invoice will appear here once you add charges</div>
               </div>
             </div>
           )}

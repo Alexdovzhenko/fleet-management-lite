@@ -22,10 +22,10 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 lg:space-y-8">
       {/* PRIMARY CHARGES SECTION */}
-      <div className="border-l-4 border-slate-400 pl-4 space-y-3">
-        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+      <div className="border-t border-slate-200 pt-4 space-y-4 lg:space-y-5">
+        <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider border-l-4 border-blue-500 pl-3 mb-4">
           Primary Charges
         </h3>
 
@@ -33,10 +33,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         <FormRow label="Flat Rate" result={formatCurrency(data.flatRate)}>
           <input
             type="number"
+            inputMode="decimal"
+            step="0.01"
             placeholder="0.00"
             value={data.flatRate || ""}
             onChange={(e) => onChange("flatRate", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
+            className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
           />
         </FormRow>
 
@@ -46,21 +48,25 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           formula={`${(data.perHourQty || 0).toFixed(2)} × ${formatCurrency(data.perHourRate)}`}
           result={formatCurrency((data.perHourQty || 0) * (data.perHourRate || 0))}
         >
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <input
               type="number"
+              inputMode="decimal"
+              step="0.01"
               placeholder="0.00"
               value={data.perHourQty || ""}
               onChange={(e) => onChange("perHourQty", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
-            <span className="text-slate-500">×</span>
+            <span className="text-slate-500 font-medium">×</span>
             <input
               type="number"
+              inputMode="decimal"
+              step="0.01"
               placeholder="0.00"
               value={data.perHourRate || ""}
               onChange={(e) => onChange("perHourRate", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -71,21 +77,25 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           formula={`${(data.travelTimeQty || 0).toFixed(2)} × ${formatCurrency(data.travelTimeRate)}`}
           result={formatCurrency((data.travelTimeQty || 0) * (data.travelTimeRate || 0))}
         >
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <input
               type="number"
+              inputMode="decimal"
+              step="0.01"
               placeholder="0.00"
               value={data.travelTimeQty || ""}
               onChange={(e) => onChange("travelTimeQty", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
-            <span className="text-slate-500">×</span>
+            <span className="text-slate-500 font-medium">×</span>
             <input
               type="number"
+              inputMode="decimal"
+              step="0.01"
               placeholder="0.00"
               value={data.travelTimeRate || ""}
               onChange={(e) => onChange("travelTimeRate", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -96,21 +106,25 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           formula={`${(data.waitTimeQty || 0).toFixed(2)} × ${formatCurrency(data.waitTimeRate)}`}
           result={formatCurrency((data.waitTimeQty || 0) * (data.waitTimeRate || 0))}
         >
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <input
               type="number"
+              inputMode="decimal"
+              step="0.01"
               placeholder="0.00"
               value={data.waitTimeQty || ""}
               onChange={(e) => onChange("waitTimeQty", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
-            <span className="text-slate-500">×</span>
+            <span className="text-slate-500 font-medium">×</span>
             <input
               type="number"
+              inputMode="decimal"
+              step="0.01"
               placeholder="0.00"
               value={data.waitTimeRate || ""}
               onChange={(e) => onChange("waitTimeRate", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -121,21 +135,25 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           formula={`${(data.extraStopsQty || 0).toFixed(2)} × ${formatCurrency(data.extraStopsRate)}`}
           result={formatCurrency((data.extraStopsQty || 0) * (data.extraStopsRate || 0))}
         >
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <input
               type="number"
+              inputMode="decimal"
+              step="0.01"
               placeholder="0.00"
               value={data.extraStopsQty || ""}
               onChange={(e) => onChange("extraStopsQty", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
-            <span className="text-slate-500">×</span>
+            <span className="text-slate-500 font-medium">×</span>
             <input
               type="number"
+              inputMode="decimal"
+              step="0.01"
               placeholder="0.00"
               value={data.extraStopsRate || ""}
               onChange={(e) => onChange("extraStopsRate", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -179,21 +197,25 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           formula={`${(data.carSeatQty || 0).toFixed(2)} × ${formatCurrency(data.carSeatRate)}`}
           result={formatCurrency((data.carSeatQty || 0) * (data.carSeatRate || 0))}
         >
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <input
               type="number"
+              inputMode="decimal"
+              step="0.01"
               placeholder="0.00"
               value={data.carSeatQty || ""}
               onChange={(e) => onChange("carSeatQty", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
-            <span className="text-slate-500">×</span>
+            <span className="text-slate-500 font-medium">×</span>
             <input
               type="number"
+              inputMode="decimal"
+              step="0.01"
               placeholder="0.00"
               value={data.carSeatRate || ""}
               onChange={(e) => onChange("carSeatRate", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -201,36 +223,38 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         {/* Late/Early Charge */}
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-4 py-2">
-            <label className="text-sm font-semibold text-slate-900">Late/Early Charge</label>
+            <label className="text-sm font-medium text-slate-700">Late/Early Charge</label>
             <div className="flex items-center gap-3">
               <select
                 value={data.lateEarlyType || "late"}
                 onChange={(e) => onChange("lateEarlyType", e.target.value)}
-                className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
               >
                 <option value="late">Late</option>
                 <option value="early">Early</option>
               </select>
             </div>
-            <div className="min-w-[90px]">
-              <div className="border border-slate-300 rounded px-3 py-1 text-right text-sm font-medium text-slate-900 bg-white">
+            <div className="min-w-[100px]">
+              <div className="border border-slate-300 rounded-lg px-3 py-2 text-right text-sm font-semibold text-slate-900 bg-slate-50">
                 {formatCurrency(data.lateEarlyCharge)}
               </div>
             </div>
           </div>
           <input
             type="number"
+            inputMode="decimal"
+            step="0.01"
             placeholder="0.00"
             value={data.lateEarlyCharge || ""}
             onChange={(e) => onChange("lateEarlyCharge", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-full px-2 py-1 border border-slate-300 rounded text-sm"
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
           />
         </div>
       </div>
 
       {/* ADDITIONAL CHARGES SECTION */}
-      <div className="border-l-4 border-slate-400 pl-4 space-y-3">
-        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+      <div className="border-t border-slate-200 pt-4 space-y-4 lg:space-y-5">
+        <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider border-l-4 border-blue-500 pl-3 mb-4">
           Additional Charges
         </h3>
 
@@ -242,14 +266,16 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="Label"
               value={data.miscFee1Label || ""}
               onChange={(e) => onChange("miscFee1Label", e.target.value)}
-              className="flex-1 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
             <input
               type="number"
+              inputMode="decimal"
+              step="0.01"
               placeholder="0.00"
               value={data.miscFee1Amount || ""}
               onChange={(e) => onChange("miscFee1Amount", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -269,7 +295,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.miscFee2Amount || ""}
               onChange={(e) => onChange("miscFee2Amount", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -289,7 +315,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.miscFee3Amount || ""}
               onChange={(e) => onChange("miscFee3Amount", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -304,10 +330,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           <div className="flex gap-2">
             <input
               type="number"
+              inputMode="decimal"
+              step="0.01"
               placeholder="0.00"
               value={data.gratuityPct || ""}
               onChange={(e) => onChange("gratuityPct", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
             <span className="text-slate-500">%</span>
           </div>
@@ -326,7 +354,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.discountPct || ""}
               onChange={(e) => onChange("discountPct", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
             <span className="text-slate-500">%</span>
           </div>
@@ -345,7 +373,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.creditCardFeePct || ""}
               onChange={(e) => onChange("creditCardFeePct", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
             <span className="text-slate-500">%</span>
           </div>
@@ -353,8 +381,8 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
       </div>
 
       {/* FARM-OUT SECTION */}
-      <div className="border-l-4 border-slate-400 pl-4 space-y-3">
-        <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+      <div className="border-t border-slate-200 pt-4 space-y-4 lg:space-y-5">
+        <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider border-l-4 border-blue-500 pl-3 mb-4">
           Farm-Out Costs
         </h3>
 
@@ -448,7 +476,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutFuelSurcharge || ""}
               onChange={(e) => onChange("farmOutFuelSurcharge", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
             <span className="text-slate-500">%</span>
           </div>
@@ -489,7 +517,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutDiscountPct || ""}
               onChange={(e) => onChange("farmOutDiscountPct", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
             <span className="text-slate-500">%</span>
           </div>
@@ -498,29 +526,31 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         {/* Farm-out Late/Early */}
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-4 py-2">
-            <label className="text-sm font-semibold text-slate-900">FO Late/Early</label>
+            <label className="text-sm font-medium text-slate-700">FO Late/Early</label>
             <div className="flex items-center gap-3">
               <select
                 value={data.farmOutLateEarlyType || "late"}
                 onChange={(e) => onChange("farmOutLateEarlyType", e.target.value)}
-                className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
               >
                 <option value="late">Late</option>
                 <option value="early">Early</option>
               </select>
             </div>
-            <div className="min-w-[90px]">
-              <div className="border border-slate-300 rounded px-3 py-1 text-right text-sm font-medium text-slate-900 bg-white">
+            <div className="min-w-[100px]">
+              <div className="border border-slate-300 rounded-lg px-3 py-2 text-right text-sm font-semibold text-slate-900 bg-slate-50">
                 {formatCurrency(data.farmOutLateEarlyCharge)}
               </div>
             </div>
           </div>
           <input
             type="number"
+            inputMode="decimal"
+            step="0.01"
             placeholder="0.00"
             value={data.farmOutLateEarlyCharge || ""}
             onChange={(e) => onChange("farmOutLateEarlyCharge", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-full px-2 py-1 border border-slate-300 rounded text-sm"
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
           />
         </div>
 
@@ -537,7 +567,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutCCFeePct || ""}
               onChange={(e) => onChange("farmOutCCFeePct", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-16 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
             />
             <span className="text-slate-500">%</span>
           </div>
@@ -557,16 +587,16 @@ interface FormRowProps {
 
 function FormRow({ label, labelColor = "text-slate-900", formula, result, children }: FormRowProps) {
   return (
-    <div className="flex items-center justify-between gap-4 py-2">
+    <div className="flex items-center justify-between gap-4 py-3 lg:py-4">
       <div className="flex-1 min-w-[100px]">
-        <label className={`text-sm font-semibold ${labelColor}`}>{label}</label>
+        <label className={`text-sm font-medium text-slate-700 ${labelColor === "text-slate-900" ? "" : labelColor}`}>{label}</label>
       </div>
       <div className="flex items-center gap-3 flex-1">
         {children}
-        {formula && <span className="text-xs text-slate-500 min-w-fit">{formula}</span>}
+        {formula && <span className="font-mono text-sm text-slate-600 min-w-fit">{formula}</span>}
       </div>
-      <div className="min-w-[100px]">
-        <div className="border border-slate-300 rounded px-3 py-1 text-right text-sm font-medium text-slate-900 bg-white">
+      <div className="min-w-[110px]">
+        <div className="border border-slate-300 rounded-lg px-3 py-2 text-right text-sm font-semibold text-slate-900 bg-slate-50">
           {result}
         </div>
       </div>
