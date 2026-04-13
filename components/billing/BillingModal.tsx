@@ -18,7 +18,8 @@ import { X } from "lucide-react"
 interface BillingModalProps {
   open: boolean
   onClose: () => void
-  tripId: string
+  mode?: 'create' | 'edit'
+  tripId?: string
   trip?: {
     tripNumber: string
     passengerName?: string
@@ -32,30 +33,41 @@ interface BillingModalProps {
     email?: string
     logoUrl?: string
   }
+  initialData?: BillingData | Partial<BillingData>
+  onSave?: (data: BillingData) => void
 }
 
 export function BillingModal({
   open,
   onClose,
+  mode = 'edit',
   tripId,
   trip,
   company,
+  initialData,
+  onSave,
 }: BillingModalProps) {
-  const [billingData, setBillingData] = useState<Partial<BillingData>>(getDefaultBillingData())
+  const defaultData = getDefaultBillingData()
+  const [billingData, setBillingData] = useState<Partial<BillingData>>(
+    initialData ? (initialData as Partial<BillingData>) : defaultData
+  )
   const [isDirty, setIsDirty] = useState(false)
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false)
 
-  // Fetch existing billing data
-  const { data: existingData, isLoading } = useTripBilling(open ? tripId : undefined)
-  const updateMutation = useUpdateTripBilling(tripId)
+  // Fetch existing billing data (edit mode only)
+  const { data: existingData, isLoading } = useTripBilling(open && mode === 'edit' && tripId ? tripId : undefined)
+  const updateMutation = useUpdateTripBilling(tripId || '')
 
-  // Load existing data when modal opens
+  // Load existing data when modal opens (edit mode)
   useEffect(() => {
-    if (open && existingData?.billingData) {
-      setBillingData(existingData.billingData)
+    if (open && mode === 'edit' && existingData?.billingData) {
+      setBillingData(existingData.billingData as Partial<BillingData>)
+      setIsDirty(false)
+    } else if (open && mode === 'create' && initialData) {
+      setBillingData(initialData as Partial<BillingData>)
       setIsDirty(false)
     }
-  }, [open, existingData])
+  }, [open, existingData, mode, initialData])
 
   const handleFieldChange = useCallback((field: string, value: any) => {
     setBillingData((prev) => ({
@@ -67,7 +79,11 @@ export function BillingModal({
 
   const handleSave = async () => {
     try {
-      await updateMutation.mutateAsync(billingData)
+      if (mode === 'create' && onSave) {
+        onSave(billingData as BillingData)
+      } else if (mode === 'edit') {
+        await updateMutation.mutateAsync(billingData)
+      }
       setIsDirty(false)
       onClose()
     } catch (error) {

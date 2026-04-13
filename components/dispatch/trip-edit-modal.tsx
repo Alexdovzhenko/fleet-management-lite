@@ -60,7 +60,7 @@ import { SendEmailModal } from "@/components/email/send-email-modal"
 import { CopyReservationModal } from "@/components/dispatch/copy-reservation-modal"
 import { RoundTripModal } from "@/components/dispatch/round-trip-modal"
 import { TripAttachmentsSection } from "@/components/dispatch/trip-attachments"
-import { BillingModalMultistep as BillingModal } from "@/components/dispatch/billing-modal-multistep"
+import { BillingModal } from "@/components/billing/BillingModal"
 import { BillingTriggerButton } from "@/components/dispatch/billing-trigger-button"
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
 import { useUpsertAddress, type CompanyAddress } from "@/lib/hooks/use-addresses"
@@ -2059,7 +2059,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                       mode="edit"
                       tripId={currentTrip?.id}
                       trip={currentTrip}
-                      initialData={currentTrip?.billingData ?? undefined}
+                      initialData={currentTrip?.billingData as any}
                     />
                   </>
                 )}

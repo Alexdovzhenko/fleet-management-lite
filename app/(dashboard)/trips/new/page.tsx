@@ -59,9 +59,10 @@ import { useUpsertAddress } from "@/lib/hooks/use-addresses"
 import { ReservationMetadata } from "@/components/trips/reservation-metadata"
 import { SendEmailModal } from "@/components/email/send-email-modal"
 import { TripAttachmentsSection } from "@/components/dispatch/trip-attachments"
-import { BillingModalMultistep as BillingModal } from "@/components/dispatch/billing-modal-multistep"
+import { BillingModal } from "@/components/billing/BillingModal"
 import { BillingTriggerButton } from "@/components/dispatch/billing-trigger-button"
-import type { Customer, Driver, Vehicle, AffiliateSearchResult, Trip, PendingFile, BillingData } from "@/types"
+import type { Customer, Driver, Vehicle, AffiliateSearchResult, Trip, PendingFile, BillingData as BillingDataType } from "@/types"
+import type { BillingData } from "@/lib/billing-calculations"
 
 const schema = z.object({
   customerId:           z.string().min(1, "Customer is required"),

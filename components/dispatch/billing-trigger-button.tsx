@@ -5,14 +5,14 @@ import { formatCurrency, computeBillingTotals } from "@/lib/utils"
 import type { BillingData, TripPayment } from "@/types"
 
 interface BillingTriggerButtonProps {
-  billingData?: BillingData | null
+  billingData?: BillingData | any | null
   payments?: TripPayment[]
   onClick: () => void
 }
 
 export function BillingTriggerButton({ billingData, payments = [], onClick }: BillingTriggerButtonProps) {
-  const totals = computeBillingTotals(billingData, payments)
-  const hasData = billingData && billingData.lineItems.length > 0
+  const totals = computeBillingTotals(billingData || { lineItems: [], adjustments: {} }, payments)
+  const hasData = billingData && ((billingData as any).lineItems?.length > 0 || Object.keys(billingData).length > 0)
 
   return (
     <button
