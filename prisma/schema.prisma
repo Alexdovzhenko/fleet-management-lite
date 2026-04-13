@@ -42,6 +42,7 @@ model Company {
   trips        Trip[]
   invoices     Invoice[]
   settings     CompanySettings?
+  billingSettings BillingSettings?
   serviceTypes ServiceType[]
   invites      CompanyInvite[]
 
@@ -476,6 +477,27 @@ model CompanySettings {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model BillingSettings {
+  id              String  @id @default(cuid())
+  companyId       String  @unique
+  company         Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  companyName     String?
+  address         String?
+  phone           String?
+  billingEmail    String?
+  logoUrl         String?
+  dateFormat      String  @default("MM/DD/YYYY")
+  invoicePrefix   String  @default("INV-")
+  paymentTerms    String  @default("Due on Receipt")
+  footerNote      String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([companyId])
 }
 
 // ============ TEAM INVITES ============

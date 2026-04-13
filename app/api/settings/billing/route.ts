@@ -1,0 +1,79 @@
+import { NextRequest, NextResponse } from "next/server"
+import { prisma } from "@/lib/db"
+import { requireAuth } from "@/lib/auth-context"
+import { z } from "zod"
+
+const billingSettingsSchema = z.object({
+  companyName: z.string().optional(),
+  address: z.string().optional(),
+  phone: z.string().optional(),
+  billingEmail: z.string().email().optional().or(z.literal("")),
+  logoUrl: z.string().optional(),
+  dateFormat: z.enum(["MM/DD/YYYY", "DD/MM/YYYY", "YYYY-MM-DD"]).optional(),
+  invoicePrefix: z.string().optional(),
+  paymentTerms: z.string().optional(),
+  footerNote: z.string().optional(),
+})
+
+export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request)
+  if (!auth.ok) return auth.response
+  const { companyId } = auth.ctx
+
+  try {
+    let billingSettings = await prisma.billingSettings.findUnique({
+      where: { companyId },
+    })
+
+    // If not found, create with defaults
+    if (!billingSettings) {
+      billingSettings = await prisma.billingSettings.create({
+        data: {
+          companyId,
+          companyName: "",
+          address: "",
+          phone: "",
+          billingEmail: "",
+          dateFormat: "MM/DD/YYYY",
+          invoicePrefix: "INV-",
+          paymentTerms: "Due on Receipt",
+        },
+      })
+    }
+
+    return NextResponse.json(billingSettings)
+  } catch (error) {
+    console.error("[GET /api/settings/billing]", error)
+    return NextResponse.json({ error: "Failed to fetch billing settings" }, { status: 500 })
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  const auth = await requireAuth(request)
+  if (!auth.ok) return auth.response
+  const { companyId } = auth.ctx
+
+  try {
+    const body = await request.json()
+    const data = billingSettingsSchema.parse(body)
+
+    // Clean empty strings
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([_, v]) => v !== "")
+    )
+
+    const billingSettings = await prisma.billingSettings.upsert({
+      where: { companyId },
+      create: { companyId, ...cleanData },
+      update: cleanData,
+    })
+
+    return NextResponse.json(billingSettings)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ error: "Invalid request", issues: error.issues }, { status: 400 })
+    }
+    console.error("[PATCH /api/settings/billing]", error)
+    return NextResponse.json({ error: "Failed to update billing settings" }, { status: 500 })
+  }
+}

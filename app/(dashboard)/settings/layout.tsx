@@ -1,11 +1,11 @@
 "use client"
 
 import { useRouter, usePathname } from "next/navigation"
-import { Building2, BookMarked, Settings2, Zap, LayoutGrid, Mail, ExternalLink, User, Users, LogOut } from "lucide-react"
+import { Building2, BookMarked, Settings2, Zap, LayoutGrid, Mail, ExternalLink, User, Users, LogOut, Receipt } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
 
-type Section = "profile" | "address-book" | "service-types" | "status-actions" | "grid-columns" | "personal" | "team" | "sender-emails" | "pdf-branding"
+type Section = "profile" | "address-book" | "service-types" | "status-actions" | "grid-columns" | "personal" | "team" | "sender-emails" | "pdf-branding" | "billing"
 
 const NAV_GROUPS: { label: string; items: { key: Section; label: string; icon: React.ElementType }[] }[] = [
   {
@@ -28,6 +28,7 @@ const NAV_GROUPS: { label: string; items: { key: Section; label: string; icon: R
     items: [
       { key: "sender-emails", label: "Sender Emails", icon: Mail },
       { key: "pdf-branding",  label: "PDF Branding",  icon: ExternalLink },
+      { key: "billing",       label: "Billing",       icon: Receipt },
     ],
   },
   {

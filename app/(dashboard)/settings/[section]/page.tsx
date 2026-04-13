@@ -38,6 +38,7 @@ import {
 } from "@/lib/hooks/use-addresses"
 import { useColumnOrderStore, COLUMN_DEFS } from "@/lib/stores/column-order-store"
 import type { Company, TripStatus } from "@/types"
+import { BillingSettingsForm } from "@/components/billing/BillingSettingsForm"
 
 // ─── Icon map ─────────────────────────────────────────────────────────────────
 
@@ -2114,7 +2115,7 @@ function PdfBrandingSection() {
 
 // ─── Section type definition ──────────────────────────────────────────────────
 
-type Section = "profile" | "address-book" | "service-types" | "status-actions" | "grid-columns" | "personal" | "team" | "sender-emails" | "pdf-branding"
+type Section = "profile" | "address-book" | "service-types" | "status-actions" | "grid-columns" | "personal" | "team" | "sender-emails" | "pdf-branding" | "billing"
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -2127,7 +2128,7 @@ export default async function SettingsSectionPage({
   const sectionParam = section as Section
 
   // Validate section parameter
-  const validSections: Section[] = ["profile", "address-book", "service-types", "status-actions", "grid-columns", "personal", "team", "sender-emails", "pdf-branding"]
+  const validSections: Section[] = ["profile", "address-book", "service-types", "status-actions", "grid-columns", "personal", "team", "sender-emails", "pdf-branding", "billing"]
   if (!validSections.includes(sectionParam)) {
     return (
       <div className="p-8 text-center">
@@ -2151,6 +2152,15 @@ export default async function SettingsSectionPage({
       {sectionParam === "grid-columns"   && <GridColumnsSection />}
       {sectionParam === "sender-emails"  && <SenderEmailsSection />}
       {sectionParam === "pdf-branding"   && <PdfBrandingSection />}
+      {sectionParam === "billing"        && (
+        <div className="p-8 space-y-6 w-full h-[calc(100vh-140px)]">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Billing Settings</h1>
+            <p className="text-sm text-slate-500 mt-1">Configure invoice details and company information</p>
+          </div>
+          <BillingSettingsForm />
+        </div>
+      )}
       {sectionParam === "personal"       && <PersonalSection />}
       {sectionParam === "team"           && <TeamSection />}
     </>
