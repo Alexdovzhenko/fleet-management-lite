@@ -113,7 +113,7 @@ export function BillingModal({
   return (
     <>
       <Dialog open={open && !showUnsavedWarning} onOpenChange={handleClose}>
-        <DialogContent className="max-w-[96rem] h-[92vh] p-0 flex flex-col overflow-hidden">
+        <DialogContent className="w-[98vw] h-[96vh] p-0 flex flex-col overflow-hidden">
           {/* Header */}
           <DialogHeader className="px-8 py-6 border-b border-slate-200">
             <div className="flex items-center justify-between gap-4">
