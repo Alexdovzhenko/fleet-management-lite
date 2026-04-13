@@ -126,7 +126,7 @@ export function BillingModal({
               <button
                 onClick={handleClose}
                 aria-label="Close billing details"
-                className="absolute right-6 top-6 flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 active:scale-95 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="absolute right-6 top-6 flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 active:scale-95 transition-all duration-150"
               >
                 <X className="w-5 h-5" strokeWidth={2} />
               </button>
