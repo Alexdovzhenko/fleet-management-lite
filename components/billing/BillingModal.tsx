@@ -123,15 +123,13 @@ export function BillingModal({
                   Trip #{trip?.tripNumber || "N/A"}
                 </p>
               </div>
-              <Button
-                variant="ghost"
-                size="icon-sm"
+              <button
                 onClick={handleClose}
-                className="absolute right-4 top-4"
+                aria-label="Close billing details"
+                className="absolute right-6 top-6 flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 active:scale-95 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
-                <X className="w-4 h-4" />
-                <span className="sr-only">Close</span>
-              </Button>
+                <X className="w-5 h-5" strokeWidth={2} />
+              </button>
             </div>
           </DialogHeader>
 
