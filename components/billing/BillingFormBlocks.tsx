@@ -17,11 +17,6 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
     return "$" + num.toFixed(2)
   }
 
-  const formatPercent = (val: any) => {
-    const num = typeof val === "string" ? parseFloat(val) || 0 : val || 0
-    return num.toFixed(2)
-  }
-
   return (
     <div className="space-y-4">
       {/* PRIMARY CHARGES SECTION */}
@@ -332,7 +327,6 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         <FormRow
           label="Std Grat"
           labelColor="text-blue-600"
-          formula={`${formatPercent(data.gratuityPct)}%`}
           result={formatCurrency(totals.gratuity)}
         >
           <div className="flex gap-2">
@@ -353,7 +347,6 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         <FormRow
           label="Discount"
           labelColor="text-red-600"
-          formula={`${formatPercent(data.discountPct)}%`}
           result={`-${formatCurrency(totals.discount)}`}
         >
           <div className="flex gap-2">
@@ -372,7 +365,6 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         <FormRow
           label="CC Fee"
           labelColor="text-blue-600"
-          formula={`${formatPercent(data.creditCardFeePct)}%`}
           result={formatCurrency(totals.creditCardFee)}
         >
           <div className="flex gap-2">
@@ -506,7 +498,6 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         <FormRow
           label="FO Fuel Surch"
           labelColor="text-blue-600"
-          formula={`${formatPercent(data.farmOutFuelSurcharge)}%`}
           result={formatCurrency((data.farmOutRate || 0) * (data.farmOutFuelSurcharge || 0) / 100)}
         >
           <div className="flex gap-2">
@@ -557,7 +548,6 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         <FormRow
           label="FO Discount"
           labelColor="text-red-600"
-          formula={`${formatPercent(data.farmOutDiscountPct)}%`}
           result={`-${formatCurrency(totals.farmOutDiscount)}`}
         >
           <div className="flex gap-2">
@@ -607,7 +597,6 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         <FormRow
           label="FO CC Fee"
           labelColor="text-blue-600"
-          formula={`${formatPercent(data.farmOutCCFeePct)}%`}
           result={formatCurrency(totals.farmOutCCFee)}
         >
           <div className="flex gap-2">
