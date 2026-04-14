@@ -48,7 +48,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.perHourQty || ""}
               onChange={(e) => onChange("perHourQty", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
             <span className="text-slate-500 font-medium">×</span>
             <div className="relative flex items-center w-20">
@@ -60,7 +60,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 placeholder="0.00"
                 value={data.perHourRate || ""}
                 onChange={(e) => onChange("perHourRate", e.target.value ? parseFloat(e.target.value) : 0)}
-                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
           </div>
@@ -79,7 +79,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.travelTimeQty || ""}
               onChange={(e) => onChange("travelTimeQty", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
             <span className="text-slate-500 font-medium">×</span>
             <div className="relative flex items-center w-20">
@@ -91,7 +91,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 placeholder="0.00"
                 value={data.travelTimeRate || ""}
                 onChange={(e) => onChange("travelTimeRate", e.target.value ? parseFloat(e.target.value) : 0)}
-                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
           </div>
@@ -110,7 +110,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.waitTimeQty || ""}
               onChange={(e) => onChange("waitTimeQty", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
             <span className="text-slate-500 font-medium">×</span>
             <div className="relative flex items-center w-20">
@@ -122,7 +122,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 placeholder="0.00"
                 value={data.waitTimeRate || ""}
                 onChange={(e) => onChange("waitTimeRate", e.target.value ? parseFloat(e.target.value) : 0)}
-                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
           </div>
@@ -141,7 +141,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.extraStopsQty || ""}
               onChange={(e) => onChange("extraStopsQty", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
             <span className="text-slate-500 font-medium">×</span>
             <div className="relative flex items-center w-20">
@@ -153,7 +153,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 placeholder="0.00"
                 value={data.extraStopsRate || ""}
                 onChange={(e) => onChange("extraStopsRate", e.target.value ? parseFloat(e.target.value) : 0)}
-                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
           </div>
@@ -199,7 +199,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0"
               value={data.carSeatQty || ""}
               onChange={(e) => onChange("carSeatQty", e.target.value ? parseInt(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
             <span className="text-slate-500 font-medium">×</span>
             <div className="relative flex items-center w-20">
@@ -211,7 +211,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 placeholder="0.00"
                 value={data.carSeatRate || ""}
                 onChange={(e) => onChange("carSeatRate", e.target.value ? parseFloat(e.target.value) : 0)}
-                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
           </div>
@@ -237,7 +237,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="Label"
               value={data.miscFee1Label || ""}
               onChange={(e) => onChange("miscFee1Label", e.target.value)}
-              className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+              className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
             <input
               type="number"
@@ -246,7 +246,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.miscFee1Amount || ""}
               onChange={(e) => onChange("miscFee1Amount", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+              className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -259,14 +259,14 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="Label"
               value={data.miscFee2Label || ""}
               onChange={(e) => onChange("miscFee2Label", e.target.value)}
-              className="flex-1 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400"
             />
             <input
               type="number"
               placeholder="0.00"
               value={data.miscFee2Amount || ""}
               onChange={(e) => onChange("miscFee2Amount", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+              className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -279,14 +279,14 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="Label"
               value={data.miscFee3Label || ""}
               onChange={(e) => onChange("miscFee3Label", e.target.value)}
-              className="flex-1 px-2 py-1 border border-slate-300 rounded text-sm"
+              className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400"
             />
             <input
               type="number"
               placeholder="0.00"
               value={data.miscFee3Amount || ""}
               onChange={(e) => onChange("miscFee3Amount", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+              className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -306,7 +306,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.gratuityPct || ""}
               onChange={(e) => onChange("gratuityPct", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
             <span className="text-slate-500">%</span>
           </div>
@@ -325,7 +325,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.discountPct || ""}
               onChange={(e) => onChange("discountPct", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
             <span className="text-slate-500">%</span>
           </div>
@@ -344,7 +344,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.creditCardFeePct || ""}
               onChange={(e) => onChange("creditCardFeePct", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
             <span className="text-slate-500">%</span>
           </div>
@@ -364,7 +364,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutRate || ""}
               onChange={(e) => onChange("farmOutRate", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-6 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+              className="w-20 pl-6 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right"
             />
           </div>
         </FormRow>
@@ -380,7 +380,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutGratuity || ""}
               onChange={(e) => onChange("farmOutGratuity", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right"
             />
           </div>
         </FormRow>
@@ -396,7 +396,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutStops || ""}
               onChange={(e) => onChange("farmOutStops", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right"
             />
           </div>
         </FormRow>
@@ -412,7 +412,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutTolls || ""}
               onChange={(e) => onChange("farmOutTolls", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right"
             />
           </div>
         </FormRow>
@@ -428,7 +428,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutParking || ""}
               onChange={(e) => onChange("farmOutParking", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right"
             />
           </div>
         </FormRow>
@@ -444,7 +444,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutAirportFee || ""}
               onChange={(e) => onChange("farmOutAirportFee", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right"
             />
           </div>
         </FormRow>
@@ -460,7 +460,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutWaitTime || ""}
               onChange={(e) => onChange("farmOutWaitTime", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right"
             />
           </div>
         </FormRow>
@@ -478,7 +478,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutFuelSurcharge || ""}
               onChange={(e) => onChange("farmOutFuelSurcharge", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
             <span className="text-slate-500">%</span>
           </div>
@@ -495,7 +495,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutMeetAndGreet || ""}
               onChange={(e) => onChange("farmOutMeetAndGreet", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right"
             />
           </div>
         </FormRow>
@@ -511,7 +511,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutChildSeat || ""}
               onChange={(e) => onChange("farmOutChildSeat", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right"
             />
           </div>
         </FormRow>
@@ -529,7 +529,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutDiscountPct || ""}
               onChange={(e) => onChange("farmOutDiscountPct", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
             <span className="text-slate-500">%</span>
           </div>
@@ -543,7 +543,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               <select
                 value={data.farmOutLateEarlyType || "late"}
                 onChange={(e) => onChange("farmOutLateEarlyType", e.target.value)}
-                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               >
                 <option value="late">Late</option>
                 <option value="early">Early</option>
@@ -562,7 +562,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
             placeholder="0.00"
             value={data.farmOutLateEarlyCharge || ""}
             onChange={(e) => onChange("farmOutLateEarlyCharge", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
           />
         </div>
 
@@ -579,7 +579,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutCCFeePct || ""}
               onChange={(e) => onChange("farmOutCCFeePct", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
             <span className="text-slate-500">%</span>
           </div>
@@ -621,7 +621,7 @@ function FormRow({ label, labelColor = "text-slate-900", formula, result, childr
               placeholder="0.00"
               value={editableValue}
               onChange={(e) => onEditChange?.(e.target.value)}
-              className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none transition-colors"
+              className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
             />
           </div>
         ) : (

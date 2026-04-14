@@ -101,7 +101,7 @@ export function CollapsibleSection({
               className="w-5 h-5 flex-shrink-0 text-slate-700"
               strokeWidth={1.5}
             />
-            <h3 className="text-sm font-medium text-slate-900 uppercase tracking-wide">
+            <h3 className="text-sm font-medium text-slate-900">
               {title}
             </h3>
           </div>

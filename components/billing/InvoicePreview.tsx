@@ -37,12 +37,12 @@ export function InvoicePreview({
   })
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-br from-slate-50 to-slate-100 p-4 rounded-xl overflow-hidden">
+    <div className="flex flex-col h-full bg-white p-4 rounded-xl overflow-hidden">
       {/* Invoice Container */}
-      <div className="flex-1 overflow-y-auto bg-white rounded-lg shadow-lg border border-slate-200">
+      <div className="flex-1 overflow-y-auto bg-white rounded-lg shadow-sm border border-slate-200">
         <div className="flex flex-col min-h-full">
           {/* Invoice Header */}
-          <div className="px-8 pt-8 pb-6 border-b-4 border-blue-500">
+          <div className="px-8 pt-8 pb-6 border-b border-slate-200">
             <div className="flex items-start justify-between mb-6">
               {/* Company Logo & Name */}
               <div className="flex items-center gap-4">
@@ -53,7 +53,7 @@ export function InvoicePreview({
                     className="h-14 w-auto object-contain"
                   />
                 ) : (
-                  <div className="h-14 w-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                  <div className="h-14 w-14 bg-slate-100 rounded-lg flex items-center justify-center text-slate-500 font-bold text-xl">
                     {company?.name?.charAt(0) || "C"}
                   </div>
                 )}
@@ -344,9 +344,9 @@ export function InvoicePreview({
                 )}
 
                 {/* Total Due */}
-                <div className="flex justify-between text-base font-bold bg-blue-50 -mx-8 -mb-6 px-8 py-4 rounded-b-lg">
+                <div className="flex justify-between text-base font-bold border-t border-slate-200 pt-4 mt-2">
                   <span className="text-slate-900">TOTAL DUE</span>
-                  <span className="font-mono text-blue-600">{formatCurrency(totals.total)}</span>
+                  <span className="font-mono text-slate-900">{formatCurrency(totals.total)}</span>
                 </div>
               </div>
             </div>
