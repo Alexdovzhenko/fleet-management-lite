@@ -41,7 +41,6 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         {/* Per Hour */}
         <FormRow
           label="Per Hour"
-          formula={`${(data.perHourQty || 0).toFixed(2)} × ${formatCurrency(data.perHourRate)}`}
           result={formatCurrency((data.perHourQty || 0) * (data.perHourRate || 0))}
         >
           <div className="flex gap-2 items-center">
@@ -70,7 +69,6 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         {/* Travel Time */}
         <FormRow
           label="Travel Time"
-          formula={`${(data.travelTimeQty || 0).toFixed(2)} × ${formatCurrency(data.travelTimeRate)}`}
           result={formatCurrency((data.travelTimeQty || 0) * (data.travelTimeRate || 0))}
         >
           <div className="flex gap-2 items-center">
@@ -99,7 +97,6 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         {/* Wait/OT Time */}
         <FormRow
           label="Wait/Misc (Qty)"
-          formula={`${(data.waitTimeQty || 0).toFixed(2)} × ${formatCurrency(data.waitTimeRate)}`}
           result={formatCurrency((data.waitTimeQty || 0) * (data.waitTimeRate || 0))}
         >
           <div className="flex gap-2 items-center">
@@ -128,7 +125,6 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         {/* Extra Stops */}
         <FormRow
           label="Extra Stops"
-          formula={`${(data.extraStopsQty || 0).toFixed(2)} × ${formatCurrency(data.extraStopsRate)}`}
           result={formatCurrency((data.extraStopsQty || 0) * (data.extraStopsRate || 0))}
         >
           <div className="flex gap-2 items-center">
@@ -184,7 +180,6 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         {/* Car Seat */}
         <FormRow
           label="Car Seat"
-          formula={`${(data.carSeatQty || 0).toFixed(2)} × ${formatCurrency(data.carSeatRate)}`}
           result={formatCurrency((data.carSeatQty || 0) * (data.carSeatRate || 0))}
         >
           <div className="flex gap-2 items-center">
