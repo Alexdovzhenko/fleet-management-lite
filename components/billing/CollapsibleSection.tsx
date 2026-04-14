@@ -13,28 +13,28 @@ interface CollapsibleSectionProps {
 // Config: colors and icons per section type
 const sectionConfig = {
   primary: {
-    accentColor: "#3B82F6",
-    accentClass: "from-blue-500 to-blue-600",
-    borderClass: "border-blue-500",
-    hoverGlow: "hover:shadow-lg hover:shadow-blue-500/30",
+    accentColor: "#475569",
+    accentClass: "bg-slate-100 hover:bg-slate-50",
+    borderClass: "border-slate-700",
+    hoverGlow: "hover:bg-slate-50",
     icon: DollarSign,
-    bgGradient: "from-slate-900 via-slate-900 to-slate-800",
+    bgGradient: "bg-white",
   },
   additional: {
-    accentColor: "#8B5CF6",
-    accentClass: "from-violet-500 to-violet-600",
-    borderClass: "border-violet-500",
-    hoverGlow: "hover:shadow-lg hover:shadow-violet-500/30",
+    accentColor: "#6366F1",
+    accentClass: "bg-slate-100 hover:bg-slate-50",
+    borderClass: "border-indigo-400",
+    hoverGlow: "hover:bg-slate-50",
     icon: Plus,
-    bgGradient: "from-slate-900 via-slate-900 to-slate-800",
+    bgGradient: "bg-white",
   },
   farmout: {
-    accentColor: "#10B981",
-    accentClass: "from-emerald-500 to-emerald-600",
-    borderClass: "border-emerald-500",
-    hoverGlow: "hover:shadow-lg hover:shadow-emerald-500/30",
+    accentColor: "#0D9488",
+    accentClass: "bg-slate-100 hover:bg-slate-50",
+    borderClass: "border-teal-600",
+    hoverGlow: "hover:bg-slate-50",
     icon: TrendingUp,
-    bgGradient: "from-slate-900 via-slate-900 to-slate-800",
+    bgGradient: "bg-white",
   },
 }
 
@@ -72,9 +72,10 @@ export function CollapsibleSection({
 
   return (
     <div
-      className={`rounded-xl overflow-hidden shadow-lg transition-all duration-300 ${config.hoverGlow}`}
+      className={`rounded-[10px] overflow-hidden transition-all duration-200`}
       style={{
-        border: `1px solid ${config.accentColor}20`,
+        border: `1px solid #E5E7EB`,
+        boxShadow: `0 1px 3px rgba(0, 0, 0, 0.06)`,
       }}
     >
       {/* Header */}
@@ -82,33 +83,25 @@ export function CollapsibleSection({
         onClick={handleToggle}
         aria-expanded={isOpen}
         aria-controls={`section-${title}`}
-        className={`w-full px-6 py-5 flex items-center justify-between gap-4 bg-gradient-to-r ${config.bgGradient} transition-all duration-300 group`}
+        className={`w-full px-6 py-5 flex items-center justify-between gap-4 bg-white transition-all duration-200 group ${config.hoverGlow}`}
       >
         <div className="flex items-center gap-4 flex-1">
           {/* Accent bar + icon */}
           <div
-            className={`w-1 h-8 rounded-full transition-all duration-300 ${config.hoverGlow} group-hover:h-10`}
+            className={`w-1 h-8 rounded transition-all duration-200`}
             style={{
-              background: `linear-gradient(180deg, ${config.accentColor}, ${config.accentColor}aa)`,
-              boxShadow: `0 0 12px ${config.accentColor}40`,
+              width: '3px',
+              backgroundColor: config.accentColor,
             }}
           />
 
           {/* Icon + Label */}
           <div className="flex items-center gap-3">
-            <div
-              className="p-2 rounded-lg transition-all duration-300 group-hover:scale-110"
-              style={{
-                background: `linear-gradient(135deg, ${config.accentColor}20, ${config.accentColor}10)`,
-              }}
-            >
-              <IconComponent
-                className="w-5 h-5 flex-shrink-0"
-                style={{ color: config.accentColor }}
-                strokeWidth={2.5}
-              />
-            </div>
-            <h3 className="text-sm font-bold text-white uppercase tracking-widest group-hover:text-opacity-100 transition-colors duration-300">
+            <IconComponent
+              className="w-5 h-5 flex-shrink-0 text-slate-700"
+              strokeWidth={1.5}
+            />
+            <h3 className="text-sm font-medium text-slate-900 uppercase tracking-wide">
               {title}
             </h3>
           </div>
@@ -116,12 +109,11 @@ export function CollapsibleSection({
 
         {/* Chevron */}
         <ChevronDown
-          className="w-5 h-5 flex-shrink-0 transition-transform duration-500 ease-out"
+          className="w-5 h-5 flex-shrink-0 text-slate-700 transition-transform duration-200"
           style={{
-            color: config.accentColor,
             transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
           }}
-          strokeWidth={2.5}
+          strokeWidth={1.5}
         />
       </button>
 
@@ -132,7 +124,7 @@ export function CollapsibleSection({
         style={{
           maxHeight: contentHeight ?? 0,
           overflow: "hidden",
-          transition: `max-height 500ms cubic-bezier(0.23, 1, 0.32, 1)`,
+          transition: `max-height 250ms ease-out`,
         }}
       >
         {/* Inner Content */}
@@ -140,10 +132,10 @@ export function CollapsibleSection({
           ref={contentRef}
           className="space-y-4 lg:space-y-5 px-6 py-5"
           style={{
-            background: "linear-gradient(to bottom, rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.3))",
-            borderTop: `1px solid ${config.accentColor}20`,
+            background: "#FFFFFF",
+            borderTop: `1px solid #E5E7EB`,
             opacity: isOpen ? 1 : 0,
-            transition: `opacity 500ms cubic-bezier(0.23, 1, 0.32, 1)`,
+            transition: `opacity 250ms ease-out`,
             pointerEvents: isOpen ? "auto" : "none",
           }}
         >
@@ -151,20 +143,6 @@ export function CollapsibleSection({
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes accentPulse {
-          0%, 100% {
-            box-shadow: 0 0 12px ${config.accentColor}40;
-          }
-          50% {
-            box-shadow: 0 0 20px ${config.accentColor}60;
-          }
-        }
-
-        button:hover .accent-bar {
-          animation: accentPulse 2s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   )
 }
