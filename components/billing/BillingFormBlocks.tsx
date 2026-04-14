@@ -211,35 +211,13 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         </FormRow>
 
         {/* Late/Early Charge */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between gap-4 py-2">
-            <label className="text-sm font-medium text-slate-700">Late/Early Charge</label>
-            <div className="flex items-center gap-3">
-              <select
-                value={data.lateEarlyType || "late"}
-                onChange={(e) => onChange("lateEarlyType", e.target.value)}
-                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
-              >
-                <option value="late">Late</option>
-                <option value="early">Early</option>
-              </select>
-            </div>
-            <div className="min-w-[100px]">
-              <div className="border border-slate-300 rounded-lg px-3 py-2 text-right text-sm font-semibold text-slate-900 bg-slate-50">
-                {formatCurrency(data.lateEarlyCharge)}
-              </div>
-            </div>
-          </div>
-          <input
-            type="number"
-            inputMode="decimal"
-            step="0.01"
-            placeholder="0.00"
-            value={data.lateEarlyCharge || ""}
-            onChange={(e) => onChange("lateEarlyCharge", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
-          />
-        </div>
+        <FormRow
+          label="Late/Early Charge"
+          result={formatCurrency(data.lateEarlyCharge)}
+          editable={true}
+          editableValue={data.lateEarlyCharge || ""}
+          onEditChange={(val) => onChange("lateEarlyCharge", val ? parseFloat(val) : 0)}
+        />
       </div>
 
       {/* ADDITIONAL CHARGES SECTION */}
