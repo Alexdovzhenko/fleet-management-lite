@@ -173,15 +173,13 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         />
 
         {/* Meet & Greet */}
-        <FormRow label="Meet & Greet" result={formatCurrency(data.meetAndGreet)}>
-          <input
-            type="number"
-            placeholder="0.00"
-            value={data.meetAndGreet || ""}
-            onChange={(e) => onChange("meetAndGreet", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
-          />
-        </FormRow>
+        <FormRow
+          label="Meet & Greet"
+          result={formatCurrency(data.meetAndGreet)}
+          editable={true}
+          editableValue={data.meetAndGreet || ""}
+          onEditChange={(val) => onChange("meetAndGreet", val ? parseFloat(val) : 0)}
+        />
 
         {/* Car Seat */}
         <FormRow
