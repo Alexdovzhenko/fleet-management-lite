@@ -2,6 +2,7 @@
 
 import { computeBillingTotals, type BillingData } from "@/lib/billing-calculations"
 import { useMemo } from "react"
+import { CollapsibleSection } from "./CollapsibleSection"
 
 interface BillingFormBlocksProps {
   data: Partial<BillingData>
@@ -22,13 +23,9 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
   }
 
   return (
-    <div className="space-y-6 lg:space-y-8">
+    <div>
       {/* PRIMARY CHARGES SECTION */}
-      <div className="border-t border-slate-200 pt-4 space-y-4 lg:space-y-5">
-        <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider border-l-4 border-blue-500 pl-3 mb-4">
-          Primary Charges
-        </h3>
-
+      <CollapsibleSection title="Primary Charges" defaultOpen={true}>
         {/* Flat Rate */}
         <FormRow
           label="Flat Rate"
@@ -228,14 +225,10 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           editableValue={data.lateEarlyCharge || ""}
           onEditChange={(val) => onChange("lateEarlyCharge", val ? parseFloat(val) : 0)}
         />
-      </div>
+      </CollapsibleSection>
 
       {/* ADDITIONAL CHARGES SECTION */}
-      <div className="border-t border-slate-200 pt-4 space-y-4 lg:space-y-5">
-        <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider border-l-4 border-blue-500 pl-3 mb-4">
-          Additional Charges
-        </h3>
-
+      <CollapsibleSection title="Additional Charges" defaultOpen={false}>
         {/* Misc Fee 1 */}
         <FormRow label="Misc Fee 1" result={formatCurrency(data.miscFee1Amount)}>
           <div className="flex gap-2 flex-1">
@@ -356,14 +349,10 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
             <span className="text-slate-500">%</span>
           </div>
         </FormRow>
-      </div>
+      </CollapsibleSection>
 
       {/* FARM-OUT SECTION */}
-      <div className="border-t border-slate-200 pt-4 space-y-4 lg:space-y-5">
-        <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider border-l-4 border-blue-500 pl-3 mb-4">
-          Farm-Out Costs
-        </h3>
-
+      <CollapsibleSection title="Farm-Out Costs" defaultOpen={false}>
         {/* Farm-out Rate */}
         <FormRow label="Farm-Out Rate" result={formatCurrency(data.farmOutRate)}>
           <div className="relative flex items-center">
@@ -595,7 +584,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
             <span className="text-slate-500">%</span>
           </div>
         </FormRow>
-      </div>
+      </CollapsibleSection>
     </div>
   )
 }
