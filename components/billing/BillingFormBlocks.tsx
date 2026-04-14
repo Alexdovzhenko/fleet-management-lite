@@ -69,7 +69,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"
-                value={focusedField === "perHourRate" ? "" : formatCurrencyInput(data.perHourRate)}
+                value={focusedField === "perHourRate" ? String(data.perHourRate || "") : formatCurrencyInput(data.perHourRate)}
                 onChange={(e) => onChange("perHourRate", parseCurrencyInput(e.target.value))}
                 onFocus={() => setFocusedField("perHourRate")}
                 onBlur={() => setFocusedField(null)}
@@ -101,7 +101,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"
-                value={focusedField === "travelTimeRate" ? "" : formatCurrencyInput(data.travelTimeRate)}
+                value={focusedField === "travelTimeRate" ? String(data.travelTimeRate || "") : formatCurrencyInput(data.travelTimeRate)}
                 onChange={(e) => onChange("travelTimeRate", parseCurrencyInput(e.target.value))}
                 onFocus={() => setFocusedField("travelTimeRate")}
                 onBlur={() => setFocusedField(null)}
@@ -133,7 +133,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"
-                value={focusedField === "waitTimeRate" ? "" : formatCurrencyInput(data.waitTimeRate)}
+                value={focusedField === "waitTimeRate" ? String(data.waitTimeRate || "") : formatCurrencyInput(data.waitTimeRate)}
                 onChange={(e) => onChange("waitTimeRate", parseCurrencyInput(e.target.value))}
                 onFocus={() => setFocusedField("waitTimeRate")}
                 onBlur={() => setFocusedField(null)}
@@ -165,7 +165,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"
-                value={focusedField === "extraStopsRate" ? "" : formatCurrencyInput(data.extraStopsRate)}
+                value={focusedField === "extraStopsRate" ? String(data.extraStopsRate || "") : formatCurrencyInput(data.extraStopsRate)}
                 onChange={(e) => onChange("extraStopsRate", parseCurrencyInput(e.target.value))}
                 onFocus={() => setFocusedField("extraStopsRate")}
                 onBlur={() => setFocusedField(null)}
@@ -224,7 +224,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"
-                value={focusedField === "carSeatRate" ? "" : formatCurrencyInput(data.carSeatRate)}
+                value={focusedField === "carSeatRate" ? String(data.carSeatRate || "") : formatCurrencyInput(data.carSeatRate)}
                 onChange={(e) => onChange("carSeatRate", parseCurrencyInput(e.target.value))}
                 onFocus={() => setFocusedField("carSeatRate")}
                 onBlur={() => setFocusedField(null)}
@@ -257,7 +257,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   type="text"
                   inputMode="decimal"
                   placeholder="0.00"
-                  value={focusedField === "miscFee1" ? "" : formatCurrencyInput(data.miscFee1Amount)}
+                  value={focusedField === "miscFee1" ? String(data.miscFee1Amount || "") : formatCurrencyInput(data.miscFee1Amount)}
                   onChange={(e) => onChange("miscFee1Amount", parseCurrencyInput(e.target.value))}
                   onFocus={() => setFocusedField("miscFee1")}
                   onBlur={() => setFocusedField(null)}
@@ -291,7 +291,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   type="text"
                   inputMode="decimal"
                   placeholder="0.00"
-                  value={focusedField === "miscFee2" ? "" : formatCurrencyInput(data.miscFee2Amount)}
+                  value={focusedField === "miscFee2" ? String(data.miscFee2Amount || "") : formatCurrencyInput(data.miscFee2Amount)}
                   onChange={(e) => onChange("miscFee2Amount", parseCurrencyInput(e.target.value))}
                   onFocus={() => setFocusedField("miscFee2")}
                   onBlur={() => setFocusedField(null)}
@@ -325,7 +325,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   type="text"
                   inputMode="decimal"
                   placeholder="0.00"
-                  value={focusedField === "miscFee3" ? "" : formatCurrencyInput(data.miscFee3Amount)}
+                  value={focusedField === "miscFee3" ? String(data.miscFee3Amount || "") : formatCurrencyInput(data.miscFee3Amount)}
                   onChange={(e) => onChange("miscFee3Amount", parseCurrencyInput(e.target.value))}
                   onFocus={() => setFocusedField("miscFee3")}
                   onBlur={() => setFocusedField(null)}
@@ -419,7 +419,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutRate" ? "" : formatCurrencyInput(data.farmOutRate)}
+              value={focusedField === "farmOutRate" ? String(data.farmOutRate || "") : formatCurrencyInput(data.farmOutRate)}
               onChange={(e) => onChange("farmOutRate", parseCurrencyInput(e.target.value))}
               onFocus={() => setFocusedField("farmOutRate")}
               onBlur={() => setFocusedField(null)}
@@ -436,7 +436,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutGratuity" ? "" : formatCurrencyInput(data.farmOutGratuity)}
+              value={focusedField === "farmOutGratuity" ? String(data.farmOutGratuity || "") : formatCurrencyInput(data.farmOutGratuity)}
               onChange={(e) => onChange("farmOutGratuity", parseCurrencyInput(e.target.value))}
               onFocus={() => setFocusedField("farmOutGratuity")}
               onBlur={() => setFocusedField(null)}
@@ -453,7 +453,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutStops" ? "" : formatCurrencyInput(data.farmOutStops)}
+              value={focusedField === "farmOutStops" ? String(data.farmOutStops || "") : formatCurrencyInput(data.farmOutStops)}
               onChange={(e) => onChange("farmOutStops", parseCurrencyInput(e.target.value))}
               onFocus={() => setFocusedField("farmOutStops")}
               onBlur={() => setFocusedField(null)}
@@ -470,7 +470,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutTolls" ? "" : formatCurrencyInput(data.farmOutTolls)}
+              value={focusedField === "farmOutTolls" ? String(data.farmOutTolls || "") : formatCurrencyInput(data.farmOutTolls)}
               onChange={(e) => onChange("farmOutTolls", parseCurrencyInput(e.target.value))}
               onFocus={() => setFocusedField("farmOutTolls")}
               onBlur={() => setFocusedField(null)}
@@ -487,7 +487,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutParking" ? "" : formatCurrencyInput(data.farmOutParking)}
+              value={focusedField === "farmOutParking" ? String(data.farmOutParking || "") : formatCurrencyInput(data.farmOutParking)}
               onChange={(e) => onChange("farmOutParking", parseCurrencyInput(e.target.value))}
               onFocus={() => setFocusedField("farmOutParking")}
               onBlur={() => setFocusedField(null)}
@@ -504,7 +504,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutAirportFee" ? "" : formatCurrencyInput(data.farmOutAirportFee)}
+              value={focusedField === "farmOutAirportFee" ? String(data.farmOutAirportFee || "") : formatCurrencyInput(data.farmOutAirportFee)}
               onChange={(e) => onChange("farmOutAirportFee", parseCurrencyInput(e.target.value))}
               onFocus={() => setFocusedField("farmOutAirportFee")}
               onBlur={() => setFocusedField(null)}
@@ -521,7 +521,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutWaitTime" ? "" : formatCurrencyInput(data.farmOutWaitTime)}
+              value={focusedField === "farmOutWaitTime" ? String(data.farmOutWaitTime || "") : formatCurrencyInput(data.farmOutWaitTime)}
               onChange={(e) => onChange("farmOutWaitTime", parseCurrencyInput(e.target.value))}
               onFocus={() => setFocusedField("farmOutWaitTime")}
               onBlur={() => setFocusedField(null)}
@@ -558,7 +558,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutMeetAndGreet" ? "" : formatCurrencyInput(data.farmOutMeetAndGreet)}
+              value={focusedField === "farmOutMeetAndGreet" ? String(data.farmOutMeetAndGreet || "") : formatCurrencyInput(data.farmOutMeetAndGreet)}
               onChange={(e) => onChange("farmOutMeetAndGreet", parseCurrencyInput(e.target.value))}
               onFocus={() => setFocusedField("farmOutMeetAndGreet")}
               onBlur={() => setFocusedField(null)}
@@ -575,7 +575,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutChildSeat" ? "" : formatCurrencyInput(data.farmOutChildSeat)}
+              value={focusedField === "farmOutChildSeat" ? String(data.farmOutChildSeat || "") : formatCurrencyInput(data.farmOutChildSeat)}
               onChange={(e) => onChange("farmOutChildSeat", parseCurrencyInput(e.target.value))}
               onFocus={() => setFocusedField("farmOutChildSeat")}
               onBlur={() => setFocusedField(null)}
@@ -628,7 +628,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
             type="text"
             inputMode="decimal"
             placeholder="0.00"
-            value={focusedField === "farmOutLateEarlyCharge" ? "" : formatCurrencyInput(data.farmOutLateEarlyCharge)}
+            value={focusedField === "farmOutLateEarlyCharge" ? String(data.farmOutLateEarlyCharge || "") : formatCurrencyInput(data.farmOutLateEarlyCharge)}
             onChange={(e) => onChange("farmOutLateEarlyCharge", parseCurrencyInput(e.target.value))}
             onFocus={() => setFocusedField("farmOutLateEarlyCharge")}
             onBlur={() => setFocusedField(null)}
