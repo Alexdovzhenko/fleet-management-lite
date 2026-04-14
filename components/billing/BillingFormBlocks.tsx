@@ -357,7 +357,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         {/* Farm-out Rate */}
         <FormRow label="Farm-Out Rate" result={formatCurrency(data.farmOutRate)}>
           <div className="relative flex items-center">
-            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+            <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
             <input
               type="number"
               inputMode="decimal"
@@ -365,7 +365,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutRate || ""}
               onChange={(e) => onChange("farmOutRate", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+              className="w-20 pl-6 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
             />
           </div>
         </FormRow>
