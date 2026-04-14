@@ -30,17 +30,13 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         </h3>
 
         {/* Flat Rate */}
-        <FormRow label="Flat Rate" result={formatCurrency(data.flatRate)}>
-          <input
-            type="number"
-            inputMode="decimal"
-            step="0.01"
-            placeholder="0.00"
-            value={data.flatRate || ""}
-            onChange={(e) => onChange("flatRate", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
-          />
-        </FormRow>
+        <FormRow
+          label="Flat Rate"
+          result={formatCurrency(data.flatRate)}
+          editable={true}
+          editableValue={data.flatRate || ""}
+          onEditChange={(val) => onChange("flatRate", val ? parseFloat(val) : 0)}
+        />
 
         {/* Per Hour */}
         <FormRow
@@ -582,10 +578,13 @@ interface FormRowProps {
   labelColor?: string
   formula?: string
   result: string
-  children: React.ReactNode
+  children?: React.ReactNode
+  editable?: boolean
+  editableValue?: string | number
+  onEditChange?: (val: string) => void
 }
 
-function FormRow({ label, labelColor = "text-slate-900", formula, result, children }: FormRowProps) {
+function FormRow({ label, labelColor = "text-slate-900", formula, result, children, editable = false, editableValue = "", onEditChange }: FormRowProps) {
   return (
     <div className="flex items-center justify-between gap-4 py-3 lg:py-4">
       <div className="flex-1 min-w-[100px]">
@@ -596,9 +595,21 @@ function FormRow({ label, labelColor = "text-slate-900", formula, result, childr
         {formula && <span className="font-mono text-sm text-slate-600 min-w-fit">{formula}</span>}
       </div>
       <div className="min-w-[110px]">
-        <div className="border border-slate-300 rounded-lg px-3 py-2 text-right text-sm font-semibold text-slate-900 bg-slate-50">
-          {result}
-        </div>
+        {editable ? (
+          <input
+            type="number"
+            inputMode="decimal"
+            step="0.01"
+            placeholder="0.00"
+            value={editableValue}
+            onChange={(e) => onEditChange?.(e.target.value)}
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-right font-semibold focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none"
+          />
+        ) : (
+          <div className="border border-slate-300 rounded-lg px-3 py-2 text-right text-sm font-semibold text-slate-900 bg-slate-50">
+            {result}
+          </div>
+        )}
       </div>
     </div>
   )
