@@ -230,66 +230,13 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
       {/* ADDITIONAL CHARGES SECTION */}
       <CollapsibleSection title="Additional Charges" defaultOpen={false} type="additional">
         {/* Misc Fee 1 */}
-        <FormRow label="Misc Fee 1" result={formatCurrency(data.miscFee1Amount)}>
-          <div className="flex gap-2 flex-1">
-            <input
-              type="text"
-              placeholder="Label"
-              value={data.miscFee1Label || ""}
-              onChange={(e) => onChange("miscFee1Label", e.target.value)}
-              className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
-            />
-            <input
-              type="number"
-              inputMode="decimal"
-              step="0.01"
-              placeholder="0.00"
-              value={data.miscFee1Amount || ""}
-              onChange={(e) => onChange("miscFee1Amount", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
-            />
-          </div>
-        </FormRow>
+        <FormRow label="Misc Fee 1" result={formatCurrency(data.miscFee1Amount)} editable={true} editableValue={data.miscFee1Amount || ""} onEditChange={(val) => onChange("miscFee1Amount", val ? parseFloat(val) : 0)} />
 
         {/* Misc Fee 2 */}
-        <FormRow label="Misc Fee 2" result={formatCurrency(data.miscFee2Amount)}>
-          <div className="flex gap-2 flex-1">
-            <input
-              type="text"
-              placeholder="Label"
-              value={data.miscFee2Label || ""}
-              onChange={(e) => onChange("miscFee2Label", e.target.value)}
-              className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400"
-            />
-            <input
-              type="number"
-              placeholder="0.00"
-              value={data.miscFee2Amount || ""}
-              onChange={(e) => onChange("miscFee2Amount", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
-            />
-          </div>
-        </FormRow>
+        <FormRow label="Misc Fee 2" result={formatCurrency(data.miscFee2Amount)} editable={true} editableValue={data.miscFee2Amount || ""} onEditChange={(val) => onChange("miscFee2Amount", val ? parseFloat(val) : 0)} />
 
         {/* Misc Fee 3 */}
-        <FormRow label="Misc Fee 3" result={formatCurrency(data.miscFee3Amount)}>
-          <div className="flex gap-2 flex-1">
-            <input
-              type="text"
-              placeholder="Label"
-              value={data.miscFee3Label || ""}
-              onChange={(e) => onChange("miscFee3Label", e.target.value)}
-              className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400"
-            />
-            <input
-              type="number"
-              placeholder="0.00"
-              value={data.miscFee3Amount || ""}
-              onChange={(e) => onChange("miscFee3Amount", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-24 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
-            />
-          </div>
-        </FormRow>
+        <FormRow label="Misc Fee 3" result={formatCurrency(data.miscFee3Amount)} editable={true} editableValue={data.miscFee3Amount || ""} onEditChange={(val) => onChange("miscFee3Amount", val ? parseFloat(val) : 0)} />
 
         {/* Standard Gratuity - BLUE */}
         <FormRow
