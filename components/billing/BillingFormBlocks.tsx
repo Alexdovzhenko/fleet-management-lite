@@ -230,13 +230,88 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
       {/* ADDITIONAL CHARGES SECTION */}
       <CollapsibleSection title="Additional Charges" defaultOpen={false} type="additional">
         {/* Misc Fee 1 */}
-        <FormRow label="Misc Fee 1" result={formatCurrency(data.miscFee1Amount)} editable={true} editableValue={data.miscFee1Amount || ""} onEditChange={(val) => onChange("miscFee1Amount", val ? parseFloat(val) : 0)} />
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-4 py-2">
+            <label className="text-sm font-medium text-slate-700">Misc Fee 1</label>
+            <div className="min-w-[110px]">
+              <div className="relative flex items-center">
+                <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={data.miscFee1Amount || ""}
+                  onChange={(e) => onChange("miscFee1Amount", e.target.value ? parseFloat(e.target.value) : 0)}
+                  className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
+                />
+              </div>
+            </div>
+          </div>
+          <input
+            type="text"
+            placeholder="e.g., Surcharge, Service Fee, etc."
+            value={data.miscFee1Label || ""}
+            onChange={(e) => onChange("miscFee1Label", e.target.value)}
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 placeholder-slate-400 focus:ring-1 focus:ring-slate-400 focus:outline-none"
+          />
+        </div>
 
         {/* Misc Fee 2 */}
-        <FormRow label="Misc Fee 2" result={formatCurrency(data.miscFee2Amount)} editable={true} editableValue={data.miscFee2Amount || ""} onEditChange={(val) => onChange("miscFee2Amount", val ? parseFloat(val) : 0)} />
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-4 py-2">
+            <label className="text-sm font-medium text-slate-700">Misc Fee 2</label>
+            <div className="min-w-[110px]">
+              <div className="relative flex items-center">
+                <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={data.miscFee2Amount || ""}
+                  onChange={(e) => onChange("miscFee2Amount", e.target.value ? parseFloat(e.target.value) : 0)}
+                  className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
+                />
+              </div>
+            </div>
+          </div>
+          <input
+            type="text"
+            placeholder="e.g., Surcharge, Service Fee, etc."
+            value={data.miscFee2Label || ""}
+            onChange={(e) => onChange("miscFee2Label", e.target.value)}
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 placeholder-slate-400 focus:ring-1 focus:ring-slate-400 focus:outline-none"
+          />
+        </div>
 
         {/* Misc Fee 3 */}
-        <FormRow label="Misc Fee 3" result={formatCurrency(data.miscFee3Amount)} editable={true} editableValue={data.miscFee3Amount || ""} onEditChange={(val) => onChange("miscFee3Amount", val ? parseFloat(val) : 0)} />
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-4 py-2">
+            <label className="text-sm font-medium text-slate-700">Misc Fee 3</label>
+            <div className="min-w-[110px]">
+              <div className="relative flex items-center">
+                <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={data.miscFee3Amount || ""}
+                  onChange={(e) => onChange("miscFee3Amount", e.target.value ? parseFloat(e.target.value) : 0)}
+                  className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
+                />
+              </div>
+            </div>
+          </div>
+          <input
+            type="text"
+            placeholder="e.g., Surcharge, Service Fee, etc."
+            value={data.miscFee3Label || ""}
+            onChange={(e) => onChange("miscFee3Label", e.target.value)}
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 placeholder-slate-400 focus:ring-1 focus:ring-slate-400 focus:outline-none"
+          />
+        </div>
 
         {/* Standard Gratuity - BLUE */}
         <FormRow
