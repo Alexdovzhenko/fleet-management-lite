@@ -155,26 +155,22 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         </FormRow>
 
         {/* Airport Fee */}
-        <FormRow label="Airport Fee" result={formatCurrency(data.airportFee)}>
-          <input
-            type="number"
-            placeholder="0.00"
-            value={data.airportFee || ""}
-            onChange={(e) => onChange("airportFee", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
-          />
-        </FormRow>
+        <FormRow
+          label="Airport Fee"
+          result={formatCurrency(data.airportFee)}
+          editable={true}
+          editableValue={data.airportFee || ""}
+          onEditChange={(val) => onChange("airportFee", val ? parseFloat(val) : 0)}
+        />
 
         {/* Parking */}
-        <FormRow label="Parking" result={formatCurrency(data.parkingFee)}>
-          <input
-            type="number"
-            placeholder="0.00"
-            value={data.parkingFee || ""}
-            onChange={(e) => onChange("parkingFee", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
-          />
-        </FormRow>
+        <FormRow
+          label="Parking"
+          result={formatCurrency(data.parkingFee)}
+          editable={true}
+          editableValue={data.parkingFee || ""}
+          onEditChange={(val) => onChange("parkingFee", val ? parseFloat(val) : 0)}
+        />
 
         {/* Meet & Greet */}
         <FormRow label="Meet & Greet" result={formatCurrency(data.meetAndGreet)}>
