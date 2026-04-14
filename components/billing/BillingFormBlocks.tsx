@@ -356,79 +356,114 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
 
         {/* Farm-out Rate */}
         <FormRow label="Farm-Out Rate" result={formatCurrency(data.farmOutRate)}>
-          <input
-            type="number"
-            placeholder="0.00"
-            value={data.farmOutRate || ""}
-            onChange={(e) => onChange("farmOutRate", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
-          />
+          <div className="relative flex items-center">
+            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              placeholder="0.00"
+              value={data.farmOutRate || ""}
+              onChange={(e) => onChange("farmOutRate", e.target.value ? parseFloat(e.target.value) : 0)}
+              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+            />
+          </div>
         </FormRow>
 
         {/* Farm-out Gratuity */}
         <FormRow label="FO Gratuity" result={formatCurrency(data.farmOutGratuity)}>
-          <input
-            type="number"
-            placeholder="0.00"
-            value={data.farmOutGratuity || ""}
-            onChange={(e) => onChange("farmOutGratuity", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
-          />
+          <div className="relative flex items-center">
+            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              placeholder="0.00"
+              value={data.farmOutGratuity || ""}
+              onChange={(e) => onChange("farmOutGratuity", e.target.value ? parseFloat(e.target.value) : 0)}
+              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+            />
+          </div>
         </FormRow>
 
         {/* Farm-out Stops */}
         <FormRow label="FO Stops" result={formatCurrency(data.farmOutStops)}>
-          <input
-            type="number"
-            placeholder="0.00"
-            value={data.farmOutStops || ""}
-            onChange={(e) => onChange("farmOutStops", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
-          />
+          <div className="relative flex items-center">
+            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              placeholder="0.00"
+              value={data.farmOutStops || ""}
+              onChange={(e) => onChange("farmOutStops", e.target.value ? parseFloat(e.target.value) : 0)}
+              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+            />
+          </div>
         </FormRow>
 
         {/* Farm-out Tolls */}
         <FormRow label="FO Tolls" result={formatCurrency(data.farmOutTolls)}>
-          <input
-            type="number"
-            placeholder="0.00"
-            value={data.farmOutTolls || ""}
-            onChange={(e) => onChange("farmOutTolls", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
-          />
+          <div className="relative flex items-center">
+            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              placeholder="0.00"
+              value={data.farmOutTolls || ""}
+              onChange={(e) => onChange("farmOutTolls", e.target.value ? parseFloat(e.target.value) : 0)}
+              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+            />
+          </div>
         </FormRow>
 
         {/* Farm-out Parking */}
         <FormRow label="FO Parking" result={formatCurrency(data.farmOutParking)}>
-          <input
-            type="number"
-            placeholder="0.00"
-            value={data.farmOutParking || ""}
-            onChange={(e) => onChange("farmOutParking", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
-          />
+          <div className="relative flex items-center">
+            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              placeholder="0.00"
+              value={data.farmOutParking || ""}
+              onChange={(e) => onChange("farmOutParking", e.target.value ? parseFloat(e.target.value) : 0)}
+              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+            />
+          </div>
         </FormRow>
 
         {/* Farm-out Airport Fee */}
         <FormRow label="FO Airport Fee" result={formatCurrency(data.farmOutAirportFee)}>
-          <input
-            type="number"
-            placeholder="0.00"
-            value={data.farmOutAirportFee || ""}
-            onChange={(e) => onChange("farmOutAirportFee", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
-          />
+          <div className="relative flex items-center">
+            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              placeholder="0.00"
+              value={data.farmOutAirportFee || ""}
+              onChange={(e) => onChange("farmOutAirportFee", e.target.value ? parseFloat(e.target.value) : 0)}
+              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+            />
+          </div>
         </FormRow>
 
         {/* Farm-out Wait Time */}
         <FormRow label="FO Wait Time" result={formatCurrency(data.farmOutWaitTime)}>
-          <input
-            type="number"
-            placeholder="0.00"
-            value={data.farmOutWaitTime || ""}
-            onChange={(e) => onChange("farmOutWaitTime", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
-          />
+          <div className="relative flex items-center">
+            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              placeholder="0.00"
+              value={data.farmOutWaitTime || ""}
+              onChange={(e) => onChange("farmOutWaitTime", e.target.value ? parseFloat(e.target.value) : 0)}
+              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+            />
+          </div>
         </FormRow>
 
         {/* Farm-out Fuel Surcharge - BLUE */}
@@ -452,24 +487,34 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
 
         {/* Farm-out Meet & Greet */}
         <FormRow label="FO Meet & Greet" result={formatCurrency(data.farmOutMeetAndGreet)}>
-          <input
-            type="number"
-            placeholder="0.00"
-            value={data.farmOutMeetAndGreet || ""}
-            onChange={(e) => onChange("farmOutMeetAndGreet", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
-          />
+          <div className="relative flex items-center">
+            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              placeholder="0.00"
+              value={data.farmOutMeetAndGreet || ""}
+              onChange={(e) => onChange("farmOutMeetAndGreet", e.target.value ? parseFloat(e.target.value) : 0)}
+              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+            />
+          </div>
         </FormRow>
 
         {/* Farm-out Child Seat */}
         <FormRow label="FO Child Seat" result={formatCurrency(data.farmOutChildSeat)}>
-          <input
-            type="number"
-            placeholder="0.00"
-            value={data.farmOutChildSeat || ""}
-            onChange={(e) => onChange("farmOutChildSeat", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-20 px-2 py-1 border border-slate-300 rounded text-sm"
-          />
+          <div className="relative flex items-center">
+            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              placeholder="0.00"
+              value={data.farmOutChildSeat || ""}
+              onChange={(e) => onChange("farmOutChildSeat", e.target.value ? parseFloat(e.target.value) : 0)}
+              className="w-20 pl-5 pr-2 py-1 border border-slate-300 rounded text-sm text-right"
+            />
+          </div>
         </FormRow>
 
         {/* Farm-out Discount - RED */}
