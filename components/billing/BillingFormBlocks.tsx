@@ -253,6 +253,11 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
             placeholder="e.g., Surcharge, Service Fee, etc."
             value={data.miscFee1Label || ""}
             onChange={(e) => onChange("miscFee1Label", e.target.value)}
+            onFocus={(e) => {
+              if (e.target.value === "Misc Fee 1") {
+                onChange("miscFee1Label", "")
+              }
+            }}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 placeholder-slate-400 focus:ring-1 focus:ring-slate-400 focus:outline-none"
           />
         </div>
@@ -281,6 +286,11 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
             placeholder="e.g., Surcharge, Service Fee, etc."
             value={data.miscFee2Label || ""}
             onChange={(e) => onChange("miscFee2Label", e.target.value)}
+            onFocus={(e) => {
+              if (e.target.value === "Misc Fee 2") {
+                onChange("miscFee2Label", "")
+              }
+            }}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 placeholder-slate-400 focus:ring-1 focus:ring-slate-400 focus:outline-none"
           />
         </div>
@@ -309,6 +319,11 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
             placeholder="e.g., Surcharge, Service Fee, etc."
             value={data.miscFee3Label || ""}
             onChange={(e) => onChange("miscFee3Label", e.target.value)}
+            onFocus={(e) => {
+              if (e.target.value === "Misc Fee 3") {
+                onChange("miscFee3Label", "")
+              }
+            }}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 placeholder-slate-400 focus:ring-1 focus:ring-slate-400 focus:outline-none"
           />
         </div>
