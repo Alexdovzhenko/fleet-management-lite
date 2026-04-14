@@ -12,6 +12,22 @@ interface BillingFormBlocksProps {
 export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
   const totals = useMemo(() => computeBillingTotals(data as BillingData), [data])
 
+  // Format number to currency display (e.g., 1999.1 → "1,999.10")
+  const formatCurrencyInput = (val: any) => {
+    const num = typeof val === "string" ? parseFloat(val) || 0 : val || 0
+    if (isNaN(num)) return ""
+    return num.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  }
+
+  // Parse user input, removing commas and converting to number
+  const parseCurrencyInput = (val: string) => {
+    const cleaned = val.replace(/,/g, "")
+    return parseFloat(cleaned) || 0
+  }
+
   const formatCurrency = (val: any) => {
     const num = typeof val === "string" ? parseFloat(val) || 0 : val || 0
     return "$" + num.toFixed(2)
@@ -49,13 +65,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
             <div className="relative flex items-center w-20">
               <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
               <input
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.01"
                 placeholder="0.00"
-                value={data.perHourRate || ""}
-                onChange={(e) => onChange("perHourRate", e.target.value ? parseFloat(e.target.value) : 0)}
-                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+                value={formatCurrencyInput(data.perHourRate)}
+                onChange={(e) => onChange("perHourRate", parseCurrencyInput(e.target.value))}
+                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
           </div>
@@ -80,13 +95,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
             <div className="relative flex items-center w-20">
               <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
               <input
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.01"
                 placeholder="0.00"
-                value={data.travelTimeRate || ""}
-                onChange={(e) => onChange("travelTimeRate", e.target.value ? parseFloat(e.target.value) : 0)}
-                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+                value={formatCurrencyInput(data.travelTimeRate)}
+                onChange={(e) => onChange("travelTimeRate", parseCurrencyInput(e.target.value))}
+                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
           </div>
@@ -111,13 +125,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
             <div className="relative flex items-center w-20">
               <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
               <input
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.01"
                 placeholder="0.00"
-                value={data.waitTimeRate || ""}
-                onChange={(e) => onChange("waitTimeRate", e.target.value ? parseFloat(e.target.value) : 0)}
-                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+                value={formatCurrencyInput(data.waitTimeRate)}
+                onChange={(e) => onChange("waitTimeRate", parseCurrencyInput(e.target.value))}
+                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
           </div>
@@ -142,13 +155,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
             <div className="relative flex items-center w-20">
               <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
               <input
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.01"
                 placeholder="0.00"
-                value={data.extraStopsRate || ""}
-                onChange={(e) => onChange("extraStopsRate", e.target.value ? parseFloat(e.target.value) : 0)}
-                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+                value={formatCurrencyInput(data.extraStopsRate)}
+                onChange={(e) => onChange("extraStopsRate", parseCurrencyInput(e.target.value))}
+                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
           </div>
@@ -200,13 +212,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
             <div className="relative flex items-center w-20">
               <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
               <input
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.01"
                 placeholder="0.00"
-                value={data.carSeatRate || ""}
-                onChange={(e) => onChange("carSeatRate", e.target.value ? parseFloat(e.target.value) : 0)}
-                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+                value={formatCurrencyInput(data.carSeatRate)}
+                onChange={(e) => onChange("carSeatRate", parseCurrencyInput(e.target.value))}
+                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
           </div>
@@ -232,13 +243,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               <div className="relative flex items-center">
                 <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
                 <input
-                  type="number"
+                  type="text"
                   inputMode="decimal"
-                  step="0.01"
                   placeholder="0.00"
-                  value={data.miscFee1Amount || ""}
-                  onChange={(e) => onChange("miscFee1Amount", e.target.value ? parseFloat(e.target.value) : 0)}
-                  className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+                  value={formatCurrencyInput(data.miscFee1Amount)}
+                  onChange={(e) => onChange("miscFee1Amount", parseCurrencyInput(e.target.value))}
+                  className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
                 />
               </div>
             </div>
@@ -265,13 +275,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               <div className="relative flex items-center">
                 <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
                 <input
-                  type="number"
+                  type="text"
                   inputMode="decimal"
-                  step="0.01"
                   placeholder="0.00"
-                  value={data.miscFee2Amount || ""}
-                  onChange={(e) => onChange("miscFee2Amount", e.target.value ? parseFloat(e.target.value) : 0)}
-                  className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+                  value={formatCurrencyInput(data.miscFee2Amount)}
+                  onChange={(e) => onChange("miscFee2Amount", parseCurrencyInput(e.target.value))}
+                  className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
                 />
               </div>
             </div>
@@ -298,13 +307,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               <div className="relative flex items-center">
                 <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
                 <input
-                  type="number"
+                  type="text"
                   inputMode="decimal"
-                  step="0.01"
                   placeholder="0.00"
-                  value={data.miscFee3Amount || ""}
-                  onChange={(e) => onChange("miscFee3Amount", e.target.value ? parseFloat(e.target.value) : 0)}
-                  className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+                  value={formatCurrencyInput(data.miscFee3Amount)}
+                  onChange={(e) => onChange("miscFee3Amount", parseCurrencyInput(e.target.value))}
+                  className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
                 />
               </div>
             </div>
@@ -391,13 +399,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           <div className="relative flex items-center">
             <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
-              step="0.01"
               placeholder="0.00"
-              value={data.farmOutRate || ""}
-              onChange={(e) => onChange("farmOutRate", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-6 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              value={formatCurrencyInput(data.farmOutRate)}
+              onChange={(e) => onChange("farmOutRate", parseCurrencyInput(e.target.value))}
+              className="w-20 pl-6 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -407,13 +414,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           <div className="relative flex items-center">
             <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
-              step="0.01"
               placeholder="0.00"
-              value={data.farmOutGratuity || ""}
-              onChange={(e) => onChange("farmOutGratuity", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              value={formatCurrencyInput(data.farmOutGratuity)}
+              onChange={(e) => onChange("farmOutGratuity", parseCurrencyInput(e.target.value))}
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -423,13 +429,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           <div className="relative flex items-center">
             <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
-              step="0.01"
               placeholder="0.00"
-              value={data.farmOutStops || ""}
-              onChange={(e) => onChange("farmOutStops", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              value={formatCurrencyInput(data.farmOutStops)}
+              onChange={(e) => onChange("farmOutStops", parseCurrencyInput(e.target.value))}
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -439,13 +444,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           <div className="relative flex items-center">
             <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
-              step="0.01"
               placeholder="0.00"
-              value={data.farmOutTolls || ""}
-              onChange={(e) => onChange("farmOutTolls", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              value={formatCurrencyInput(data.farmOutTolls)}
+              onChange={(e) => onChange("farmOutTolls", parseCurrencyInput(e.target.value))}
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -455,13 +459,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           <div className="relative flex items-center">
             <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
-              step="0.01"
               placeholder="0.00"
-              value={data.farmOutParking || ""}
-              onChange={(e) => onChange("farmOutParking", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              value={formatCurrencyInput(data.farmOutParking)}
+              onChange={(e) => onChange("farmOutParking", parseCurrencyInput(e.target.value))}
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -471,13 +474,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           <div className="relative flex items-center">
             <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
-              step="0.01"
               placeholder="0.00"
-              value={data.farmOutAirportFee || ""}
-              onChange={(e) => onChange("farmOutAirportFee", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              value={formatCurrencyInput(data.farmOutAirportFee)}
+              onChange={(e) => onChange("farmOutAirportFee", parseCurrencyInput(e.target.value))}
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -487,13 +489,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           <div className="relative flex items-center">
             <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
-              step="0.01"
               placeholder="0.00"
-              value={data.farmOutWaitTime || ""}
-              onChange={(e) => onChange("farmOutWaitTime", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              value={formatCurrencyInput(data.farmOutWaitTime)}
+              onChange={(e) => onChange("farmOutWaitTime", parseCurrencyInput(e.target.value))}
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -523,13 +524,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           <div className="relative flex items-center">
             <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
-              step="0.01"
               placeholder="0.00"
-              value={data.farmOutMeetAndGreet || ""}
-              onChange={(e) => onChange("farmOutMeetAndGreet", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              value={formatCurrencyInput(data.farmOutMeetAndGreet)}
+              onChange={(e) => onChange("farmOutMeetAndGreet", parseCurrencyInput(e.target.value))}
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -539,13 +539,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           <div className="relative flex items-center">
             <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
-              step="0.01"
               placeholder="0.00"
-              value={data.farmOutChildSeat || ""}
-              onChange={(e) => onChange("farmOutChildSeat", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              value={formatCurrencyInput(data.farmOutChildSeat)}
+              onChange={(e) => onChange("farmOutChildSeat", parseCurrencyInput(e.target.value))}
+              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
         </FormRow>
@@ -591,13 +590,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
             </div>
           </div>
           <input
-            type="number"
+            type="text"
             inputMode="decimal"
-            step="0.01"
             placeholder="0.00"
-            value={data.farmOutLateEarlyCharge || ""}
-            onChange={(e) => onChange("farmOutLateEarlyCharge", e.target.value ? parseFloat(e.target.value) : 0)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+            value={formatCurrencyInput(data.farmOutLateEarlyCharge)}
+            onChange={(e) => onChange("farmOutLateEarlyCharge", parseCurrencyInput(e.target.value))}
+            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
           />
         </div>
 
