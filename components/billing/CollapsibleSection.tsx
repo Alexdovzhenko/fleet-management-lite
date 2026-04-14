@@ -19,12 +19,11 @@ export function CollapsibleSection({
   const [contentHeight, setContentHeight] = useState<number | undefined>(
     defaultOpen ? undefined : 0
   )
-  const [shouldRender, setShouldRender] = useState(defaultOpen)
 
   // Measure content height when opening
   useEffect(() => {
     if (isOpen && contentRef.current) {
-      // Use requestAnimationFrame to ensure DOM is updated
+      // Use requestAnimationFrame to ensure DOM is laid out
       requestAnimationFrame(() => {
         if (contentRef.current) {
           setContentHeight(contentRef.current.scrollHeight)
@@ -36,19 +35,6 @@ export function CollapsibleSection({
   }, [isOpen])
 
   const handleToggle = () => {
-    if (!isOpen) {
-      // Opening: render content and measure
-      setShouldRender(true)
-      // Measurement happens in useEffect after render
-    } else {
-      // Closing: collapse first, then remove from DOM after animation
-      setContentHeight(0)
-      // Use timeout to match animation duration before removing from DOM
-      const timer = setTimeout(() => {
-        setShouldRender(false)
-      }, 500)
-      return () => clearTimeout(timer)
-    }
     setIsOpen(!isOpen)
   }
 
@@ -85,39 +71,18 @@ export function CollapsibleSection({
         }}
       >
         {/* Inner Content */}
-        {shouldRender && (
-          <div
-            ref={contentRef}
-            className="space-y-4 lg:space-y-5 pb-4"
-            style={{
-              // Stagger children opacity/transform
-              animation: isOpen ? `expandContent 500ms cubic-bezier(0.23, 1, 0.32, 1)` : `collapseContent 500ms cubic-bezier(0.23, 1, 0.32, 1)`,
-            }}
-          >
-            {children}
-          </div>
-        )}
+        <div
+          ref={contentRef}
+          className="space-y-4 lg:space-y-5 pb-4"
+          style={{
+            opacity: isOpen ? 1 : 0,
+            transition: `opacity 500ms cubic-bezier(0.23, 1, 0.32, 1)`,
+            pointerEvents: isOpen ? "auto" : "none",
+          }}
+        >
+          {children}
+        </div>
       </div>
-
-      <style jsx>{`
-        @keyframes expandContent {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes collapseContent {
-          from {
-            opacity: 1;
-          }
-          to {
-            opacity: 0;
-          }
-        }
-      `}</style>
     </div>
   )
 }
