@@ -53,15 +53,18 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           result={formatCurrency((data.perHourQty || 0) * (data.perHourRate || 0))}
         >
           <div className="flex gap-2 items-center">
-            <input
-              type="number"
-              inputMode="decimal"
-              step="0.01"
-              placeholder="0.00"
-              value={data.perHourQty || ""}
-              onChange={(e) => onChange("perHourQty", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
-            />
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                inputMode="decimal"
+                step="0.01"
+                placeholder="0.00"
+                value={data.perHourQty || ""}
+                onChange={(e) => onChange("perHourQty", e.target.value ? parseFloat(e.target.value) : 0)}
+                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              />
+              <span className="text-sm font-medium text-slate-500 min-w-max">Hrs</span>
+            </div>
             <span className="text-slate-500 font-medium">×</span>
             <div className="relative flex items-center w-20">
               <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
@@ -85,15 +88,18 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           result={formatCurrency((data.travelTimeQty || 0) * (data.travelTimeRate || 0))}
         >
           <div className="flex gap-2 items-center">
-            <input
-              type="number"
-              inputMode="decimal"
-              step="0.01"
-              placeholder="0.00"
-              value={data.travelTimeQty || ""}
-              onChange={(e) => onChange("travelTimeQty", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
-            />
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                inputMode="decimal"
+                step="0.01"
+                placeholder="0.00"
+                value={data.travelTimeQty || ""}
+                onChange={(e) => onChange("travelTimeQty", e.target.value ? parseFloat(e.target.value) : 0)}
+                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              />
+              <span className="text-sm font-medium text-slate-500 min-w-max">Hrs</span>
+            </div>
             <span className="text-slate-500 font-medium">×</span>
             <div className="relative flex items-center w-20">
               <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
@@ -117,15 +123,18 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           result={formatCurrency((data.waitTimeQty || 0) * (data.waitTimeRate || 0))}
         >
           <div className="flex gap-2 items-center">
-            <input
-              type="number"
-              inputMode="decimal"
-              step="0.01"
-              placeholder="0.00"
-              value={data.waitTimeQty || ""}
-              onChange={(e) => onChange("waitTimeQty", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
-            />
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                inputMode="decimal"
+                step="0.01"
+                placeholder="0.00"
+                value={data.waitTimeQty || ""}
+                onChange={(e) => onChange("waitTimeQty", e.target.value ? parseFloat(e.target.value) : 0)}
+                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              />
+              <span className="text-sm font-medium text-slate-500 min-w-max">Hrs</span>
+            </div>
             <span className="text-slate-500 font-medium">×</span>
             <div className="relative flex items-center w-20">
               <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
@@ -149,15 +158,18 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           result={formatCurrency((data.extraStopsQty || 0) * (data.extraStopsRate || 0))}
         >
           <div className="flex gap-2 items-center">
-            <input
-              type="number"
-              inputMode="decimal"
-              step="0.01"
-              placeholder="0.00"
-              value={data.extraStopsQty || ""}
-              onChange={(e) => onChange("extraStopsQty", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
-            />
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                inputMode="decimal"
+                step="0.01"
+                placeholder="0.00"
+                value={data.extraStopsQty || ""}
+                onChange={(e) => onChange("extraStopsQty", e.target.value ? parseFloat(e.target.value) : 0)}
+                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              />
+              <span className="text-sm font-medium text-slate-500 min-w-max">ea.</span>
+            </div>
             <span className="text-slate-500 font-medium">×</span>
             <div className="relative flex items-center w-20">
               <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
@@ -208,15 +220,18 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           result={formatCurrency((data.carSeatQty || 0) * (data.carSeatRate || 0))}
         >
           <div className="flex gap-2 items-center">
-            <input
-              type="number"
-              inputMode="numeric"
-              step="1"
-              placeholder="0"
-              value={data.carSeatQty || ""}
-              onChange={(e) => onChange("carSeatQty", e.target.value ? parseInt(e.target.value) : 0)}
-              className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
-            />
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                inputMode="numeric"
+                step="1"
+                placeholder="0"
+                value={data.carSeatQty || ""}
+                onChange={(e) => onChange("carSeatQty", e.target.value ? parseInt(e.target.value) : 0)}
+                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              />
+              <span className="text-sm font-medium text-slate-500 min-w-max">ea.</span>
+            </div>
             <span className="text-slate-500 font-medium">×</span>
             <div className="relative flex items-center w-20">
               <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
