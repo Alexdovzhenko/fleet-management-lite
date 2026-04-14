@@ -1,7 +1,7 @@
 "use client"
 
 import { computeBillingTotals, type BillingData } from "@/lib/billing-calculations"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { CollapsibleSection } from "./CollapsibleSection"
 
 interface BillingFormBlocksProps {
@@ -11,6 +11,7 @@ interface BillingFormBlocksProps {
 
 export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
   const totals = useMemo(() => computeBillingTotals(data as BillingData), [data])
+  const [focusedField, setFocusedField] = useState<string | null>(null)
 
   // Format number to currency display (e.g., 1999.1 → "1,999.10")
   const formatCurrencyInput = (val: any) => {
@@ -68,9 +69,10 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"
-                value={formatCurrencyInput(data.perHourRate)}
+                value={focusedField === "perHourRate" ? "" : formatCurrencyInput(data.perHourRate)}
                 onChange={(e) => onChange("perHourRate", parseCurrencyInput(e.target.value))}
-                onFocus={(e) => e.target.select()}
+                onFocus={() => setFocusedField("perHourRate")}
+                onBlur={() => setFocusedField(null)}
                 className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
@@ -247,9 +249,10 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   type="text"
                   inputMode="decimal"
                   placeholder="0.00"
-                  value={formatCurrencyInput(data.miscFee1Amount)}
+                  value={focusedField === "miscFee1" ? "" : formatCurrencyInput(data.miscFee1Amount)}
                   onChange={(e) => onChange("miscFee1Amount", parseCurrencyInput(e.target.value))}
-                  onFocus={(e) => e.target.select()}
+                  onFocus={() => setFocusedField("miscFee1")}
+                  onBlur={() => setFocusedField(null)}
                   className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -280,9 +283,10 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   type="text"
                   inputMode="decimal"
                   placeholder="0.00"
-                  value={formatCurrencyInput(data.miscFee2Amount)}
+                  value={focusedField === "miscFee2" ? "" : formatCurrencyInput(data.miscFee2Amount)}
                   onChange={(e) => onChange("miscFee2Amount", parseCurrencyInput(e.target.value))}
-                  onFocus={(e) => e.target.select()}
+                  onFocus={() => setFocusedField("miscFee2")}
+                  onBlur={() => setFocusedField(null)}
                   className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -313,9 +317,10 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   type="text"
                   inputMode="decimal"
                   placeholder="0.00"
-                  value={formatCurrencyInput(data.miscFee3Amount)}
+                  value={focusedField === "miscFee3" ? "" : formatCurrencyInput(data.miscFee3Amount)}
                   onChange={(e) => onChange("miscFee3Amount", parseCurrencyInput(e.target.value))}
-                  onFocus={(e) => e.target.select()}
+                  onFocus={() => setFocusedField("miscFee3")}
+                  onBlur={() => setFocusedField(null)}
                   className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
                 />
               </div>
