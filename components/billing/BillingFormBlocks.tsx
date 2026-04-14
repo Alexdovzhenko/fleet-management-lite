@@ -592,15 +592,18 @@ function FormRow({ label, labelColor = "text-slate-900", formula, result, childr
       </div>
       <div className="min-w-[110px]">
         {editable ? (
-          <input
-            type="number"
-            inputMode="decimal"
-            step="0.01"
-            placeholder="$0.00"
-            value={editableValue}
-            onChange={(e) => onEditChange?.(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none transition-colors"
-          />
+          <div className="relative flex items-center">
+            <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              placeholder="0.00"
+              value={editableValue}
+              onChange={(e) => onEditChange?.(e.target.value)}
+              className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 focus:outline-none transition-colors"
+            />
+          </div>
         ) : (
           <div className="border border-slate-300 rounded-lg px-3 py-2 text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50">
             {result}
