@@ -70,6 +70,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 placeholder="0.00"
                 value={formatCurrencyInput(data.perHourRate)}
                 onChange={(e) => onChange("perHourRate", parseCurrencyInput(e.target.value))}
+                onFocus={(e) => e.target.select()}
                 className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
@@ -248,6 +249,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   placeholder="0.00"
                   value={formatCurrencyInput(data.miscFee1Amount)}
                   onChange={(e) => onChange("miscFee1Amount", parseCurrencyInput(e.target.value))}
+                  onFocus={(e) => e.target.select()}
                   className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -280,6 +282,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   placeholder="0.00"
                   value={formatCurrencyInput(data.miscFee2Amount)}
                   onChange={(e) => onChange("miscFee2Amount", parseCurrencyInput(e.target.value))}
+                  onFocus={(e) => e.target.select()}
                   className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -312,6 +315,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   placeholder="0.00"
                   value={formatCurrencyInput(data.miscFee3Amount)}
                   onChange={(e) => onChange("miscFee3Amount", parseCurrencyInput(e.target.value))}
+                  onFocus={(e) => e.target.select()}
                   className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
                 />
               </div>
