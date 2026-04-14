@@ -23,9 +23,9 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
   }
 
   return (
-    <div>
+    <div className="space-y-4">
       {/* PRIMARY CHARGES SECTION */}
-      <CollapsibleSection title="Primary Charges" defaultOpen={true}>
+      <CollapsibleSection title="Primary Charges" defaultOpen={true} type="primary">
         {/* Flat Rate */}
         <FormRow
           label="Flat Rate"
@@ -228,7 +228,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
       </CollapsibleSection>
 
       {/* ADDITIONAL CHARGES SECTION */}
-      <CollapsibleSection title="Additional Charges" defaultOpen={false}>
+      <CollapsibleSection title="Additional Charges" defaultOpen={false} type="additional">
         {/* Misc Fee 1 */}
         <FormRow label="Misc Fee 1" result={formatCurrency(data.miscFee1Amount)}>
           <div className="flex gap-2 flex-1">
@@ -352,7 +352,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
       </CollapsibleSection>
 
       {/* FARM-OUT SECTION */}
-      <CollapsibleSection title="Farm-Out Costs" defaultOpen={false}>
+      <CollapsibleSection title="Farm-Out Costs" defaultOpen={false} type="farmout">
         {/* Farm-out Rate */}
         <FormRow label="Farm-Out Rate" result={formatCurrency(data.farmOutRate)}>
           <div className="relative flex items-center">
