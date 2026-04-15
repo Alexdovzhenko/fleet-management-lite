@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Upload, X, Check, Eye } from "lucide-react"
+import { Upload, X, Check, Eye, Save } from "lucide-react"
 import type { BillingData } from "@/lib/billing-calculations"
 
 export function BillingSettingsForm() {
@@ -88,6 +88,33 @@ export function BillingSettingsForm() {
   useEffect(() => {
     handleSave()
   }, [handleSave])
+
+  // Manual save handler - saves immediately without debounce
+  const handleSaveNow = useCallback(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
+    }
+
+    setSaveError(null)
+    updateMutation.mutate(
+      { ...formData, logoUrl: logoUrl || undefined },
+      {
+        onSuccess: () => {
+          setHasUnsavedChanges(false)
+          setIsSaved(true)
+          setSaveError(null)
+          const timer = setTimeout(() => setIsSaved(false), 2000)
+          return () => clearTimeout(timer)
+        },
+        onError: (error) => {
+          setHasUnsavedChanges(true)
+          setSaveError(
+            error instanceof Error ? error.message : "Failed to save billing settings"
+          )
+        },
+      }
+    )
+  }, [formData, logoUrl, updateMutation])
 
   // Warn if user tries to leave with unsaved changes
   useEffect(() => {
@@ -413,15 +440,27 @@ export function BillingSettingsForm() {
             </div>
           )}
 
-          {/* Preview Button */}
-          <button
-            type="button"
-            onClick={() => setIsPreviewOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 active:scale-95 transition-all duration-150"
-          >
-            <Eye className="w-4 h-4" />
-            Preview Billing Invoice
-          </button>
+          {/* Action Buttons */}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleSaveNow}
+              disabled={!hasUnsavedChanges || updateMutation.isPending || isUploading}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 transition-all duration-150"
+            >
+              <Save className="w-4 h-4" />
+              {updateMutation.isPending ? "Saving..." : "Save Now"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsPreviewOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 active:scale-95 transition-all duration-150"
+            >
+              <Eye className="w-4 h-4" />
+              Preview Billing Invoice
+            </button>
+          </div>
         </div>
       </div>
     </div>
