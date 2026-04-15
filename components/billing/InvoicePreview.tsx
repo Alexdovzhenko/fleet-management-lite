@@ -246,6 +246,19 @@ export function InvoicePreview({
                       </tr>
                     )}
 
+                  {billingData.lateEarlyCharge && billingData.lateEarlyCharge > 0 && (
+                    <tr className="border-b border-slate-100">
+                      <td className="py-3 px-3 text-slate-700">Late/Early Charge</td>
+                      <td className="text-center py-3 px-3">1</td>
+                      <td className="text-right py-3 px-3 font-mono">
+                        {formatCurrency(billingData.lateEarlyCharge)}
+                      </td>
+                      <td className="text-right py-3 px-3 font-mono font-semibold">
+                        {formatCurrency(billingData.lateEarlyCharge)}
+                      </td>
+                    </tr>
+                  )}
+
                   {/* Block 2 Additional Charges */}
                   {billingData.miscFee1Amount && billingData.miscFee1Amount > 0 && (
                     <tr className="border-b border-slate-100">
