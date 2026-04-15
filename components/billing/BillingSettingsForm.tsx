@@ -30,6 +30,7 @@ export function BillingSettingsForm() {
   const [logoUrl, setLogoUrl] = useState<string | undefined>(undefined)
   const [dragActive, setDragActive] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
@@ -59,18 +60,29 @@ export function BillingSettingsForm() {
     }
 
     setHasUnsavedChanges(true)
+    setSaveError(null)
 
     debounceTimerRef.current = setTimeout(() => {
-      updateMutation.mutate(formData, {
-        onSuccess: () => {
-          setHasUnsavedChanges(false)
-          setIsSaved(true)
-          const timer = setTimeout(() => setIsSaved(false), 2000)
-          return () => clearTimeout(timer)
-        },
-      })
+      updateMutation.mutate(
+        { ...formData, logoUrl: logoUrl || undefined },
+        {
+          onSuccess: () => {
+            setHasUnsavedChanges(false)
+            setIsSaved(true)
+            setSaveError(null)
+            const timer = setTimeout(() => setIsSaved(false), 2000)
+            return () => clearTimeout(timer)
+          },
+          onError: (error) => {
+            setHasUnsavedChanges(true)
+            setSaveError(
+              error instanceof Error ? error.message : "Failed to save billing settings"
+            )
+          },
+        }
+      )
     }, 800)
-  }, [formData, updateMutation])
+  }, [formData, logoUrl, updateMutation])
 
   // Trigger auto-save on form changes
   useEffect(() => {
@@ -386,8 +398,15 @@ export function BillingSettingsForm() {
             </div>
           </div>
 
+          {/* Error Indicator */}
+          {saveError && (
+            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <span className="text-sm font-medium text-red-700">{saveError}</span>
+            </div>
+          )}
+
           {/* Saved Indicator */}
-          {isSaved && (
+          {isSaved && !saveError && (
             <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg">
               <Check className="w-4 h-4 text-emerald-600" />
               <span className="text-sm font-medium text-emerald-700">All changes saved</span>

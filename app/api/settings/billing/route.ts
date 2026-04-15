@@ -9,7 +9,7 @@ const billingSettingsSchema = z.object({
   phone: z.string().optional(),
   billingEmail: z.string().email().optional().or(z.literal("")),
   logoUrl: z.string().optional(),
-  dateFormat: z.enum(["MM/DD/YYYY", "DD/MM/YYYY", "YYYY-MM-DD"]).optional(),
+  dateFormat: z.enum(["MM/DD/YYYY", "DD/MM/YYYY", "YYYY-MM-DD", "Month DD, YYYY"]).optional(),
   invoicePrefix: z.string().optional(),
   paymentTerms: z.string().optional(),
   footerNote: z.string().optional(),
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
           billingEmail: "",
           dateFormat: "MM/DD/YYYY",
           invoicePrefix: "INV-",
-          paymentTerms: "Due on Receipt",
+          paymentTerms: "Due upon receipt",
         },
       })
     }
