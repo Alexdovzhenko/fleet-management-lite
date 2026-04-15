@@ -83,10 +83,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"
-                value={focusedField === "perHourQty" ? String(data.perHourQty || "") : formatDecimalInput(data.perHourQty)}
-                onChange={(e) => onChange("perHourQty", parseDecimalInput(e.target.value))}
+                value={focusedField === "perHourQty" ? (inputValues.perHourQty || String(data.perHourQty || "")) : formatDecimalInput(data.perHourQty)}
+                onChange={(e) => {
+                  setInputValues({ ...inputValues, perHourQty: e.target.value })
+                  onChange("perHourQty", parseDecimalInput(e.target.value))
+                }}
                 onFocus={() => setFocusedField("perHourQty")}
-                onBlur={() => setFocusedField(null)}
+                onBlur={() => {
+                  setFocusedField(null)
+                  const { perHourQty: _, ...rest } = inputValues
+                  setInputValues(rest)
+                }}
                 className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
               <span className="text-sm font-medium text-slate-500 min-w-max">Hrs</span>
@@ -126,10 +133,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"
-                value={focusedField === "travelTimeQty" ? String(data.travelTimeQty || "") : formatDecimalInput(data.travelTimeQty)}
-                onChange={(e) => onChange("travelTimeQty", parseDecimalInput(e.target.value))}
+                value={focusedField === "travelTimeQty" ? (inputValues.travelTimeQty || String(data.travelTimeQty || "")) : formatDecimalInput(data.travelTimeQty)}
+                onChange={(e) => {
+                  setInputValues({ ...inputValues, travelTimeQty: e.target.value })
+                  onChange("travelTimeQty", parseDecimalInput(e.target.value))
+                }}
                 onFocus={() => setFocusedField("travelTimeQty")}
-                onBlur={() => setFocusedField(null)}
+                onBlur={() => {
+                  setFocusedField(null)
+                  const { travelTimeQty: _, ...rest } = inputValues
+                  setInputValues(rest)
+                }}
                 className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
               <span className="text-sm font-medium text-slate-500 min-w-max">Hrs</span>
@@ -169,10 +183,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"
-                value={focusedField === "waitTimeQty" ? String(data.waitTimeQty || "") : formatDecimalInput(data.waitTimeQty)}
-                onChange={(e) => onChange("waitTimeQty", parseDecimalInput(e.target.value))}
+                value={focusedField === "waitTimeQty" ? (inputValues.waitTimeQty || String(data.waitTimeQty || "")) : formatDecimalInput(data.waitTimeQty)}
+                onChange={(e) => {
+                  setInputValues({ ...inputValues, waitTimeQty: e.target.value })
+                  onChange("waitTimeQty", parseDecimalInput(e.target.value))
+                }}
                 onFocus={() => setFocusedField("waitTimeQty")}
-                onBlur={() => setFocusedField(null)}
+                onBlur={() => {
+                  setFocusedField(null)
+                  const { waitTimeQty: _, ...rest } = inputValues
+                  setInputValues(rest)
+                }}
                 className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
               <span className="text-sm font-medium text-slate-500 min-w-max">Hrs</span>
