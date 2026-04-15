@@ -70,6 +70,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           editable={true}
           editableValue={data.flatRate || ""}
           onEditChange={(val) => onChange("flatRate", val ? parseFloat(val) : 0)}
+          fieldId="flatRate"
         />
 
         {/* Per Hour */}
@@ -272,6 +273,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           editable={true}
           editableValue={data.airportFee || ""}
           onEditChange={(val) => onChange("airportFee", val ? parseFloat(val) : 0)}
+          fieldId="airportFee"
         />
 
         {/* Parking */}
@@ -281,6 +283,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           editable={true}
           editableValue={data.parkingFee || ""}
           onEditChange={(val) => onChange("parkingFee", val ? parseFloat(val) : 0)}
+          fieldId="parkingFee"
         />
 
         {/* Meet & Greet */}
@@ -290,6 +293,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           editable={true}
           editableValue={data.meetAndGreet || ""}
           onEditChange={(val) => onChange("meetAndGreet", val ? parseFloat(val) : 0)}
+          fieldId="meetAndGreet"
         />
 
         {/* Car Seat */}
@@ -342,6 +346,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           editable={true}
           editableValue={data.lateEarlyCharge || ""}
           onEditChange={(val) => onChange("lateEarlyCharge", val ? parseFloat(val) : 0)}
+          fieldId="lateEarlyCharge"
         />
       </CollapsibleSection>
 
@@ -885,9 +890,22 @@ interface FormRowProps {
   editable?: boolean
   editableValue?: string | number
   onEditChange?: (val: string) => void
+  fieldId?: string
 }
 
-function FormRow({ label, labelColor = "text-slate-900", formula, result, children, editable = false, editableValue = "", onEditChange }: FormRowProps) {
+function FormRow({ label, labelColor = "text-slate-900", formula, result, children, editable = false, editableValue = "", onEditChange, fieldId }: FormRowProps) {
+  const [focusedEditableField, setFocusedEditableField] = useState<string | null>(null)
+  const [editableInputValues, setEditableInputValues] = useState<Record<string, string>>({})
+
+  const formatCurrencyInput = (val: any) => {
+    const num = typeof val === "string" ? parseFloat(val) || 0 : val || 0
+    if (isNaN(num)) return ""
+    return num.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  }
+
   return (
     <div className="flex items-center justify-between gap-4 py-3 lg:py-4">
       <div className="flex-1 min-w-[100px]">
@@ -902,13 +920,25 @@ function FormRow({ label, labelColor = "text-slate-900", formula, result, childr
           <div className="relative flex items-center">
             <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
             <input
-              type="number"
+              type="text"
               inputMode="decimal"
-              step="0.01"
               placeholder="0.00"
-              value={editableValue}
-              onChange={(e) => onEditChange?.(e.target.value)}
-              className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              value={fieldId && focusedEditableField === fieldId ? (editableInputValues[fieldId] || String(editableValue || "")) : formatCurrencyInput(editableValue)}
+              onChange={(e) => {
+                if (fieldId) {
+                  setEditableInputValues({ ...editableInputValues, [fieldId]: e.target.value })
+                }
+                onEditChange?.(e.target.value)
+              }}
+              onFocus={() => fieldId && setFocusedEditableField(fieldId)}
+              onBlur={() => {
+                if (fieldId) {
+                  setFocusedEditableField(null)
+                  const { [fieldId]: _, ...rest } = editableInputValues
+                  setEditableInputValues(rest)
+                }
+              }}
+              className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
             />
           </div>
         ) : (
