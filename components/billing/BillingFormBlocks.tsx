@@ -141,10 +141,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"
-                value={focusedField === "travelTimeRate" ? String(data.travelTimeRate || "") : formatCurrencyInput(data.travelTimeRate)}
-                onChange={(e) => onChange("travelTimeRate", parseCurrencyInput(e.target.value))}
+                value={focusedField === "travelTimeRate" ? (inputValues.travelTimeRate || String(data.travelTimeRate || "")) : formatCurrencyInput(data.travelTimeRate)}
+                onChange={(e) => {
+                  setInputValues({ ...inputValues, travelTimeRate: e.target.value })
+                  onChange("travelTimeRate", parseCurrencyInput(e.target.value))
+                }}
                 onFocus={() => setFocusedField("travelTimeRate")}
-                onBlur={() => setFocusedField(null)}
+                onBlur={() => {
+                  setFocusedField(null)
+                  const { travelTimeRate: _, ...rest } = inputValues
+                  setInputValues(rest)
+                }}
                 className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
@@ -177,10 +184,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"
-                value={focusedField === "waitTimeRate" ? String(data.waitTimeRate || "") : formatCurrencyInput(data.waitTimeRate)}
-                onChange={(e) => onChange("waitTimeRate", parseCurrencyInput(e.target.value))}
+                value={focusedField === "waitTimeRate" ? (inputValues.waitTimeRate || String(data.waitTimeRate || "")) : formatCurrencyInput(data.waitTimeRate)}
+                onChange={(e) => {
+                  setInputValues({ ...inputValues, waitTimeRate: e.target.value })
+                  onChange("waitTimeRate", parseCurrencyInput(e.target.value))
+                }}
                 onFocus={() => setFocusedField("waitTimeRate")}
-                onBlur={() => setFocusedField(null)}
+                onBlur={() => {
+                  setFocusedField(null)
+                  const { waitTimeRate: _, ...rest } = inputValues
+                  setInputValues(rest)
+                }}
                 className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
@@ -213,10 +227,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"
-                value={focusedField === "extraStopsRate" ? String(data.extraStopsRate || "") : formatCurrencyInput(data.extraStopsRate)}
-                onChange={(e) => onChange("extraStopsRate", parseCurrencyInput(e.target.value))}
+                value={focusedField === "extraStopsRate" ? (inputValues.extraStopsRate || String(data.extraStopsRate || "")) : formatCurrencyInput(data.extraStopsRate)}
+                onChange={(e) => {
+                  setInputValues({ ...inputValues, extraStopsRate: e.target.value })
+                  onChange("extraStopsRate", parseCurrencyInput(e.target.value))
+                }}
                 onFocus={() => setFocusedField("extraStopsRate")}
-                onBlur={() => setFocusedField(null)}
+                onBlur={() => {
+                  setFocusedField(null)
+                  const { extraStopsRate: _, ...rest } = inputValues
+                  setInputValues(rest)
+                }}
                 className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
