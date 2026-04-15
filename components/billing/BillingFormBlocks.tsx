@@ -98,10 +98,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"
-                value={focusedField === "perHourRate" ? String(data.perHourRate || "") : formatCurrencyInput(data.perHourRate)}
-                onChange={(e) => onChange("perHourRate", parseCurrencyInput(e.target.value))}
+                value={focusedField === "perHourRate" ? (inputValues.perHourRate || String(data.perHourRate || "")) : formatCurrencyInput(data.perHourRate)}
+                onChange={(e) => {
+                  setInputValues({ ...inputValues, perHourRate: e.target.value })
+                  onChange("perHourRate", parseCurrencyInput(e.target.value))
+                }}
                 onFocus={() => setFocusedField("perHourRate")}
-                onBlur={() => setFocusedField(null)}
+                onBlur={() => {
+                  setFocusedField(null)
+                  const { perHourRate: _, ...rest } = inputValues
+                  setInputValues(rest)
+                }}
                 className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
@@ -302,10 +309,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   type="text"
                   inputMode="decimal"
                   placeholder="0.00"
-                  value={focusedField === "miscFee1" ? String(data.miscFee1Amount || "") : formatCurrencyInput(data.miscFee1Amount)}
-                  onChange={(e) => onChange("miscFee1Amount", parseCurrencyInput(e.target.value))}
+                  value={focusedField === "miscFee1" ? (inputValues.miscFee1 || String(data.miscFee1Amount || "")) : formatCurrencyInput(data.miscFee1Amount)}
+                  onChange={(e) => {
+                    setInputValues({ ...inputValues, miscFee1: e.target.value })
+                    onChange("miscFee1Amount", parseCurrencyInput(e.target.value))
+                  }}
                   onFocus={() => setFocusedField("miscFee1")}
-                  onBlur={() => setFocusedField(null)}
+                  onBlur={() => {
+                    setFocusedField(null)
+                    const { miscFee1: _, ...rest } = inputValues
+                    setInputValues(rest)
+                  }}
                   className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -336,10 +350,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   type="text"
                   inputMode="decimal"
                   placeholder="0.00"
-                  value={focusedField === "miscFee2" ? String(data.miscFee2Amount || "") : formatCurrencyInput(data.miscFee2Amount)}
-                  onChange={(e) => onChange("miscFee2Amount", parseCurrencyInput(e.target.value))}
+                  value={focusedField === "miscFee2" ? (inputValues.miscFee2 || String(data.miscFee2Amount || "")) : formatCurrencyInput(data.miscFee2Amount)}
+                  onChange={(e) => {
+                    setInputValues({ ...inputValues, miscFee2: e.target.value })
+                    onChange("miscFee2Amount", parseCurrencyInput(e.target.value))
+                  }}
                   onFocus={() => setFocusedField("miscFee2")}
-                  onBlur={() => setFocusedField(null)}
+                  onBlur={() => {
+                    setFocusedField(null)
+                    const { miscFee2: _, ...rest } = inputValues
+                    setInputValues(rest)
+                  }}
                   className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -370,10 +391,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   type="text"
                   inputMode="decimal"
                   placeholder="0.00"
-                  value={focusedField === "miscFee3" ? String(data.miscFee3Amount || "") : formatCurrencyInput(data.miscFee3Amount)}
-                  onChange={(e) => onChange("miscFee3Amount", parseCurrencyInput(e.target.value))}
+                  value={focusedField === "miscFee3" ? (inputValues.miscFee3 || String(data.miscFee3Amount || "")) : formatCurrencyInput(data.miscFee3Amount)}
+                  onChange={(e) => {
+                    setInputValues({ ...inputValues, miscFee3: e.target.value })
+                    onChange("miscFee3Amount", parseCurrencyInput(e.target.value))
+                  }}
                   onFocus={() => setFocusedField("miscFee3")}
-                  onBlur={() => setFocusedField(null)}
+                  onBlur={() => {
+                    setFocusedField(null)
+                    const { miscFee3: _, ...rest } = inputValues
+                    setInputValues(rest)
+                  }}
                   className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -488,10 +516,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutRate" ? String(data.farmOutRate || "") : formatCurrencyInput(data.farmOutRate)}
-              onChange={(e) => onChange("farmOutRate", parseCurrencyInput(e.target.value))}
+              value={focusedField === "farmOutRate" ? (inputValues.farmOutRate || String(data.farmOutRate || "")) : formatCurrencyInput(data.farmOutRate)}
+              onChange={(e) => {
+                setInputValues({ ...inputValues, farmOutRate: e.target.value })
+                onChange("farmOutRate", parseCurrencyInput(e.target.value))
+              }}
               onFocus={() => setFocusedField("farmOutRate")}
-              onBlur={() => setFocusedField(null)}
+              onBlur={() => {
+                setFocusedField(null)
+                const { farmOutRate: _, ...rest } = inputValues
+                setInputValues(rest)
+              }}
               className="w-20 pl-6 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
@@ -505,10 +540,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutGratuity" ? String(data.farmOutGratuity || "") : formatCurrencyInput(data.farmOutGratuity)}
-              onChange={(e) => onChange("farmOutGratuity", parseCurrencyInput(e.target.value))}
+              value={focusedField === "farmOutGratuity" ? (inputValues.farmOutGratuity || String(data.farmOutGratuity || "")) : formatCurrencyInput(data.farmOutGratuity)}
+              onChange={(e) => {
+                setInputValues({ ...inputValues, farmOutGratuity: e.target.value })
+                onChange("farmOutGratuity", parseCurrencyInput(e.target.value))
+              }}
               onFocus={() => setFocusedField("farmOutGratuity")}
-              onBlur={() => setFocusedField(null)}
+              onBlur={() => {
+                setFocusedField(null)
+                const { farmOutGratuity: _, ...rest } = inputValues
+                setInputValues(rest)
+              }}
               className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
