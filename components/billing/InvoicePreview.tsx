@@ -119,191 +119,181 @@ export function InvoicePreview({
                 </thead>
                 <tbody>
                   {/* Block 1 Items */}
-                  {billingData.flatRate && billingData.flatRate > 0 && (
+                  {(billingData.flatRate || 0) > 0 ? (
                     <tr className="border-b border-slate-100">
                       <td className="py-3 px-3 text-slate-700">Base Rate</td>
                       <td className="text-center py-3 px-3">1</td>
                       <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.flatRate)}
+                        {formatCurrency(billingData.flatRate || 0)}
                       </td>
                       <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.flatRate)}
+                        {formatCurrency(billingData.flatRate || 0)}
                       </td>
                     </tr>
-                  )}
+                  ) : null}
 
-                  {billingData.perHourQty &&
-                    billingData.perHourQty > 0 &&
-                    billingData.perHourRate && (
+                  {(billingData.perHourQty || 0) > 0 && (billingData.perHourRate || 0) > 0 ? (
                       <tr className="border-b border-slate-100">
                         <td className="py-3 px-3 text-slate-700">Per Hour</td>
-                        <td className="text-center py-3 px-3">{billingData.perHourQty}</td>
+                        <td className="text-center py-3 px-3">{billingData.perHourQty || 0}</td>
                         <td className="text-right py-3 px-3 font-mono">
-                          {formatCurrency(billingData.perHourRate)}
+                          {formatCurrency(billingData.perHourRate || 0)}
                         </td>
                         <td className="text-right py-3 px-3 font-mono font-semibold">
-                          {formatCurrency(billingData.perHourQty * billingData.perHourRate)}
+                          {formatCurrency((billingData.perHourQty || 0) * (billingData.perHourRate || 0))}
                         </td>
                       </tr>
-                    )}
+                    ) : null}
 
-                  {billingData.travelTimeQty &&
-                    billingData.travelTimeQty > 0 &&
-                    billingData.travelTimeRate && (
+                  {(billingData.travelTimeQty || 0) > 0 && (billingData.travelTimeRate || 0) > 0 ? (
                       <tr className="border-b border-slate-100">
                         <td className="py-3 px-3 text-slate-700">Travel Time</td>
-                        <td className="text-center py-3 px-3">{billingData.travelTimeQty}</td>
+                        <td className="text-center py-3 px-3">{billingData.travelTimeQty || 0}</td>
                         <td className="text-right py-3 px-3 font-mono">
-                          {formatCurrency(billingData.travelTimeRate)}
+                          {formatCurrency(billingData.travelTimeRate || 0)}
                         </td>
                         <td className="text-right py-3 px-3 font-mono font-semibold">
-                          {formatCurrency(billingData.travelTimeQty * billingData.travelTimeRate)}
+                          {formatCurrency((billingData.travelTimeQty || 0) * (billingData.travelTimeRate || 0))}
                         </td>
                       </tr>
-                    )}
+                    ) : null}
 
-                  {billingData.waitTimeQty &&
-                    billingData.waitTimeQty > 0 &&
-                    billingData.waitTimeRate && (
+                  {(billingData.waitTimeQty || 0) > 0 && (billingData.waitTimeRate || 0) > 0 ? (
                       <tr className="border-b border-slate-100">
                         <td className="py-3 px-3 text-slate-700">Wait Time</td>
-                        <td className="text-center py-3 px-3">{billingData.waitTimeQty}</td>
+                        <td className="text-center py-3 px-3">{billingData.waitTimeQty || 0}</td>
                         <td className="text-right py-3 px-3 font-mono">
-                          {formatCurrency(billingData.waitTimeRate)}
+                          {formatCurrency(billingData.waitTimeRate || 0)}
                         </td>
                         <td className="text-right py-3 px-3 font-mono font-semibold">
-                          {formatCurrency(billingData.waitTimeQty * billingData.waitTimeRate)}
+                          {formatCurrency((billingData.waitTimeQty || 0) * (billingData.waitTimeRate || 0))}
                         </td>
                       </tr>
-                    )}
+                    ) : null}
 
-                  {billingData.extraStopsQty &&
-                    billingData.extraStopsQty > 0 &&
-                    billingData.extraStopsRate && (
+                  {(billingData.extraStopsQty || 0) > 0 && (billingData.extraStopsRate || 0) > 0 ? (
                       <tr className="border-b border-slate-100">
                         <td className="py-3 px-3 text-slate-700">Extra Stops</td>
-                        <td className="text-center py-3 px-3">{billingData.extraStopsQty}</td>
+                        <td className="text-center py-3 px-3">{billingData.extraStopsQty || 0}</td>
                         <td className="text-right py-3 px-3 font-mono">
-                          {formatCurrency(billingData.extraStopsRate)}
+                          {formatCurrency(billingData.extraStopsRate || 0)}
                         </td>
                         <td className="text-right py-3 px-3 font-mono font-semibold">
-                          {formatCurrency(billingData.extraStopsQty * billingData.extraStopsRate)}
+                          {formatCurrency((billingData.extraStopsQty || 0) * (billingData.extraStopsRate || 0))}
                         </td>
                       </tr>
-                    )}
+                    ) : null}
 
-                  {billingData.airportFee && billingData.airportFee > 0 && (
+                  {(billingData.airportFee || 0) > 0 ? (
                     <tr className="border-b border-slate-100">
                       <td className="py-3 px-3 text-slate-700">Airport Fee</td>
                       <td className="text-center py-3 px-3">1</td>
                       <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.airportFee)}
+                        {formatCurrency(billingData.airportFee || 0)}
                       </td>
                       <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.airportFee)}
+                        {formatCurrency(billingData.airportFee || 0)}
                       </td>
                     </tr>
-                  )}
+                  ) : null}
 
-                  {billingData.parkingFee && billingData.parkingFee > 0 && (
+                  {(billingData.parkingFee || 0) > 0 ? (
                     <tr className="border-b border-slate-100">
                       <td className="py-3 px-3 text-slate-700">Parking Fee</td>
                       <td className="text-center py-3 px-3">1</td>
                       <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.parkingFee)}
+                        {formatCurrency(billingData.parkingFee || 0)}
                       </td>
                       <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.parkingFee)}
+                        {formatCurrency(billingData.parkingFee || 0)}
                       </td>
                     </tr>
-                  )}
+                  ) : null}
 
-                  {billingData.meetAndGreet && billingData.meetAndGreet > 0 && (
+                  {(billingData.meetAndGreet || 0) > 0 ? (
                     <tr className="border-b border-slate-100">
                       <td className="py-3 px-3 text-slate-700">Meet & Greet</td>
                       <td className="text-center py-3 px-3">1</td>
                       <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.meetAndGreet)}
+                        {formatCurrency(billingData.meetAndGreet || 0)}
                       </td>
                       <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.meetAndGreet)}
+                        {formatCurrency(billingData.meetAndGreet || 0)}
                       </td>
                     </tr>
-                  )}
+                  ) : null}
 
-                  {billingData.carSeatQty &&
-                    billingData.carSeatQty > 0 &&
-                    billingData.carSeatRate && (
+                  {(billingData.carSeatQty || 0) > 0 && (billingData.carSeatRate || 0) > 0 ? (
                       <tr className="border-b border-slate-100">
                         <td className="py-3 px-3 text-slate-700">Car Seat</td>
-                        <td className="text-center py-3 px-3">{billingData.carSeatQty}</td>
+                        <td className="text-center py-3 px-3">{billingData.carSeatQty || 0}</td>
                         <td className="text-right py-3 px-3 font-mono">
-                          {formatCurrency(billingData.carSeatRate)}
+                          {formatCurrency(billingData.carSeatRate || 0)}
                         </td>
                         <td className="text-right py-3 px-3 font-mono font-semibold">
-                          {formatCurrency(billingData.carSeatQty * billingData.carSeatRate)}
+                          {formatCurrency((billingData.carSeatQty || 0) * (billingData.carSeatRate || 0))}
                         </td>
                       </tr>
-                    )}
+                    ) : null}
 
-                  {billingData.lateEarlyCharge && billingData.lateEarlyCharge > 0 && (
+                  {(billingData.lateEarlyCharge || 0) > 0 ? (
                     <tr className="border-b border-slate-100">
                       <td className="py-3 px-3 text-slate-700">Late/Early Charge</td>
                       <td className="text-center py-3 px-3">1</td>
                       <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.lateEarlyCharge)}
+                        {formatCurrency(billingData.lateEarlyCharge || 0)}
                       </td>
                       <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.lateEarlyCharge)}
+                        {formatCurrency(billingData.lateEarlyCharge || 0)}
                       </td>
                     </tr>
-                  )}
+                  ) : null}
 
                   {/* Block 2 Additional Charges */}
-                  {billingData.miscFee1Amount && billingData.miscFee1Amount > 0 && (
+                  {(billingData.miscFee1Amount || 0) > 0 ? (
                     <tr className="border-b border-slate-100">
                       <td className="py-3 px-3 text-slate-700">
                         {billingData.miscFee1Label || "Misc Fee 1"}
                       </td>
                       <td className="text-center py-3 px-3">1</td>
                       <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.miscFee1Amount)}
+                        {formatCurrency(billingData.miscFee1Amount || 0)}
                       </td>
                       <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.miscFee1Amount)}
+                        {formatCurrency(billingData.miscFee1Amount || 0)}
                       </td>
                     </tr>
-                  )}
+                  ) : null}
 
-                  {billingData.miscFee2Amount && billingData.miscFee2Amount > 0 && (
+                  {(billingData.miscFee2Amount || 0) > 0 ? (
                     <tr className="border-b border-slate-100">
                       <td className="py-3 px-3 text-slate-700">
                         {billingData.miscFee2Label || "Misc Fee 2"}
                       </td>
                       <td className="text-center py-3 px-3">1</td>
                       <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.miscFee2Amount)}
+                        {formatCurrency(billingData.miscFee2Amount || 0)}
                       </td>
                       <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.miscFee2Amount)}
+                        {formatCurrency(billingData.miscFee2Amount || 0)}
                       </td>
                     </tr>
-                  )}
+                  ) : null}
 
-                  {billingData.miscFee3Amount && billingData.miscFee3Amount > 0 && (
+                  {(billingData.miscFee3Amount || 0) > 0 ? (
                     <tr className="border-b border-slate-100">
                       <td className="py-3 px-3 text-slate-700">
                         {billingData.miscFee3Label || "Misc Fee 3"}
                       </td>
                       <td className="text-center py-3 px-3">1</td>
                       <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.miscFee3Amount)}
+                        {formatCurrency(billingData.miscFee3Amount || 0)}
                       </td>
                       <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.miscFee3Amount)}
+                        {formatCurrency(billingData.miscFee3Amount || 0)}
                       </td>
                     </tr>
-                  )}
+                  ) : null}
                 </tbody>
               </table>
             </div>
