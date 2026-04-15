@@ -394,12 +394,6 @@ export function BillingSettingsForm() {
             </div>
           )}
 
-          {updateMutation.isPending && (
-            <div className="text-xs text-slate-500 animate-pulse">
-              Saving...
-            </div>
-          )}
-
           {/* Preview Button */}
           <button
             type="button"
