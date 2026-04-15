@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useBillingSettings, useUpdateBillingSettings, useUploadBillingLogo } from "@/lib/hooks/use-billing"
 import { InvoicePreview } from "./InvoicePreview"
 import { Input } from "@/components/ui/input"
@@ -53,37 +53,6 @@ export function BillingSettingsForm() {
     }
   }, [settings])
 
-  // Auto-save handler with debounce
-  const triggerAutoSave = useCallback(() => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current)
-    }
-
-    setHasUnsavedChanges(true)
-    setSaveError(null)
-
-    debounceTimerRef.current = setTimeout(() => {
-      updateMutation.mutate(
-        { ...formData, logoUrl: logoUrl || undefined },
-        {
-          onSuccess: () => {
-            setHasUnsavedChanges(false)
-            setIsSaved(true)
-            setSaveError(null)
-            const timer = setTimeout(() => setIsSaved(false), 2000)
-            return () => clearTimeout(timer)
-          },
-          onError: (error) => {
-            setHasUnsavedChanges(true)
-            setSaveError(
-              error instanceof Error ? error.message : "Failed to save billing settings"
-            )
-          },
-        }
-      )
-    }, 800)
-  }, [formData, logoUrl, updateMutation])
-
   // Warn if user tries to leave with unsaved changes
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -97,11 +66,39 @@ export function BillingSettingsForm() {
   }, [hasUnsavedChanges])
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
-    triggerAutoSave()
+    setFormData((prev) => {
+      const updated = {
+        ...prev,
+        [field]: value,
+      }
+      // Debounce save with updated data
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+      setHasUnsavedChanges(true)
+      setSaveError(null)
+      debounceTimerRef.current = setTimeout(() => {
+        updateMutation.mutate(
+          { ...updated, logoUrl: logoUrl || undefined },
+          {
+            onSuccess: () => {
+              setHasUnsavedChanges(false)
+              setIsSaved(true)
+              setSaveError(null)
+              const timer = setTimeout(() => setIsSaved(false), 2000)
+              return () => clearTimeout(timer)
+            },
+            onError: (error) => {
+              setHasUnsavedChanges(true)
+              setSaveError(
+                error instanceof Error ? error.message : "Failed to save billing settings"
+              )
+            },
+          }
+        )
+      }, 800)
+      return updated
+    })
   }
 
   // Logo upload handlers
@@ -121,7 +118,31 @@ export function BillingSettingsForm() {
       onSuccess: (response) => {
         setLogoUrl(response.logoUrl)
         setIsUploading(false)
-        triggerAutoSave()
+        // Save immediately after logo upload succeeds
+        setHasUnsavedChanges(true)
+        if (debounceTimerRef.current) {
+          clearTimeout(debounceTimerRef.current)
+        }
+        debounceTimerRef.current = setTimeout(() => {
+          updateMutation.mutate(
+            { ...formData, logoUrl: response.logoUrl || undefined },
+            {
+              onSuccess: () => {
+                setHasUnsavedChanges(false)
+                setIsSaved(true)
+                setSaveError(null)
+                const timer = setTimeout(() => setIsSaved(false), 2000)
+                return () => clearTimeout(timer)
+              },
+              onError: (error) => {
+                setHasUnsavedChanges(true)
+                setSaveError(
+                  error instanceof Error ? error.message : "Failed to save billing settings"
+                )
+              },
+            }
+          )
+        }, 800)
       },
       onError: () => {
         setIsUploading(false)
@@ -156,7 +177,31 @@ export function BillingSettingsForm() {
 
   const handleRemoveLogo = () => {
     setLogoUrl(undefined)
-    triggerAutoSave()
+    // Save after logo removal
+    setHasUnsavedChanges(true)
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
+    }
+    debounceTimerRef.current = setTimeout(() => {
+      updateMutation.mutate(
+        { ...formData, logoUrl: undefined },
+        {
+          onSuccess: () => {
+            setHasUnsavedChanges(false)
+            setIsSaved(true)
+            setSaveError(null)
+            const timer = setTimeout(() => setIsSaved(false), 2000)
+            return () => clearTimeout(timer)
+          },
+          onError: (error) => {
+            setHasUnsavedChanges(true)
+            setSaveError(
+              error instanceof Error ? error.message : "Failed to save billing settings"
+            )
+          },
+        }
+      )
+    }, 800)
   }
 
   // Sample invoice data for preview
