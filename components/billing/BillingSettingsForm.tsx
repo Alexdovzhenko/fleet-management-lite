@@ -54,7 +54,7 @@ export function BillingSettingsForm() {
   }, [settings])
 
   // Auto-save handler with debounce
-  const handleSave = useCallback(() => {
+  const triggerAutoSave = useCallback(() => {
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current)
     }
@@ -84,11 +84,6 @@ export function BillingSettingsForm() {
     }, 800)
   }, [formData, logoUrl, updateMutation])
 
-  // Trigger auto-save on form changes
-  useEffect(() => {
-    handleSave()
-  }, [handleSave])
-
   // Warn if user tries to leave with unsaved changes
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -106,6 +101,7 @@ export function BillingSettingsForm() {
       ...prev,
       [field]: value,
     }))
+    triggerAutoSave()
   }
 
   // Logo upload handlers
@@ -125,6 +121,7 @@ export function BillingSettingsForm() {
       onSuccess: (response) => {
         setLogoUrl(response.logoUrl)
         setIsUploading(false)
+        triggerAutoSave()
       },
       onError: () => {
         setIsUploading(false)
@@ -159,6 +156,7 @@ export function BillingSettingsForm() {
 
   const handleRemoveLogo = () => {
     setLogoUrl(undefined)
+    triggerAutoSave()
   }
 
   // Sample invoice data for preview
