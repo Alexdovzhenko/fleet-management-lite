@@ -99,203 +99,482 @@ export function InvoicePreview({
 
           {/* Line Items */}
           {hasLineItems ? (
-            <div className="px-8 py-6">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="text-left py-3 px-3 font-semibold text-slate-900">
-                      Description
-                    </th>
-                    <th className="text-center py-3 px-3 font-semibold text-slate-900 w-16">
-                      Qty
-                    </th>
-                    <th className="text-right py-3 px-3 font-semibold text-slate-900 w-24">
-                      Unit Price
-                    </th>
-                    <th className="text-right py-3 px-3 font-semibold text-slate-900 w-24">
-                      Amount
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* Block 1 Items */}
-                  {(billingData.flatRate || 0) > 0 ? (
-                    <tr className="border-b border-slate-100">
-                      <td className="py-3 px-3 text-slate-700">Base Rate</td>
-                      <td className="text-center py-3 px-3">1</td>
-                      <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.flatRate || 0)}
-                      </td>
-                      <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.flatRate || 0)}
-                      </td>
-                    </tr>
-                  ) : null}
-
-                  {(billingData.perHourQty || 0) > 0 && (billingData.perHourRate || 0) > 0 ? (
-                      <tr className="border-b border-slate-100">
-                        <td className="py-3 px-3 text-slate-700">Per Hour</td>
-                        <td className="text-center py-3 px-3">{billingData.perHourQty || 0}</td>
-                        <td className="text-right py-3 px-3 font-mono">
-                          {formatCurrency(billingData.perHourRate || 0)}
-                        </td>
-                        <td className="text-right py-3 px-3 font-mono font-semibold">
-                          {formatCurrency((billingData.perHourQty || 0) * (billingData.perHourRate || 0))}
-                        </td>
+            <div className="px-8 py-6 space-y-8">
+              {/* SECTION 1: PRIMARY CHARGES */}
+              {totals.block1Subtotal > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-900 mb-4">Primary Charges</h3>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left py-3 px-3 font-semibold text-slate-900">
+                          Description
+                        </th>
+                        <th className="text-center py-3 px-3 font-semibold text-slate-900 w-16">
+                          Qty
+                        </th>
+                        <th className="text-right py-3 px-3 font-semibold text-slate-900 w-24">
+                          Unit Price
+                        </th>
+                        <th className="text-right py-3 px-3 font-semibold text-slate-900 w-24">
+                          Amount
+                        </th>
                       </tr>
-                    ) : null}
+                    </thead>
+                    <tbody>
+                      {(billingData.flatRate || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">Base Rate</td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.flatRate || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.flatRate || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
 
-                  {(billingData.travelTimeQty || 0) > 0 && (billingData.travelTimeRate || 0) > 0 ? (
-                      <tr className="border-b border-slate-100">
-                        <td className="py-3 px-3 text-slate-700">Travel Time</td>
-                        <td className="text-center py-3 px-3">{billingData.travelTimeQty || 0}</td>
-                        <td className="text-right py-3 px-3 font-mono">
-                          {formatCurrency(billingData.travelTimeRate || 0)}
-                        </td>
-                        <td className="text-right py-3 px-3 font-mono font-semibold">
-                          {formatCurrency((billingData.travelTimeQty || 0) * (billingData.travelTimeRate || 0))}
-                        </td>
+                      {(billingData.perHourQty || 0) > 0 && (billingData.perHourRate || 0) > 0 ? (
+                          <tr className="border-b border-slate-100">
+                            <td className="py-3 px-3 text-slate-700">Per Hour</td>
+                            <td className="text-center py-3 px-3">{billingData.perHourQty || 0}</td>
+                            <td className="text-right py-3 px-3 font-mono">
+                              {formatCurrency(billingData.perHourRate || 0)}
+                            </td>
+                            <td className="text-right py-3 px-3 font-mono font-semibold">
+                              {formatCurrency((billingData.perHourQty || 0) * (billingData.perHourRate || 0))}
+                            </td>
+                          </tr>
+                        ) : null}
+
+                      {(billingData.travelTimeQty || 0) > 0 && (billingData.travelTimeRate || 0) > 0 ? (
+                          <tr className="border-b border-slate-100">
+                            <td className="py-3 px-3 text-slate-700">Travel Time</td>
+                            <td className="text-center py-3 px-3">{billingData.travelTimeQty || 0}</td>
+                            <td className="text-right py-3 px-3 font-mono">
+                              {formatCurrency(billingData.travelTimeRate || 0)}
+                            </td>
+                            <td className="text-right py-3 px-3 font-mono font-semibold">
+                              {formatCurrency((billingData.travelTimeQty || 0) * (billingData.travelTimeRate || 0))}
+                            </td>
+                          </tr>
+                        ) : null}
+
+                      {(billingData.waitTimeQty || 0) > 0 && (billingData.waitTimeRate || 0) > 0 ? (
+                          <tr className="border-b border-slate-100">
+                            <td className="py-3 px-3 text-slate-700">Wait Time</td>
+                            <td className="text-center py-3 px-3">{billingData.waitTimeQty || 0}</td>
+                            <td className="text-right py-3 px-3 font-mono">
+                              {formatCurrency(billingData.waitTimeRate || 0)}
+                            </td>
+                            <td className="text-right py-3 px-3 font-mono font-semibold">
+                              {formatCurrency((billingData.waitTimeQty || 0) * (billingData.waitTimeRate || 0))}
+                            </td>
+                          </tr>
+                        ) : null}
+
+                      {(billingData.extraStopsQty || 0) > 0 && (billingData.extraStopsRate || 0) > 0 ? (
+                          <tr className="border-b border-slate-100">
+                            <td className="py-3 px-3 text-slate-700">Extra Stops</td>
+                            <td className="text-center py-3 px-3">{billingData.extraStopsQty || 0}</td>
+                            <td className="text-right py-3 px-3 font-mono">
+                              {formatCurrency(billingData.extraStopsRate || 0)}
+                            </td>
+                            <td className="text-right py-3 px-3 font-mono font-semibold">
+                              {formatCurrency((billingData.extraStopsQty || 0) * (billingData.extraStopsRate || 0))}
+                            </td>
+                          </tr>
+                        ) : null}
+
+                      {(billingData.airportFee || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">Airport Fee</td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.airportFee || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.airportFee || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
+
+                      {(billingData.parkingFee || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">Parking Fee</td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.parkingFee || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.parkingFee || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
+
+                      {(billingData.meetAndGreet || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">Meet & Greet</td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.meetAndGreet || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.meetAndGreet || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
+
+                      {(billingData.carSeatQty || 0) > 0 && (billingData.carSeatRate || 0) > 0 ? (
+                          <tr className="border-b border-slate-100">
+                            <td className="py-3 px-3 text-slate-700">Car Seat</td>
+                            <td className="text-center py-3 px-3">{billingData.carSeatQty || 0}</td>
+                            <td className="text-right py-3 px-3 font-mono">
+                              {formatCurrency(billingData.carSeatRate || 0)}
+                            </td>
+                            <td className="text-right py-3 px-3 font-mono font-semibold">
+                              {formatCurrency((billingData.carSeatQty || 0) * (billingData.carSeatRate || 0))}
+                            </td>
+                          </tr>
+                        ) : null}
+
+                      {(billingData.lateEarlyCharge || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">Late/Early Charge</td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.lateEarlyCharge || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.lateEarlyCharge || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
+                    </tbody>
+                  </table>
+                  <div className="flex justify-between text-sm font-semibold text-slate-900 mt-4 pt-4 border-t border-slate-200">
+                    <span>Primary Charges Subtotal</span>
+                    <span className="font-mono">{formatCurrency(totals.block1Subtotal)}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* SECTION 2: ADDITIONAL CHARGES */}
+              {totals.block2Subtotal > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-900 mb-4">Additional Charges</h3>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left py-3 px-3 font-semibold text-slate-900">
+                          Description
+                        </th>
+                        <th className="text-center py-3 px-3 font-semibold text-slate-900 w-16">
+                          Qty
+                        </th>
+                        <th className="text-right py-3 px-3 font-semibold text-slate-900 w-24">
+                          Unit Price
+                        </th>
+                        <th className="text-right py-3 px-3 font-semibold text-slate-900 w-24">
+                          Amount
+                        </th>
                       </tr>
-                    ) : null}
+                    </thead>
+                    <tbody>
+                      {(billingData.miscFee1Amount || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">
+                            {billingData.miscFee1Label || "Misc Fee 1"}
+                          </td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.miscFee1Amount || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.miscFee1Amount || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
 
-                  {(billingData.waitTimeQty || 0) > 0 && (billingData.waitTimeRate || 0) > 0 ? (
-                      <tr className="border-b border-slate-100">
-                        <td className="py-3 px-3 text-slate-700">Wait Time</td>
-                        <td className="text-center py-3 px-3">{billingData.waitTimeQty || 0}</td>
-                        <td className="text-right py-3 px-3 font-mono">
-                          {formatCurrency(billingData.waitTimeRate || 0)}
-                        </td>
-                        <td className="text-right py-3 px-3 font-mono font-semibold">
-                          {formatCurrency((billingData.waitTimeQty || 0) * (billingData.waitTimeRate || 0))}
-                        </td>
+                      {(billingData.miscFee2Amount || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">
+                            {billingData.miscFee2Label || "Misc Fee 2"}
+                          </td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.miscFee2Amount || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.miscFee2Amount || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
+
+                      {(billingData.miscFee3Amount || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">
+                            {billingData.miscFee3Label || "Misc Fee 3"}
+                          </td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.miscFee3Amount || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.miscFee3Amount || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
+                    </tbody>
+                  </table>
+                  <div className="flex justify-between text-sm font-semibold text-slate-900 mt-4 pt-4 border-t border-slate-200">
+                    <span>Additional Charges Subtotal</span>
+                    <span className="font-mono">{formatCurrency(totals.block2Subtotal)}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* COMBINED ADJUSTMENTS */}
+              {(totals.block1Subtotal > 0 || totals.block2Subtotal > 0) && (
+                <div className="space-y-3 text-sm">
+                  {/* Combined Subtotal */}
+                  <div className="flex justify-between font-semibold text-slate-900">
+                    <span>Subtotal (Primary + Additional)</span>
+                    <span className="font-mono">{formatCurrency(totals.subtotal)}</span>
+                  </div>
+
+                  {/* Discount */}
+                  {totals.discount > 0 && (
+                    <div className="flex justify-between text-red-600">
+                      <span>Discount ({billingData.discountPct}%)</span>
+                      <span className="font-mono font-semibold">
+                        -{formatCurrency(totals.discount)}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Gratuity */}
+                  {totals.gratuity > 0 && (
+                    <div className="flex justify-between text-slate-600">
+                      <span>Gratuity ({billingData.gratuityPct}%)</span>
+                      <span className="font-mono font-semibold text-slate-900">
+                        +{formatCurrency(totals.gratuity)}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Credit Card Fee */}
+                  {totals.creditCardFee > 0 && (
+                    <div className="flex justify-between text-slate-600">
+                      <span>Credit Card Fee ({billingData.creditCardFeePct}%)</span>
+                      <span className="font-mono font-semibold text-slate-900">
+                        +{formatCurrency(totals.creditCardFee)}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Section 1 & 2 Total */}
+                  <div className="flex justify-between font-semibold text-slate-900 pt-2 border-t border-slate-200">
+                    <span>Section Total (Primary + Additional)</span>
+                    <span className="font-mono">{formatCurrency(totals.subtotalWithAdjustments)}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* SECTION 3: FARM-OUT COSTS */}
+              {totals.block3Subtotal > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-900 mb-4">Farm-out Costs</h3>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left py-3 px-3 font-semibold text-slate-900">
+                          Description
+                        </th>
+                        <th className="text-center py-3 px-3 font-semibold text-slate-900 w-16">
+                          Qty
+                        </th>
+                        <th className="text-right py-3 px-3 font-semibold text-slate-900 w-24">
+                          Unit Price
+                        </th>
+                        <th className="text-right py-3 px-3 font-semibold text-slate-900 w-24">
+                          Amount
+                        </th>
                       </tr>
-                    ) : null}
+                    </thead>
+                    <tbody>
+                      {(billingData.farmOutRate || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">Base Rate</td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.farmOutRate || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.farmOutRate || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
 
-                  {(billingData.extraStopsQty || 0) > 0 && (billingData.extraStopsRate || 0) > 0 ? (
-                      <tr className="border-b border-slate-100">
-                        <td className="py-3 px-3 text-slate-700">Extra Stops</td>
-                        <td className="text-center py-3 px-3">{billingData.extraStopsQty || 0}</td>
-                        <td className="text-right py-3 px-3 font-mono">
-                          {formatCurrency(billingData.extraStopsRate || 0)}
-                        </td>
-                        <td className="text-right py-3 px-3 font-mono font-semibold">
-                          {formatCurrency((billingData.extraStopsQty || 0) * (billingData.extraStopsRate || 0))}
-                        </td>
-                      </tr>
-                    ) : null}
+                      {(billingData.farmOutGratuity || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">Gratuity</td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.farmOutGratuity || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.farmOutGratuity || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
 
-                  {(billingData.airportFee || 0) > 0 ? (
-                    <tr className="border-b border-slate-100">
-                      <td className="py-3 px-3 text-slate-700">Airport Fee</td>
-                      <td className="text-center py-3 px-3">1</td>
-                      <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.airportFee || 0)}
-                      </td>
-                      <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.airportFee || 0)}
-                      </td>
-                    </tr>
-                  ) : null}
+                      {(billingData.farmOutStops || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">Extra Stops</td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.farmOutStops || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.farmOutStops || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
 
-                  {(billingData.parkingFee || 0) > 0 ? (
-                    <tr className="border-b border-slate-100">
-                      <td className="py-3 px-3 text-slate-700">Parking Fee</td>
-                      <td className="text-center py-3 px-3">1</td>
-                      <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.parkingFee || 0)}
-                      </td>
-                      <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.parkingFee || 0)}
-                      </td>
-                    </tr>
-                  ) : null}
+                      {(billingData.farmOutTolls || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">Tolls</td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.farmOutTolls || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.farmOutTolls || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
 
-                  {(billingData.meetAndGreet || 0) > 0 ? (
-                    <tr className="border-b border-slate-100">
-                      <td className="py-3 px-3 text-slate-700">Meet & Greet</td>
-                      <td className="text-center py-3 px-3">1</td>
-                      <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.meetAndGreet || 0)}
-                      </td>
-                      <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.meetAndGreet || 0)}
-                      </td>
-                    </tr>
-                  ) : null}
+                      {(billingData.farmOutParking || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">Parking</td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.farmOutParking || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.farmOutParking || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
 
-                  {(billingData.carSeatQty || 0) > 0 && (billingData.carSeatRate || 0) > 0 ? (
-                      <tr className="border-b border-slate-100">
-                        <td className="py-3 px-3 text-slate-700">Car Seat</td>
-                        <td className="text-center py-3 px-3">{billingData.carSeatQty || 0}</td>
-                        <td className="text-right py-3 px-3 font-mono">
-                          {formatCurrency(billingData.carSeatRate || 0)}
-                        </td>
-                        <td className="text-right py-3 px-3 font-mono font-semibold">
-                          {formatCurrency((billingData.carSeatQty || 0) * (billingData.carSeatRate || 0))}
-                        </td>
-                      </tr>
-                    ) : null}
+                      {(billingData.farmOutAirportFee || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">Airport Fee</td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.farmOutAirportFee || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.farmOutAirportFee || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
 
-                  {(billingData.lateEarlyCharge || 0) > 0 ? (
-                    <tr className="border-b border-slate-100">
-                      <td className="py-3 px-3 text-slate-700">Late/Early Charge</td>
-                      <td className="text-center py-3 px-3">1</td>
-                      <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.lateEarlyCharge || 0)}
-                      </td>
-                      <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.lateEarlyCharge || 0)}
-                      </td>
-                    </tr>
-                  ) : null}
+                      {(billingData.farmOutWaitTime || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">Wait Time</td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.farmOutWaitTime || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.farmOutWaitTime || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
 
-                  {/* Block 2 Additional Charges */}
-                  {(billingData.miscFee1Amount || 0) > 0 ? (
-                    <tr className="border-b border-slate-100">
-                      <td className="py-3 px-3 text-slate-700">
-                        {billingData.miscFee1Label || "Misc Fee 1"}
-                      </td>
-                      <td className="text-center py-3 px-3">1</td>
-                      <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.miscFee1Amount || 0)}
-                      </td>
-                      <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.miscFee1Amount || 0)}
-                      </td>
-                    </tr>
-                  ) : null}
+                      {(billingData.farmOutFuelSurcharge || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">Fuel Surcharge</td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.farmOutFuelSurcharge || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.farmOutFuelSurcharge || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
 
-                  {(billingData.miscFee2Amount || 0) > 0 ? (
-                    <tr className="border-b border-slate-100">
-                      <td className="py-3 px-3 text-slate-700">
-                        {billingData.miscFee2Label || "Misc Fee 2"}
-                      </td>
-                      <td className="text-center py-3 px-3">1</td>
-                      <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.miscFee2Amount || 0)}
-                      </td>
-                      <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.miscFee2Amount || 0)}
-                      </td>
-                    </tr>
-                  ) : null}
+                      {(billingData.farmOutMeetAndGreet || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">Meet & Greet</td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.farmOutMeetAndGreet || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.farmOutMeetAndGreet || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
 
-                  {(billingData.miscFee3Amount || 0) > 0 ? (
-                    <tr className="border-b border-slate-100">
-                      <td className="py-3 px-3 text-slate-700">
-                        {billingData.miscFee3Label || "Misc Fee 3"}
-                      </td>
-                      <td className="text-center py-3 px-3">1</td>
-                      <td className="text-right py-3 px-3 font-mono">
-                        {formatCurrency(billingData.miscFee3Amount || 0)}
-                      </td>
-                      <td className="text-right py-3 px-3 font-mono font-semibold">
-                        {formatCurrency(billingData.miscFee3Amount || 0)}
-                      </td>
-                    </tr>
-                  ) : null}
-                </tbody>
-              </table>
+                      {(billingData.farmOutChildSeat || 0) > 0 ? (
+                        <tr className="border-b border-slate-100">
+                          <td className="py-3 px-3 text-slate-700">Child Seat</td>
+                          <td className="text-center py-3 px-3">1</td>
+                          <td className="text-right py-3 px-3 font-mono">
+                            {formatCurrency(billingData.farmOutChildSeat || 0)}
+                          </td>
+                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                            {formatCurrency(billingData.farmOutChildSeat || 0)}
+                          </td>
+                        </tr>
+                      ) : null}
+                    </tbody>
+                  </table>
+                  <div className="space-y-3 mt-4 pt-4 border-t border-slate-200 text-sm">
+                    <div className="flex justify-between font-semibold text-slate-900">
+                      <span>Farm-out Costs Subtotal</span>
+                      <span className="font-mono">{formatCurrency(totals.block3Subtotal)}</span>
+                    </div>
+
+                    {totals.farmOutDiscount > 0 && (
+                      <div className="flex justify-between text-red-600">
+                        <span>Discount ({billingData.farmOutDiscountPct}%)</span>
+                        <span className="font-mono font-semibold">
+                          -{formatCurrency(totals.farmOutDiscount)}
+                        </span>
+                      </div>
+                    )}
+
+                    {totals.farmOutLateEarlyCharge > 0 && (
+                      <div className="flex justify-between text-slate-600">
+                        <span>Late/Early Charge</span>
+                        <span className="font-mono font-semibold text-slate-900">
+                          +{formatCurrency(totals.farmOutLateEarlyCharge)}
+                        </span>
+                      </div>
+                    )}
+
+                    {totals.farmOutCCFee > 0 && (
+                      <div className="flex justify-between text-slate-600">
+                        <span>Credit Card Fee ({billingData.farmOutCCFeePct}%)</span>
+                        <span className="font-mono font-semibold text-slate-900">
+                          +{formatCurrency(totals.farmOutCCFee)}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between font-semibold text-slate-900 pt-2 border-t border-slate-200">
+                      <span>Farm-out Costs Total</span>
+                      <span className="font-mono">{formatCurrency(totals.farmOutTotal)}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex-1 flex items-center justify-center text-center px-8 py-12">
@@ -307,65 +586,12 @@ export function InvoicePreview({
             </div>
           )}
 
-          {/* Summary Section */}
+          {/* Grand Total Section */}
           {hasLineItems && (
             <div className="px-8 py-6 border-t border-slate-200 mt-auto">
-              <div className="space-y-3 text-sm">
-                {/* Subtotal */}
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Subtotal</span>
-                  <span className="font-mono font-semibold text-slate-900">
-                    {formatCurrency(totals.subtotal)}
-                  </span>
-                </div>
-
-                {/* Discount */}
-                {totals.discount > 0 && (
-                  <div className="flex justify-between text-red-600">
-                    <span>Discount ({billingData.discountPct}%)</span>
-                    <span className="font-mono font-semibold">
-                      -{formatCurrency(totals.discount)}
-                    </span>
-                  </div>
-                )}
-
-                {/* Gratuity */}
-                {totals.gratuity > 0 && (
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Gratuity ({billingData.gratuityPct}%)</span>
-                    <span className="font-mono font-semibold text-slate-900">
-                      +{formatCurrency(totals.gratuity)}
-                    </span>
-                  </div>
-                )}
-
-                {/* Credit Card Fee */}
-                {totals.creditCardFee > 0 && (
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">
-                      Credit Card Fee ({billingData.creditCardFeePct}%)
-                    </span>
-                    <span className="font-mono font-semibold text-slate-900">
-                      +{formatCurrency(totals.creditCardFee)}
-                    </span>
-                  </div>
-                )}
-
-                {/* Farm-out Total */}
-                {totals.farmOutTotal > 0 && (
-                  <div className="flex justify-between pt-2 border-t border-slate-100">
-                    <span className="text-slate-600 font-medium">Farm-out Costs</span>
-                    <span className="font-mono font-semibold text-slate-900">
-                      {formatCurrency(totals.farmOutTotal)}
-                    </span>
-                  </div>
-                )}
-
-                {/* Total Due */}
-                <div className="flex justify-between text-base font-bold border-t border-slate-200 pt-4 mt-2">
-                  <span className="text-slate-900">TOTAL DUE</span>
-                  <span className="font-mono text-slate-900">{formatCurrency(totals.total)}</span>
-                </div>
+              <div className="flex justify-between text-lg font-bold">
+                <span className="text-slate-900">GRAND TOTAL</span>
+                <span className="font-mono text-slate-900">{formatCurrency(totals.total)}</span>
               </div>
             </div>
           )}
