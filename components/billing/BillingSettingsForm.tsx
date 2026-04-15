@@ -170,9 +170,9 @@ export function BillingSettingsForm() {
 
   return (
     <>
-    <div className="flex flex-col h-full">
+    <div className="w-full">
       {/* Form */}
-      <div className="flex-1 overflow-y-auto w-full max-w-2xl mx-auto px-4 py-6 lg:px-0">
+      <div className="w-full max-w-2xl mx-auto px-4 py-6 lg:px-0">
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-slate-900">Billing Configuration</h2>
           <p className="text-sm text-slate-500 mt-1">Manage your invoice settings and company information</p>
