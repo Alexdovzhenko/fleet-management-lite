@@ -410,8 +410,15 @@ export function BillingSettingsForm() {
     {/* Preview Modal */}
     <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
       <DialogContent className="w-[98vw] h-[96vh] max-w-[98vw] max-h-[96vh] p-0 flex flex-col overflow-hidden" showCloseButton={false}>
-        <DialogHeader className="px-8 py-6 border-b border-slate-200">
+        <DialogHeader className="relative px-8 py-6 border-b border-slate-200">
           <DialogTitle className="text-xl">Invoice Preview</DialogTitle>
+          <button
+            onClick={() => setIsPreviewOpen(false)}
+            aria-label="Close invoice preview"
+            className="absolute right-6 top-6 flex items-center justify-center w-10 h-10 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 active:scale-95 transition-all duration-150"
+          >
+            <X className="w-5 h-5" strokeWidth={2} />
+          </button>
         </DialogHeader>
 
         {/* Invoice Preview Content */}
