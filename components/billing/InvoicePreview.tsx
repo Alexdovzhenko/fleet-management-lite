@@ -231,6 +231,21 @@ export function InvoicePreview({
                     </tr>
                   )}
 
+                  {billingData.carSeatQty &&
+                    billingData.carSeatQty > 0 &&
+                    billingData.carSeatRate && (
+                      <tr className="border-b border-slate-100">
+                        <td className="py-3 px-3 text-slate-700">Car Seat</td>
+                        <td className="text-center py-3 px-3">{billingData.carSeatQty}</td>
+                        <td className="text-right py-3 px-3 font-mono">
+                          {formatCurrency(billingData.carSeatRate)}
+                        </td>
+                        <td className="text-right py-3 px-3 font-mono font-semibold">
+                          {formatCurrency(billingData.carSeatQty * billingData.carSeatRate)}
+                        </td>
+                      </tr>
+                    )}
+
                   {/* Block 2 Additional Charges */}
                   {billingData.miscFee1Amount && billingData.miscFee1Amount > 0 && (
                     <tr className="border-b border-slate-100">
