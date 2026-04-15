@@ -113,7 +113,7 @@ export function BillingModal({
   return (
     <>
       <Dialog open={open && !showUnsavedWarning} onOpenChange={handleClose}>
-        <DialogContent className="w-[95vw] h-[94vh] max-w-[95vw] max-h-[94vh] p-0 flex flex-col overflow-hidden" showCloseButton={false}>
+        <DialogContent className="w-[98vw] h-[96vh] max-w-[98vw] max-h-[96vh] p-0 flex flex-col overflow-hidden" showCloseButton={false}>
           {/* Header */}
           <DialogHeader className="px-8 py-6 border-b border-slate-200">
             <div className="flex items-center justify-between gap-4">
@@ -134,9 +134,9 @@ export function BillingModal({
           </DialogHeader>
 
           {/* Content - Two Column Layout (Mobile: Single Column) */}
-          <div className="flex-1 flex flex-col lg:flex-row overflow-hidden gap-0 lg:gap-6 px-6 lg:px-8 py-6 lg:py-6">
+          <div className="flex-1 flex flex-col lg:flex-row overflow-hidden gap-0 lg:gap-8 px-6 lg:px-8 py-6 lg:py-6">
             {/* Left Panel - Form */}
-            <div className="flex-1 overflow-y-auto pr-0 lg:pr-4 pb-6 lg:pb-0">
+            <div className="flex-0 lg:w-[38%] overflow-y-auto pr-0 lg:pr-4 pb-6 lg:pb-0">
               {isLoading ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-sm text-slate-500">Loading...</div>
@@ -154,7 +154,7 @@ export function BillingModal({
             <div className="lg:hidden h-px bg-slate-200"></div>
 
             {/* Right Panel - Invoice Preview */}
-            <div className="w-full lg:w-[45%] flex flex-col">
+            <div className="w-full lg:flex-1 flex flex-col">
               <InvoicePreview
                 billingData={billingData}
                 trip={trip}

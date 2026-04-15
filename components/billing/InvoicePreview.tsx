@@ -37,12 +37,12 @@ export function InvoicePreview({
   })
 
   return (
-    <div className="flex flex-col h-full bg-white p-4 rounded-xl overflow-hidden">
+    <div className="flex flex-col h-full bg-white p-6 rounded-xl overflow-hidden">
       {/* Invoice Container */}
       <div className="flex-1 overflow-y-auto bg-white rounded-lg shadow-sm border border-slate-200">
         <div className="flex flex-col min-h-full">
           {/* Invoice Header */}
-          <div className="px-8 pt-8 pb-6 border-b border-slate-200">
+          <div className="px-8 pt-8 pb-8 border-b border-slate-200">
             <div className="flex items-start justify-between mb-6">
               {/* Company Logo & Name */}
               <div className="flex items-center gap-4">
@@ -99,7 +99,7 @@ export function InvoicePreview({
 
           {/* Line Items */}
           {hasLineItems ? (
-            <div className="px-8 py-6 space-y-8">
+            <div className="px-8 py-8 space-y-10">
               {/* SECTION 1: PRIMARY CHARGES */}
               {totals.block1Subtotal > 0 && (
                 <div>
@@ -107,16 +107,16 @@ export function InvoicePreview({
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-slate-200">
-                        <th className="text-left py-3 px-3 font-semibold text-slate-900">
+                        <th className="text-left py-4 px-3 font-semibold text-slate-900">
                           Description
                         </th>
-                        <th className="text-center py-3 px-3 font-semibold text-slate-900 w-16">
+                        <th className="text-center py-4 px-3 font-semibold text-slate-900 w-16">
                           Qty
                         </th>
-                        <th className="text-right py-3 px-3 font-semibold text-slate-900 w-24">
+                        <th className="text-right py-4 px-3 font-semibold text-slate-900 w-24">
                           Unit Price
                         </th>
-                        <th className="text-right py-3 px-3 font-semibold text-slate-900 w-24">
+                        <th className="text-right py-4 px-3 font-semibold text-slate-900 w-24">
                           Amount
                         </th>
                       </tr>
@@ -124,12 +124,12 @@ export function InvoicePreview({
                     <tbody>
                       {(billingData.flatRate || 0) > 0 ? (
                         <tr className="border-b border-slate-100">
-                          <td className="py-3 px-3 text-slate-700">Base Rate</td>
-                          <td className="text-center py-3 px-3">1</td>
-                          <td className="text-right py-3 px-3 font-mono">
+                          <td className="py-4 px-3 text-slate-700">Base Rate</td>
+                          <td className="text-center py-4 px-3">1</td>
+                          <td className="text-right py-4 px-3 font-mono">
                             {formatCurrency(billingData.flatRate || 0)}
                           </td>
-                          <td className="text-right py-3 px-3 font-mono font-semibold">
+                          <td className="text-right py-4 px-3 font-mono font-semibold">
                             {formatCurrency(billingData.flatRate || 0)}
                           </td>
                         </tr>
@@ -267,16 +267,16 @@ export function InvoicePreview({
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-slate-200">
-                        <th className="text-left py-3 px-3 font-semibold text-slate-900">
+                        <th className="text-left py-4 px-3 font-semibold text-slate-900">
                           Description
                         </th>
-                        <th className="text-center py-3 px-3 font-semibold text-slate-900 w-16">
+                        <th className="text-center py-4 px-3 font-semibold text-slate-900 w-16">
                           Qty
                         </th>
-                        <th className="text-right py-3 px-3 font-semibold text-slate-900 w-24">
+                        <th className="text-right py-4 px-3 font-semibold text-slate-900 w-24">
                           Unit Price
                         </th>
-                        <th className="text-right py-3 px-3 font-semibold text-slate-900 w-24">
+                        <th className="text-right py-4 px-3 font-semibold text-slate-900 w-24">
                           Amount
                         </th>
                       </tr>
@@ -389,16 +389,16 @@ export function InvoicePreview({
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-slate-200">
-                        <th className="text-left py-3 px-3 font-semibold text-slate-900">
+                        <th className="text-left py-4 px-3 font-semibold text-slate-900">
                           Description
                         </th>
-                        <th className="text-center py-3 px-3 font-semibold text-slate-900 w-16">
+                        <th className="text-center py-4 px-3 font-semibold text-slate-900 w-16">
                           Qty
                         </th>
-                        <th className="text-right py-3 px-3 font-semibold text-slate-900 w-24">
+                        <th className="text-right py-4 px-3 font-semibold text-slate-900 w-24">
                           Unit Price
                         </th>
-                        <th className="text-right py-3 px-3 font-semibold text-slate-900 w-24">
+                        <th className="text-right py-4 px-3 font-semibold text-slate-900 w-24">
                           Amount
                         </th>
                       </tr>
@@ -588,7 +588,7 @@ export function InvoicePreview({
 
           {/* Grand Total Section */}
           {hasLineItems && (
-            <div className="px-8 py-6 border-t border-slate-200 mt-auto">
+            <div className="px-8 py-8 border-t border-slate-200 mt-auto">
               <div className="flex justify-between text-lg font-bold">
                 <span className="text-slate-900">GRAND TOTAL</span>
                 <span className="font-mono text-slate-900">{formatCurrency(totals.total)}</span>
