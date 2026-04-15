@@ -276,10 +276,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 type="text"
                 inputMode="decimal"
                 placeholder="0.00"
-                value={focusedField === "carSeatRate" ? String(data.carSeatRate || "") : formatCurrencyInput(data.carSeatRate)}
-                onChange={(e) => onChange("carSeatRate", parseCurrencyInput(e.target.value))}
+                value={focusedField === "carSeatRate" ? (inputValues.carSeatRate || String(data.carSeatRate || "")) : formatCurrencyInput(data.carSeatRate)}
+                onChange={(e) => {
+                  setInputValues({ ...inputValues, carSeatRate: e.target.value })
+                  onChange("carSeatRate", parseCurrencyInput(e.target.value))
+                }}
                 onFocus={() => setFocusedField("carSeatRate")}
-                onBlur={() => setFocusedField(null)}
+                onBlur={() => {
+                  setFocusedField(null)
+                  const { carSeatRate: _, ...rest } = inputValues
+                  setInputValues(rest)
+                }}
                 className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
@@ -564,10 +571,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutStops" ? String(data.farmOutStops || "") : formatCurrencyInput(data.farmOutStops)}
-              onChange={(e) => onChange("farmOutStops", parseCurrencyInput(e.target.value))}
+              value={focusedField === "farmOutStops" ? (inputValues.farmOutStops || String(data.farmOutStops || "")) : formatCurrencyInput(data.farmOutStops)}
+              onChange={(e) => {
+                setInputValues({ ...inputValues, farmOutStops: e.target.value })
+                onChange("farmOutStops", parseCurrencyInput(e.target.value))
+              }}
               onFocus={() => setFocusedField("farmOutStops")}
-              onBlur={() => setFocusedField(null)}
+              onBlur={() => {
+                setFocusedField(null)
+                const { farmOutStops: _, ...rest } = inputValues
+                setInputValues(rest)
+              }}
               className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
@@ -581,10 +595,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutTolls" ? String(data.farmOutTolls || "") : formatCurrencyInput(data.farmOutTolls)}
-              onChange={(e) => onChange("farmOutTolls", parseCurrencyInput(e.target.value))}
+              value={focusedField === "farmOutTolls" ? (inputValues.farmOutTolls || String(data.farmOutTolls || "")) : formatCurrencyInput(data.farmOutTolls)}
+              onChange={(e) => {
+                setInputValues({ ...inputValues, farmOutTolls: e.target.value })
+                onChange("farmOutTolls", parseCurrencyInput(e.target.value))
+              }}
               onFocus={() => setFocusedField("farmOutTolls")}
-              onBlur={() => setFocusedField(null)}
+              onBlur={() => {
+                setFocusedField(null)
+                const { farmOutTolls: _, ...rest } = inputValues
+                setInputValues(rest)
+              }}
               className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
@@ -598,10 +619,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutParking" ? String(data.farmOutParking || "") : formatCurrencyInput(data.farmOutParking)}
-              onChange={(e) => onChange("farmOutParking", parseCurrencyInput(e.target.value))}
+              value={focusedField === "farmOutParking" ? (inputValues.farmOutParking || String(data.farmOutParking || "")) : formatCurrencyInput(data.farmOutParking)}
+              onChange={(e) => {
+                setInputValues({ ...inputValues, farmOutParking: e.target.value })
+                onChange("farmOutParking", parseCurrencyInput(e.target.value))
+              }}
               onFocus={() => setFocusedField("farmOutParking")}
-              onBlur={() => setFocusedField(null)}
+              onBlur={() => {
+                setFocusedField(null)
+                const { farmOutParking: _, ...rest } = inputValues
+                setInputValues(rest)
+              }}
               className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
@@ -615,10 +643,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutAirportFee" ? String(data.farmOutAirportFee || "") : formatCurrencyInput(data.farmOutAirportFee)}
-              onChange={(e) => onChange("farmOutAirportFee", parseCurrencyInput(e.target.value))}
+              value={focusedField === "farmOutAirportFee" ? (inputValues.farmOutAirportFee || String(data.farmOutAirportFee || "")) : formatCurrencyInput(data.farmOutAirportFee)}
+              onChange={(e) => {
+                setInputValues({ ...inputValues, farmOutAirportFee: e.target.value })
+                onChange("farmOutAirportFee", parseCurrencyInput(e.target.value))
+              }}
               onFocus={() => setFocusedField("farmOutAirportFee")}
-              onBlur={() => setFocusedField(null)}
+              onBlur={() => {
+                setFocusedField(null)
+                const { farmOutAirportFee: _, ...rest } = inputValues
+                setInputValues(rest)
+              }}
               className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
@@ -632,10 +667,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutWaitTime" ? String(data.farmOutWaitTime || "") : formatCurrencyInput(data.farmOutWaitTime)}
-              onChange={(e) => onChange("farmOutWaitTime", parseCurrencyInput(e.target.value))}
+              value={focusedField === "farmOutWaitTime" ? (inputValues.farmOutWaitTime || String(data.farmOutWaitTime || "")) : formatCurrencyInput(data.farmOutWaitTime)}
+              onChange={(e) => {
+                setInputValues({ ...inputValues, farmOutWaitTime: e.target.value })
+                onChange("farmOutWaitTime", parseCurrencyInput(e.target.value))
+              }}
               onFocus={() => setFocusedField("farmOutWaitTime")}
-              onBlur={() => setFocusedField(null)}
+              onBlur={() => {
+                setFocusedField(null)
+                const { farmOutWaitTime: _, ...rest } = inputValues
+                setInputValues(rest)
+              }}
               className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
@@ -669,10 +711,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutMeetAndGreet" ? String(data.farmOutMeetAndGreet || "") : formatCurrencyInput(data.farmOutMeetAndGreet)}
-              onChange={(e) => onChange("farmOutMeetAndGreet", parseCurrencyInput(e.target.value))}
+              value={focusedField === "farmOutMeetAndGreet" ? (inputValues.farmOutMeetAndGreet || String(data.farmOutMeetAndGreet || "")) : formatCurrencyInput(data.farmOutMeetAndGreet)}
+              onChange={(e) => {
+                setInputValues({ ...inputValues, farmOutMeetAndGreet: e.target.value })
+                onChange("farmOutMeetAndGreet", parseCurrencyInput(e.target.value))
+              }}
               onFocus={() => setFocusedField("farmOutMeetAndGreet")}
-              onBlur={() => setFocusedField(null)}
+              onBlur={() => {
+                setFocusedField(null)
+                const { farmOutMeetAndGreet: _, ...rest } = inputValues
+                setInputValues(rest)
+              }}
               className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
@@ -686,10 +735,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "farmOutChildSeat" ? String(data.farmOutChildSeat || "") : formatCurrencyInput(data.farmOutChildSeat)}
-              onChange={(e) => onChange("farmOutChildSeat", parseCurrencyInput(e.target.value))}
+              value={focusedField === "farmOutChildSeat" ? (inputValues.farmOutChildSeat || String(data.farmOutChildSeat || "")) : formatCurrencyInput(data.farmOutChildSeat)}
+              onChange={(e) => {
+                setInputValues({ ...inputValues, farmOutChildSeat: e.target.value })
+                onChange("farmOutChildSeat", parseCurrencyInput(e.target.value))
+              }}
               onFocus={() => setFocusedField("farmOutChildSeat")}
-              onBlur={() => setFocusedField(null)}
+              onBlur={() => {
+                setFocusedField(null)
+                const { farmOutChildSeat: _, ...rest } = inputValues
+                setInputValues(rest)
+              }}
               className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
           </div>
@@ -739,10 +795,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
             type="text"
             inputMode="decimal"
             placeholder="0.00"
-            value={focusedField === "farmOutLateEarlyCharge" ? String(data.farmOutLateEarlyCharge || "") : formatCurrencyInput(data.farmOutLateEarlyCharge)}
-            onChange={(e) => onChange("farmOutLateEarlyCharge", parseCurrencyInput(e.target.value))}
+            value={focusedField === "farmOutLateEarlyCharge" ? (inputValues.farmOutLateEarlyCharge || String(data.farmOutLateEarlyCharge || "")) : formatCurrencyInput(data.farmOutLateEarlyCharge)}
+            onChange={(e) => {
+              setInputValues({ ...inputValues, farmOutLateEarlyCharge: e.target.value })
+              onChange("farmOutLateEarlyCharge", parseCurrencyInput(e.target.value))
+            }}
             onFocus={() => setFocusedField("farmOutLateEarlyCharge")}
-            onBlur={() => setFocusedField(null)}
+            onBlur={() => {
+              setFocusedField(null)
+              const { farmOutLateEarlyCharge: _, ...rest } = inputValues
+              setInputValues(rest)
+            }}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
           />
         </div>
