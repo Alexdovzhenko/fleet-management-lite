@@ -41,6 +41,18 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
     return parseFloat(val) || 0
   }
 
+  // Format integer (whole number only)
+  const formatIntegerInput = (val: any) => {
+    const num = typeof val === "string" ? parseInt(val) || 0 : val || 0
+    if (isNaN(num)) return ""
+    return String(Math.max(0, num))
+  }
+
+  // Parse integer input
+  const parseIntegerInput = (val: string) => {
+    return parseInt(val) || 0
+  }
+
   const formatCurrency = (val: any) => {
     const num = typeof val === "string" ? parseFloat(val) || 0 : val || 0
     return "$" + num.toFixed(2)
@@ -175,13 +187,14 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           <div className="flex gap-2 items-center">
             <div className="flex items-center gap-2">
               <input
-                type="number"
-                inputMode="decimal"
-                step="0.01"
-                placeholder="0.00"
-                value={data.extraStopsQty || ""}
-                onChange={(e) => onChange("extraStopsQty", e.target.value ? parseFloat(e.target.value) : 0)}
-                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+                type="text"
+                inputMode="numeric"
+                placeholder="0"
+                value={focusedField === "extraStopsQty" ? String(data.extraStopsQty || "") : formatIntegerInput(data.extraStopsQty)}
+                onChange={(e) => onChange("extraStopsQty", parseIntegerInput(e.target.value))}
+                onFocus={() => setFocusedField("extraStopsQty")}
+                onBlur={() => setFocusedField(null)}
+                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
               <span className="text-sm font-medium text-slate-500 min-w-max">ea.</span>
             </div>
@@ -237,13 +250,14 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           <div className="flex gap-2 items-center">
             <div className="flex items-center gap-2">
               <input
-                type="number"
+                type="text"
                 inputMode="numeric"
-                step="1"
                 placeholder="0"
-                value={data.carSeatQty || ""}
-                onChange={(e) => onChange("carSeatQty", e.target.value ? parseInt(e.target.value) : 0)}
-                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+                value={focusedField === "carSeatQty" ? String(data.carSeatQty || "") : formatIntegerInput(data.carSeatQty)}
+                onChange={(e) => onChange("carSeatQty", parseIntegerInput(e.target.value))}
+                onFocus={() => setFocusedField("carSeatQty")}
+                onBlur={() => setFocusedField(null)}
+                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
               <span className="text-sm font-medium text-slate-500 min-w-max">ea.</span>
             </div>
