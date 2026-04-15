@@ -818,45 +818,6 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           </div>
         </FormRow>
 
-        {/* Farm-out Late/Early */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between gap-4 py-2">
-            <label className="text-sm font-medium text-slate-700">FO Late/Early</label>
-            <div className="flex items-center gap-3">
-              <select
-                value={data.farmOutLateEarlyType || "late"}
-                onChange={(e) => onChange("farmOutLateEarlyType", e.target.value)}
-                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
-              >
-                <option value="late">Late</option>
-                <option value="early">Early</option>
-              </select>
-            </div>
-            <div className="min-w-[100px]">
-              <div className="border border-slate-300 rounded-lg px-3 py-2 text-right text-sm font-semibold text-slate-900 bg-slate-50">
-                {formatCurrency(data.farmOutLateEarlyCharge)}
-              </div>
-            </div>
-          </div>
-          <input
-            type="text"
-            inputMode="decimal"
-            placeholder="0.00"
-            value={focusedField === "farmOutLateEarlyCharge" ? (inputValues.farmOutLateEarlyCharge || String(data.farmOutLateEarlyCharge || "")) : formatCurrencyInput(data.farmOutLateEarlyCharge)}
-            onChange={(e) => {
-              setInputValues({ ...inputValues, farmOutLateEarlyCharge: e.target.value })
-              onChange("farmOutLateEarlyCharge", parseCurrencyInput(e.target.value))
-            }}
-            onFocus={() => setFocusedField("farmOutLateEarlyCharge")}
-            onBlur={() => {
-              setFocusedField(null)
-              const { farmOutLateEarlyCharge: _, ...rest } = inputValues
-              setInputValues(rest)
-            }}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
-          />
-        </div>
-
         {/* Farm-out CC Fee - BLUE */}
         <FormRow
           label="FO CC Fee"
