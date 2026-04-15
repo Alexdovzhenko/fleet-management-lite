@@ -5,7 +5,9 @@ import { useBillingSettings, useUpdateBillingSettings, useUploadBillingLogo } fr
 import { InvoicePreview } from "./InvoicePreview"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Upload, X, Check } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Upload, X, Check, Eye } from "lucide-react"
 import type { BillingData } from "@/lib/billing-calculations"
 
 export function BillingSettingsForm() {
@@ -30,6 +32,7 @@ export function BillingSettingsForm() {
   const [isSaved, setIsSaved] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   // Initialize form from loaded settings
@@ -166,9 +169,10 @@ export function BillingSettingsForm() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-0 lg:gap-6 h-[calc(100vh-200px)]">
-      {/* Left Panel - Form */}
-      <div className="w-full lg:w-[45%] overflow-y-auto pr-0 lg:pr-4 pb-6 lg:pb-0">
+    <>
+    <div className="flex flex-col h-full">
+      {/* Form */}
+      <div className="flex-1 overflow-y-auto w-full max-w-2xl mx-auto px-4 py-6 lg:px-0">
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-slate-900">Billing Configuration</h2>
           <p className="text-sm text-slate-500 mt-1">Manage your invoice settings and company information</p>
@@ -395,31 +399,48 @@ export function BillingSettingsForm() {
               Saving...
             </div>
           )}
+
+          {/* Preview Button */}
+          <button
+            type="button"
+            onClick={() => setIsPreviewOpen(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 active:scale-95 transition-all duration-150"
+          >
+            <Eye className="w-4 h-4" />
+            Preview Billing Invoice
+          </button>
         </div>
       </div>
-
-      {/* Divider - Hidden on mobile */}
-      <div className="hidden lg:block w-px bg-slate-200"></div>
-
-      {/* Right Panel - Invoice Preview */}
-      <div className="w-full lg:w-[55%] overflow-hidden pl-0 lg:pl-6">
-        <InvoicePreview
-          billingData={sampleInvoiceData}
-          trip={{
-            tripNumber: "LC-2024-001",
-            passengerName: "John Smith",
-            passengerEmail: "john@example.com",
-            passengerPhone: "(555) 123-4567",
-          }}
-          company={{
-            name: formData.companyName || "Your Company",
-            address: formData.address,
-            phone: formData.phone,
-            email: formData.billingEmail,
-            logoUrl,
-          }}
-        />
-      </div>
     </div>
+
+    {/* Preview Modal */}
+    <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+      <DialogContent className="w-[98vw] h-[96vh] max-w-[98vw] max-h-[96vh] p-0 flex flex-col overflow-hidden" showCloseButton={false}>
+        <DialogHeader className="px-8 py-6 border-b border-slate-200">
+          <DialogTitle className="text-xl">Invoice Preview</DialogTitle>
+        </DialogHeader>
+
+        {/* Invoice Preview Content */}
+        <div className="flex-1 overflow-hidden">
+          <InvoicePreview
+            billingData={sampleInvoiceData}
+            trip={{
+              tripNumber: "LC-2024-001",
+              passengerName: "John Smith",
+              passengerEmail: "john@example.com",
+              passengerPhone: "(555) 123-4567",
+            }}
+            company={{
+              name: formData.companyName || "Your Company",
+              address: formData.address,
+              phone: formData.phone,
+              email: formData.billingEmail,
+              logoUrl,
+            }}
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   )
 }
