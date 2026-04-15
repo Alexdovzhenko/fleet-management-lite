@@ -173,9 +173,9 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           </div>
         </FormRow>
 
-        {/* Wait/OT Time */}
+        {/* Wait Time */}
         <FormRow
-          label="Wait/Misc (Qty)"
+          label="Wait Time (Qty)"
           result={formatCurrency((data.waitTimeQty || 0) * (data.waitTimeRate || 0))}
         >
           <div className="flex gap-2 items-center">
