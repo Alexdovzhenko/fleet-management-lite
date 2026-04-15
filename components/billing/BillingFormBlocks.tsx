@@ -29,6 +29,18 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
     return parseFloat(cleaned) || 0
   }
 
+  // Format decimal number with 2 decimal places (e.g., 1 → "1.00", .2 → "0.20")
+  const formatDecimalInput = (val: any) => {
+    const num = typeof val === "string" ? parseFloat(val) || 0 : val || 0
+    if (isNaN(num)) return ""
+    return num.toFixed(2)
+  }
+
+  // Parse decimal input
+  const parseDecimalInput = (val: string) => {
+    return parseFloat(val) || 0
+  }
+
   const formatCurrency = (val: any) => {
     const num = typeof val === "string" ? parseFloat(val) || 0 : val || 0
     return "$" + num.toFixed(2)
@@ -55,13 +67,14 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           <div className="flex gap-2 items-center">
             <div className="flex items-center gap-2">
               <input
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.01"
                 placeholder="0.00"
-                value={data.perHourQty || ""}
-                onChange={(e) => onChange("perHourQty", e.target.value ? parseFloat(e.target.value) : 0)}
-                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+                value={focusedField === "perHourQty" ? String(data.perHourQty || "") : formatDecimalInput(data.perHourQty)}
+                onChange={(e) => onChange("perHourQty", parseDecimalInput(e.target.value))}
+                onFocus={() => setFocusedField("perHourQty")}
+                onBlur={() => setFocusedField(null)}
+                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
               <span className="text-sm font-medium text-slate-500 min-w-max">Hrs</span>
             </div>
@@ -90,13 +103,14 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           <div className="flex gap-2 items-center">
             <div className="flex items-center gap-2">
               <input
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.01"
                 placeholder="0.00"
-                value={data.travelTimeQty || ""}
-                onChange={(e) => onChange("travelTimeQty", e.target.value ? parseFloat(e.target.value) : 0)}
-                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+                value={focusedField === "travelTimeQty" ? String(data.travelTimeQty || "") : formatDecimalInput(data.travelTimeQty)}
+                onChange={(e) => onChange("travelTimeQty", parseDecimalInput(e.target.value))}
+                onFocus={() => setFocusedField("travelTimeQty")}
+                onBlur={() => setFocusedField(null)}
+                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
               <span className="text-sm font-medium text-slate-500 min-w-max">Hrs</span>
             </div>
@@ -125,13 +139,14 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
           <div className="flex gap-2 items-center">
             <div className="flex items-center gap-2">
               <input
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.01"
                 placeholder="0.00"
-                value={data.waitTimeQty || ""}
-                onChange={(e) => onChange("waitTimeQty", e.target.value ? parseFloat(e.target.value) : 0)}
-                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+                value={focusedField === "waitTimeQty" ? String(data.waitTimeQty || "") : formatDecimalInput(data.waitTimeQty)}
+                onChange={(e) => onChange("waitTimeQty", parseDecimalInput(e.target.value))}
+                onFocus={() => setFocusedField("waitTimeQty")}
+                onBlur={() => setFocusedField(null)}
+                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
               <span className="text-sm font-medium text-slate-500 min-w-max">Hrs</span>
             </div>
