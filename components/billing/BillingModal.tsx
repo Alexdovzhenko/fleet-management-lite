@@ -134,9 +134,9 @@ export function BillingModal({
           </DialogHeader>
 
           {/* Content - Two Column Layout (Mobile: Single Column) */}
-          <div className="flex-1 flex flex-col lg:flex-row overflow-hidden gap-0 lg:gap-8 px-6 lg:px-8 py-6 lg:py-6">
+          <div className="flex-1 flex flex-col md:flex-row overflow-hidden gap-0 md:gap-8 px-6 md:px-8 py-6 md:py-6">
             {/* Left Panel - Form */}
-            <div className="flex-0 lg:w-[38%] overflow-y-auto pr-0 lg:pr-4 pb-6 lg:pb-0">
+            <div className="w-full md:w-[38%] flex-shrink-0 overflow-y-auto pr-0 md:pr-4 pb-6 md:pb-0">
               {isLoading ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-sm text-slate-500">Loading...</div>
@@ -150,11 +150,11 @@ export function BillingModal({
             </div>
 
             {/* Divider */}
-            <div className="hidden lg:block w-px bg-slate-200"></div>
-            <div className="lg:hidden h-px bg-slate-200"></div>
+            <div className="hidden md:block w-px bg-slate-200"></div>
+            <div className="md:hidden h-px bg-slate-200"></div>
 
             {/* Right Panel - Invoice Preview */}
-            <div className="w-full lg:flex-1 flex flex-col">
+            <div className="w-full md:flex-1 flex flex-col overflow-hidden">
               <InvoicePreview
                 billingData={billingData}
                 trip={trip}
