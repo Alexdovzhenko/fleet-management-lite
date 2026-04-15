@@ -563,172 +563,74 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
       {/* FARM-OUT SECTION */}
       <CollapsibleSection title="Farm-Out Costs" defaultOpen={false} type="farmout">
         {/* Farm-out Rate */}
-        <FormRow label="Farm-Out Rate" result={formatCurrency(data.farmOutRate)}>
-          <div className="relative flex items-center">
-            <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              placeholder="0.00"
-              value={focusedField === "farmOutRate" ? (inputValues.farmOutRate || String(data.farmOutRate || "")) : formatCurrencyInput(data.farmOutRate)}
-              onChange={(e) => {
-                setInputValues({ ...inputValues, farmOutRate: e.target.value })
-                onChange("farmOutRate", parseCurrencyInput(e.target.value))
-              }}
-              onFocus={() => setFocusedField("farmOutRate")}
-              onBlur={() => {
-                setFocusedField(null)
-                const { farmOutRate: _, ...rest } = inputValues
-                setInputValues(rest)
-              }}
-              className="w-20 pl-6 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
-            />
-          </div>
-        </FormRow>
+        <FormRow
+          label="Farm-Out Rate"
+          result={formatCurrency(data.farmOutRate)}
+          editable={true}
+          editableValue={data.farmOutRate || ""}
+          onEditChange={(val) => onChange("farmOutRate", val ? parseFloat(val) : 0)}
+          fieldId="farmOutRate"
+        />
 
         {/* Farm-out Gratuity */}
-        <FormRow label="FO Gratuity" result={formatCurrency(data.farmOutGratuity)}>
-          <div className="relative flex items-center">
-            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              placeholder="0.00"
-              value={focusedField === "farmOutGratuity" ? (inputValues.farmOutGratuity || String(data.farmOutGratuity || "")) : formatCurrencyInput(data.farmOutGratuity)}
-              onChange={(e) => {
-                setInputValues({ ...inputValues, farmOutGratuity: e.target.value })
-                onChange("farmOutGratuity", parseCurrencyInput(e.target.value))
-              }}
-              onFocus={() => setFocusedField("farmOutGratuity")}
-              onBlur={() => {
-                setFocusedField(null)
-                const { farmOutGratuity: _, ...rest } = inputValues
-                setInputValues(rest)
-              }}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
-            />
-          </div>
-        </FormRow>
+        <FormRow
+          label="FO Gratuity"
+          result={formatCurrency(data.farmOutGratuity)}
+          editable={true}
+          editableValue={data.farmOutGratuity || ""}
+          onEditChange={(val) => onChange("farmOutGratuity", val ? parseFloat(val) : 0)}
+          fieldId="farmOutGratuity"
+        />
 
         {/* Farm-out Stops */}
-        <FormRow label="FO Stops" result={formatCurrency(data.farmOutStops)}>
-          <div className="relative flex items-center">
-            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              placeholder="0.00"
-              value={focusedField === "farmOutStops" ? (inputValues.farmOutStops || String(data.farmOutStops || "")) : formatCurrencyInput(data.farmOutStops)}
-              onChange={(e) => {
-                setInputValues({ ...inputValues, farmOutStops: e.target.value })
-                onChange("farmOutStops", parseCurrencyInput(e.target.value))
-              }}
-              onFocus={() => setFocusedField("farmOutStops")}
-              onBlur={() => {
-                setFocusedField(null)
-                const { farmOutStops: _, ...rest } = inputValues
-                setInputValues(rest)
-              }}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
-            />
-          </div>
-        </FormRow>
+        <FormRow
+          label="FO Stops"
+          result={formatCurrency(data.farmOutStops)}
+          editable={true}
+          editableValue={data.farmOutStops || ""}
+          onEditChange={(val) => onChange("farmOutStops", val ? parseFloat(val) : 0)}
+          fieldId="farmOutStops"
+        />
 
         {/* Farm-out Tolls */}
-        <FormRow label="FO Tolls" result={formatCurrency(data.farmOutTolls)}>
-          <div className="relative flex items-center">
-            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              placeholder="0.00"
-              value={focusedField === "farmOutTolls" ? (inputValues.farmOutTolls || String(data.farmOutTolls || "")) : formatCurrencyInput(data.farmOutTolls)}
-              onChange={(e) => {
-                setInputValues({ ...inputValues, farmOutTolls: e.target.value })
-                onChange("farmOutTolls", parseCurrencyInput(e.target.value))
-              }}
-              onFocus={() => setFocusedField("farmOutTolls")}
-              onBlur={() => {
-                setFocusedField(null)
-                const { farmOutTolls: _, ...rest } = inputValues
-                setInputValues(rest)
-              }}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
-            />
-          </div>
-        </FormRow>
+        <FormRow
+          label="FO Tolls"
+          result={formatCurrency(data.farmOutTolls)}
+          editable={true}
+          editableValue={data.farmOutTolls || ""}
+          onEditChange={(val) => onChange("farmOutTolls", val ? parseFloat(val) : 0)}
+          fieldId="farmOutTolls"
+        />
 
         {/* Farm-out Parking */}
-        <FormRow label="FO Parking" result={formatCurrency(data.farmOutParking)}>
-          <div className="relative flex items-center">
-            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              placeholder="0.00"
-              value={focusedField === "farmOutParking" ? (inputValues.farmOutParking || String(data.farmOutParking || "")) : formatCurrencyInput(data.farmOutParking)}
-              onChange={(e) => {
-                setInputValues({ ...inputValues, farmOutParking: e.target.value })
-                onChange("farmOutParking", parseCurrencyInput(e.target.value))
-              }}
-              onFocus={() => setFocusedField("farmOutParking")}
-              onBlur={() => {
-                setFocusedField(null)
-                const { farmOutParking: _, ...rest } = inputValues
-                setInputValues(rest)
-              }}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
-            />
-          </div>
-        </FormRow>
+        <FormRow
+          label="FO Parking"
+          result={formatCurrency(data.farmOutParking)}
+          editable={true}
+          editableValue={data.farmOutParking || ""}
+          onEditChange={(val) => onChange("farmOutParking", val ? parseFloat(val) : 0)}
+          fieldId="farmOutParking"
+        />
 
         {/* Farm-out Airport Fee */}
-        <FormRow label="FO Airport Fee" result={formatCurrency(data.farmOutAirportFee)}>
-          <div className="relative flex items-center">
-            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              placeholder="0.00"
-              value={focusedField === "farmOutAirportFee" ? (inputValues.farmOutAirportFee || String(data.farmOutAirportFee || "")) : formatCurrencyInput(data.farmOutAirportFee)}
-              onChange={(e) => {
-                setInputValues({ ...inputValues, farmOutAirportFee: e.target.value })
-                onChange("farmOutAirportFee", parseCurrencyInput(e.target.value))
-              }}
-              onFocus={() => setFocusedField("farmOutAirportFee")}
-              onBlur={() => {
-                setFocusedField(null)
-                const { farmOutAirportFee: _, ...rest } = inputValues
-                setInputValues(rest)
-              }}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
-            />
-          </div>
-        </FormRow>
+        <FormRow
+          label="FO Airport Fee"
+          result={formatCurrency(data.farmOutAirportFee)}
+          editable={true}
+          editableValue={data.farmOutAirportFee || ""}
+          onEditChange={(val) => onChange("farmOutAirportFee", val ? parseFloat(val) : 0)}
+          fieldId="farmOutAirportFee"
+        />
 
         {/* Farm-out Wait Time */}
-        <FormRow label="FO Wait Time" result={formatCurrency(data.farmOutWaitTime)}>
-          <div className="relative flex items-center">
-            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              placeholder="0.00"
-              value={focusedField === "farmOutWaitTime" ? (inputValues.farmOutWaitTime || String(data.farmOutWaitTime || "")) : formatCurrencyInput(data.farmOutWaitTime)}
-              onChange={(e) => {
-                setInputValues({ ...inputValues, farmOutWaitTime: e.target.value })
-                onChange("farmOutWaitTime", parseCurrencyInput(e.target.value))
-              }}
-              onFocus={() => setFocusedField("farmOutWaitTime")}
-              onBlur={() => {
-                setFocusedField(null)
-                const { farmOutWaitTime: _, ...rest } = inputValues
-                setInputValues(rest)
-              }}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
-            />
-          </div>
-        </FormRow>
+        <FormRow
+          label="FO Wait Time"
+          result={formatCurrency(data.farmOutWaitTime)}
+          editable={true}
+          editableValue={data.farmOutWaitTime || ""}
+          onEditChange={(val) => onChange("farmOutWaitTime", val ? parseFloat(val) : 0)}
+          fieldId="farmOutWaitTime"
+        />
 
         {/* Farm-out Fuel Surcharge - BLUE */}
         <FormRow
@@ -751,52 +653,24 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
         </FormRow>
 
         {/* Farm-out Meet & Greet */}
-        <FormRow label="FO Meet & Greet" result={formatCurrency(data.farmOutMeetAndGreet)}>
-          <div className="relative flex items-center">
-            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              placeholder="0.00"
-              value={focusedField === "farmOutMeetAndGreet" ? (inputValues.farmOutMeetAndGreet || String(data.farmOutMeetAndGreet || "")) : formatCurrencyInput(data.farmOutMeetAndGreet)}
-              onChange={(e) => {
-                setInputValues({ ...inputValues, farmOutMeetAndGreet: e.target.value })
-                onChange("farmOutMeetAndGreet", parseCurrencyInput(e.target.value))
-              }}
-              onFocus={() => setFocusedField("farmOutMeetAndGreet")}
-              onBlur={() => {
-                setFocusedField(null)
-                const { farmOutMeetAndGreet: _, ...rest } = inputValues
-                setInputValues(rest)
-              }}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
-            />
-          </div>
-        </FormRow>
+        <FormRow
+          label="FO Meet & Greet"
+          result={formatCurrency(data.farmOutMeetAndGreet)}
+          editable={true}
+          editableValue={data.farmOutMeetAndGreet || ""}
+          onEditChange={(val) => onChange("farmOutMeetAndGreet", val ? parseFloat(val) : 0)}
+          fieldId="farmOutMeetAndGreet"
+        />
 
         {/* Farm-out Child Seat */}
-        <FormRow label="FO Child Seat" result={formatCurrency(data.farmOutChildSeat)}>
-          <div className="relative flex items-center">
-            <span className="absolute left-2 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
-            <input
-              type="text"
-              inputMode="decimal"
-              placeholder="0.00"
-              value={focusedField === "farmOutChildSeat" ? (inputValues.farmOutChildSeat || String(data.farmOutChildSeat || "")) : formatCurrencyInput(data.farmOutChildSeat)}
-              onChange={(e) => {
-                setInputValues({ ...inputValues, farmOutChildSeat: e.target.value })
-                onChange("farmOutChildSeat", parseCurrencyInput(e.target.value))
-              }}
-              onFocus={() => setFocusedField("farmOutChildSeat")}
-              onBlur={() => {
-                setFocusedField(null)
-                const { farmOutChildSeat: _, ...rest } = inputValues
-                setInputValues(rest)
-              }}
-              className="w-20 pl-5 pr-2 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
-            />
-          </div>
-        </FormRow>
+        <FormRow
+          label="FO Child Seat"
+          result={formatCurrency(data.farmOutChildSeat)}
+          editable={true}
+          editableValue={data.farmOutChildSeat || ""}
+          onEditChange={(val) => onChange("farmOutChildSeat", val ? parseFloat(val) : 0)}
+          fieldId="farmOutChildSeat"
+        />
 
         {/* Farm-out Discount - RED */}
         <FormRow
