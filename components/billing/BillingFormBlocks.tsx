@@ -12,6 +12,7 @@ interface BillingFormBlocksProps {
 export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
   const totals = useMemo(() => computeBillingTotals(data as BillingData), [data])
   const [focusedField, setFocusedField] = useState<string | null>(null)
+  const [inputValues, setInputValues] = useState<Record<string, string>>({})
 
   // Format number to currency display (e.g., 1999.1 → "1,999.10")
   const formatCurrencyInput = (val: any) => {
@@ -403,10 +404,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "gratuityPct" ? String(data.gratuityPct || "") : formatDecimalInput(data.gratuityPct)}
-              onChange={(e) => onChange("gratuityPct", parseDecimalInput(e.target.value))}
+              value={focusedField === "gratuityPct" ? (inputValues.gratuityPct || String(data.gratuityPct || "")) : formatDecimalInput(data.gratuityPct)}
+              onChange={(e) => {
+                setInputValues({ ...inputValues, gratuityPct: e.target.value })
+                onChange("gratuityPct", parseDecimalInput(e.target.value))
+              }}
               onFocus={() => setFocusedField("gratuityPct")}
-              onBlur={() => setFocusedField(null)}
+              onBlur={() => {
+                setFocusedField(null)
+                const { gratuityPct: _, ...rest } = inputValues
+                setInputValues(rest)
+              }}
               className="w-full pr-6 pl-3 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
             <span className="absolute right-3 text-sm font-semibold text-slate-500 pointer-events-none">%</span>
@@ -424,10 +432,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "discountPct" ? String(data.discountPct || "") : formatDecimalInput(data.discountPct)}
-              onChange={(e) => onChange("discountPct", parseDecimalInput(e.target.value))}
+              value={focusedField === "discountPct" ? (inputValues.discountPct || String(data.discountPct || "")) : formatDecimalInput(data.discountPct)}
+              onChange={(e) => {
+                setInputValues({ ...inputValues, discountPct: e.target.value })
+                onChange("discountPct", parseDecimalInput(e.target.value))
+              }}
               onFocus={() => setFocusedField("discountPct")}
-              onBlur={() => setFocusedField(null)}
+              onBlur={() => {
+                setFocusedField(null)
+                const { discountPct: _, ...rest } = inputValues
+                setInputValues(rest)
+              }}
               className="w-full pr-6 pl-3 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
             <span className="absolute right-3 text-sm font-semibold text-slate-500 pointer-events-none">%</span>
@@ -445,10 +460,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               type="text"
               inputMode="decimal"
               placeholder="0.00"
-              value={focusedField === "creditCardFeePct" ? String(data.creditCardFeePct || "") : formatDecimalInput(data.creditCardFeePct)}
-              onChange={(e) => onChange("creditCardFeePct", parseDecimalInput(e.target.value))}
+              value={focusedField === "creditCardFeePct" ? (inputValues.creditCardFeePct || String(data.creditCardFeePct || "")) : formatDecimalInput(data.creditCardFeePct)}
+              onChange={(e) => {
+                setInputValues({ ...inputValues, creditCardFeePct: e.target.value })
+                onChange("creditCardFeePct", parseDecimalInput(e.target.value))
+              }}
               onFocus={() => setFocusedField("creditCardFeePct")}
-              onBlur={() => setFocusedField(null)}
+              onBlur={() => {
+                setFocusedField(null)
+                const { creditCardFeePct: _, ...rest } = inputValues
+                setInputValues(rest)
+              }}
               className="w-full pr-6 pl-3 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
             />
             <span className="absolute right-3 text-sm font-semibold text-slate-500 pointer-events-none">%</span>
