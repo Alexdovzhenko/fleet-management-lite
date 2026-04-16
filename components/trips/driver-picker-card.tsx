@@ -5,6 +5,7 @@ import { createPortal } from "react-dom"
 import { ChevronDown, UserCheck, X } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
+import { formatPhone } from "@/lib/utils"
 import type { Driver } from "@/types"
 
 function getInitials(name: string) {
@@ -70,7 +71,7 @@ export function DriverPickerCard({
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-semibold text-gray-900 truncate">{selected.name}</div>
-            {selected.phone && <div className="text-[11px] text-gray-500 truncate">{selected.phone}</div>}
+            {selected.phone && <div className="text-[11px] text-gray-500 truncate">{formatPhone(selected.phone)}</div>}
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-full px-1.5 py-0.5">
@@ -129,7 +130,7 @@ export function DriverPickerCard({
                   </div>
                   <div className="flex-1 min-w-0 text-left">
                     <div className="text-sm font-medium text-gray-800">{d.name}</div>
-                    {d.phone && <div className="text-[11px] text-gray-400">{d.phone}</div>}
+                    {d.phone && <div className="text-[11px] text-gray-400">{formatPhone(d.phone)}</div>}
                   </div>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
                 </button>
