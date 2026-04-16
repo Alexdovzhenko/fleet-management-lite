@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { useBillingSettings, useUpdateBillingSettings, useUploadBillingLogo } from "@/lib/hooks/use-billing"
 import { InvoicePreview } from "./InvoicePreview"
 import { Input } from "@/components/ui/input"
+import { PhoneInput } from "@/components/ui/phone-input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -329,12 +330,12 @@ export function BillingSettingsForm() {
               <Label htmlFor="phone" className="text-sm font-medium text-slate-700">
                 Phone
               </Label>
-              <Input
+              <PhoneInput
                 id="phone"
                 value={formData.phone}
-                onChange={(e) => handleInputChange("phone", e.target.value)}
+                onChange={(value) => handleInputChange("phone", value)}
                 placeholder="(555) 123-4567"
-                className="h-10"
+                className="h-10 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
             </div>
 
