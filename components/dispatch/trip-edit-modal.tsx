@@ -51,7 +51,7 @@ import { FBOAutocomplete } from "@/components/ui/fbo-autocomplete"
 import { useUpdateTrip, useTrip } from "@/lib/hooks/use-trips"
 import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
-import { useInvoicesByTrip } from "@/lib/hooks/use-billing"
+import { useInvoicesByCustomer } from "@/lib/hooks/use-billing"
 import { useVehicleTypes } from "@/lib/hooks/use-vehicle-types"
 import { useServiceTypes } from "@/lib/hooks/use-service-types"
 import { useCustomers } from "@/lib/hooks/use-customers"
@@ -1148,11 +1148,14 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const enabledTypes = serviceTypes.filter((t) => t.isEnabled)
   const { actions: statusActions } = useStatusActionsStore()
   const { data: billingSettings } = useBillingSettings()
-  const { data: invoicesByTrip = [] } = useInvoicesByTrip(currentTrip?.tripNumber)
+  const { data: invoicesByCustomer = [] } = useInvoicesByCustomer(currentTrip?.customerId)
 
   const isFarmedIn = !!currentTrip?.farmedIn
-  // Get the first invoice for this trip (if any)
-  const tripInvoice = invoicesByTrip && invoicesByTrip.length > 0 ? invoicesByTrip[0] : null
+  // Get invoice: prefer direct relation, fallback to customer invoices (most recent OPEN invoice)
+  const tripInvoice = currentTrip?.invoice ||
+    (invoicesByCustomer && invoicesByCustomer.length > 0
+      ? invoicesByCustomer.find((inv: any) => inv.status === 'OPEN') || invoicesByCustomer[0]
+      : null)
 
   const [farmOutOpen, setFarmOutOpen]         = useState(false)
   const [sendEmailOpen, setSendEmailOpen]     = useState(false)

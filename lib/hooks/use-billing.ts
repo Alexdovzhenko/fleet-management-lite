@@ -211,6 +211,12 @@ async function fetchInvoicesByTrip(tripNumber: string): Promise<any[]> {
   return res.json()
 }
 
+async function fetchInvoicesByCustomer(customerId: string): Promise<any[]> {
+  const res = await fetch(`/api/billing/invoices?accountId=${encodeURIComponent(customerId)}`)
+  if (!res.ok) throw new Error("Failed to fetch invoices")
+  return res.json()
+}
+
 export function useTripBilling(tripId: string | undefined) {
   return useQuery({
     queryKey: ["tripBilling", tripId],
@@ -244,6 +250,14 @@ export function useInvoicesByTrip(tripNumber: string | undefined) {
     queryKey: ["invoicesByTrip", tripNumber],
     queryFn: () => fetchInvoicesByTrip(tripNumber!),
     enabled: !!tripNumber,
+  })
+}
+
+export function useInvoicesByCustomer(customerId: string | undefined) {
+  return useQuery({
+    queryKey: ["invoicesByCustomer", customerId],
+    queryFn: () => fetchInvoicesByCustomer(customerId!),
+    enabled: !!customerId,
   })
 }
 
