@@ -51,7 +51,9 @@ export function SendInvoiceModal({
   // Reset state when modal opens/closes
   useEffect(() => {
     if (open) {
-      setPrimaryEmail(defaultEmail || "")
+      // Set email with proper fallback chain
+      const email = defaultEmail || ""
+      setPrimaryEmail(email)
       setSecondaryEmail("")
       setShowCC(false)
       setMessage("")
@@ -61,7 +63,7 @@ export function SendInvoiceModal({
       // Focus primary email input after a short delay to allow modal animation
       setTimeout(() => primaryInputRef.current?.focus(), 100)
     }
-  }, [open, defaultEmail])
+  }, [open])
 
   // Validation checks
   const isPrimaryEmailValid = primaryEmail.trim() === "" || isValidEmail(primaryEmail)
