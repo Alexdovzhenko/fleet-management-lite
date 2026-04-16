@@ -20,7 +20,7 @@ export function BillingTriggerButton({ billingData, payments = [], onClick }: Bi
       className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-white rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-sm transition-all group"
     >
       <div className="flex items-center gap-3 flex-1 min-w-0">
-        <DollarSign className="w-4 h-4 text-gray-400 flex-shrink-0" />
+        <DollarSign className="w-4 h-4 text-emerald-600 flex-shrink-0" />
         <div className="text-left min-w-0">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Billing</p>
           {hasData ? (
