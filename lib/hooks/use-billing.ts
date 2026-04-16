@@ -355,3 +355,35 @@ export function useCreateTripInvoice(tripId: string) {
     },
   })
 }
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Invoice Send Hook
+// ──────────────────────────────────────────────────────────────────────────────
+
+async function sendInvoice(
+  tripId: string,
+  data: { primaryEmail: string; secondaryEmail?: string; message?: string }
+): Promise<{ success: boolean }> {
+  const res = await fetch(`/api/trips/${tripId}/invoice/send`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) {
+    try {
+      const errorData = await res.json()
+      throw new Error(errorData.error || "Failed to send invoice")
+    } catch (e) {
+      if (e instanceof Error) throw e
+      throw new Error("Failed to send invoice")
+    }
+  }
+  return res.json()
+}
+
+export function useSendInvoice(tripId: string) {
+  return useMutation({
+    mutationFn: (data: { primaryEmail: string; secondaryEmail?: string; message?: string }) =>
+      sendInvoice(tripId, data),
+  })
+}

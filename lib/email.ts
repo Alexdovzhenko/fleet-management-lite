@@ -252,3 +252,61 @@ export function buildAffiliateEmailHtml(params: {
 </body>
 </html>`
 }
+
+export function buildInvoiceEmailHtml(params: {
+  companyName: string
+  invoiceNumber: string
+  invoiceDate: string
+  passengerName: string
+  total: string
+  message?: string
+}) {
+  const { companyName, invoiceNumber, invoiceDate, passengerName, total, message } = params
+
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+</head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <div style="max-width:540px;margin:32px auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;">
+    <div style="background:#0f172a;padding:24px 28px;">
+      <p style="margin:0 0 2px;font-size:18px;font-weight:800;color:#ffffff;">${companyName}</p>
+      <p style="margin:0;font-size:12px;color:#94a3b8;">Invoice</p>
+    </div>
+    <div style="padding:28px;">
+      <p style="margin:0 0 4px;font-size:12px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">Invoice Number</p>
+      <p style="margin:0 0 28px;font-size:28px;font-weight:800;color:#0f172a;font-family:monospace;letter-spacing:2px;">${invoiceNumber}</p>
+
+      <p style="margin:0 0 20px;font-size:14px;color:#475569;">Hi ${passengerName},<br/>Please find your invoice attached. Thank you for your business.</p>
+
+      <div style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:24px;">
+        <div style="background:#f8fafc;padding:12px 16px;border-bottom:1px solid #e2e8f0;">
+          <p style="margin:0;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1px;">Invoice Details</p>
+        </div>
+        <div style="padding:16px;">
+          <div style="margin-bottom:14px;">
+            <p style="margin:0 0 2px;font-size:11px;color:#94a3b8;text-transform:uppercase;">Date</p>
+            <p style="margin:0;font-size:14px;font-weight:600;color:#0f172a;">${invoiceDate}</p>
+          </div>
+          <div style="border-top:1px solid #e2e8f0;padding-top:14px;">
+            <p style="margin:0 0 2px;font-size:11px;color:#94a3b8;text-transform:uppercase;">Total Amount Due</p>
+            <p style="margin:0;font-size:18px;font-weight:800;color:#0f172a;">${total}</p>
+          </div>
+        </div>
+      </div>
+
+      ${message ? `<div style="background:#f8fafc;padding:16px;border-radius:10px;border:1px solid #e2e8f0;margin-bottom:20px;">
+        <p style="margin:0;font-size:13px;color:#1e293b;line-height:1.5;">${message.replace(/\n/g, '<br/>')}</p>
+      </div>` : ''}
+
+      <p style="margin:0;font-size:13px;color:#64748b;">The invoice PDF is attached to this email. If you have any questions, please contact us.</p>
+    </div>
+    <div style="background:#f8fafc;padding:16px 28px;border-top:1px solid #e2e8f0;">
+      <p style="margin:0;font-size:12px;color:#94a3b8;text-align:center;">Sent via Livery Connect</p>
+    </div>
+  </div>
+</body>
+</html>`
+}

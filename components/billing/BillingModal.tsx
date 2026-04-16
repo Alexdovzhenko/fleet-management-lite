@@ -12,9 +12,10 @@ import { Button } from "@/components/ui/button"
 import { BillingFormBlocks } from "./BillingFormBlocks"
 import { InvoicePreview } from "./InvoicePreview"
 import { DownloadInvoicePdfButton } from "./DownloadInvoicePdfButton"
+import { SendInvoiceModal } from "./SendInvoiceModal"
 import { useUpdateTripBilling, useTripBilling, useCreateTripInvoice, useTripInvoice } from "@/lib/hooks/use-billing"
 import { getDefaultBillingData, type BillingData } from "@/lib/billing-calculations"
-import { X } from "lucide-react"
+import { X, Send } from "lucide-react"
 
 interface BillingModalProps {
   open: boolean
@@ -54,6 +55,7 @@ export function BillingModal({
   )
   const [isDirty, setIsDirty] = useState(false)
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false)
+  const [showSendModal, setShowSendModal] = useState(false)
 
   // Fetch existing billing data (edit mode only)
   const { data: existingData, isLoading } = useTripBilling(open && mode === 'edit' && tripId ? tripId : undefined)
@@ -193,6 +195,15 @@ export function BillingModal({
                 />
                 <Button
                   variant="outline"
+                  onClick={() => setShowSendModal(true)}
+                  disabled={!tripInvoice?.invoiceNumber || isLoading}
+                  className="gap-2"
+                >
+                  <Send className="w-4 h-4" />
+                  Send Invoice
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={handleClose}
                   disabled={updateMutation.isPending || createInvoiceMutation.isPending}
                 >
@@ -235,6 +246,16 @@ export function BillingModal({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Send Invoice Modal */}
+      <SendInvoiceModal
+        open={showSendModal}
+        onClose={() => setShowSendModal(false)}
+        tripId={tripId || ''}
+        invoiceNumber={tripInvoice?.invoiceNumber}
+        defaultEmail={trip?.passengerEmail}
+        companyName={company?.name}
+      />
     </>
   )
 }
