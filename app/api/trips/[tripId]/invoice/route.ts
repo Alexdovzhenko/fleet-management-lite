@@ -366,3 +366,70 @@ export async function GET(
     return NextResponse.json({ error: "Failed to compute invoice" }, { status: 500 })
   }
 }
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ tripId: string }> }
+) {
+  const auth = await requireAuth(request)
+  if (!auth.ok) return auth.response
+  const { companyId } = auth.ctx
+
+  const { tripId } = await params
+
+  try {
+    const trip = await prisma.trip.findFirst({
+      where: { id: tripId, companyId },
+      include: {
+        customer: { select: { id: true, name: true, email: true, phone: true } },
+      },
+    })
+
+    if (!trip) {
+      return NextResponse.json({ error: "Trip not found" }, { status: 404 })
+    }
+
+    if (!trip.customerId) {
+      return NextResponse.json({ error: "Trip must have a customer assigned" }, { status: 400 })
+    }
+
+    // Check if invoice already exists for this trip
+    const existingInvoice = await prisma.invoice.findFirst({
+      where: { tripId },
+    })
+
+    if (existingInvoice) {
+      return NextResponse.json(
+        { error: "Invoice already exists for this trip", invoiceId: existingInvoice.id },
+        { status: 409 }
+      )
+    }
+
+    const settings = await prisma.billingSettings.findUnique({
+      where: { companyId },
+    })
+
+    const invoiceData = computeInvoiceData(trip.billingData, trip, settings)
+
+    // Create the invoice record
+    const invoice = await prisma.invoice.create({
+      data: {
+        invoiceNumber: invoiceData.invoiceNumber,
+        status: "DRAFT",
+        customerId: trip.customerId,
+        tripId: tripId,
+        companyId: companyId,
+        subtotal: invoiceData.summary.subtotal,
+        gratuity: invoiceData.summary.gratuity,
+        tax: invoiceData.summary.tax,
+        total: invoiceData.summary.total,
+        notes: invoiceData.footerNote,
+      },
+    })
+
+    return NextResponse.json(invoice)
+  } catch (error) {
+    console.error("[POST /api/trips/[tripId]/invoice]", error)
+    return NextResponse.json({ error: "Failed to create invoice" }, { status: 500 })
+  }
+}

@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { BillingFormBlocks } from "./BillingFormBlocks"
 import { InvoicePreview } from "./InvoicePreview"
-import { useUpdateTripBilling, useTripBilling } from "@/lib/hooks/use-billing"
+import { useUpdateTripBilling, useTripBilling, useCreateTripInvoice } from "@/lib/hooks/use-billing"
 import { getDefaultBillingData, type BillingData } from "@/lib/billing-calculations"
 import { X } from "lucide-react"
 
@@ -57,6 +57,7 @@ export function BillingModal({
   // Fetch existing billing data (edit mode only)
   const { data: existingData, isLoading } = useTripBilling(open && mode === 'edit' && tripId ? tripId : undefined)
   const updateMutation = useUpdateTripBilling(tripId || '')
+  const createInvoiceMutation = useCreateTripInvoice(tripId || '')
 
   // Load existing data when modal opens (edit mode)
   useEffect(() => {
@@ -83,6 +84,13 @@ export function BillingModal({
         onSave(billingData as BillingData)
       } else if (mode === 'edit') {
         await updateMutation.mutateAsync(billingData)
+        // Auto-create invoice after saving billing data
+        try {
+          await createInvoiceMutation.mutateAsync()
+        } catch (invoiceError) {
+          // Invoice creation may fail if one already exists, which is fine
+          console.log("Invoice creation info:", invoiceError)
+        }
       }
       setIsDirty(false)
       onClose()
@@ -177,15 +185,15 @@ export function BillingModal({
                 <Button
                   variant="outline"
                   onClick={handleClose}
-                  disabled={updateMutation.isPending}
+                  disabled={updateMutation.isPending || createInvoiceMutation.isPending}
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleSave}
-                  disabled={!isDirty || updateMutation.isPending}
+                  disabled={!isDirty || updateMutation.isPending || createInvoiceMutation.isPending}
                 >
-                  {updateMutation.isPending ? "Saving..." : "Save Changes"}
+                  {updateMutation.isPending || createInvoiceMutation.isPending ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
             </div>

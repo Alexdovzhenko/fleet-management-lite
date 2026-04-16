@@ -321,3 +321,37 @@ export function useDeletePayment(tripId: string) {
     },
   })
 }
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Invoice Creation Hook
+// ──────────────────────────────────────────────────────────────────────────────
+
+async function createTripInvoice(tripId: string): Promise<any> {
+  const res = await fetch(`/api/trips/${tripId}/invoice`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({}),
+  })
+  if (!res.ok) {
+    try {
+      const errorData = await res.json()
+      throw new Error(errorData.error || "Failed to create invoice")
+    } catch (e) {
+      if (e instanceof Error) throw e
+      throw new Error("Failed to create invoice")
+    }
+  }
+  return res.json()
+}
+
+export function useCreateTripInvoice(tripId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => createTripInvoice(tripId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["trips", tripId] })
+      qc.invalidateQueries({ queryKey: ["tripInvoice", tripId] })
+      qc.invalidateQueries({ queryKey: ["invoicesByCustomer"] })
+    },
+  })
+}
