@@ -74,6 +74,13 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "Invalid request", issues: error.issues }, { status: 400 })
     }
     console.error("[PATCH /api/settings/billing]", error)
-    return NextResponse.json({ error: "Failed to update billing settings" }, { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : "Unknown error"
+    return NextResponse.json(
+      {
+        error: "Failed to update billing settings",
+        details: process.env.NODE_ENV === "development" ? errorMessage : undefined
+      },
+      { status: 500 }
+    )
   }
 }
