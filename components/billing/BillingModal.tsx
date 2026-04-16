@@ -11,7 +11,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { BillingFormBlocks } from "./BillingFormBlocks"
 import { InvoicePreview } from "./InvoicePreview"
-import { useUpdateTripBilling, useTripBilling, useCreateTripInvoice } from "@/lib/hooks/use-billing"
+import { DownloadInvoicePdfButton } from "./DownloadInvoicePdfButton"
+import { useUpdateTripBilling, useTripBilling, useCreateTripInvoice, useTripInvoice } from "@/lib/hooks/use-billing"
 import { getDefaultBillingData, type BillingData } from "@/lib/billing-calculations"
 import { X } from "lucide-react"
 
@@ -56,6 +57,7 @@ export function BillingModal({
 
   // Fetch existing billing data (edit mode only)
   const { data: existingData, isLoading } = useTripBilling(open && mode === 'edit' && tripId ? tripId : undefined)
+  const { data: tripInvoice } = useTripInvoice(open && tripId ? tripId : undefined)
   const updateMutation = useUpdateTripBilling(tripId || '')
   const createInvoiceMutation = useCreateTripInvoice(tripId || '')
 
@@ -182,6 +184,12 @@ export function BillingModal({
                 )}
               </div>
               <div className="flex gap-3">
+                <DownloadInvoicePdfButton
+                  tripId={tripId || ''}
+                  invoiceNumber={tripInvoice?.invoiceNumber}
+                  invoiceTotal={tripInvoice?.summary?.total}
+                  isLoading={isLoading}
+                />
                 <Button
                   variant="outline"
                   onClick={handleClose}

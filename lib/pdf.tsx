@@ -483,3 +483,227 @@ export async function generateDriverJobOrderPdf(trip: PdfTripData, company: PdfC
 export async function generateReservationPdf(trip: PdfTripData, company: PdfCompanyBranding, isAffiliate = false): Promise<Buffer> {
   return renderToBuffer(<ReservationDoc trip={trip} company={company} isAffiliate={isAffiliate} />)
 }
+
+// ─── INVOICE PDF ────────────────────────────────────────────────────────────────
+
+export interface PdfInvoiceLineItem {
+  description: string
+  qty: number
+  unitPrice: number
+  amount: number
+}
+
+export interface PdfInvoiceData {
+  invoiceNumber: string
+  invoiceDate: string
+  billTo: {
+    name: string
+    email?: string
+    phone?: string
+  }
+  company: {
+    name: string
+    address?: string
+    phone?: string
+    email?: string
+    logoUrl?: string
+  }
+  lineItems: PdfInvoiceLineItem[]
+  summary: {
+    subtotal: number
+    farmOutTotal: number
+    discount: number
+    creditCardFee: number
+    gratuity: number
+    subtotalWithAdjustments: number
+    tax: number
+    total: number
+  }
+  paymentTerms: string
+  footerNote?: string
+}
+
+const INV = StyleSheet.create({
+  page: { fontFamily: "Helvetica", fontSize: 10, color: "#1e293b", backgroundColor: "#ffffff" },
+  header: { padding: "24 32", borderBottom: "1 solid #e2e8f0" },
+  headerTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 },
+  logoArea: { width: 60, height: 60, borderRadius: 8, backgroundColor: "#f1f5f9", alignItems: "center", justifyContent: "center", marginRight: 16 },
+  logoText: { fontSize: 24, fontFamily: "Helvetica-Bold", color: "#0f172a" },
+  companyInfo: { flex: 1 },
+  companyName: { fontSize: 16, fontFamily: "Helvetica-Bold", color: "#0f172a", marginBottom: 4 },
+  companyDetail: { fontSize: 9, color: "#64748b", lineHeight: 1.4, marginBottom: 2 },
+  invoiceNumber: { fontSize: 11, fontFamily: "Helvetica-Bold", color: "#0f172a", marginBottom: 2 },
+  invoiceDate: { fontSize: 9, color: "#64748b" },
+  billToSection: { marginTop: 16, paddingTop: 16, borderTop: "1 solid #e2e8f0" },
+  billToLabel: { fontSize: 8, fontFamily: "Helvetica-Bold", color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 },
+  billToName: { fontSize: 11, fontFamily: "Helvetica-Bold", color: "#0f172a", marginBottom: 2 },
+  billToDetail: { fontSize: 9, color: "#64748b", lineHeight: 1.4 },
+  body: { padding: "24 32" },
+  lineItemsTable: { marginBottom: 24 },
+  tableHeader: { flexDirection: "row", borderBottom: "2 solid #e2e8f0", paddingBottom: 8, marginBottom: 8 },
+  headerCell: { fontSize: 9, fontFamily: "Helvetica-Bold", color: "#64748b", textTransform: "uppercase", letterSpacing: 0.5 },
+  descCol: { flex: 2 },
+  qtyCol: { flex: 0.8, textAlign: "right" },
+  priceCol: { flex: 1, textAlign: "right" },
+  amountCol: { flex: 1, textAlign: "right" },
+  tableRow: { flexDirection: "row", paddingVertical: 8, borderBottom: "1 solid #f1f5f9" },
+  descCell: { flex: 2, fontSize: 10, color: "#0f172a", lineHeight: 1.4 },
+  qtyCell: { flex: 0.8, fontSize: 10, color: "#0f172a", textAlign: "right" },
+  priceCell: { flex: 1, fontSize: 10, color: "#0f172a", textAlign: "right" },
+  amountCell: { flex: 1, fontSize: 10, fontFamily: "Helvetica-Bold", color: "#0f172a", textAlign: "right" },
+  summarySection: { marginLeft: "auto", marginTop: 16, width: "40%", paddingLeft: 16 },
+  summaryRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 6, borderBottom: "1 solid #f1f5f9" },
+  summaryLabel: { fontSize: 9, color: "#64748b" },
+  summaryValue: { fontSize: 9, fontFamily: "Helvetica-Bold", color: "#0f172a", textAlign: "right" },
+  totalRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 10, borderTop: "2 solid #e2e8f0", marginTop: 8 },
+  totalLabel: { fontSize: 11, fontFamily: "Helvetica-Bold", color: "#0f172a" },
+  totalValue: { fontSize: 14, fontFamily: "Helvetica-Bold", color: "#0f172a", textAlign: "right" },
+  footer: { padding: "16 32", borderTop: "1 solid #e2e8f0" },
+  paymentTerms: { fontSize: 9, color: "#64748b", marginBottom: 8 },
+  footerNote: { fontSize: 8, color: "#94a3b8", fontStyle: "italic" },
+})
+
+function InvoiceDoc({ invoice }: { invoice: PdfInvoiceData }) {
+  const farmOutTotal = invoice.summary.farmOutTotal || 0
+  const hasAdjustments = farmOutTotal > 0 || invoice.summary.discount > 0 || invoice.summary.creditCardFee > 0 || invoice.summary.gratuity > 0
+
+  return (
+    <Document title={`Invoice ${invoice.invoiceNumber}`} author={invoice.company.name}>
+      <Page size="LETTER" style={INV.page}>
+        {/* Header */}
+        <View style={INV.header}>
+          <View style={INV.headerTop}>
+            {/* Company info */}
+            <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: "row" }}>
+                <View style={INV.logoArea}>
+                  {invoice.company.logoUrl ? (
+                    <Image src={invoice.company.logoUrl} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                  ) : (
+                    <Text style={INV.logoText}>{invoice.company.name.charAt(0).toUpperCase()}</Text>
+                  )}
+                </View>
+                <View style={INV.companyInfo}>
+                  <Text style={INV.companyName}>{invoice.company.name}</Text>
+                  {invoice.company.address && <Text style={INV.companyDetail}>{invoice.company.address}</Text>}
+                  {invoice.company.phone && <Text style={INV.companyDetail}>{invoice.company.phone}</Text>}
+                  {invoice.company.email && <Text style={INV.companyDetail}>{invoice.company.email}</Text>}
+                </View>
+              </View>
+            </View>
+
+            {/* Invoice details */}
+            <View style={{ alignItems: "flex-end" }}>
+              <Text style={INV.invoiceNumber}>Invoice {invoice.invoiceNumber}</Text>
+              <Text style={INV.invoiceDate}>{invoice.invoiceDate}</Text>
+            </View>
+          </View>
+
+          {/* Bill To */}
+          <View style={INV.billToSection}>
+            <Text style={INV.billToLabel}>Bill To</Text>
+            <Text style={INV.billToName}>{invoice.billTo.name}</Text>
+            {invoice.billTo.email && <Text style={INV.billToDetail}>{invoice.billTo.email}</Text>}
+            {invoice.billTo.phone && <Text style={INV.billToDetail}>{invoice.billTo.phone}</Text>}
+          </View>
+        </View>
+
+        {/* Body */}
+        <View style={INV.body}>
+          {/* Line Items Table */}
+          <View style={INV.lineItemsTable}>
+            <View style={INV.tableHeader}>
+              <Text style={[INV.headerCell, INV.descCol]}>Description</Text>
+              <Text style={[INV.headerCell, INV.qtyCol]}>Qty</Text>
+              <Text style={[INV.headerCell, INV.priceCol]}>Unit Price</Text>
+              <Text style={[INV.headerCell, INV.amountCol]}>Amount</Text>
+            </View>
+
+            {/* Primary charges */}
+            {invoice.lineItems.map((item, idx) => (
+              <View key={idx} style={INV.tableRow}>
+                <Text style={INV.descCell}>{item.description}</Text>
+                <Text style={INV.qtyCell}>{item.qty}</Text>
+                <Text style={INV.priceCell}>${item.unitPrice.toFixed(2)}</Text>
+                <Text style={INV.amountCell}>${item.amount.toFixed(2)}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Summary section */}
+          <View style={{ flexDirection: "row" }}>
+            <View style={{ flex: 1 }} />
+            <View style={INV.summarySection}>
+              {/* Subtotal */}
+              <View style={INV.summaryRow}>
+                <Text style={INV.summaryLabel}>Subtotal</Text>
+                <Text style={INV.summaryValue}>${invoice.summary.subtotal.toFixed(2)}</Text>
+              </View>
+
+              {/* Discount */}
+              {invoice.summary.discount > 0 && (
+                <View style={INV.summaryRow}>
+                  <Text style={INV.summaryLabel}>Discount</Text>
+                  <Text style={INV.summaryValue}>-${invoice.summary.discount.toFixed(2)}</Text>
+                </View>
+              )}
+
+              {/* Gratuity */}
+              {invoice.summary.gratuity > 0 && (
+                <View style={INV.summaryRow}>
+                  <Text style={INV.summaryLabel}>Gratuity</Text>
+                  <Text style={INV.summaryValue}>${invoice.summary.gratuity.toFixed(2)}</Text>
+                </View>
+              )}
+
+              {/* Credit Card Fee */}
+              {invoice.summary.creditCardFee > 0 && (
+                <View style={INV.summaryRow}>
+                  <Text style={INV.summaryLabel}>Credit Card Fee</Text>
+                  <Text style={INV.summaryValue}>${invoice.summary.creditCardFee.toFixed(2)}</Text>
+                </View>
+              )}
+
+              {/* Farm-out Total */}
+              {farmOutTotal > 0 && (
+                <View style={INV.summaryRow}>
+                  <Text style={INV.summaryLabel}>Farm-Out Cost</Text>
+                  <Text style={INV.summaryValue}>${farmOutTotal.toFixed(2)}</Text>
+                </View>
+              )}
+
+              {/* Tax */}
+              {invoice.summary.tax > 0 && (
+                <View style={INV.summaryRow}>
+                  <Text style={INV.summaryLabel}>Tax</Text>
+                  <Text style={INV.summaryValue}>${invoice.summary.tax.toFixed(2)}</Text>
+                </View>
+              )}
+
+              {/* Total */}
+              <View style={INV.totalRow}>
+                <Text style={INV.totalLabel}>TOTAL DUE</Text>
+                <Text style={INV.totalValue}>${invoice.summary.total.toFixed(2)}</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Payment terms and footer note */}
+          <View style={{ marginTop: 32, paddingTop: 16, borderTop: "1 solid #e2e8f0" }}>
+            <Text style={INV.paymentTerms}>
+              <Text style={{ fontFamily: "Helvetica-Bold" }}>Payment Terms: </Text>
+              {invoice.paymentTerms}
+            </Text>
+            {invoice.footerNote && (
+              <Text style={[INV.footerNote, { marginTop: 8 }]}>{invoice.footerNote}</Text>
+            )}
+          </View>
+        </View>
+      </Page>
+    </Document>
+  )
+}
+
+export async function generateInvoicePdf(invoice: PdfInvoiceData): Promise<Buffer> {
+  return renderToBuffer(<InvoiceDoc invoice={invoice} />)
+}
