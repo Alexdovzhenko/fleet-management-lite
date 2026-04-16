@@ -43,8 +43,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(billingSettings)
   } catch (error) {
-    console.error("[GET /api/settings/billing]", error)
-    return NextResponse.json({ error: "Failed to fetch billing settings" }, { status: 500 })
+    const errorMsg = error instanceof Error ? error.message : String(error)
+    console.error("[GET /api/settings/billing]", errorMsg)
+    return NextResponse.json({ error: "Failed to fetch billing settings", details: errorMsg }, { status: 500 })
   }
 }
 
@@ -73,12 +74,12 @@ export async function PATCH(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: "Invalid request", issues: error.issues }, { status: 400 })
     }
-    console.error("[PATCH /api/settings/billing]", error)
-    const errorMessage = error instanceof Error ? error.message : "Unknown error"
+    const errorMsg = error instanceof Error ? error.message : String(error)
+    console.error("[PATCH /api/settings/billing]", errorMsg)
     return NextResponse.json(
       {
         error: "Failed to update billing settings",
-        details: process.env.NODE_ENV === "development" ? errorMessage : undefined
+        details: errorMsg
       },
       { status: 500 }
     )
