@@ -1157,6 +1157,18 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       ? invoicesByCustomer.find((inv: any) => inv.status === 'OPEN') || invoicesByCustomer[0]
       : null)
 
+  // Debug invoice lookup
+  useEffect(() => {
+    if (currentTrip?.id) {
+      console.log('[TripEditModal] Trip ID:', currentTrip.id)
+      console.log('[TripEditModal] Customer ID:', currentTrip.customerId)
+      console.log('[TripEditModal] Direct invoice (from trip.invoice):', currentTrip?.invoice)
+      console.log('[TripEditModal] Invoices from customer search:', invoicesByCustomer)
+      console.log('[TripEditModal] Final tripInvoice:', tripInvoice)
+      console.log('[TripEditModal] Invoice total to pass:', tripInvoice?.total ? Number(tripInvoice.total) : null)
+    }
+  }, [currentTrip, invoicesByCustomer, tripInvoice])
+
   const [farmOutOpen, setFarmOutOpen]         = useState(false)
   const [sendEmailOpen, setSendEmailOpen]     = useState(false)
   const [copyOpen, setCopyOpen]               = useState(false)

@@ -17,6 +17,12 @@ export function BillingTriggerButton({ billingData, payments = [], invoiceTotal,
   const displayTotal = invoiceTotal !== null && invoiceTotal !== undefined ? invoiceTotal : totals.total
   const hasData = (invoiceTotal !== null && invoiceTotal !== undefined) || (billingData && ((billingData as any).lineItems?.length > 0 || Object.keys(billingData).length > 0))
 
+  // Debug logging
+  console.log('[BillingButton] invoiceTotal:', invoiceTotal)
+  console.log('[BillingButton] displayTotal:', displayTotal)
+  console.log('[BillingButton] hasData:', hasData)
+  console.log('[BillingButton] billingData:', billingData)
+
   return (
     <button
       onClick={onClick}
