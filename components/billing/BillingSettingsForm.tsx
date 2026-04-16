@@ -19,7 +19,10 @@ export function BillingSettingsForm() {
   // Form state
   const [formData, setFormData] = useState({
     companyName: "",
-    address: "",
+    streetAddress: "",
+    city: "",
+    state: "",
+    zipCode: "",
     phone: "",
     billingEmail: "",
     dateFormat: "MM/DD/YYYY",
@@ -27,6 +30,11 @@ export function BillingSettingsForm() {
     paymentTerms: "Due upon receipt",
     footerNote: "",
   })
+
+  const [citySuggestions, setCitySuggestions] = useState<Array<{ city: string; state: string }>>([])
+  const [showCitySuggestions, setShowCitySuggestions] = useState(false)
+  const [citySearchQuery, setCitySearchQuery] = useState("")
+  const citySuggestionsRef = useRef<HTMLDivElement>(null)
 
   const [logoUrl, setLogoUrl] = useState<string | undefined>(undefined)
   const [dragActive, setDragActive] = useState(false)
@@ -38,12 +46,28 @@ export function BillingSettingsForm() {
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const [focusedField, setFocusedField] = useState<string | null>(null)
 
+  // Helper to parse address string into components
+  const parseAddress = (addressStr: string) => {
+    // Expected format: "123 Main Street, City, ST 12345"
+    const parts = addressStr.split(",").map(p => p.trim())
+    return {
+      streetAddress: parts[0] || "",
+      city: parts[1] || "",
+      state: parts[2]?.split(" ")[0] || "",
+      zipCode: parts[2]?.split(" ")[1] || "",
+    }
+  }
+
   // Initialize form from loaded settings
   useEffect(() => {
     if (settings) {
+      const addressParts = parseAddress(settings.address || "")
       setFormData({
         companyName: settings.companyName || "",
-        address: settings.address || "",
+        streetAddress: addressParts.streetAddress,
+        city: addressParts.city,
+        state: addressParts.state,
+        zipCode: addressParts.zipCode,
         phone: settings.phone || "",
         billingEmail: settings.billingEmail || "",
         dateFormat: settings.dateFormat || "MM/DD/YYYY",
@@ -80,8 +104,26 @@ export function BillingSettingsForm() {
       setHasUnsavedChanges(true)
       setSaveError(null)
       debounceTimerRef.current = setTimeout(() => {
+        // Combine address fields back into a single string
+        const addressParts = [
+          updated.streetAddress,
+          updated.city,
+          updated.state && updated.zipCode ? `${updated.state} ${updated.zipCode}` : updated.state,
+        ].filter(Boolean)
+        const combinedAddress = addressParts.join(", ")
+
         updateMutation.mutate(
-          { ...updated, logoUrl: logoUrl || undefined },
+          {
+            companyName: updated.companyName,
+            address: combinedAddress,
+            phone: updated.phone,
+            billingEmail: updated.billingEmail,
+            dateFormat: updated.dateFormat,
+            invoicePrefix: updated.invoicePrefix,
+            paymentTerms: updated.paymentTerms,
+            footerNote: updated.footerNote,
+            logoUrl: logoUrl || undefined,
+          },
           {
             onSuccess: () => {
               setHasUnsavedChanges(false)
@@ -126,8 +168,26 @@ export function BillingSettingsForm() {
           clearTimeout(debounceTimerRef.current)
         }
         debounceTimerRef.current = setTimeout(() => {
+          // Combine address fields
+          const addressParts = [
+            formData.streetAddress,
+            formData.city,
+            formData.state && formData.zipCode ? `${formData.state} ${formData.zipCode}` : formData.state,
+          ].filter(Boolean)
+          const combinedAddress = addressParts.join(", ")
+
           updateMutation.mutate(
-            { ...formData, logoUrl: response.logoUrl || undefined },
+            {
+              companyName: formData.companyName,
+              address: combinedAddress,
+              phone: formData.phone,
+              billingEmail: formData.billingEmail,
+              dateFormat: formData.dateFormat,
+              invoicePrefix: formData.invoicePrefix,
+              paymentTerms: formData.paymentTerms,
+              footerNote: formData.footerNote,
+              logoUrl: response.logoUrl || undefined,
+            },
             {
               onSuccess: () => {
                 setHasUnsavedChanges(false)
@@ -206,6 +266,78 @@ export function BillingSettingsForm() {
         }
       )
     }, 800)
+  }
+
+  // US cities for autocomplete
+  const US_CITIES = [
+    { city: "New York", state: "NY" },
+    { city: "Los Angeles", state: "CA" },
+    { city: "Chicago", state: "IL" },
+    { city: "Houston", state: "TX" },
+    { city: "Phoenix", state: "AZ" },
+    { city: "Philadelphia", state: "PA" },
+    { city: "San Antonio", state: "TX" },
+    { city: "San Diego", state: "CA" },
+    { city: "Dallas", state: "TX" },
+    { city: "San Jose", state: "CA" },
+    { city: "Austin", state: "TX" },
+    { city: "Jacksonville", state: "FL" },
+    { city: "Fort Worth", state: "TX" },
+    { city: "Columbus", state: "OH" },
+    { city: "Charlotte", state: "NC" },
+    { city: "San Francisco", state: "CA" },
+    { city: "Indianapolis", state: "IN" },
+    { city: "Seattle", state: "WA" },
+    { city: "Denver", state: "CO" },
+    { city: "Washington", state: "DC" },
+    { city: "Boston", state: "MA" },
+    { city: "El Paso", state: "TX" },
+    { city: "Nashville", state: "TN" },
+    { city: "Detroit", state: "MI" },
+    { city: "Oklahoma City", state: "OK" },
+    { city: "Portland", state: "OR" },
+    { city: "Las Vegas", state: "NV" },
+    { city: "Memphis", state: "TN" },
+    { city: "Louisville", state: "KY" },
+    { city: "Baltimore", state: "MD" },
+    { city: "Milwaukee", state: "WI" },
+    { city: "Albuquerque", state: "NM" },
+    { city: "Tucson", state: "AZ" },
+    { city: "Fresno", state: "CA" },
+    { city: "Sacramento", state: "CA" },
+    { city: "Long Beach", state: "CA" },
+    { city: "Kansas City", state: "MO" },
+    { city: "Mesa", state: "AZ" },
+    { city: "Virginia Beach", state: "VA" },
+    { city: "Atlanta", state: "GA" },
+    { city: "Miami", state: "FL" },
+    { city: "Aventura", state: "FL" },
+  ]
+
+  // Handle city search and autocomplete
+  const handleCitySearch = (value: string) => {
+    setCitySearchQuery(value)
+    handleInputChange("city", value)
+
+    if (value.length > 0) {
+      const filtered = US_CITIES.filter((item) =>
+        item.city.toLowerCase().startsWith(value.toLowerCase())
+      ).slice(0, 8)
+      setCitySuggestions(filtered)
+      setShowCitySuggestions(true)
+    } else {
+      setCitySuggestions([])
+      setShowCitySuggestions(false)
+    }
+  }
+
+  // Handle city selection from suggestions
+  const handleSelectCity = (city: string, state: string) => {
+    handleInputChange("city", city)
+    handleInputChange("state", state)
+    setCitySearchQuery("")
+    setCitySuggestions([])
+    setShowCitySuggestions(false)
   }
 
   // Sample invoice data for preview
@@ -335,20 +467,90 @@ export function BillingSettingsForm() {
                 />
               </div>
 
-              {/* Address */}
-              <div className="p-6">
-                <label htmlFor="address" className="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-2">
-                  Address
+              {/* Street Address */}
+              <div className="p-6 border-b border-slate-200">
+                <label htmlFor="streetAddress" className="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-2">
+                  Street Address
                 </label>
                 <Input
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) => handleInputChange("address", e.target.value)}
-                  onFocus={() => setFocusedField("address")}
+                  id="streetAddress"
+                  value={formData.streetAddress}
+                  onChange={(e) => handleInputChange("streetAddress", e.target.value)}
+                  onFocus={() => setFocusedField("streetAddress")}
                   onBlur={() => setFocusedField(null)}
-                  placeholder="123 Main Street, City, State 12345"
+                  placeholder="123 Main Street"
                   className="h-11 px-4 border-0 bg-slate-50 rounded-lg text-sm placeholder-slate-500 focus:bg-slate-100 focus:ring-1 focus:ring-slate-400 transition-all"
                 />
+              </div>
+
+              {/* City with Autocomplete */}
+              <div className="p-6 border-b border-slate-200 relative">
+                <label htmlFor="city" className="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-2">
+                  City
+                </label>
+                <Input
+                  id="city"
+                  value={formData.city}
+                  onChange={(e) => handleCitySearch(e.target.value)}
+                  onFocus={() => setShowCitySuggestions(formData.city.length > 0)}
+                  onBlur={() => setTimeout(() => setShowCitySuggestions(false), 150)}
+                  placeholder="Aventura"
+                  className="h-11 px-4 border-0 bg-slate-50 rounded-lg text-sm placeholder-slate-500 focus:bg-slate-100 focus:ring-1 focus:ring-slate-400 transition-all"
+                />
+
+                {/* City Suggestions Dropdown */}
+                {showCitySuggestions && citySuggestions.length > 0 && (
+                  <div
+                    ref={citySuggestionsRef}
+                    className="absolute top-full left-6 right-6 mt-1 bg-white border border-slate-200 rounded-lg shadow-md z-10 max-h-48 overflow-y-auto"
+                  >
+                    {citySuggestions.map((item, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleSelectCity(item.city, item.state)}
+                        className="w-full text-left px-4 py-2.5 hover:bg-slate-50 border-b border-slate-100 last:border-b-0 text-sm text-slate-900 transition-colors"
+                      >
+                        <div className="font-medium">{item.city}</div>
+                        <div className="text-xs text-slate-500">{item.state}</div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* State & Zip Code */}
+              <div className="p-6 grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="state" className="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-2">
+                    State
+                  </label>
+                  <Input
+                    id="state"
+                    value={formData.state}
+                    onChange={(e) => handleInputChange("state", e.target.value.toUpperCase())}
+                    onFocus={() => setFocusedField("state")}
+                    onBlur={() => setFocusedField(null)}
+                    placeholder="FL"
+                    maxLength={2}
+                    className="h-11 px-4 border-0 bg-slate-50 rounded-lg text-sm placeholder-slate-500 focus:bg-slate-100 focus:ring-1 focus:ring-slate-400 transition-all uppercase"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="zipCode" className="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-2">
+                    Zip Code
+                  </label>
+                  <Input
+                    id="zipCode"
+                    value={formData.zipCode}
+                    onChange={(e) => handleInputChange("zipCode", e.target.value)}
+                    onFocus={() => setFocusedField("zipCode")}
+                    onBlur={() => setFocusedField(null)}
+                    placeholder="33180"
+                    maxLength={5}
+                    className="h-11 px-4 border-0 bg-slate-50 rounded-lg text-sm placeholder-slate-500 focus:bg-slate-100 focus:ring-1 focus:ring-slate-400 transition-all"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -543,7 +745,13 @@ export function BillingSettingsForm() {
             }}
             company={{
               name: formData.companyName || "Your Company",
-              address: formData.address,
+              address: [
+                formData.streetAddress,
+                formData.city,
+                formData.state && formData.zipCode ? `${formData.state} ${formData.zipCode}` : formData.state,
+              ]
+                .filter(Boolean)
+                .join(", "),
               phone: formData.phone,
               email: formData.billingEmail,
               logoUrl,
