@@ -64,6 +64,7 @@ import { BillingModal } from "@/components/billing/BillingModal"
 import { BillingTriggerButton } from "@/components/dispatch/billing-trigger-button"
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
 import { useUpsertAddress, type CompanyAddress } from "@/lib/hooks/use-addresses"
+import { useBillingSettings } from "@/lib/hooks/use-billing"
 import { formatCurrency, formatPhone, getTripStatusLabel, cn } from "@/lib/utils"
 import type { Trip, TripStatus, Driver, Vehicle, Customer } from "@/types"
 import { format, parse, isValid } from "date-fns"
@@ -1145,6 +1146,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const { data: serviceTypes = [] } = useServiceTypes()
   const enabledTypes = serviceTypes.filter((t) => t.isEnabled)
   const { actions: statusActions } = useStatusActionsStore()
+  const { data: billingSettings } = useBillingSettings()
 
   const isFarmedIn = !!currentTrip?.farmedIn
 
@@ -2059,6 +2061,17 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                       mode="edit"
                       tripId={currentTrip?.id}
                       trip={currentTrip}
+                      company={
+                        billingSettings
+                          ? {
+                              name: billingSettings.companyName,
+                              address: billingSettings.address,
+                              phone: billingSettings.phone,
+                              email: billingSettings.billingEmail,
+                              logoUrl: billingSettings.logoUrl,
+                            }
+                          : undefined
+                      }
                       initialData={currentTrip?.billingData as any}
                     />
                   </>

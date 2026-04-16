@@ -56,6 +56,7 @@ import { formatCurrency, generateConfirmationNumber, formatPhone, cn } from "@/l
 import { DatePickerInput } from "@/components/ui/date-picker"
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
 import { useUpsertAddress } from "@/lib/hooks/use-addresses"
+import { useBillingSettings } from "@/lib/hooks/use-billing"
 import { ReservationMetadata } from "@/components/trips/reservation-metadata"
 import { SendEmailModal } from "@/components/email/send-email-modal"
 import { TripAttachmentsSection } from "@/components/dispatch/trip-attachments"
@@ -2330,6 +2331,7 @@ export default function NewTripPage() {
   const { data: vehicleTypes = [], isLoading: vehicleTypesLoading } = useVehicleTypes()
   const { data: serviceTypes = [] } = useServiceTypes()
   const enabledTypes = serviceTypes.filter((t) => t.isEnabled)
+  const { data: billingSettings } = useBillingSettings()
 
   const [selectedAccount, setSelectedAccount] = useState<Customer | null>(null)
   const [tripTypeValue, setTripTypeValue] = useState("")
@@ -3050,6 +3052,17 @@ export default function NewTripPage() {
                 open={billingOpen}
                 onClose={() => setBillingOpen(false)}
                 mode="create"
+                company={
+                  billingSettings
+                    ? {
+                        name: billingSettings.companyName,
+                        address: billingSettings.address,
+                        phone: billingSettings.phone,
+                        email: billingSettings.billingEmail,
+                        logoUrl: billingSettings.logoUrl,
+                      }
+                    : undefined
+                }
                 initialData={billingData}
                 onSave={(data) => { setBillingData(data); setBillingOpen(false) }}
               />
