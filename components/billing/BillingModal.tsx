@@ -27,6 +27,12 @@ interface BillingModalProps {
     passengerName?: string
     passengerEmail?: string
     passengerPhone?: string
+    pickupDate?: string
+    pickupTime?: string
+    pickupAddress?: string
+    dropoffAddress?: string
+    vehicleType?: string
+    tripType?: string
     customer?: {
       name?: string
       email?: string

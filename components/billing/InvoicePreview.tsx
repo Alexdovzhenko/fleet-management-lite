@@ -11,6 +11,12 @@ interface InvoicePreviewProps {
     passengerName?: string
     passengerEmail?: string
     passengerPhone?: string
+    pickupDate?: string
+    pickupTime?: string
+    pickupAddress?: string
+    dropoffAddress?: string
+    vehicleType?: string
+    tripType?: string
   }
   company?: {
     name?: string
@@ -76,8 +82,8 @@ export function InvoicePreview({
               </div>
             </div>
 
-            {/* Company Details */}
-            <div className="grid grid-cols-2 gap-6 text-sm">
+            {/* Company Details & Bill To */}
+            <div className="grid grid-cols-2 gap-6 text-sm mb-6">
               <div>
                 <div className="font-semibold text-slate-900 mb-2">FROM</div>
                 <div className="text-slate-600 space-y-1">
@@ -97,6 +103,55 @@ export function InvoicePreview({
                 </div>
               </div>
             </div>
+
+            {/* Trip Details */}
+            {(trip?.pickupDate || trip?.pickupTime || trip?.vehicleType || trip?.tripType || trip?.pickupAddress || trip?.dropoffAddress) && (
+              <div className="border-t border-slate-200 pt-6">
+                <div className="grid grid-cols-2 gap-6 text-sm">
+                  <div className="space-y-3">
+                    {trip?.pickupDate && (
+                      <div>
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Pickup Date</div>
+                        <div className="text-slate-900">{new Date(trip.pickupDate).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</div>
+                      </div>
+                    )}
+                    {trip?.pickupTime && (
+                      <div>
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Pickup Time</div>
+                        <div className="text-slate-900">{trip.pickupTime}</div>
+                      </div>
+                    )}
+                    {trip?.vehicleType && (
+                      <div>
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Vehicle Type</div>
+                        <div className="text-slate-900">{trip.vehicleType}</div>
+                      </div>
+                    )}
+                    {trip?.tripType && (
+                      <div>
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Service Type</div>
+                        <div className="text-slate-900">{trip.tripType}</div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-3">
+                    {trip?.pickupAddress && (
+                      <div>
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Pickup Location</div>
+                        <div className="text-slate-900">{trip.pickupAddress}</div>
+                      </div>
+                    )}
+                    {trip?.dropoffAddress && (
+                      <div>
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Dropoff Location</div>
+                        <div className="text-slate-900">{trip.dropoffAddress}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Line Items */}
