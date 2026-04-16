@@ -452,6 +452,8 @@ enum InvoiceStatus {
   PAID
   OVERDUE
   CANCELLED
+  OPEN
+  SETTLED
 }
 
 // ============ SETTINGS ============

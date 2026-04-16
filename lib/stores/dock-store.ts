@@ -13,6 +13,7 @@ export const ALL_DOCK_ITEMS: DockItem[] = [
   { id: "customers",      label: "Customers",      href: "/customers",      iconName: "Users" },
   { id: "drivers",        label: "Drivers",        href: "/drivers",        iconName: "UserCheck" },
   { id: "vehicles",       label: "Vehicles",       href: "/vehicles",       iconName: "Car" },
+  { id: "billing",        label: "Billing",        href: "/billing",        iconName: "Receipt" },
   { id: "affiliates",     label: "Affiliates",     href: "/affiliates",     iconName: "Network" },
   { id: "notifications",  label: "Notifications",  href: "/notifications",  iconName: "Bell" },
   { id: "settings",       label: "Settings",       href: "/settings",       iconName: "Settings" },

@@ -144,6 +144,8 @@ export function getInvoiceStatusLabel(status: InvoiceStatus): string {
     PAID: "Paid",
     OVERDUE: "Overdue",
     CANCELLED: "Cancelled",
+    OPEN: "Open",
+    SETTLED: "Settled",
   }
   return labels[status]
 }

@@ -31,7 +31,7 @@ export type VehicleType =
 export type VehicleStatus = 'ACTIVE' | 'MAINTENANCE' | 'OUT_OF_SERVICE'
 export type DriverStatus = 'ACTIVE' | 'INACTIVE' | 'ON_LEAVE'
 export type UserRole = 'OWNER' | 'DISPATCHER' | 'VIEWER'
-export type InvoiceStatus = 'DRAFT' | 'SENT' | 'VIEWED' | 'PAID' | 'OVERDUE' | 'CANCELLED'
+export type InvoiceStatus = 'DRAFT' | 'SENT' | 'VIEWED' | 'PAID' | 'OVERDUE' | 'CANCELLED' | 'OPEN' | 'SETTLED'
 
 export interface Company {
   id: string
