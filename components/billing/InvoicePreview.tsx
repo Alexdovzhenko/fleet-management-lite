@@ -50,7 +50,7 @@ export function InvoicePreview({
                   <img
                     src={company.logoUrl}
                     alt={company.name}
-                    className="h-14 w-auto object-contain"
+                    className="h-14 w-auto object-contain rounded-lg"
                   />
                 ) : (
                   <div className="h-14 w-14 bg-slate-100 rounded-lg flex items-center justify-center text-slate-500 font-bold text-xl">
