@@ -92,6 +92,7 @@ export async function GET(
         stops: { orderBy: { order: "asc" } },
         notifications: { orderBy: { sentAt: "desc" }, take: 20 },
         invoice: true,
+        payments: true,
         farmOuts: {
           where: { status: "ACCEPTED" },
           take: 1,
