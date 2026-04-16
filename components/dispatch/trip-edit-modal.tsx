@@ -1908,7 +1908,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <div className="text-xs font-medium text-gray-900 truncate">{c.name}</div>
-                                  {c.phone && <div className="text-[10px] text-gray-400">{c.phone}</div>}
+                                  {c.phone && <div className="text-[10px] text-gray-400">{formatPhone(c.phone)}</div>}
                                 </div>
                               </button>
                             ))
