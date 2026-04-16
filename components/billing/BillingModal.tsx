@@ -27,6 +27,11 @@ interface BillingModalProps {
     passengerName?: string
     passengerEmail?: string
     passengerPhone?: string
+    customer?: {
+      name?: string
+      email?: string
+      phone?: string
+    }
   }
   company?: {
     name?: string
@@ -253,7 +258,7 @@ export function BillingModal({
         onClose={() => setShowSendModal(false)}
         tripId={tripId || ''}
         invoiceNumber={tripInvoice?.invoiceNumber}
-        defaultEmail={trip?.passengerEmail}
+        defaultEmail={trip?.passengerEmail || trip?.customer?.email}
         companyName={company?.name}
       />
     </>
