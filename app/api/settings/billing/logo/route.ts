@@ -69,7 +69,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ logoUrl })
   } catch (error) {
-    console.error("[POST /api/settings/billing/logo]", error)
-    return NextResponse.json({ error: "Failed to upload logo" }, { status: 500 })
+    const errorMsg = error instanceof Error ? error.message : String(error)
+    console.error("[POST /api/settings/billing/logo]", errorMsg)
+    return NextResponse.json({ error: "Failed to upload logo", details: errorMsg }, { status: 500 })
   }
 }
