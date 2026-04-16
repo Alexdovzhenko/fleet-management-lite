@@ -144,9 +144,11 @@ export function BillingSettingsForm() {
           )
         }, 800)
       },
-      onError: () => {
+      onError: (error) => {
         setIsUploading(false)
-        alert("Failed to upload logo")
+        const errorMsg = error instanceof Error ? error.message : "Failed to upload logo"
+        setSaveError(errorMsg)
+        alert(errorMsg)
       },
     })
   }

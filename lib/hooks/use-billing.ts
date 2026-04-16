@@ -23,7 +23,15 @@ interface BillingSettings {
 
 async function fetchBillingSettings(): Promise<BillingSettings> {
   const res = await fetch("/api/settings/billing")
-  if (!res.ok) throw new Error("Failed to fetch billing settings")
+  if (!res.ok) {
+    try {
+      const errorData = await res.json()
+      throw new Error(errorData.details || errorData.error || "Failed to fetch billing settings")
+    } catch (e) {
+      if (e instanceof Error) throw e
+      throw new Error("Failed to fetch billing settings")
+    }
+  }
   return res.json()
 }
 
@@ -33,7 +41,15 @@ async function updateBillingSettings(data: Partial<BillingSettings>): Promise<Bi
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   })
-  if (!res.ok) throw new Error("Failed to update billing settings")
+  if (!res.ok) {
+    try {
+      const errorData = await res.json()
+      throw new Error(errorData.details || errorData.error || "Failed to update billing settings")
+    } catch (e) {
+      if (e instanceof Error) throw e
+      throw new Error("Failed to update billing settings")
+    }
+  }
   return res.json()
 }
 
@@ -44,7 +60,15 @@ async function uploadBillingLogo(file: File): Promise<{ logoUrl: string }> {
     method: "POST",
     body: formData,
   })
-  if (!res.ok) throw new Error("Failed to upload logo")
+  if (!res.ok) {
+    try {
+      const errorData = await res.json()
+      throw new Error(errorData.details || errorData.error || "Failed to upload logo")
+    } catch (e) {
+      if (e instanceof Error) throw e
+      throw new Error("Failed to upload logo")
+    }
+  }
   return res.json()
 }
 
