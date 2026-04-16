@@ -277,19 +277,19 @@ export function SendInvoiceModal({
 
         {/* Footer */}
         {status !== "success" && (
-          <DialogFooter className="px-5 py-4 border-t border-gray-100 bg-gray-50 gap-2 flex items-center justify-end">
+          <DialogFooter className="px-5 py-4 border-t border-gray-100 bg-white gap-3 flex items-center justify-end">
             <Button
               variant="outline"
               onClick={onClose}
               disabled={status === "sending"}
-              className="rounded-xl border-gray-200"
+              className="rounded-lg border-gray-300 h-11 px-6 text-sm font-medium hover:bg-gray-50"
             >
               Cancel
             </Button>
             <Button
               onClick={handleSend}
               disabled={!canSubmit}
-              className="gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-11 active:scale-[0.97] transition-transform"
+              className="gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white rounded-lg h-11 px-6 text-sm font-medium active:scale-[0.97] transition-all duration-150"
             >
               {status === "sending" ? (
                 <>
