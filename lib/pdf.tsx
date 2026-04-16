@@ -71,6 +71,18 @@ function formatVehicleType(t: string) {
   return map[t] ?? t
 }
 
+function formatPhoneNumber(phone?: string | null): string | null {
+  if (!phone) return null
+  // Remove all non-digit characters
+  const digits = phone.replace(/\D/g, '')
+  // Format as (XXX) XXX-XXXX if it's 10 digits
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`
+  }
+  // Return original if not 10 digits
+  return phone
+}
+
 // ─── DRIVER JOB ORDER PDF ────────────────────────────────────────────────────
 
 const JO = StyleSheet.create({
@@ -604,7 +616,7 @@ function InvoiceDoc({ invoice }: { invoice: PdfInvoiceData }) {
             <Text style={INV.billToLabel}>Bill To</Text>
             <Text style={INV.billToName}>{invoice.billTo.name}</Text>
             {invoice.billTo.email && <Text style={INV.billToDetail}>{invoice.billTo.email}</Text>}
-            {invoice.billTo.phone && <Text style={INV.billToDetail}>{invoice.billTo.phone}</Text>}
+            {invoice.billTo.phone && <Text style={INV.billToDetail}>{formatPhoneNumber(invoice.billTo.phone)}</Text>}
           </View>
         </View>
 
