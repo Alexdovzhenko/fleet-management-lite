@@ -232,12 +232,6 @@ export function BillingSettingsForm() {
     <div className="w-full bg-white">
       {/* Form */}
       <div className="w-full max-w-3xl mx-auto px-4 py-8 lg:px-6">
-        {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Billing Settings</h1>
-          <p className="text-base text-slate-600 mt-2">Configure your company details and invoice preferences</p>
-        </div>
-
         {/* Status Indicators */}
         {saveError && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
