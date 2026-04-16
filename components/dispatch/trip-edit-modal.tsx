@@ -2053,6 +2053,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                     <BillingTriggerButton
                       billingData={currentTrip?.billingData}
                       payments={currentTrip?.payments}
+                      invoiceTotal={currentTrip?.invoice?.total ? Number(currentTrip.invoice.total) : null}
                       onClick={() => setBillingOpen(true)}
                     />
                     <BillingModal

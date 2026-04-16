@@ -301,6 +301,7 @@ export interface Trip {
   stops?: TripStop[]
   attachments?: TripAttachment[]
   payments?: TripPayment[]
+  invoice?: Invoice | null
   farmOuts?: Array<{
     id: string
     status: FarmOutStatus

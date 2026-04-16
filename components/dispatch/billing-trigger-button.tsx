@@ -7,12 +7,15 @@ import type { BillingData, TripPayment } from "@/types"
 interface BillingTriggerButtonProps {
   billingData?: BillingData | any | null
   payments?: TripPayment[]
+  invoiceTotal?: number | null
   onClick: () => void
 }
 
-export function BillingTriggerButton({ billingData, payments = [], onClick }: BillingTriggerButtonProps) {
+export function BillingTriggerButton({ billingData, payments = [], invoiceTotal, onClick }: BillingTriggerButtonProps) {
   const totals = computeBillingTotals(billingData || { lineItems: [], adjustments: {} }, payments)
-  const hasData = billingData && ((billingData as any).lineItems?.length > 0 || Object.keys(billingData).length > 0)
+  // Use invoiceTotal if available (from Invoice record), otherwise use computed totals from billingData
+  const displayTotal = invoiceTotal !== null && invoiceTotal !== undefined ? invoiceTotal : totals.total
+  const hasData = (invoiceTotal !== null && invoiceTotal !== undefined) || (billingData && ((billingData as any).lineItems?.length > 0 || Object.keys(billingData).length > 0))
 
   return (
     <button
@@ -25,7 +28,7 @@ export function BillingTriggerButton({ billingData, payments = [], onClick }: Bi
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Billing</p>
           {hasData ? (
             <p className="text-sm font-bold text-gray-900">
-              {formatCurrency(totals.total)}
+              {formatCurrency(displayTotal)}
               {totals.balance > 0 && <span className="ml-2 text-xs text-rose-600">({totals.balance > 0 ? 'Balance due' : 'Paid'})</span>}
             </p>
           ) : (
