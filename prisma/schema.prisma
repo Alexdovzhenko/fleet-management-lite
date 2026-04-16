@@ -493,6 +493,7 @@ model BillingSettings {
   logoUrl         String?
   dateFormat      String  @default("MM/DD/YYYY")
   invoicePrefix   String  @default("INV-")
+  invoiceCounter  Int     @default(0)
   paymentTerms    String  @default("Due on Receipt")
   footerNote      String?
 

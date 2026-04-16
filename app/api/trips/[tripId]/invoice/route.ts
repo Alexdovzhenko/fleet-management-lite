@@ -358,7 +358,18 @@ export async function GET(
       where: { companyId },
     })
 
+    // Check if invoice already exists for this trip
+    const existingInvoice = await prisma.invoice.findFirst({
+      where: { tripId, companyId },
+      select: { invoiceNumber: true },
+    })
+
     const invoiceData = computeInvoiceData(trip.billingData, trip, settings)
+
+    // Override with stored invoice number if it exists
+    if (existingInvoice) {
+      invoiceData.invoiceNumber = existingInvoice.invoiceNumber
+    }
 
     return NextResponse.json(invoiceData)
   } catch (error) {
@@ -405,26 +416,37 @@ export async function POST(
       )
     }
 
-    const settings = await prisma.billingSettings.findUnique({
-      where: { companyId },
-    })
+    // Create invoice with atomically incremented counter
+    const invoice = await prisma.$transaction(async (tx) => {
+      // Upsert settings and increment counter
+      const updatedSettings = await tx.billingSettings.upsert({
+        where: { companyId },
+        update: { invoiceCounter: { increment: 1 } },
+        create: { companyId, invoiceCounter: 1 },
+      })
 
-    const invoiceData = computeInvoiceData(trip.billingData, trip, settings)
+      // Generate invoice number with prefix + counter
+      const prefix = updatedSettings.invoicePrefix || "INV-"
+      const invoiceNumber = `${prefix}${updatedSettings.invoiceCounter}`
 
-    // Create the invoice record
-    const invoice = await prisma.invoice.create({
-      data: {
-        invoiceNumber: invoiceData.invoiceNumber,
-        status: "DRAFT",
-        customerId: trip.customerId,
-        tripId: tripId,
-        companyId: companyId,
-        subtotal: invoiceData.summary.subtotal,
-        gratuity: invoiceData.summary.gratuity,
-        tax: invoiceData.summary.tax,
-        total: invoiceData.summary.total,
-        notes: invoiceData.footerNote,
-      },
+      // Compute invoice data
+      const invoiceData = computeInvoiceData(trip.billingData, trip, updatedSettings)
+
+      // Create the invoice record
+      return tx.invoice.create({
+        data: {
+          invoiceNumber,
+          status: "DRAFT",
+          customerId: trip.customerId!,
+          tripId,
+          companyId,
+          subtotal: invoiceData.summary.subtotal,
+          gratuity: invoiceData.summary.gratuity,
+          tax: invoiceData.summary.tax,
+          total: invoiceData.summary.total,
+          notes: invoiceData.footerNote,
+        },
+      })
     })
 
     return NextResponse.json(invoice)

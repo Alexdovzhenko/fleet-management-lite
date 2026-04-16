@@ -347,7 +347,18 @@ export async function GET(
       where: { companyId },
     })
 
+    // Check if invoice exists and use its stored number
+    const existingInvoice = await prisma.invoice.findFirst({
+      where: { tripId, companyId },
+      select: { invoiceNumber: true },
+    })
+
     const invoiceData = computeInvoiceData(trip.billingData, trip, settings)
+
+    // Override with stored invoice number if it exists
+    if (existingInvoice) {
+      invoiceData.invoiceNumber = existingInvoice.invoiceNumber
+    }
 
     // Generate PDF
     const pdfBuffer = await generateInvoicePdf(invoiceData)
