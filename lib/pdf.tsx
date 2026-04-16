@@ -539,7 +539,7 @@ const INV = StyleSheet.create({
   page: { fontFamily: "Helvetica", fontSize: 10, color: "#1e293b", backgroundColor: "#ffffff" },
   header: { padding: "24 32", borderBottom: "1 solid #e2e8f0" },
   headerTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 },
-  logoArea: { width: 60, height: 60, borderRadius: 8, backgroundColor: "#f1f5f9", alignItems: "center", justifyContent: "center", marginRight: 16 },
+  logoArea: { width: 60, height: 60, borderRadius: 8, backgroundColor: "#f1f5f9", alignItems: "center", justifyContent: "center", marginRight: 16, overflow: "hidden" },
   logoText: { fontSize: 24, fontFamily: "Helvetica-Bold", color: "#0f172a" },
   companyInfo: { flex: 1 },
   companyName: { fontSize: 16, fontFamily: "Helvetica-Bold", color: "#0f172a", marginBottom: 4 },
