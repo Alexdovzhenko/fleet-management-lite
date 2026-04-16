@@ -277,7 +277,7 @@ export function SendInvoiceModal({
 
         {/* Footer */}
         {status !== "success" && (
-          <DialogFooter className="px-5 py-4 border-t border-gray-100 bg-white gap-3 flex items-center justify-end">
+          <DialogFooter className="px-5 py-4 border-t border-gray-100 bg-white flex items-center justify-between">
             <Button
               variant="outline"
               onClick={onClose}
