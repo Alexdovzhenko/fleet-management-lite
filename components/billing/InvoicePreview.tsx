@@ -5,6 +5,7 @@ import { computeBillingTotals, formatCurrency, type BillingData } from "@/lib/bi
 
 interface InvoicePreviewProps {
   billingData: Partial<BillingData>
+  invoiceNumber?: string
   trip?: {
     tripNumber: string
     passengerName?: string
@@ -22,6 +23,7 @@ interface InvoicePreviewProps {
 
 export function InvoicePreview({
   billingData,
+  invoiceNumber,
   trip,
   company,
 }: InvoicePreviewProps) {
@@ -68,7 +70,7 @@ export function InvoicePreview({
               <div className="text-right">
                 <div className="text-sm text-slate-500 font-medium">INVOICE</div>
                 <div className="text-xl font-bold text-slate-900">
-                  INV-{trip?.tripNumber || "0000"}
+                  {invoiceNumber || "Draft"}
                 </div>
                 <div className="text-xs text-slate-500 mt-2">{invoiceDate}</div>
               </div>

@@ -167,6 +167,7 @@ export function BillingModal({
             <div className="w-full md:flex-1 flex flex-col overflow-hidden">
               <InvoicePreview
                 billingData={billingData}
+                invoiceNumber={tripInvoice?.invoiceNumber}
                 trip={trip}
                 company={company}
               />
