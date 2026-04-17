@@ -24,6 +24,15 @@ interface InvoiceData {
     email?: string
     logoUrl?: string
   }
+  trip?: {
+    pickupDate?: string
+    pickupTime?: string
+    pickupAddress?: string
+    dropoffAddress?: string
+    vehicleType?: string | null
+    tripType?: string | null
+    stops?: Array<{ order: number; address: string; notes?: string | null }>
+  }
   lineItems: InvoiceLineItem[]
   summary: {
     subtotal: number
@@ -347,6 +356,7 @@ export async function GET(
       where: { id: tripId, companyId },
       include: {
         customer: { select: { name: true, email: true, phone: true } },
+        stops: { orderBy: { order: "asc" } },
       },
     })
 
@@ -371,6 +381,23 @@ export async function GET(
       invoiceData.invoiceNumber = existingInvoice.invoiceNumber
     }
 
+    // Add trip details including stops
+    invoiceData.trip = {
+      pickupDate: trip.pickupDate?.toISOString().split("T")[0],
+      pickupTime: trip.pickupTime,
+      pickupAddress: trip.pickupAddress,
+      dropoffAddress: trip.dropoffAddress,
+      vehicleType: trip.vehicleType,
+      tripType: trip.tripType,
+      stops: trip.stops
+        ?.filter((s: any) => s.role === "stop" || s.role === "wait")
+        .map((s: any) => ({
+          order: s.order,
+          address: s.address,
+          notes: s.notes,
+        })) || [],
+    }
+
     return NextResponse.json(invoiceData)
   } catch (error) {
     console.error("[GET /api/trips/[tripId]/invoice]", error)
@@ -393,6 +420,7 @@ export async function POST(
       where: { id: tripId, companyId },
       include: {
         customer: { select: { id: true, name: true, email: true, phone: true } },
+        stops: { orderBy: { order: "asc" } },
       },
     })
 

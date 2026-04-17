@@ -17,6 +17,7 @@ interface InvoicePreviewProps {
     dropoffAddress?: string
     vehicleType?: string
     tripType?: string
+    stops?: Array<{ order: number; address: string; notes?: string | null }>
   }
   company?: {
     name?: string
@@ -189,6 +190,26 @@ export function InvoicePreview({
                       </div>
                     )}
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Stops Section for Hourly Jobs */}
+            {trip?.stops && trip.stops.length > 0 && (
+              <div className="border-t border-slate-200 pt-6">
+                <h3 className="text-sm font-semibold text-slate-900 mb-4">Stops</h3>
+                <div className="space-y-3">
+                  {trip.stops.map((stop) => (
+                    <div key={stop.order} className="text-sm">
+                      <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+                        Stop {stop.order}
+                      </div>
+                      <div className="text-slate-900">{stop.address}</div>
+                      {stop.notes && (
+                        <div className="text-xs text-slate-600 mt-1">Note: {stop.notes}</div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
