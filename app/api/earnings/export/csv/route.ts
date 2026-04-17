@@ -44,9 +44,17 @@ export async function GET(request: NextRequest) {
       const invoices = await prisma.invoice.findMany({
         where: {
           companyId,
-          trip: {
-            pickupDate: { gte: startDate, lt: endDate },
-          },
+          OR: [
+            {
+              trip: {
+                pickupDate: { gte: startDate, lt: endDate },
+              },
+            },
+            {
+              tripId: null,
+              createdAt: { gte: startDate, lt: endDate },
+            },
+          ],
         },
         select: { status: true, total: true },
       })

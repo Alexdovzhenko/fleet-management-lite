@@ -36,12 +36,23 @@ export async function GET(request: NextRequest) {
       prisma.invoice.findMany({
         where: {
           companyId,
-          trip: {
-            pickupDate: {
-              gte: startDate,
-              lt: endDate,
+          OR: [
+            {
+              trip: {
+                pickupDate: {
+                  gte: startDate,
+                  lt: endDate,
+                },
+              },
             },
-          },
+            {
+              tripId: null,
+              createdAt: {
+                gte: startDate,
+                lt: endDate,
+              },
+            },
+          ],
         },
         select: {
           status: true,
@@ -103,12 +114,23 @@ export async function GET(request: NextRequest) {
       prisma.invoice.findMany({
         where: {
           companyId,
-          trip: {
-            pickupDate: {
-              gte: previousStart,
-              lt: previousEnd,
+          OR: [
+            {
+              trip: {
+                pickupDate: {
+                  gte: previousStart,
+                  lt: previousEnd,
+                },
+              },
             },
-          },
+            {
+              tripId: null,
+              createdAt: {
+                gte: previousStart,
+                lt: previousEnd,
+              },
+            },
+          ],
         },
         select: {
           status: true,
