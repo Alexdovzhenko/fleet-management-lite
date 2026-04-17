@@ -80,7 +80,7 @@ export function InvoiceList({
       </div>
 
       {/* Invoice Cards - with animation */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         {invoices.map((invoice, index) => (
           <div
             key={invoice.id}
