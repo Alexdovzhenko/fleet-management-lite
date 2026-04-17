@@ -13,6 +13,7 @@ import { InvoiceTabs } from "./InvoiceTabs"
 import { InvoiceList } from "./InvoiceList"
 import { SettleConfirmModal } from "./SettleConfirmModal"
 import { InvoiceDetailModal } from "./InvoiceDetailModal"
+import { X } from "lucide-react"
 
 export function BillingScreen() {
   const [activeTab, setActiveTab] = useState<"OPEN" | "SETTLED">("OPEN")
@@ -103,55 +104,76 @@ export function BillingScreen() {
     })
   }, [selectedInvoice, settleInvoice, openCount])
 
+  const hasActiveFilters = filters.search || filters.date || filters.accountId
+
   return (
-    <div className="space-y-6">
-      {/* Controls */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row gap-3">
+    <div className="flex flex-col h-full bg-slate-50/50">
+      {/* Apple-style Header */}
+      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-slate-200/50">
+        <div className="px-6 py-4 space-y-4">
+          {/* Title Row */}
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900">Invoices</h1>
+            <p className="text-sm text-slate-500 mt-1">Manage and track payment status</p>
+          </div>
+
+          {/* Search Bar - Primary Action */}
           <div className="flex-1">
             <BillingSearchBar value={filters.search} onChange={setSearch} />
           </div>
-          <BillingDatePicker value={filters.date} onChange={setDate} />
-          <AccountFilterDropdown
-            accounts={dropdownAccounts}
-            value={filters.accountId}
-            onChange={setAccountId}
-            isLoading={accountsLoading}
-          />
+
+          {/* Filter Chips */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <BillingDatePicker value={filters.date} onChange={setDate} />
+            <AccountFilterDropdown
+              accounts={dropdownAccounts}
+              value={filters.accountId}
+              onChange={setAccountId}
+              isLoading={accountsLoading}
+            />
+
+            {/* Clear filters button */}
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 rounded-full transition-colors duration-150"
+                aria-label="Clear all filters"
+              >
+                <span>Clear</span>
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Clear filters hint */}
-        {(filters.search || filters.date || filters.accountId) && (
-          <button
-            onClick={clearFilters}
-            className="text-xs text-slate-500 hover:text-slate-700 transition-colors"
-          >
-            Clear all filters
-          </button>
-        )}
+        {/* Tabs */}
+        <div className="px-6 border-t border-slate-200/50">
+          <InvoiceTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            openCount={openCount}
+            settledCount={settledCount}
+          />
+        </div>
       </div>
 
-      {/* Tabs */}
-      <InvoiceTabs
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        openCount={openCount}
-        settledCount={settledCount}
-      />
-
-      {/* Invoice List */}
-      <InvoiceList
-        invoices={currentInvoices}
-        isLoading={isLoading}
-        isError={isError}
-        onMarkSettled={(invoiceId) => {
-          const invoice = currentInvoices?.find((i) => i.id === invoiceId)
-          if (invoice) handleMarkSettled(invoice)
-        }}
-        onViewDetails={handleViewDetails}
-        onClearFilters={clearFilters}
-        isSettledTab={activeTab === "SETTLED"}
-      />
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="px-6 py-6">
+          <InvoiceList
+            invoices={currentInvoices}
+            isLoading={isLoading}
+            isError={isError}
+            onMarkSettled={(invoiceId) => {
+              const invoice = currentInvoices?.find((i) => i.id === invoiceId)
+              if (invoice) handleMarkSettled(invoice)
+            }}
+            onViewDetails={handleViewDetails}
+            onClearFilters={clearFilters}
+            isSettledTab={activeTab === "SETTLED"}
+          />
+        </div>
+      </div>
 
       {/* Settle Confirmation Modal */}
       <SettleConfirmModal

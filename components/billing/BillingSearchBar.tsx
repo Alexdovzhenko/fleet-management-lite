@@ -9,23 +9,24 @@ interface BillingSearchBarProps {
 
 export function BillingSearchBar({ value, onChange }: BillingSearchBarProps) {
   return (
-    <div className="relative">
-      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-        <Search className="w-4 h-4" />
+    <div className="relative group">
+      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+        <Search className="w-5 h-5" />
       </div>
       <input
         type="text"
-        placeholder="Search by client name or reservation #"
+        placeholder="Search invoices..."
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full pl-10 pr-10 py-2.5 rounded-lg bg-slate-100 border border-slate-200 text-sm focus:outline-none focus:ring-1 focus:ring-slate-400 focus:border-slate-400"
+        className="w-full pl-11 pr-10 py-3 text-base rounded-xl bg-white border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 hover:border-slate-300 transition-all duration-150"
       />
       {value && (
         <button
           onClick={() => onChange("")}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 active:scale-90 transition-all duration-150 p-1"
+          aria-label="Clear search"
         >
-          <X className="w-4 h-4" />
+          <X className="w-5 h-5" />
         </button>
       )}
     </div>
