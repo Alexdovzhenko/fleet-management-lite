@@ -436,7 +436,7 @@ export async function POST(
       return tx.invoice.create({
         data: {
           invoiceNumber,
-          status: "DRAFT",
+          status: "OPEN",
           customerId: trip.customerId!,
           tripId,
           companyId,
