@@ -142,51 +142,34 @@ export function InvoicePreview({
             </div>
 
             {/* Trip Details */}
-            {(trip?.pickupDate || trip?.pickupTime || trip?.vehicleType || trip?.tripType || trip?.pickupAddress || trip?.dropoffAddress) && (
+            {(trip?.pickupDate || trip?.pickupTime || trip?.vehicleType || trip?.tripType) && (
               <div className="border-t border-slate-200 pt-6">
                 <div className="grid grid-cols-2 gap-6 text-sm">
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-4">
-                      {trip?.pickupDate && (
-                        <div>
-                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Pickup Date</div>
-                          <div className="text-slate-900">{new Date(trip.pickupDate).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</div>
-                        </div>
-                      )}
-                      {trip?.pickupTime && (
-                        <div>
-                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Pickup Time</div>
-                          <div className="text-slate-900">{trip.pickupTime}</div>
-                        </div>
-                      )}
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      {trip?.tripType && (
-                        <div>
-                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Service Type</div>
-                          <div className="text-slate-900">{formatTripType(trip.tripType)}</div>
-                        </div>
-                      )}
-                      {trip?.vehicleType && (
-                        <div>
-                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Type</div>
-                          <div className="text-slate-900">{formatVehicleType(trip.vehicleType)}</div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    {trip?.pickupAddress && (
+                  <div className="grid grid-cols-2 gap-4">
+                    {trip?.pickupDate && (
                       <div>
-                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Pickup Location</div>
-                        <div className="text-slate-900">{trip.pickupAddress}</div>
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Pickup Date</div>
+                        <div className="text-slate-900">{new Date(trip.pickupDate).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</div>
                       </div>
                     )}
-                    {trip?.dropoffAddress && (
+                    {trip?.pickupTime && (
                       <div>
-                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Dropoff Location</div>
-                        <div className="text-slate-900">{trip.dropoffAddress}</div>
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Pickup Time</div>
+                        <div className="text-slate-900">{trip.pickupTime}</div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {trip?.tripType && (
+                      <div>
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Service Type</div>
+                        <div className="text-slate-900">{formatTripType(trip.tripType)}</div>
+                      </div>
+                    )}
+                    {trip?.vehicleType && (
+                      <div>
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Type</div>
+                        <div className="text-slate-900">{formatVehicleType(trip.vehicleType)}</div>
                       </div>
                     )}
                   </div>
@@ -194,22 +177,71 @@ export function InvoicePreview({
               </div>
             )}
 
-            {/* Stops Section for Hourly Jobs */}
-            {trip?.stops && trip.stops.length > 0 && (
+            {/* Unified Trip Route Section */}
+            {(trip?.pickupAddress || trip?.dropoffAddress || (trip?.stops && trip.stops.length > 0)) && (
               <div className="border-t border-slate-200 pt-6">
-                <h3 className="text-sm font-semibold text-slate-900 mb-4">Stops</h3>
-                <div className="space-y-3">
-                  {trip.stops.map((stop) => (
-                    <div key={stop.order} className="text-sm">
-                      <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
-                        Stop {stop.order}
+                <h3 className="text-sm font-semibold text-slate-900 mb-6">Trip Route</h3>
+
+                <div className="space-y-4">
+                  {/* Pickup */}
+                  {trip?.pickupAddress && (
+                    <div className="flex gap-4">
+                      <div className="flex flex-col items-center flex-shrink-0">
+                        <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-900">
+                          1
+                        </div>
+                        {(trip?.stops && trip.stops.length > 0) || trip?.dropoffAddress ? (
+                          <div className="w-0.5 h-6 bg-slate-300 mt-2"></div>
+                        ) : null}
                       </div>
-                      <div className="text-slate-900">{stop.address}</div>
-                      {stop.notes && (
-                        <div className="text-xs text-slate-600 mt-1">Note: {stop.notes}</div>
-                      )}
+                      <div className="pb-2">
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Pickup</div>
+                        <div className="text-sm text-slate-900">{trip.pickupAddress}</div>
+                      </div>
                     </div>
-                  ))}
+                  )}
+
+                  {/* Intermediate Stops */}
+                  {trip?.stops && trip.stops.length > 0 && (
+                    <>
+                      {trip.stops.map((stop, idx) => (
+                        <div key={stop.order} className="flex gap-4">
+                          <div className="flex flex-col items-center flex-shrink-0">
+                            <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-xs font-bold text-amber-900">
+                              {idx + 2}
+                            </div>
+                            {idx < (trip.stops?.length ?? 0) - 1 || trip?.dropoffAddress ? (
+                              <div className="w-0.5 h-6 bg-slate-300 mt-2"></div>
+                            ) : null}
+                          </div>
+                          <div className="pb-2">
+                            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+                              Stop {stop.order}
+                            </div>
+                            <div className="text-sm text-slate-900">{stop.address}</div>
+                            {stop.notes && (
+                              <div className="text-xs text-slate-600 mt-1">Note: {stop.notes}</div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  )}
+
+                  {/* Dropoff */}
+                  {trip?.dropoffAddress && trip?.dropoffAddress !== trip?.pickupAddress && (
+                    <div className="flex gap-4">
+                      <div className="flex flex-col items-center flex-shrink-0">
+                        <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-700">
+                          {(trip?.stops?.length ?? 0) + 2}
+                        </div>
+                      </div>
+                      <div className="pb-2">
+                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Dropoff</div>
+                        <div className="text-sm text-slate-900">{trip.dropoffAddress}</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
