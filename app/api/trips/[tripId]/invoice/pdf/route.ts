@@ -26,14 +26,35 @@ interface InvoiceData {
     email?: string
     logoUrl?: string
   }
-  lineItems: InvoiceLineItem[]
+  primaryCharges: InvoiceLineItem[]
+  additionalCharges: InvoiceLineItem[]
+  farmOutCharges: InvoiceLineItem[]
+  trip?: {
+    pickupDate?: string
+    pickupTime?: string
+    vehicleType?: string
+    tripType?: string
+    pickupAddress?: string
+    dropoffAddress?: string
+  }
   summary: {
     subtotal: number
-    farmOutTotal: number
+    block1Subtotal: number
+    block2Subtotal: number
+    block3Subtotal: number
     discount: number
-    creditCardFee: number
+    discountPct: number
     gratuity: number
+    gratuityPct: number
+    creditCardFee: number
+    creditCardFeePct: number
     subtotalWithAdjustments: number
+    farmOutTotal: number
+    farmOutDiscount: number
+    farmOutDiscountPct: number
+    farmOutLateEarlyCharge: number
+    farmOutCCFee: number
+    farmOutCCFeePct: number
     tax: number
     total: number
   }
@@ -279,8 +300,6 @@ function computeInvoiceData(billingData: any, trip: any, settings: any): Invoice
 
   const total = subtotalWithAdjustments + farmOutTotal - farmOutDiscount + farmOutCCFee + tax
 
-  const allLineItems = [...primaryCharges, ...additionalCharges]
-
   const invoiceNumber =
     settings?.invoicePrefix || "INV-" + trip.tripNumber.replace(/[^0-9]/g, "")
 
@@ -289,6 +308,10 @@ function computeInvoiceData(billingData: any, trip: any, settings: any): Invoice
     month: "2-digit",
     day: "2-digit",
   })
+
+  const block1Subtotal = primarySubtotal
+  const block2Subtotal = additionalSubtotal
+  const block3Subtotal = farmOutCharges.reduce((sum, item) => sum + item.amount, 0)
 
   return {
     invoiceNumber,
@@ -305,14 +328,35 @@ function computeInvoiceData(billingData: any, trip: any, settings: any): Invoice
       email: settings?.billingEmail,
       logoUrl: settings?.logoUrl,
     },
-    lineItems: allLineItems,
+    primaryCharges,
+    additionalCharges,
+    farmOutCharges,
+    trip: {
+      pickupDate: trip.pickupDate?.toISOString(),
+      pickupTime: trip.pickupTime,
+      vehicleType: trip.vehicleType,
+      tripType: trip.tripType,
+      pickupAddress: trip.pickupAddress,
+      dropoffAddress: trip.dropoffAddress,
+    },
     summary: {
       subtotal,
-      farmOutTotal: farmOutTotal - farmOutDiscount + farmOutCCFee,
+      block1Subtotal,
+      block2Subtotal,
+      block3Subtotal,
       discount,
-      creditCardFee,
+      discountPct: b.discountPct || 0,
       gratuity,
+      gratuityPct: b.gratuityPct || 0,
+      creditCardFee,
+      creditCardFeePct: b.creditCardFeePct || 0,
       subtotalWithAdjustments,
+      farmOutTotal: farmOutTotal - farmOutDiscount + farmOutCCFee,
+      farmOutDiscount,
+      farmOutDiscountPct: b.farmOutDiscountPct || 0,
+      farmOutLateEarlyCharge: b.farmOutLateEarlyCharge || 0,
+      farmOutCCFee,
+      farmOutCCFeePct: b.farmOutCCFeePct || 0,
       tax,
       total,
     },

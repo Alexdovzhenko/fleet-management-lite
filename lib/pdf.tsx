@@ -520,14 +520,35 @@ export interface PdfInvoiceData {
     email?: string
     logoUrl?: string
   }
-  lineItems: PdfInvoiceLineItem[]
+  primaryCharges: PdfInvoiceLineItem[]
+  additionalCharges: PdfInvoiceLineItem[]
+  farmOutCharges: PdfInvoiceLineItem[]
+  trip?: {
+    pickupDate?: string
+    pickupTime?: string
+    vehicleType?: string
+    tripType?: string
+    pickupAddress?: string
+    dropoffAddress?: string
+  }
   summary: {
     subtotal: number
-    farmOutTotal: number
+    block1Subtotal: number
+    block2Subtotal: number
+    block3Subtotal: number
     discount: number
-    creditCardFee: number
+    discountPct: number
     gratuity: number
+    gratuityPct: number
+    creditCardFee: number
+    creditCardFeePct: number
     subtotalWithAdjustments: number
+    farmOutTotal: number
+    farmOutDiscount: number
+    farmOutDiscountPct: number
+    farmOutLateEarlyCharge: number
+    farmOutCCFee: number
+    farmOutCCFeePct: number
     tax: number
     total: number
   }
@@ -573,11 +594,33 @@ const INV = StyleSheet.create({
   footer: { padding: "16 32", borderTop: "1 solid #e2e8f0" },
   paymentTerms: { fontSize: 9, color: "#64748b", marginBottom: 8 },
   footerNote: { fontSize: 8, color: "#94a3b8", fontStyle: "italic" },
+  // New styles for enhanced invoice layout
+  sectionHeading: { fontSize: 10, fontFamily: "Helvetica-Bold", color: "#0f172a", marginBottom: 8, marginTop: 12 },
+  sectionSubtotalRow: { flexDirection: "row", justifyContent: "space-between", fontSize: 9, fontFamily: "Helvetica-Bold", color: "#0f172a", marginTop: 10, paddingTop: 8, borderTop: "1 solid #e2e8f0" },
+  adjustmentRow: { flexDirection: "row", justifyContent: "space-between", fontSize: 9, color: "#64748b", paddingVertical: 5, borderBottom: "1 solid #f1f5f9" },
+  adjustmentRowRed: { flexDirection: "row", justifyContent: "space-between", fontSize: 9, color: "#dc2626", paddingVertical: 5, borderBottom: "1 solid #f1f5f9" },
+  tripSection: { marginTop: 16, paddingTop: 16, borderTop: "1 solid #e2e8f0" },
+  tripRow: { flexDirection: "row", marginBottom: 10, gap: 16 },
+  tripCol: { flex: 1 },
+  tripLabel: { fontSize: 8, fontFamily: "Helvetica-Bold", color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1, marginBottom: 3 },
+  tripValue: { fontSize: 10, color: "#0f172a" },
+  fromBillToRow: { flexDirection: "row", marginTop: 20 },
+  fromCol: { flex: 1 },
+  billToCol: { flex: 1, alignItems: "flex-end" },
+  sectionLabel: { fontSize: 8, fontFamily: "Helvetica-Bold", color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 },
+  invoiceNumberLabel: { fontSize: 8, fontFamily: "Helvetica-Bold", color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1, marginBottom: 1 },
 })
 
 function InvoiceDoc({ invoice }: { invoice: PdfInvoiceData }) {
-  const farmOutTotal = invoice.summary.farmOutTotal || 0
-  const hasAdjustments = farmOutTotal > 0 || invoice.summary.discount > 0 || invoice.summary.creditCardFee > 0 || invoice.summary.gratuity > 0
+  const block1Subtotal = invoice.summary.block1Subtotal || 0
+  const block2Subtotal = invoice.summary.block2Subtotal || 0
+  const block3Subtotal = invoice.summary.block3Subtotal || 0
+
+  const hasBlock1 = invoice.primaryCharges && invoice.primaryCharges.length > 0
+  const hasBlock2 = invoice.additionalCharges && invoice.additionalCharges.length > 0
+  const hasBlock3 = invoice.farmOutCharges && invoice.farmOutCharges.length > 0
+
+  const hasTripDetails = invoice.trip && (invoice.trip.pickupDate || invoice.trip.pickupTime || invoice.trip.vehicleType || invoice.trip.tripType || invoice.trip.pickupAddress || invoice.trip.dropoffAddress)
 
   return (
     <Document title={`Invoice ${invoice.invoiceNumber}`} author={invoice.company.name}>
@@ -585,7 +628,7 @@ function InvoiceDoc({ invoice }: { invoice: PdfInvoiceData }) {
         {/* Header */}
         <View style={INV.header}>
           <View style={INV.headerTop}>
-            {/* Company info */}
+            {/* Company logo + name only */}
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: "row" }}>
                 <View style={INV.logoArea}>
@@ -597,106 +640,239 @@ function InvoiceDoc({ invoice }: { invoice: PdfInvoiceData }) {
                 </View>
                 <View style={INV.companyInfo}>
                   <Text style={INV.companyName}>{invoice.company.name}</Text>
-                  {invoice.company.address && <Text style={INV.companyDetail}>{invoice.company.address}</Text>}
-                  {invoice.company.phone && <Text style={INV.companyDetail}>{invoice.company.phone}</Text>}
-                  {invoice.company.email && <Text style={INV.companyDetail}>{invoice.company.email}</Text>}
                 </View>
               </View>
             </View>
 
-            {/* Invoice details */}
+            {/* Invoice number section */}
             <View style={{ alignItems: "flex-end" }}>
-              <Text style={INV.invoiceNumber}>Invoice {invoice.invoiceNumber}</Text>
+              <Text style={INV.invoiceNumberLabel}>INVOICE</Text>
+              <Text style={INV.invoiceNumber}>{invoice.invoiceNumber}</Text>
               <Text style={INV.invoiceDate}>{invoice.invoiceDate}</Text>
             </View>
           </View>
 
-          {/* Bill To */}
-          <View style={INV.billToSection}>
-            <Text style={INV.billToLabel}>Bill To</Text>
-            <Text style={INV.billToName}>{invoice.billTo.name}</Text>
-            {invoice.billTo.email && <Text style={INV.billToDetail}>{invoice.billTo.email}</Text>}
-            {invoice.billTo.phone && <Text style={INV.billToDetail}>{formatPhoneNumber(invoice.billTo.phone)}</Text>}
+          {/* FROM / BILL TO row */}
+          <View style={INV.fromBillToRow}>
+            {/* FROM section */}
+            <View style={INV.fromCol}>
+              <Text style={INV.sectionLabel}>FROM</Text>
+              {invoice.company.address && <Text style={INV.billToDetail}>{invoice.company.address}</Text>}
+              <View style={{ flexDirection: "row" }}>
+                {invoice.company.phone && <Text style={[INV.billToDetail, { marginRight: 12 }]}>{invoice.company.phone}</Text>}
+                {invoice.company.email && <Text style={INV.billToDetail}>{invoice.company.email}</Text>}
+              </View>
+            </View>
+
+            {/* BILL TO section */}
+            <View style={INV.billToCol}>
+              <Text style={INV.sectionLabel}>BILL TO</Text>
+              <Text style={INV.billToName}>{invoice.billTo.name}</Text>
+              {invoice.billTo.email && <Text style={INV.billToDetail}>{invoice.billTo.email}</Text>}
+              {invoice.billTo.phone && <Text style={INV.billToDetail}>{formatPhoneNumber(invoice.billTo.phone)}</Text>}
+            </View>
           </View>
+
+          {/* Trip Details section */}
+          {hasTripDetails && (
+            <View style={INV.tripSection}>
+              {/* Row 1: Pickup Date | Pickup Time */}
+              <View style={INV.tripRow}>
+                {invoice.trip?.pickupDate && (
+                  <View style={INV.tripCol}>
+                    <Text style={INV.tripLabel}>Pickup Date</Text>
+                    <Text style={INV.tripValue}>{invoice.trip.pickupDate}</Text>
+                  </View>
+                )}
+                {invoice.trip?.pickupTime && (
+                  <View style={INV.tripCol}>
+                    <Text style={INV.tripLabel}>Pickup Time</Text>
+                    <Text style={INV.tripValue}>{invoice.trip.pickupTime}</Text>
+                  </View>
+                )}
+              </View>
+
+              {/* Row 2: Type | Service Type */}
+              <View style={INV.tripRow}>
+                {invoice.trip?.vehicleType && (
+                  <View style={INV.tripCol}>
+                    <Text style={INV.tripLabel}>Type</Text>
+                    <Text style={INV.tripValue}>{invoice.trip.vehicleType}</Text>
+                  </View>
+                )}
+                {invoice.trip?.tripType && (
+                  <View style={INV.tripCol}>
+                    <Text style={INV.tripLabel}>Service Type</Text>
+                    <Text style={INV.tripValue}>{invoice.trip.tripType}</Text>
+                  </View>
+                )}
+              </View>
+
+              {/* Pickup Location */}
+              {invoice.trip?.pickupAddress && (
+                <View style={INV.tripRow}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={INV.tripLabel}>Pickup Location</Text>
+                    <Text style={INV.tripValue}>{invoice.trip.pickupAddress}</Text>
+                  </View>
+                </View>
+              )}
+
+              {/* Dropoff Location */}
+              {invoice.trip?.dropoffAddress && (
+                <View style={INV.tripRow}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={INV.tripLabel}>Dropoff Location</Text>
+                    <Text style={INV.tripValue}>{invoice.trip.dropoffAddress}</Text>
+                  </View>
+                </View>
+              )}
+            </View>
+          )}
         </View>
 
         {/* Body */}
         <View style={INV.body}>
-          {/* Line Items Table */}
-          <View style={INV.lineItemsTable}>
-            <View style={INV.tableHeader}>
-              <Text style={[INV.headerCell, INV.descCol]}>Description</Text>
-              <Text style={[INV.headerCell, INV.qtyCol]}>Qty</Text>
-              <Text style={[INV.headerCell, INV.priceCol]}>Unit Price</Text>
-              <Text style={[INV.headerCell, INV.amountCol]}>Amount</Text>
+          {/* Block 1: Primary Charges */}
+          {hasBlock1 && (
+            <View style={{ marginBottom: 20 }}>
+              <Text style={INV.sectionHeading}>Primary Charges</Text>
+              <View style={INV.lineItemsTable}>
+                <View style={INV.tableHeader}>
+                  <Text style={[INV.headerCell, INV.descCol]}>Description</Text>
+                  <Text style={[INV.headerCell, INV.qtyCol]}>Qty</Text>
+                  <Text style={[INV.headerCell, INV.priceCol]}>Unit Price</Text>
+                  <Text style={[INV.headerCell, INV.amountCol]}>Amount</Text>
+                </View>
+                {invoice.primaryCharges.map((item, idx) => (
+                  <View key={idx} style={INV.tableRow}>
+                    <Text style={INV.descCell}>{item.description}</Text>
+                    <Text style={INV.qtyCell}>{item.qty}</Text>
+                    <Text style={INV.priceCell}>${item.unitPrice.toFixed(2)}</Text>
+                    <Text style={INV.amountCell}>${item.amount.toFixed(2)}</Text>
+                  </View>
+                ))}
+              </View>
+              <View style={INV.sectionSubtotalRow}>
+                <Text>Primary Charges Subtotal</Text>
+                <Text>${block1Subtotal.toFixed(2)}</Text>
+              </View>
             </View>
+          )}
 
-            {/* Primary charges */}
-            {invoice.lineItems.map((item, idx) => (
-              <View key={idx} style={INV.tableRow}>
-                <Text style={INV.descCell}>{item.description}</Text>
-                <Text style={INV.qtyCell}>{item.qty}</Text>
-                <Text style={INV.priceCell}>${item.unitPrice.toFixed(2)}</Text>
-                <Text style={INV.amountCell}>${item.amount.toFixed(2)}</Text>
+          {/* Block 2: Additional Charges */}
+          {hasBlock2 && (
+            <View style={{ marginBottom: 20 }}>
+              <Text style={INV.sectionHeading}>Additional Charges</Text>
+              <View style={INV.lineItemsTable}>
+                <View style={INV.tableHeader}>
+                  <Text style={[INV.headerCell, INV.descCol]}>Description</Text>
+                  <Text style={[INV.headerCell, INV.qtyCol]}>Qty</Text>
+                  <Text style={[INV.headerCell, INV.priceCol]}>Unit Price</Text>
+                  <Text style={[INV.headerCell, INV.amountCol]}>Amount</Text>
+                </View>
+                {invoice.additionalCharges.map((item, idx) => (
+                  <View key={idx} style={INV.tableRow}>
+                    <Text style={INV.descCell}>{item.description}</Text>
+                    <Text style={INV.qtyCell}>{item.qty}</Text>
+                    <Text style={INV.priceCell}>${item.unitPrice.toFixed(2)}</Text>
+                    <Text style={INV.amountCell}>${item.amount.toFixed(2)}</Text>
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
-
-          {/* Summary section */}
-          <View style={{ flexDirection: "row" }}>
-            <View style={{ flex: 1 }} />
-            <View style={INV.summarySection}>
-              {/* Subtotal */}
-              <View style={INV.summaryRow}>
-                <Text style={INV.summaryLabel}>Subtotal</Text>
-                <Text style={INV.summaryValue}>${invoice.summary.subtotal.toFixed(2)}</Text>
+              <View style={INV.sectionSubtotalRow}>
+                <Text>Additional Charges Subtotal</Text>
+                <Text>${block2Subtotal.toFixed(2)}</Text>
               </View>
+            </View>
+          )}
 
-              {/* Discount */}
+          {/* Combined adjustments (Primary + Additional) */}
+          {(hasBlock1 || hasBlock2) && (
+            <View style={{ marginBottom: 20, paddingTop: 12, paddingBottom: 8, borderTop: "1 solid #e2e8f0" }}>
+              <View style={INV.adjustmentRow}>
+                <Text>Subtotal (Primary + Additional)</Text>
+                <Text>${invoice.summary.subtotal.toFixed(2)}</Text>
+              </View>
               {invoice.summary.discount > 0 && (
-                <View style={INV.summaryRow}>
-                  <Text style={INV.summaryLabel}>Discount</Text>
-                  <Text style={INV.summaryValue}>-${invoice.summary.discount.toFixed(2)}</Text>
+                <View style={INV.adjustmentRowRed}>
+                  <Text>Discount ({invoice.summary.discountPct}%)</Text>
+                  <Text>-${invoice.summary.discount.toFixed(2)}</Text>
                 </View>
               )}
-
-              {/* Gratuity */}
               {invoice.summary.gratuity > 0 && (
-                <View style={INV.summaryRow}>
-                  <Text style={INV.summaryLabel}>Gratuity</Text>
-                  <Text style={INV.summaryValue}>${invoice.summary.gratuity.toFixed(2)}</Text>
+                <View style={INV.adjustmentRow}>
+                  <Text>Gratuity ({invoice.summary.gratuityPct}%)</Text>
+                  <Text>+${invoice.summary.gratuity.toFixed(2)}</Text>
                 </View>
               )}
-
-              {/* Credit Card Fee */}
               {invoice.summary.creditCardFee > 0 && (
-                <View style={INV.summaryRow}>
-                  <Text style={INV.summaryLabel}>Credit Card Fee</Text>
-                  <Text style={INV.summaryValue}>${invoice.summary.creditCardFee.toFixed(2)}</Text>
+                <View style={INV.adjustmentRow}>
+                  <Text>Credit Card Fee ({invoice.summary.creditCardFeePct}%)</Text>
+                  <Text>+${invoice.summary.creditCardFee.toFixed(2)}</Text>
                 </View>
               )}
-
-              {/* Farm-out Total */}
-              {farmOutTotal > 0 && (
-                <View style={INV.summaryRow}>
-                  <Text style={INV.summaryLabel}>Farm-Out Cost</Text>
-                  <Text style={INV.summaryValue}>${farmOutTotal.toFixed(2)}</Text>
-                </View>
-              )}
-
-              {/* Tax */}
-              {invoice.summary.tax > 0 && (
-                <View style={INV.summaryRow}>
-                  <Text style={INV.summaryLabel}>Tax</Text>
-                  <Text style={INV.summaryValue}>${invoice.summary.tax.toFixed(2)}</Text>
-                </View>
-              )}
-
-              {/* Total */}
-              <View style={INV.totalRow}>
-                <Text style={INV.totalLabel}>TOTAL DUE</Text>
-                <Text style={INV.totalValue}>${invoice.summary.total.toFixed(2)}</Text>
+              <View style={INV.sectionSubtotalRow}>
+                <Text>Section Total (Primary + Additional)</Text>
+                <Text>${invoice.summary.subtotalWithAdjustments.toFixed(2)}</Text>
               </View>
+            </View>
+          )}
+
+          {/* Block 3: Farm-out Costs */}
+          {hasBlock3 && (
+            <View style={{ marginBottom: 20 }}>
+              <Text style={INV.sectionHeading}>Farm-out Costs</Text>
+              <View style={INV.lineItemsTable}>
+                <View style={INV.tableHeader}>
+                  <Text style={[INV.headerCell, INV.descCol]}>Description</Text>
+                  <Text style={[INV.headerCell, INV.qtyCol]}>Qty</Text>
+                  <Text style={[INV.headerCell, INV.priceCol]}>Unit Price</Text>
+                  <Text style={[INV.headerCell, INV.amountCol]}>Amount</Text>
+                </View>
+                {invoice.farmOutCharges.map((item, idx) => (
+                  <View key={idx} style={INV.tableRow}>
+                    <Text style={INV.descCell}>{item.description}</Text>
+                    <Text style={INV.qtyCell}>{item.qty}</Text>
+                    <Text style={INV.priceCell}>${item.unitPrice.toFixed(2)}</Text>
+                    <Text style={INV.amountCell}>${item.amount.toFixed(2)}</Text>
+                  </View>
+                ))}
+              </View>
+              <View style={INV.sectionSubtotalRow}>
+                <Text>Farm-out Costs Subtotal</Text>
+                <Text>${block3Subtotal.toFixed(2)}</Text>
+              </View>
+              {invoice.summary.farmOutDiscount > 0 && (
+                <View style={INV.adjustmentRowRed}>
+                  <Text>Discount ({invoice.summary.farmOutDiscountPct}%)</Text>
+                  <Text>-${invoice.summary.farmOutDiscount.toFixed(2)}</Text>
+                </View>
+              )}
+              {invoice.summary.farmOutLateEarlyCharge > 0 && (
+                <View style={INV.adjustmentRow}>
+                  <Text>Late/Early Charge</Text>
+                  <Text>+${invoice.summary.farmOutLateEarlyCharge.toFixed(2)}</Text>
+                </View>
+              )}
+              {invoice.summary.farmOutCCFee > 0 && (
+                <View style={INV.adjustmentRow}>
+                  <Text>Credit Card Fee ({invoice.summary.farmOutCCFeePct}%)</Text>
+                  <Text>+${invoice.summary.farmOutCCFee.toFixed(2)}</Text>
+                </View>
+              )}
+              <View style={INV.sectionSubtotalRow}>
+                <Text>Farm-out Costs Total</Text>
+                <Text>${invoice.summary.farmOutTotal.toFixed(2)}</Text>
+              </View>
+            </View>
+          )}
+
+          {/* Grand Total */}
+          <View style={{ marginTop: 20, borderTop: "2 solid #0f172a", paddingTop: 10 }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+              <Text style={{ fontSize: 12, fontFamily: "Helvetica-Bold", color: "#0f172a" }}>GRAND TOTAL</Text>
+              <Text style={{ fontSize: 14, fontFamily: "Helvetica-Bold", color: "#0f172a" }}>${invoice.summary.total.toFixed(2)}</Text>
             </View>
           </View>
 
