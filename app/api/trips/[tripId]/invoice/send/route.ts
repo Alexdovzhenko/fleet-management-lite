@@ -10,6 +10,7 @@ const sendInvoiceSchema = z.object({
   primaryEmail: z.string().email("Invalid primary email"),
   secondaryEmail: z.string().email("Invalid secondary email").optional(),
   message: z.string().max(500).optional(),
+  senderEmailId: z.string().optional(),
 })
 
 // Reuse invoice computation logic from invoice/pdf route
@@ -394,7 +395,7 @@ export async function POST(
   try {
     // Parse and validate request body
     const body = await request.json()
-    const { primaryEmail, secondaryEmail, message } = sendInvoiceSchema.parse(body)
+    const { primaryEmail, secondaryEmail, message, senderEmailId } = sendInvoiceSchema.parse(body)
 
     // Fetch trip with billing data
     const trip = await prisma.trip.findFirst({
@@ -430,6 +431,18 @@ export async function POST(
       },
     })
 
+    // Fetch sender email if specified
+    let senderEmail: string | null = null
+    if (senderEmailId) {
+      const sender = await prisma.senderEmail.findUnique({
+        where: { id: senderEmailId },
+        select: { email: true },
+      })
+      if (sender) {
+        senderEmail = sender.email
+      }
+    }
+
     if (!company) {
       return NextResponse.json({ error: "Company not found" }, { status: 404 })
     }
@@ -462,10 +475,13 @@ export async function POST(
       message,
     })
 
+    // Determine the reply-to email
+    const replyToEmail = senderEmail || settings?.billingEmail || company.email
+
     // Send to primary email
     await sendEmailWithPdf({
       to: primaryEmail,
-      replyTo: settings?.billingEmail || company.email,
+      replyTo: replyToEmail,
       fromLabel: company.name,
       subject: `Invoice ${invoiceData.invoiceNumber}`,
       html: htmlBody,
@@ -477,7 +493,7 @@ export async function POST(
     if (secondaryEmail) {
       await sendEmailWithPdf({
         to: secondaryEmail,
-        replyTo: settings?.billingEmail || company.email,
+        replyTo: replyToEmail,
         fromLabel: company.name,
         subject: `Invoice ${invoiceData.invoiceNumber}`,
         html: htmlBody,

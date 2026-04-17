@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Mail, Send, CheckCircle2, AlertTriangle, X, Loader2 } from "lucide-react"
+import { Mail, Send, CheckCircle2, AlertTriangle, X, Loader2, ChevronDown } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { useSendInvoice } from "@/lib/hooks/use-billing"
+import { useSenderEmails } from "@/lib/hooks/use-sender-emails"
 import { toast } from "sonner"
 
 interface SendInvoiceModalProps {
@@ -29,6 +30,77 @@ function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
+// ─── Sender selector component ───────────────────────────────────────────────
+
+function SenderSelector({
+  senders,
+  selected,
+  onChange,
+}: {
+  senders: any[]
+  selected: string
+  onChange: (id: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const current = senders.find(s => s.id === selected) ?? senders[0]
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        className={cn(
+          "w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border text-left transition-all",
+          open
+            ? "border-blue-300 bg-blue-50 ring-1 ring-blue-200"
+            : "border-gray-200 bg-white hover:border-gray-300"
+        )}
+      >
+        <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
+          <Mail className="w-3.5 h-3.5 text-indigo-500" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-gray-800 truncate">{current?.email ?? "Select sender"}</p>
+          {current?.label && <p className="text-[11px] text-gray-400 leading-tight">{current.label}</p>}
+        </div>
+        {current?.isDefault && (
+          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex-shrink-0">
+            Default
+          </span>
+        )}
+        <ChevronDown className={cn("w-4 h-4 text-gray-400 flex-shrink-0 transition-transform", open && "rotate-180")} />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
+          {senders.map(s => (
+            <button
+              key={s.id}
+              type="button"
+              onClick={() => { onChange(s.id); setOpen(false) }}
+              className={cn(
+                "w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left transition-colors",
+                s.id === selected
+                  ? "bg-blue-50 text-blue-700"
+                  : "hover:bg-gray-50"
+              )}
+            >
+              <div className={cn("w-2 h-2 rounded-full flex-shrink-0", s.id === selected ? "bg-blue-500" : "bg-gray-200")} />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-800 truncate">{s.email}</p>
+                {s.label && <p className="text-[11px] text-gray-400">{s.label}</p>}
+              </div>
+              {s.isDefault && (
+                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">Default</span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function SendInvoiceModal({
   open,
   onClose,
@@ -41,11 +113,13 @@ export function SendInvoiceModal({
   const [secondaryEmail, setSecondaryEmail] = useState("")
   const [showCC, setShowCC] = useState(false)
   const [message, setMessage] = useState("")
+  const [senderEmailId, setSenderEmailId] = useState("")
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle")
   const [errorMsg, setErrorMsg] = useState("")
   const [touched, setTouched] = useState({ primary: false, secondary: false })
   const primaryInputRef = useRef<HTMLInputElement>(null)
 
+  const { data: senders = [] } = useSenderEmails()
   const sendInvoice = useSendInvoice(tripId)
 
   // Reset state when modal opens/closes
@@ -60,10 +134,13 @@ export function SendInvoiceModal({
       setStatus("idle")
       setErrorMsg("")
       setTouched({ primary: false, secondary: false })
+      // Set default sender email
+      const defaultSender = senders.find(s => s.isDefault) ?? senders[0]
+      if (defaultSender) setSenderEmailId(defaultSender.id)
       // Focus primary email input after a short delay to allow modal animation
       setTimeout(() => primaryInputRef.current?.focus(), 100)
     }
-  }, [open])
+  }, [open, senders])
 
   // Validation checks
   const isPrimaryEmailValid = primaryEmail.trim() === "" || isValidEmail(primaryEmail)
@@ -102,6 +179,7 @@ export function SendInvoiceModal({
         primaryEmail: primaryEmail.trim(),
         secondaryEmail: secondaryEmail.trim() ? secondaryEmail.trim() : undefined,
         message: message.trim() || undefined,
+        senderEmailId: senderEmailId || undefined,
       },
       {
         onSuccess: () => {
@@ -255,6 +333,27 @@ export function SendInvoiceModal({
                 rows={3}
                 className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm bg-white resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               />
+            </div>
+
+            {/* Sent From (Reply-To) */}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-gray-900 uppercase tracking-widest">
+                Sent From (Reply-To)
+              </Label>
+              {senders.length > 0 ? (
+                <SenderSelector
+                  senders={senders}
+                  selected={senderEmailId}
+                  onChange={setSenderEmailId}
+                />
+              ) : (
+                <div className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50">
+                  <p className="text-xs text-gray-400">Loading sender emails…</p>
+                </div>
+              )}
+              <p className="text-[11px] text-gray-400 leading-snug">
+                Replies from recipients will go to this address.
+              </p>
             </div>
 
             {/* Attachment Badge */}

@@ -362,7 +362,7 @@ export function useCreateTripInvoice(tripId: string) {
 
 async function sendInvoice(
   tripId: string,
-  data: { primaryEmail: string; secondaryEmail?: string; message?: string }
+  data: { primaryEmail: string; secondaryEmail?: string; message?: string; senderEmailId?: string }
 ): Promise<{ success: boolean }> {
   const res = await fetch(`/api/trips/${tripId}/invoice/send`, {
     method: "POST",
@@ -383,7 +383,7 @@ async function sendInvoice(
 
 export function useSendInvoice(tripId: string) {
   return useMutation({
-    mutationFn: (data: { primaryEmail: string; secondaryEmail?: string; message?: string }) =>
+    mutationFn: (data: { primaryEmail: string; secondaryEmail?: string; message?: string; senderEmailId?: string }) =>
       sendInvoice(tripId, data),
   })
 }
