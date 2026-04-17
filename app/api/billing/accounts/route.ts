@@ -8,42 +8,47 @@ export async function GET(request: NextRequest) {
   const { companyId } = auth.ctx
 
   try {
-    // Fetch all customers for this company
+    // Fetch customers
     const customers = await prisma.customer.findMany({
       where: { companyId },
-      select: { id: true, name: true, company: true },
+      select: {
+        id: true,
+        name: true,
+        company: true,
+      },
       orderBy: { name: "asc" },
     })
 
-    // Fetch all affiliate connections where this company is the receiver
-    // (companies that have accepted connection with us)
-    const affiliateConnections = await prisma.affiliateConnection.findMany({
+    // Fetch affiliates (accepted connections)
+    const affiliates = await prisma.affiliateConnection.findMany({
       where: {
-        receiverId: companyId,
+        senderId: companyId,
         status: "ACCEPTED",
       },
       include: {
-        sender: { select: { id: true, name: true } },
+        receiver: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     })
 
-    // Format affiliates
-    const affiliates = affiliateConnections.map((conn) => ({
-      id: conn.sender.id,
-      name: conn.sender.name,
-      company: null,
-    }))
-
     return NextResponse.json({
-      customers,
-      affiliates,
+      customers: customers.map((c) => ({
+        id: c.id,
+        name: c.name,
+        company: c.company,
+      })),
+      affiliates: affiliates.map((a) => ({
+        id: a.receiver.id,
+        name: a.receiver.name,
+      })),
     })
   } catch (error) {
-    console.error("Billing accounts error:", error)
-    return NextResponse.json(
-      { error: "Failed to fetch accounts" },
-      { status: 500 }
-    )
+    console.error("[GET /api/billing/accounts]", error)
+    return NextResponse.json({ error: "Failed to fetch accounts" }, { status: 500 })
   }
 }

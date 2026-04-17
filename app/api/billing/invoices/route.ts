@@ -1,15 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { requireAuth } from "@/lib/auth-context"
-import { z } from "zod"
-
-const getInvoicesSchema = z.object({
-  status: z.enum(["OPEN", "SETTLED"]).optional(),
-  search: z.string().optional(),
-  date: z.string().optional(), // ISO date string
-  accountId: z.string().optional(),
-  accountType: z.enum(["CUSTOMER", "AFFILIATE"]).optional(),
-})
 
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request)
@@ -17,70 +8,102 @@ export async function GET(request: NextRequest) {
   const { companyId } = auth.ctx
 
   try {
-    const url = new URL(request.url)
-    const params = {
-      status: url.searchParams.get("status"),
-      search: url.searchParams.get("search"),
-      date: url.searchParams.get("date"),
-      accountId: url.searchParams.get("accountId"),
-      accountType: url.searchParams.get("accountType"),
-    }
-
-    const validated = getInvoicesSchema.parse(params)
+    const searchParams = request.nextUrl.searchParams
+    const status = searchParams.get("status") as "OPEN" | "SETTLED" | null
+    const search = searchParams.get("search")
+    const date = searchParams.get("date")
+    const accountId = searchParams.get("accountId")
 
     // Build where clause
-    const where: any = {
+    const whereClause: any = {
       companyId,
-      ...(validated.status && {
-        status: validated.status,
-      }),
-      ...(validated.accountId && {
-        customerId: validated.accountId,
-      }),
-      ...(validated.date && {
-        trip: {
-          pickupDate: {
-            gte: new Date(`${validated.date}T00:00:00Z`),
-            lt: new Date(`${validated.date}T23:59:59Z`),
-          },
-        },
-      }),
-      ...(validated.search && {
-        OR: [
-          { customer: { name: { contains: validated.search, mode: "insensitive" } } },
-          { customer: { company: { contains: validated.search, mode: "insensitive" } } },
-          { invoiceNumber: { contains: validated.search, mode: "insensitive" } },
-          { trip: { tripNumber: { contains: validated.search, mode: "insensitive" } } },
-        ],
-      }),
     }
 
+    // Filter by status
+    if (status) {
+      whereClause.status = status
+    }
+
+    // Filter by customerId
+    if (accountId) {
+      whereClause.customerId = accountId
+    }
+
+    // Filter by search (invoiceNumber, customer name, or trip number)
+    if (search) {
+      whereClause.OR = [
+        { invoiceNumber: { contains: search, mode: "insensitive" } },
+        { customer: { name: { contains: search, mode: "insensitive" } } },
+        { trip: { tripNumber: { contains: search, mode: "insensitive" } } },
+      ]
+    }
+
+    // Filter by date (pickup date of trip)
+    if (date) {
+      const targetDate = new Date(date)
+      const nextDay = new Date(targetDate)
+      nextDay.setDate(nextDay.getDate() + 1)
+      whereClause.trip = {
+        ...whereClause.trip,
+        pickupDate: {
+          gte: targetDate,
+          lt: nextDay,
+        },
+      }
+    }
+
+    // Fetch invoices with customer and trip data
     const invoices = await prisma.invoice.findMany({
-      where,
+      where: whereClause,
       include: {
-        customer: true,
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
         trip: {
           select: {
             id: true,
             tripNumber: true,
             pickupDate: true,
-            createdById: true,
-            createdBy: { select: { name: true } },
+            pickupTime: true,
           },
         },
       },
       orderBy: { createdAt: "desc" },
     })
 
-    return NextResponse.json(invoices)
+    // Transform to match Invoice interface
+    const transformedInvoices = invoices.map((inv) => ({
+      id: inv.id,
+      invoiceNumber: inv.invoiceNumber,
+      status: inv.status,
+      customerId: inv.customerId,
+      customer: inv.customer,
+      tripId: inv.tripId,
+      trip: inv.trip,
+      subtotal: inv.subtotal.toString(),
+      gratuity: inv.gratuity?.toString(),
+      tax: inv.tax?.toString(),
+      total: inv.total.toString(),
+      notes: inv.notes,
+      dueDate: inv.dueDate?.toISOString(),
+      paidAt: inv.paidAt?.toISOString(),
+      paymentMethod: inv.paymentMethod,
+      companyId: inv.companyId,
+      createdAt: inv.createdAt.toISOString(),
+      updatedAt: inv.updatedAt.toISOString(),
+      // Add summary field for compatibility with BillingModal
+      summary: {
+        total: parseFloat(inv.total.toString()),
+      },
+    }))
+
+    return NextResponse.json(transformedInvoices)
   } catch (error) {
-    console.error("Billing invoices error:", error)
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: "Invalid query parameters" }, { status: 400 })
-    }
-    return NextResponse.json(
-      { error: "Failed to fetch invoices" },
-      { status: 500 }
-    )
+    console.error("[GET /api/billing/invoices]", error)
+    return NextResponse.json({ error: "Failed to fetch invoices" }, { status: 500 })
   }
 }
