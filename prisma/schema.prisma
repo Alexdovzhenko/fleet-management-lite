@@ -537,6 +537,11 @@ model CompanySettings {
   defaultGratuityPercent Int?    @default(20)
   requirePaymentUpfront  Boolean @default(false)
 
+  // Vehicle Performance Alerts
+  alertMinProfitMargin    Int?    @default(15)  // Alert if vehicle profit margin below 15%
+  alertNegativeProfitDays Int?    @default(7)   // Alert if vehicle negative for X days
+  enableProfitAlerts      Boolean @default(false) // Enable/disable alerts
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
