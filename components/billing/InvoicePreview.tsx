@@ -88,8 +88,10 @@ export function InvoicePreview({
                 <div className="font-semibold text-slate-900 mb-2">FROM</div>
                 <div className="text-slate-600 space-y-1">
                   {company?.address && <div>{company.address}</div>}
-                  {company?.phone && <div>{company.phone}</div>}
-                  {company?.email && <div>{company.email}</div>}
+                  <div className="flex gap-3">
+                    {company?.phone && <div>{company.phone}</div>}
+                    {company?.email && <div>{company.email}</div>}
+                  </div>
                 </div>
               </div>
 
