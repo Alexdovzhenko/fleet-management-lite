@@ -611,6 +611,16 @@ const INV = StyleSheet.create({
   invoiceNumberLabel: { fontSize: 8, fontFamily: "Helvetica-Bold", color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1, marginBottom: 1 },
 })
 
+function formatPickupDate(dateString?: string): string {
+  if (!dateString) return ""
+  try {
+    const date = new Date(dateString)
+    return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+  } catch {
+    return dateString
+  }
+}
+
 function InvoiceDoc({ invoice }: { invoice: PdfInvoiceData }) {
   const block1Subtotal = invoice.summary.block1Subtotal || 0
   const block2Subtotal = invoice.summary.block2Subtotal || 0
@@ -681,7 +691,7 @@ function InvoiceDoc({ invoice }: { invoice: PdfInvoiceData }) {
                 {invoice.trip?.pickupDate && (
                   <View style={INV.tripCol}>
                     <Text style={INV.tripLabel}>Pickup Date</Text>
-                    <Text style={INV.tripValue}>{invoice.trip.pickupDate}</Text>
+                    <Text style={INV.tripValue}>{formatPickupDate(invoice.trip.pickupDate)}</Text>
                   </View>
                 )}
                 {invoice.trip?.pickupTime && (
