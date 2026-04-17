@@ -4,8 +4,6 @@ import { useState, useEffect } from "react"
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,6 +14,7 @@ import {
   AlertTriangle,
   Loader2,
   Send,
+  ChevronDown,
 } from "lucide-react"
 import { useSenderEmails } from "@/lib/hooks/use-sender-emails"
 import { cn } from "@/lib/utils"
@@ -35,6 +34,77 @@ interface InvoiceSendEmailModalProps {
   onOpenChange: (v: boolean) => void
 }
 
+// ─── Sender selector component ───────────────────────────────────────────────
+
+function SenderSelector({
+  senders,
+  selected,
+  onChange,
+}: {
+  senders: any[]
+  selected: string
+  onChange: (id: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const current = senders.find(s => s.id === selected) ?? senders[0]
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        className={cn(
+          "w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border text-left transition-all",
+          open
+            ? "border-blue-300 bg-blue-50 ring-1 ring-blue-200"
+            : "border-gray-200 bg-white hover:border-gray-300"
+        )}
+      >
+        <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
+          <Mail className="w-3.5 h-3.5 text-indigo-500" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-gray-800 truncate">{current?.email ?? "Select sender"}</p>
+          {current?.label && <p className="text-[11px] text-gray-400 leading-tight">{current.label}</p>}
+        </div>
+        {current?.isDefault && (
+          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex-shrink-0">
+            Default
+          </span>
+        )}
+        <ChevronDown className={cn("w-4 h-4 text-gray-400 flex-shrink-0 transition-transform", open && "rotate-180")} />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
+          {senders.map(s => (
+            <button
+              key={s.id}
+              type="button"
+              onClick={() => { onChange(s.id); setOpen(false) }}
+              className={cn(
+                "w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left transition-colors",
+                s.id === selected
+                  ? "bg-blue-50 text-blue-700"
+                  : "hover:bg-gray-50"
+              )}
+            >
+              <div className={cn("w-2 h-2 rounded-full flex-shrink-0", s.id === selected ? "bg-blue-500" : "bg-gray-200")} />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-800 truncate">{s.email}</p>
+                {s.label && <p className="text-[11px] text-gray-400">{s.label}</p>}
+              </div>
+              {s.isDefault && (
+                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">Default</span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function InvoiceSendEmailModal({
   tripId,
   invoice,
@@ -44,11 +114,8 @@ export function InvoiceSendEmailModal({
 }: InvoiceSendEmailModalProps) {
   const [senderEmailId, setSenderEmailId] = useState<string>("")
   const [recipientEmail, setRecipientEmail] = useState("")
-  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">(
-    "idle"
-  )
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle")
   const [errorMsg, setErrorMsg] = useState("")
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   const { data: senders = [] } = useSenderEmails()
 
@@ -68,8 +135,6 @@ export function InvoiceSendEmailModal({
       setErrorMsg("")
     }
   }, [open, senders, trip, invoice])
-
-  const currentSender = senders.find((s) => s.id === senderEmailId) ?? senders[0]
 
   const handleSend = async () => {
     if (!recipientEmail.trim()) {
@@ -110,35 +175,29 @@ export function InvoiceSendEmailModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="p-0 gap-0 max-w-md overflow-hidden rounded-2xl border border-gray-200 shadow-2xl">
-        {/* Header */}
-        <DialogHeader className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white">
+
+        {/* ── Header ── */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center">
               <Send className="w-4 h-4 text-blue-600" />
             </div>
             <div>
-              <DialogTitle className="text-sm font-bold text-gray-900">
-                Send Invoice Email
-              </DialogTitle>
-              <p className="text-[11px] text-gray-400">
-                {invoice.invoiceNumber}
-              </p>
+              <h2 className="text-sm font-bold text-gray-900">Send Invoice Email</h2>
+              <p className="text-[11px] text-gray-400">{invoice.invoiceNumber}</p>
             </div>
           </div>
-        </DialogHeader>
+        </div>
 
-        {/* Success State */}
+        {/* ── Success state ── */}
         {status === "success" ? (
           <div className="px-6 py-10 text-center">
             <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="w-8 h-8 text-emerald-500" />
             </div>
-            <h3 className="text-base font-bold text-gray-900 mb-1">
-              Invoice Sent
-            </h3>
+            <h3 className="text-base font-bold text-gray-900 mb-1">Invoice Sent</h3>
             <p className="text-sm text-gray-400 mb-6">
-              The invoice was sent to{" "}
-              <span className="font-medium text-gray-700">{recipientEmail}</span>
+              The invoice was sent to <span className="font-medium text-gray-700">{recipientEmail}</span>
             </p>
             <div className="flex gap-2">
               <Button
@@ -161,11 +220,10 @@ export function InvoiceSendEmailModal({
           </div>
         ) : (
           <div className="px-5 py-5 space-y-4">
-            {/* Recipient Email */}
+
+            {/* ── Recipient Email ── */}
             <div>
-              <Label className="text-xs font-semibold text-gray-900 mb-2 block">
-                Send To
-              </Label>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">Send To</p>
               <Input
                 type="email"
                 placeholder="customer@example.com"
@@ -174,105 +232,43 @@ export function InvoiceSendEmailModal({
                 className="h-10 text-sm"
               />
               {trip?.passengerName && (
-                <p className="text-xs text-gray-400 mt-1.5">
-                  {trip.passengerName}
-                </p>
+                <p className="text-xs text-gray-500 mt-1.5">{trip.passengerName}</p>
               )}
             </div>
 
-            {/* Sender Email */}
+            {/* ── Sender Email ── */}
             <div>
-              <Label className="text-xs font-semibold text-gray-900 mb-2 block">
-                Sent From (Reply-To)
-              </Label>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">Sent From (Reply-To)</p>
               {senders.length > 0 ? (
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className={cn(
-                      "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg border text-left text-sm transition-all",
-                      isDropdownOpen
-                        ? "border-blue-300 bg-blue-50"
-                        : "border-gray-200 bg-white hover:border-gray-300"
-                    )}
-                  >
-                    <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-800 truncate">
-                        {currentSender?.email}
-                      </p>
-                      {currentSender?.label && (
-                        <p className="text-[11px] text-gray-400 truncate">
-                          {currentSender.label}
-                        </p>
-                      )}
-                    </div>
-                  </button>
-
-                  {isDropdownOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-1 z-50 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-                      {senders.map((sender) => (
-                        <button
-                          key={sender.id}
-                          type="button"
-                          onClick={() => {
-                            setSenderEmailId(sender.id)
-                            setIsDropdownOpen(false)
-                          }}
-                          className={cn(
-                            "w-full flex items-center gap-2.5 px-3 py-2.5 text-left text-sm transition-colors",
-                            sender.id === senderEmailId
-                              ? "bg-blue-50 text-blue-700"
-                              : "hover:bg-gray-50"
-                          )}
-                        >
-                          <div
-                            className={cn(
-                              "w-2 h-2 rounded-full flex-shrink-0",
-                              sender.id === senderEmailId
-                                ? "bg-blue-500"
-                                : "bg-gray-200"
-                            )}
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-800 truncate">
-                              {sender.email}
-                            </p>
-                            {sender.label && (
-                              <p className="text-[11px] text-gray-400 truncate">
-                                {sender.label}
-                              </p>
-                            )}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <SenderSelector
+                  senders={senders}
+                  selected={senderEmailId}
+                  onChange={setSenderEmailId}
+                />
               ) : (
-                <div className="px-3 py-2.5 rounded-lg border border-gray-200 bg-gray-50">
+                <div className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50">
                   <p className="text-xs text-gray-400">Loading sender emails…</p>
                 </div>
               )}
-              <p className="text-[11px] text-gray-400 mt-1.5">
-                Replies will go to this address
+              <p className="text-[11px] text-gray-400 mt-1.5 leading-snug">
+                Replies from recipients will go to this address.
               </p>
             </div>
 
-            {/* Error State */}
+            {/* ── Error state ── */}
             {status === "error" && errorMsg && (
-              <div className="flex items-start gap-2.5 px-3 py-2.5 rounded-lg bg-red-50 border border-red-200">
+              <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-red-50 border border-red-200">
                 <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-red-700">{errorMsg}</p>
+                <p className="text-sm text-red-700">{errorMsg}</p>
               </div>
             )}
 
-            {/* Send Button */}
+            {/* ── Send button ── */}
             <Button
-              onClick={handleSend}
+              type="button"
+              className="w-full h-11 font-semibold text-sm bg-blue-600 hover:bg-blue-700 text-white transition-all"
               disabled={!recipientEmail.trim() || status === "sending"}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+              onClick={handleSend}
             >
               {status === "sending" ? (
                 <span className="flex items-center gap-2">
@@ -286,8 +282,10 @@ export function InvoiceSendEmailModal({
                 </span>
               )}
             </Button>
+
           </div>
         )}
+
       </DialogContent>
     </Dialog>
   )
