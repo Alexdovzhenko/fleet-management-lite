@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Calendar, X, ChevronLeft, ChevronRight } from "lucide-react"
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, isSameDay, isWithinInterval } from "date-fns"
+import { Calendar, X, ChevronLeft, ChevronRight, ChevronRight as Arrow } from "lucide-react"
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths, isSameDay, isWithinInterval, isBefore } from "date-fns"
 
 interface BillingDatePickerProps {
   startDate: string | null
@@ -41,6 +41,10 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
         setSelectedEnd(null)
       }
     } else {
+      // In end selection mode, prevent clicking dates before the start date
+      if (selectedStart && isBefore(day, selectedStart)) {
+        return
+      }
       if (day < selectedStart!) {
         // If user clicks a date before start, swap them
         setSelectedEnd(selectedStart)
@@ -83,7 +87,7 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
   })
 
   const getDayClasses = (day: Date) => {
-    const baseClasses = "w-8 h-8 rounded text-sm flex items-center justify-center cursor-pointer transition-colors"
+    const baseClasses = "w-8 h-8 rounded text-sm flex items-center justify-center transition-colors"
 
     const isStart = selectedStart && isSameDay(day, selectedStart)
     const isEnd = selectedEnd && isSameDay(day, selectedEnd)
@@ -95,12 +99,19 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
         end: selectedEnd,
       })
 
-    if (isStart || isEnd) {
-      return `${baseClasses} bg-blue-600 text-white font-medium`
+    // In step 2, dim dates before the selected start date
+    const isBeforeStart = selectedStart && selectionMode === "end" && isBefore(day, selectedStart)
+
+    if (isBeforeStart) {
+      return `${baseClasses} text-slate-300 cursor-not-allowed`
+    } else if (isStart) {
+      return `${baseClasses} bg-blue-600 text-white font-medium cursor-pointer hover:bg-blue-700`
+    } else if (isEnd) {
+      return `${baseClasses} bg-teal-600 text-white font-medium cursor-pointer hover:bg-teal-700`
     } else if (isInRange) {
-      return `${baseClasses} bg-blue-100 text-slate-900`
+      return `${baseClasses} bg-blue-50 text-slate-900 cursor-pointer`
     } else {
-      return `${baseClasses} text-slate-700 hover:bg-slate-100`
+      return `${baseClasses} text-slate-700 cursor-pointer hover:bg-slate-100`
     }
   }
 
@@ -127,14 +138,41 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
 
       {isOpen && (
         <div className="absolute top-full left-0 mt-2 z-50 bg-white border border-slate-200 rounded-xl shadow-lg p-4 w-80">
-          {/* Mode indicator */}
-          <div className="mb-4 flex items-center gap-2">
-            <div className="text-xs font-medium text-slate-600 bg-slate-100 px-2.5 py-1 rounded">
-              {selectionMode === "start" ? "Select start date" : "Select end date"}
+          {/* Progress Indicator */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                Step {selectionMode === "start" ? "1" : "2"}/2
+              </div>
+              <div className="text-xs font-medium text-slate-500">
+                {selectionMode === "start" ? "Select Start Date" : "Select End Date"}
+              </div>
             </div>
-            {selectedStart && (
-              <div className="text-xs text-slate-500">
-                Start: {format(selectedStart, "MMM d")}
+            {/* Progress bar */}
+            <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-blue-600 transition-all duration-300 ease-out"
+                style={{ width: selectionMode === "start" ? "50%" : "100%" }}
+              />
+            </div>
+          </div>
+
+          {/* Date Range Display */}
+          <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-slate-50 rounded-lg border border-blue-100">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-semibold text-slate-900">
+                  {selectedStart ? format(selectedStart, "MMM d") : "Start"}
+                </span>
+                <Arrow className="w-4 h-4 text-slate-400" />
+              </div>
+              <span className="text-sm font-semibold text-slate-900">
+                {selectedEnd ? format(selectedEnd, "MMM d, yyyy") : "End"}
+              </span>
+            </div>
+            {selectedStart && selectedEnd && (
+              <div className="text-xs text-slate-600 mt-2">
+                {Math.ceil((selectedEnd.getTime() - selectedStart.getTime()) / (1000 * 60 * 60 * 24))} days selected
               </div>
             )}
           </div>
@@ -182,6 +220,23 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
               </button>
             ))}
           </div>
+
+          {/* Confirmation Summary - Show when both dates are selected */}
+          {selectedStart && selectedEnd && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg opacity-100 transition-opacity duration-300">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <span className="text-sm font-semibold text-green-900">Range Selected</span>
+              </div>
+              <p className="text-sm text-green-800">
+                {format(selectedStart, "MMM d")} – {format(selectedEnd, "MMM d, yyyy")}
+              </p>
+            </div>
+          )}
 
           {/* Quick ranges */}
           <div className="border-t border-slate-200 pt-3 space-y-2">
