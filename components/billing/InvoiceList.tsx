@@ -9,6 +9,7 @@ interface InvoiceListProps {
   isLoading: boolean
   isError: boolean
   onMarkSettled: (invoiceId: string) => void
+  onViewDetails: (invoice: Invoice) => void
   onClearFilters: () => void
   isSettledTab?: boolean
 }
@@ -18,6 +19,7 @@ export function InvoiceList({
   isLoading,
   isError,
   onMarkSettled,
+  onViewDetails,
   onClearFilters,
   isSettledTab,
 }: InvoiceListProps) {
@@ -59,6 +61,7 @@ export function InvoiceList({
           invoice={invoice}
           isSettledTab={isSettledTab}
           onMarkSettled={() => onMarkSettled(invoice.id)}
+          onViewDetails={() => onViewDetails(invoice)}
         />
       ))}
     </div>

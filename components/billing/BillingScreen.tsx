@@ -12,11 +12,14 @@ import { AccountFilterDropdown } from "./AccountFilterDropdown"
 import { InvoiceTabs } from "./InvoiceTabs"
 import { InvoiceList } from "./InvoiceList"
 import { SettleConfirmModal } from "./SettleConfirmModal"
+import { InvoiceDetailModal } from "./InvoiceDetailModal"
 
 export function BillingScreen() {
   const [activeTab, setActiveTab] = useState<"OPEN" | "SETTLED">("OPEN")
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [selectedDetailInvoice, setSelectedDetailInvoice] = useState<Invoice | null>(null)
+  const [showDetailModal, setShowDetailModal] = useState(false)
 
   const { filters, setSearch, setDate, setAccountId, clearFilters } = useBillingFilters()
   const debouncedSearch = useDebounce(filters.search, 300)
@@ -62,6 +65,15 @@ export function BillingScreen() {
   // Counts for tabs
   const openCount = openInvoices?.length ?? 0
   const settledCount = settledInvoices?.length ?? 0
+
+  // Handle view invoice details
+  const handleViewDetails = useCallback(
+    (invoice: Invoice) => {
+      setSelectedDetailInvoice(invoice)
+      setShowDetailModal(true)
+    },
+    []
+  )
 
   // Handle mark as settled
   const handleMarkSettled = useCallback(
@@ -136,6 +148,7 @@ export function BillingScreen() {
           const invoice = currentInvoices?.find((i) => i.id === invoiceId)
           if (invoice) handleMarkSettled(invoice)
         }}
+        onViewDetails={handleViewDetails}
         onClearFilters={clearFilters}
         isSettledTab={activeTab === "SETTLED"}
       />
@@ -150,6 +163,16 @@ export function BillingScreen() {
           setShowConfirmModal(false)
           setSelectedInvoice(null)
         }}
+      />
+
+      {/* Invoice Detail Modal */}
+      <InvoiceDetailModal
+        open={showDetailModal}
+        onClose={() => {
+          setShowDetailModal(false)
+          setSelectedDetailInvoice(null)
+        }}
+        invoice={selectedDetailInvoice}
       />
     </div>
   )

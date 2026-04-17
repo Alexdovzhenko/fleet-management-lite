@@ -6,12 +6,14 @@ import type { Invoice } from "@/types"
 interface InvoiceCardProps {
   invoice: any
   onMarkSettled?: () => void
+  onViewDetails?: () => void
   isSettledTab?: boolean
 }
 
 export function InvoiceCard({
   invoice,
   onMarkSettled,
+  onViewDetails,
   isSettledTab,
 }: InvoiceCardProps) {
   const customerName = invoice.customer?.name || "Unknown"
@@ -24,8 +26,12 @@ export function InvoiceCard({
   const isOpen = invoice.status === "OPEN"
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4 hover:border-slate-300 transition-colors">
-      <div className="flex items-start justify-between gap-3">
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div
+        onClick={onViewDetails}
+        className="p-4 hover:bg-slate-50 cursor-pointer transition-colors"
+      >
+        <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           {/* Client name and reservation */}
           <div className="flex items-center gap-2 mb-1">
@@ -40,7 +46,7 @@ export function InvoiceCard({
           <p className="text-xs text-slate-400">{dispatcherName}</p>
         </div>
 
-        <div className="flex flex-col items-end gap-2 shrink-0">
+          <div className="flex flex-col items-end gap-2 shrink-0">
           {/* Invoice total */}
           <p className="text-xl font-semibold text-slate-900">
             ${parseFloat(invoice.total).toFixed(2)}
@@ -56,6 +62,7 @@ export function InvoiceCard({
           >
             {isOpen ? "Open" : "Settled"}
           </span>
+        </div>
         </div>
       </div>
 
