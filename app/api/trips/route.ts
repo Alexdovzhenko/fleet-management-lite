@@ -41,6 +41,7 @@ const createTripSchema = z.object({
   })).optional(),
   driverId: z.string().optional().nullable(),
   vehicleId: z.string().optional().nullable(),
+  vehicleType: z.enum(["SEDAN", "SUV", "STRETCH_LIMO", "SPRINTER", "PARTY_BUS", "COACH", "OTHER"]).optional().nullable(),
   secondaryDriverId: z.string().optional().nullable(),
   secondaryVehicleId: z.string().optional().nullable(),
   price: z.number().optional(),
@@ -201,6 +202,16 @@ export async function POST(request: NextRequest) {
     // Use client-provided tripNumber if given (pre-displayed to user), otherwise generate one
     const tripNumber = data.tripNumber || await generateUniqueTripNumber()
 
+    // Resolve vehicleType: use provided value or fetch from selected vehicle
+    let vehicleType = data.vehicleType || null
+    if (!vehicleType && data.vehicleId) {
+      const vehicle = await prisma.vehicle.findUnique({
+        where: { id: data.vehicleId },
+        select: { type: true },
+      })
+      vehicleType = vehicle?.type || null
+    }
+
     const trip = await prisma.trip.create({
       data: {
         tripNumber,
@@ -224,6 +235,7 @@ export async function POST(request: NextRequest) {
         additionalPassengers: data.additionalPassengers ?? undefined,
         driverId: data.driverId || null,
         vehicleId: data.vehicleId || null,
+        vehicleType: vehicleType,
         secondaryDriverId: data.secondaryDriverId || null,
         secondaryVehicleId: data.secondaryVehicleId || null,
         price: data.price,

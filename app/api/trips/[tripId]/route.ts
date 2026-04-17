@@ -156,6 +156,16 @@ export async function PUT(
 
     const isOwned = existing.companyId === companyId
 
+    // Resolve vehicleType if vehicleId is being updated and vehicleType not provided
+    let resolvedVehicleType: string | null | undefined = data.vehicleType
+    if (data.vehicleId && !data.vehicleType) {
+      const vehicle = await prisma.vehicle.findUnique({
+        where: { id: data.vehicleId },
+        select: { type: true },
+      })
+      resolvedVehicleType = vehicle?.type || null
+    }
+
     // Farm-in trips: only allow updating dispatch fields and status
     const updateData = isOwned
       ? (() => {
@@ -166,6 +176,7 @@ export async function PUT(
             ...(customerId ? { customerId } : {}),
             ...(additionalPassengers !== undefined ? { additionalPassengers: additionalPassengers ?? [] } : {}),
             ...(billingData !== undefined ? { billingData } : {}),
+            ...(data.vehicleId !== undefined ? { vehicleType: resolvedVehicleType ?? null } : {}),
             pickupDate: data.pickupDate ? new Date(data.pickupDate) : undefined,
             flightArrival: data.flightArrival ? new Date(data.flightArrival) : undefined,
           }
@@ -175,7 +186,7 @@ export async function PUT(
           ...(data.status !== undefined ? { status: data.status, ...extraData } : {}),
           ...(data.driverId !== undefined ? { driverId: data.driverId } : {}),
           ...(data.vehicleType !== undefined ? { vehicleType: data.vehicleType } : {}),
-          ...(data.vehicleId !== undefined ? { vehicleId: data.vehicleId } : {}),
+          ...(data.vehicleId !== undefined ? { vehicleId: data.vehicleId, vehicleType: resolvedVehicleType ?? null } : {}),
           ...(data.secondaryDriverId !== undefined ? { secondaryDriverId: data.secondaryDriverId } : {}),
           ...(data.secondaryVehicleId !== undefined ? { secondaryVehicleId: data.secondaryVehicleId } : {}),
         }
