@@ -55,7 +55,7 @@ export interface PdfTripData {
 
 function formatTripType(t: string) {
   const map: Record<string, string> = {
-    ONE_WAY: "One-Way", ROUND_TRIP: "Round-Trip", HOURLY: "Hourly",
+    ONE_WAY: "One Way", ROUND_TRIP: "Round Trip", HOURLY: "Hourly",
     AIRPORT_PICKUP: "Airport Pickup", AIRPORT_DROPOFF: "Airport Drop-Off",
     MULTI_STOP: "Multi-Stop", SHUTTLE: "Shuttle",
   }
@@ -707,13 +707,13 @@ function InvoiceDoc({ invoice }: { invoice: PdfInvoiceData }) {
                 {invoice.trip?.vehicleType && (
                   <View style={INV.tripCol}>
                     <Text style={INV.tripLabel}>Type</Text>
-                    <Text style={INV.tripValue}>{invoice.trip.vehicleType}</Text>
+                    <Text style={INV.tripValue}>{formatVehicleType(invoice.trip.vehicleType)}</Text>
                   </View>
                 )}
                 {invoice.trip?.tripType && (
                   <View style={INV.tripCol}>
                     <Text style={INV.tripLabel}>Service Type</Text>
-                    <Text style={INV.tripValue}>{invoice.trip.tripType}</Text>
+                    <Text style={INV.tripValue}>{formatTripType(invoice.trip.tripType)}</Text>
                   </View>
                 )}
               </View>
