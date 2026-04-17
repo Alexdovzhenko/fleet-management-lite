@@ -123,18 +123,20 @@ export function InvoicePreview({
                         </div>
                       )}
                     </div>
-                    {trip?.vehicleType && (
-                      <div>
-                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Vehicle Type</div>
-                        <div className="text-slate-900">{trip.vehicleType}</div>
-                      </div>
-                    )}
-                    {trip?.tripType && (
-                      <div>
-                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Service Type</div>
-                        <div className="text-slate-900">{trip.tripType}</div>
-                      </div>
-                    )}
+                    <div className="grid grid-cols-2 gap-4">
+                      {trip?.vehicleType && (
+                        <div>
+                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Type</div>
+                          <div className="text-slate-900">{trip.vehicleType}</div>
+                        </div>
+                      )}
+                      {trip?.tripType && (
+                        <div>
+                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Service Type</div>
+                          <div className="text-slate-900">{trip.tripType}</div>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="space-y-3">
