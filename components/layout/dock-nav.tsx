@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, Reorder, AnimatePresence } from "framer-motion"
-import { LayoutGrid, Users, UserCheck, Car, Settings, Settings2, Plus, X, Network, Bell, Receipt } from "lucide-react"
+import { LayoutGrid, Users, UserCheck, Car, Settings, Settings2, Plus, X, Network, Bell, Receipt, TrendingUp } from "lucide-react"
 import { useDockStore, ALL_DOCK_ITEMS } from "@/lib/stores/dock-store"
 import type { DockItem } from "@/lib/stores/dock-store"
 import type { LucideIcon } from "lucide-react"
@@ -20,6 +20,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Bell,
   Settings,
   Receipt,
+  TrendingUp,
 }
 
 const glassPanel = {
