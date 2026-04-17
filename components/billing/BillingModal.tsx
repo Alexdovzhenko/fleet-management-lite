@@ -31,8 +31,8 @@ interface BillingModalProps {
     pickupTime?: string
     pickupAddress?: string
     dropoffAddress?: string
-    vehicleType?: string
-    tripType?: string
+    vehicleType?: string | null
+    tripType?: string | null
     stops?: Array<{ order: number; address: string; notes?: string | null }>
     customer?: {
       name?: string
@@ -181,7 +181,7 @@ export function BillingModal({
               <InvoicePreview
                 billingData={billingData}
                 invoiceNumber={tripInvoice?.invoiceNumber}
-                trip={trip}
+                trip={trip && tripInvoice?.trip ? { ...trip, ...tripInvoice.trip } : trip}
                 company={company}
               />
             </div>

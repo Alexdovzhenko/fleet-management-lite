@@ -15,8 +15,8 @@ interface InvoicePreviewProps {
     pickupTime?: string
     pickupAddress?: string
     dropoffAddress?: string
-    vehicleType?: string
-    tripType?: string
+    vehicleType?: string | null
+    tripType?: string | null
     stops?: Array<{ order: number; address: string; notes?: string | null }>
   }
   company?: {

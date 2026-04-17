@@ -160,6 +160,15 @@ interface InvoiceData {
     email?: string
     logoUrl?: string
   }
+  trip?: {
+    pickupDate?: string
+    pickupTime?: string
+    pickupAddress?: string
+    dropoffAddress?: string
+    vehicleType?: string | null
+    tripType?: string | null
+    stops?: Array<{ order: number; address: string; notes?: string | null }>
+  }
   lineItems: Array<{
     description: string
     qty: number
