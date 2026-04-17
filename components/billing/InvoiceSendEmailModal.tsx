@@ -1,9 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import {
   Dialog,
   DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,6 +18,7 @@ import {
   Loader2,
   Send,
   ChevronDown,
+  X,
 } from "lucide-react"
 import { useSenderEmails } from "@/lib/hooks/use-sender-emails"
 import { cn } from "@/lib/utils"
@@ -32,6 +36,10 @@ interface InvoiceSendEmailModalProps {
   }
   open: boolean
   onOpenChange: (v: boolean) => void
+}
+
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
 // ─── Sender selector component ───────────────────────────────────────────────
@@ -112,133 +120,249 @@ export function InvoiceSendEmailModal({
   open,
   onOpenChange,
 }: InvoiceSendEmailModalProps) {
+  const [primaryEmail, setPrimaryEmail] = useState("")
+  const [secondaryEmail, setSecondaryEmail] = useState("")
+  const [showCC, setShowCC] = useState(false)
+  const [message, setMessage] = useState("")
   const [senderEmailId, setSenderEmailId] = useState<string>("")
-  const [recipientEmail, setRecipientEmail] = useState("")
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle")
   const [errorMsg, setErrorMsg] = useState("")
+  const [touched, setTouched] = useState({ primary: false, secondary: false })
+  const primaryInputRef = useRef<HTMLInputElement>(null)
 
   const { data: senders = [] } = useSenderEmails()
 
   // Set default sender and recipient email when modal opens
   useEffect(() => {
     if (open) {
-      const defaultSender = senders.find((s) => s.isDefault) ?? senders[0]
-      if (defaultSender) setSenderEmailId(defaultSender.id)
-
       // Pre-fill recipient with passenger email
       const passengerEmail = trip?.passengerEmail || invoice.customer?.email
       if (passengerEmail) {
-        setRecipientEmail(passengerEmail)
+        setPrimaryEmail(passengerEmail)
       }
 
+      setSecondaryEmail("")
+      setShowCC(false)
+      setMessage("")
       setStatus("idle")
       setErrorMsg("")
+      setTouched({ primary: false, secondary: false })
+
+      const defaultSender = senders.find((s) => s.isDefault) ?? senders[0]
+      if (defaultSender) setSenderEmailId(defaultSender.id)
+
+      // Focus primary email input after a short delay
+      setTimeout(() => primaryInputRef.current?.focus(), 100)
     }
   }, [open, senders, trip, invoice])
 
-  const handleSend = async () => {
-    if (!recipientEmail.trim()) {
-      setErrorMsg("Please enter a recipient email")
-      return
-    }
+  // Validation checks
+  const isPrimaryEmailValid = primaryEmail.trim() === "" || isValidEmail(primaryEmail)
+  const isSecondaryEmailValid = secondaryEmail.trim() === "" || isValidEmail(secondaryEmail)
+  const isDuplicateEmail = primaryEmail.trim() && secondaryEmail.trim() && primaryEmail === secondaryEmail
+  const canSubmit = primaryEmail.trim() !== "" && isValidEmail(primaryEmail) && status !== "sending"
 
-    if (status === "sending") return
+  const handlePrimaryBlur = () => {
+    setTouched((prev) => ({ ...prev, primary: true }))
+  }
+
+  const handleSecondaryBlur = () => {
+    setTouched((prev) => ({ ...prev, secondary: true }))
+  }
+
+  const handleRemoveCC = () => {
+    setSecondaryEmail("")
+    setShowCC(false)
+    setTouched((prev) => ({ ...prev, secondary: false }))
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && canSubmit) {
+      handleSend()
+    }
+  }
+
+  const handleSend = async () => {
+    if (!canSubmit) return
+
+    setStatus("sending")
+    setErrorMsg("")
 
     try {
-      setStatus("sending")
-      setErrorMsg("")
-
       const response = await fetch(`/api/trips/${tripId}/invoice/send`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          primaryEmail: recipientEmail.trim(),
+          primaryEmail: primaryEmail.trim(),
+          secondaryEmail: secondaryEmail.trim() ? secondaryEmail.trim() : undefined,
+          message: message.trim() || undefined,
           senderEmailId: senderEmailId || undefined,
         }),
       })
 
       if (!response.ok) {
-        throw new Error("Failed to send invoice")
+        const data = await response.json()
+        throw new Error(data.error || "Failed to send invoice")
       }
 
       setStatus("success")
       toast.success("Invoice sent successfully")
     } catch (error) {
       setStatus("error")
-      const message =
+      const errorMessage =
         error instanceof Error ? error.message : "Failed to send invoice"
-      setErrorMsg(message)
-      toast.error(message)
+      setErrorMsg(errorMessage)
+      toast.error(errorMessage)
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 gap-0 max-w-md overflow-hidden rounded-2xl border border-gray-200 shadow-2xl">
-
-        {/* ── Header ── */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center">
-              <Send className="w-4 h-4 text-blue-600" />
+      <DialogContent className="w-[98vw] max-w-[480px] p-0 gap-0 rounded-[20px] border border-gray-200 shadow-2xl overflow-hidden" showCloseButton={false}>
+        {/* Header */}
+        <DialogHeader className="px-5 py-4 border-b border-gray-100 bg-white">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                <Mail className="w-4 h-4 text-blue-600" />
+              </div>
+              <div>
+                <DialogTitle className="text-sm font-bold text-gray-900">Send Invoice</DialogTitle>
+                <p className="text-[11px] text-gray-400 mt-0.5">
+                  {invoice.invoiceNumber}
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-sm font-bold text-gray-900">Send Invoice Email</h2>
-              <p className="text-[11px] text-gray-400">{invoice.invoiceNumber}</p>
-            </div>
+            <button
+              onClick={() => onOpenChange(false)}
+              className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 active:scale-95 transition-all duration-150"
+              aria-label="Close"
+            >
+              <X className="w-4 h-4" strokeWidth={2} />
+            </button>
           </div>
-        </div>
+        </DialogHeader>
 
-        {/* ── Success state ── */}
+        {/* Content */}
         {status === "success" ? (
-          <div className="px-6 py-10 text-center">
-            <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="px-6 py-10 text-center flex flex-col items-center">
+            <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mb-4">
               <CheckCircle2 className="w-8 h-8 text-emerald-500" />
             </div>
             <h3 className="text-base font-bold text-gray-900 mb-1">Invoice Sent</h3>
-            <p className="text-sm text-gray-400 mb-6">
-              The invoice was sent to <span className="font-medium text-gray-700">{recipientEmail}</span>
+            <p className="text-sm text-gray-500 mb-6">
+              Invoice {invoice.invoiceNumber} was sent to:
+              <br />
+              <span className="font-medium text-gray-700">{primaryEmail}</span>
+              {secondaryEmail && (
+                <>
+                  <br />
+                  <span className="font-medium text-gray-700">{secondaryEmail}</span>
+                </>
+              )}
             </p>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => {
-                  setStatus("idle")
-                  setRecipientEmail("")
-                }}
-              >
-                Send Another
-              </Button>
-              <Button
-                className="flex-1 bg-gray-900 hover:bg-gray-800 text-white"
-                onClick={() => onOpenChange(false)}
-              >
-                Done
-              </Button>
-            </div>
+            <Button
+              onClick={() => onOpenChange(false)}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white h-11 rounded-xl font-semibold"
+            >
+              Done
+            </Button>
           </div>
         ) : (
-          <div className="px-5 py-5 space-y-4">
-
-            {/* ── Recipient Email ── */}
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">Send To</p>
+          <div className="px-5 py-5 space-y-4 max-h-[calc(96vh-200px)] overflow-y-auto">
+            {/* Primary Email */}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-gray-900 uppercase tracking-widest">
+                To <span className="text-red-500">*</span>
+              </Label>
               <Input
+                ref={primaryInputRef}
                 type="email"
-                placeholder="customer@example.com"
-                value={recipientEmail}
-                onChange={(e) => setRecipientEmail(e.target.value)}
-                className="h-10 text-sm"
+                placeholder="recipient@example.com"
+                value={primaryEmail}
+                onChange={(e) => setPrimaryEmail(e.target.value)}
+                onBlur={handlePrimaryBlur}
+                onKeyDown={handleKeyDown}
+                className={cn(
+                  "h-[44px] rounded-xl border text-sm px-3.5 transition-all",
+                  touched.primary && !isValidEmail(primaryEmail)
+                    ? "border-red-300 bg-red-50 focus:ring-2 focus:ring-red-200"
+                    : "border-gray-200 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                )}
               />
-              {trip?.passengerName && (
-                <p className="text-xs text-gray-500 mt-1.5">{trip.passengerName}</p>
+              {touched.primary && primaryEmail && !isValidEmail(primaryEmail) && (
+                <p className="text-xs text-red-600 mt-1">Please enter a valid email address</p>
               )}
             </div>
 
-            {/* ── Sender Email ── */}
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">Sent From (Reply-To)</p>
+            {/* CC Toggle / CC Input */}
+            {!showCC ? (
+              <button
+                type="button"
+                onClick={() => setShowCC(true)}
+                className="text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors px-0 py-1"
+              >
+                + Add CC
+              </button>
+            ) : (
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-gray-900 uppercase tracking-widest">
+                  CC <span className="text-gray-400">(optional)</span>
+                </Label>
+                <div className="relative">
+                  <Input
+                    type="email"
+                    placeholder="another@example.com"
+                    value={secondaryEmail}
+                    onChange={(e) => setSecondaryEmail(e.target.value)}
+                    onBlur={handleSecondaryBlur}
+                    onKeyDown={handleKeyDown}
+                    className={cn(
+                      "h-[44px] rounded-xl border text-sm px-3.5 pr-10 transition-all",
+                      touched.secondary && !isValidEmail(secondaryEmail) && secondaryEmail
+                        ? "border-red-300 bg-red-50 focus:ring-2 focus:ring-red-200"
+                        : isDuplicateEmail
+                        ? "border-amber-300 bg-amber-50 focus:ring-2 focus:ring-amber-200"
+                        : "border-gray-200 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    )}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveCC}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                {isDuplicateEmail && (
+                  <p className="text-xs text-amber-700">Email addresses must be different</p>
+                )}
+                {touched.secondary && secondaryEmail && !isValidEmail(secondaryEmail) && (
+                  <p className="text-xs text-red-600">Please enter a valid email address</p>
+                )}
+              </div>
+            )}
+
+            {/* Message */}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-gray-900 uppercase tracking-widest">
+                Message <span className="text-gray-400">(optional)</span>
+              </Label>
+              <textarea
+                placeholder="Add a message (optional)"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
+                rows={3}
+                className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm bg-white resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              />
+            </div>
+
+            {/* Sent From (Reply-To) */}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium text-gray-900 uppercase tracking-widest">
+                Sent From (Reply-To)
+              </Label>
               {senders.length > 0 ? (
                 <SenderSelector
                   senders={senders}
@@ -250,42 +374,59 @@ export function InvoiceSendEmailModal({
                   <p className="text-xs text-gray-400">Loading sender emails…</p>
                 </div>
               )}
-              <p className="text-[11px] text-gray-400 mt-1.5 leading-snug">
+              <p className="text-[11px] text-gray-400 leading-snug">
                 Replies from recipients will go to this address.
               </p>
             </div>
 
-            {/* ── Error state ── */}
+            {/* Attachment Badge */}
+            <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-blue-50 border border-blue-100">
+              <span className="text-sm">📎</span>
+              <span className="text-sm text-blue-700 font-medium">
+                Invoice PDF attached
+              </span>
+            </div>
+
+            {/* Error Banner */}
             {status === "error" && errorMsg && (
               <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-red-50 border border-red-200">
                 <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-red-700">{errorMsg}</p>
               </div>
             )}
-
-            {/* ── Send button ── */}
-            <Button
-              type="button"
-              className="w-full h-11 font-semibold text-sm bg-blue-600 hover:bg-blue-700 text-white transition-all"
-              disabled={!recipientEmail.trim() || status === "sending"}
-              onClick={handleSend}
-            >
-              {status === "sending" ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Sending…
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <Send className="w-4 h-4" />
-                  Send Invoice
-                </span>
-              )}
-            </Button>
-
           </div>
         )}
 
+        {/* Footer */}
+        {status !== "success" && (
+          <DialogFooter className="px-5 py-6 border-t border-gray-100 bg-white flex items-center justify-between">
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={status === "sending"}
+              className="rounded-lg border-gray-300 h-11 px-6 text-sm font-medium hover:bg-gray-50"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSend}
+              disabled={!canSubmit}
+              className="gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white rounded-lg h-11 px-6 text-sm font-medium active:scale-[0.97] transition-all duration-150"
+            >
+              {status === "sending" ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Sending…
+                </>
+              ) : (
+                <>
+                  <Mail className="w-4 h-4" />
+                  Send Invoice
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   )
