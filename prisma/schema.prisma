@@ -59,6 +59,7 @@ model Company {
   addresses        CompanyAddress[]
   quoteRequests    QuoteRequest[]
   senderEmails     SenderEmail[]
+  expenses         Expense[] @relation("CompanyExpenses")
 }
 
 model CompanyAddress {
@@ -180,6 +181,7 @@ model Vehicle {
   trips          Trip[] @relation("PrimaryVehicle")
   secondaryTrips Trip[] @relation("SecondaryVehicle")
   defaultDrivers Driver[] @relation("DefaultDriver")
+  expenses       Expense[] @relation("VehicleExpenses")
 
   @@index([companyId])
 }
@@ -454,6 +456,41 @@ enum InvoiceStatus {
   CANCELLED
   OPEN
   SETTLED
+}
+
+// ============ EXPENSES ============
+
+model Expense {
+  id            String        @id @default(cuid())
+  companyId     String
+  company       Company       @relation("CompanyExpenses", fields: [companyId], references: [id])
+
+  category      ExpenseCategory
+  subcategory   String        // "Insurance", "Gas", "Driver Salary", "Maintenance", etc.
+  amount        Decimal       @db.Decimal(10, 2)
+  date          DateTime      // When the expense occurred
+
+  vehicleId     String?       // null = company-wide expense
+  vehicle       Vehicle?      @relation("VehicleExpenses", fields: [vehicleId], references: [id])
+
+  // For recurring (fixed) expenses
+  isRecurring   Boolean       @default(false)
+  recurrenceDay Int?          // Day of month (1-31) to recur on
+  lastRecurredAt DateTime?    // Track last recurrence
+
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([companyId, date])
+  @@index([companyId, category])
+  @@index([vehicleId])
+  @@index([isRecurring])
+}
+
+enum ExpenseCategory {
+  FIXED      // Insurance, car payments, maintenance contracts
+  VARIABLE   // Gas, driver salaries, repairs, tolls
 }
 
 // ============ SETTINGS ============

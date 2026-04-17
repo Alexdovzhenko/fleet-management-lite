@@ -498,3 +498,24 @@ export interface QuoteRequest {
   createdAt: string
   updatedAt: string
 }
+
+// ============ EXPENSES ============
+
+export type ExpenseCategory = 'FIXED' | 'VARIABLE'
+
+export interface Expense {
+  id: string
+  companyId: string
+  category: ExpenseCategory
+  subcategory: string
+  amount: string
+  date: string
+  vehicleId?: string | null
+  vehicle?: Vehicle | null
+  isRecurring: boolean
+  recurrenceDay?: number | null
+  lastRecurredAt?: string | null
+  notes?: string | null
+  createdAt: string
+  updatedAt: string
+}
