@@ -108,7 +108,6 @@ export function BillingModal({
         }
       }
       setIsDirty(false)
-      onClose()
     } catch (error) {
       console.error("Failed to save billing data:", error)
     }
