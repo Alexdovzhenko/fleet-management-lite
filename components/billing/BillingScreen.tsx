@@ -22,7 +22,7 @@ export function BillingScreen() {
   const [selectedDetailInvoice, setSelectedDetailInvoice] = useState<Invoice | null>(null)
   const [showDetailModal, setShowDetailModal] = useState(false)
 
-  const { filters, setSearch, setDate, setAccountId, clearFilters } = useBillingFilters()
+  const { filters, setSearch, setDateRange, setAccountId, clearFilters } = useBillingFilters()
   const debouncedSearch = useDebounce(filters.search, 300)
 
   // Build filters for API
@@ -104,7 +104,7 @@ export function BillingScreen() {
     })
   }, [selectedInvoice, settleInvoice, openCount])
 
-  const hasActiveFilters = filters.search || filters.date || filters.accountId
+  const hasActiveFilters = filters.search || filters.dateStart || filters.dateEnd || filters.accountId
 
   return (
     <div className="flex flex-col h-full bg-slate-50/50">
@@ -124,7 +124,11 @@ export function BillingScreen() {
 
           {/* Filter Chips */}
           <div className="flex items-center gap-2 flex-wrap">
-            <BillingDatePicker value={filters.date} onChange={setDate} />
+            <BillingDatePicker
+              startDate={filters.dateStart}
+              endDate={filters.dateEnd}
+              onChange={setDateRange}
+            />
             <AccountFilterDropdown
               accounts={dropdownAccounts}
               value={filters.accountId}

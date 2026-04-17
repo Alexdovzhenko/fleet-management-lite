@@ -11,7 +11,8 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const status = searchParams.get("status") as "OPEN" | "SETTLED" | null
     const search = searchParams.get("search")
-    const date = searchParams.get("date")
+    const dateStart = searchParams.get("dateStart")
+    const dateEnd = searchParams.get("dateEnd")
     const accountId = searchParams.get("accountId")
 
     // Build where clause
@@ -38,17 +39,23 @@ export async function GET(request: NextRequest) {
       ]
     }
 
-    // Filter by date (pickup date of trip)
-    if (date) {
-      const targetDate = new Date(date)
-      const nextDay = new Date(targetDate)
-      nextDay.setDate(nextDay.getDate() + 1)
+    // Filter by date range (pickup date of trip)
+    if (dateStart || dateEnd) {
+      const dateFilter: any = {}
+
+      if (dateStart) {
+        dateFilter.gte = new Date(dateStart)
+      }
+
+      if (dateEnd) {
+        const endDate = new Date(dateEnd)
+        endDate.setDate(endDate.getDate() + 1) // Include entire end date
+        dateFilter.lt = endDate
+      }
+
       whereClause.trip = {
         ...whereClause.trip,
-        pickupDate: {
-          gte: targetDate,
-          lt: nextDay,
-        },
+        pickupDate: dateFilter,
       }
     }
 

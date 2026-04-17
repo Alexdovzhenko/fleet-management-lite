@@ -11,7 +11,8 @@ export function useBillingInvoices(status: "OPEN" | "SETTLED", filters: BillingF
       const params = new URLSearchParams({
         status,
         ...(filters.search && { search: filters.search }),
-        ...(filters.date && { date: filters.date }),
+        ...(filters.dateStart && { dateStart: filters.dateStart }),
+        ...(filters.dateEnd && { dateEnd: filters.dateEnd }),
         ...(filters.accountId && { accountId: filters.accountId }),
       })
 

@@ -2,14 +2,16 @@ import { useState, useCallback } from "react"
 
 export interface BillingFilters {
   search: string
-  date: string | null
+  dateStart: string | null
+  dateEnd: string | null
   accountId: string | null
 }
 
 export function useBillingFilters() {
   const [filters, setFilters] = useState<BillingFilters>({
     search: "",
-    date: null,
+    dateStart: null,
+    dateEnd: null,
     accountId: null,
   })
 
@@ -17,8 +19,8 @@ export function useBillingFilters() {
     setFilters((prev) => ({ ...prev, search }))
   }, [])
 
-  const setDate = useCallback((date: string | null) => {
-    setFilters((prev) => ({ ...prev, date }))
+  const setDateRange = useCallback((startDate: string | null, endDate: string | null) => {
+    setFilters((prev) => ({ ...prev, dateStart: startDate, dateEnd: endDate }))
   }, [])
 
   const setAccountId = useCallback((accountId: string | null) => {
@@ -28,7 +30,8 @@ export function useBillingFilters() {
   const clearFilters = useCallback(() => {
     setFilters({
       search: "",
-      date: null,
+      dateStart: null,
+      dateEnd: null,
       accountId: null,
     })
   }, [])
@@ -36,7 +39,7 @@ export function useBillingFilters() {
   return {
     filters,
     setSearch,
-    setDate,
+    setDateRange,
     setAccountId,
     clearFilters,
   }
