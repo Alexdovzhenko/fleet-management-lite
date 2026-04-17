@@ -109,18 +109,20 @@ export function InvoicePreview({
               <div className="border-t border-slate-200 pt-6">
                 <div className="grid grid-cols-2 gap-6 text-sm">
                   <div className="space-y-3">
-                    {trip?.pickupDate && (
-                      <div>
-                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Pickup Date</div>
-                        <div className="text-slate-900">{new Date(trip.pickupDate).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</div>
-                      </div>
-                    )}
-                    {trip?.pickupTime && (
-                      <div>
-                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Pickup Time</div>
-                        <div className="text-slate-900">{trip.pickupTime}</div>
-                      </div>
-                    )}
+                    <div className="grid grid-cols-2 gap-4">
+                      {trip?.pickupDate && (
+                        <div>
+                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Pickup Date</div>
+                          <div className="text-slate-900">{new Date(trip.pickupDate).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</div>
+                        </div>
+                      )}
+                      {trip?.pickupTime && (
+                        <div>
+                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Pickup Time</div>
+                          <div className="text-slate-900">{trip.pickupTime}</div>
+                        </div>
+                      )}
+                    </div>
                     {trip?.vehicleType && (
                       <div>
                         <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Vehicle Type</div>
