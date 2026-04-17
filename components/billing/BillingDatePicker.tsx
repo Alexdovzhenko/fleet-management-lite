@@ -16,6 +16,7 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
   const [selectedStart, setSelectedStart] = useState<Date | null>(startDate ? new Date(startDate) : null)
   const [selectedEnd, setSelectedEnd] = useState<Date | null>(endDate ? new Date(endDate) : null)
   const [selectionMode, setSelectionMode] = useState<"start" | "end">("start")
+  const [dateMode, setDateMode] = useState<"single" | "range">(endDate && startDate !== endDate ? "range" : "single")
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Close dropdown when clicking outside
@@ -33,6 +34,17 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
   }, [isOpen])
 
   const handleDayClick = (day: Date) => {
+    if (dateMode === "single") {
+      // Single date mode: select and close
+      setSelectedStart(day)
+      setSelectedEnd(day)
+      const dateStr = format(day, "yyyy-MM-dd")
+      onChange(dateStr, dateStr)
+      setIsOpen(false)
+      return
+    }
+
+    // Range mode logic
     if (selectionMode === "start") {
       setSelectedStart(day)
       setSelectionMode("end")
@@ -138,44 +150,103 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
 
       {isOpen && (
         <div className="absolute top-full left-0 mt-2 z-50 bg-white border border-slate-200 rounded-xl shadow-lg p-4 w-80">
-          {/* Progress Indicator */}
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide">
-                Step {selectionMode === "start" ? "1" : "2"}/2
-              </div>
-              <div className="text-xs font-medium text-slate-500">
-                {selectionMode === "start" ? "Select Start Date" : "Select End Date"}
-              </div>
-            </div>
-            {/* Progress bar */}
-            <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-blue-600 transition-all duration-300 ease-out"
-                style={{ width: selectionMode === "start" ? "50%" : "100%" }}
-              />
-            </div>
+          {/* Date Mode Selector */}
+          <div className="mb-4 flex gap-2">
+            <button
+              onClick={() => {
+                setDateMode("single")
+                setSelectionMode("start")
+                setSelectedEnd(null)
+              }}
+              className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                dateMode === "single"
+                  ? "bg-blue-600 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              }`}
+            >
+              Single Date
+            </button>
+            <button
+              onClick={() => {
+                setDateMode("range")
+                setSelectionMode("start")
+              }}
+              className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                dateMode === "range"
+                  ? "bg-blue-600 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              }`}
+            >
+              Date Range
+            </button>
           </div>
 
-          {/* Date Range Display */}
-          <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-slate-50 rounded-lg border border-blue-100">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1">
-                <span className="text-sm font-semibold text-slate-900">
-                  {selectedStart ? format(selectedStart, "MMM d") : "Start"}
-                </span>
-                <Arrow className="w-4 h-4 text-slate-400" />
+          {/* Progress Indicator (Range mode only) */}
+          {dateMode === "range" && (
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                  Step {selectionMode === "start" ? "1" : "2"}/2
+                </div>
+                <div className="text-xs font-medium text-slate-500">
+                  {selectionMode === "start" ? "Select Start Date" : "Select End Date"}
+                </div>
               </div>
-              <span className="text-sm font-semibold text-slate-900">
-                {selectedEnd ? format(selectedEnd, "MMM d, yyyy") : "End"}
-              </span>
+              {/* Progress bar */}
+              <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-blue-600 transition-all duration-300 ease-out"
+                  style={{ width: selectionMode === "start" ? "50%" : "100%" }}
+                />
+              </div>
             </div>
-            {selectedStart && selectedEnd && (
-              <div className="text-xs text-slate-600 mt-2">
-                {Math.ceil((selectedEnd.getTime() - selectedStart.getTime()) / (1000 * 60 * 60 * 24))} days selected
+          )}
+
+          {/* Date Display */}
+          {selectedStart && (
+            <div className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-slate-50 rounded-lg border border-blue-100">
+              <div className="flex items-center justify-between">
+                {dateMode === "single" ? (
+                  <span className="text-sm font-semibold text-slate-900">
+                    {format(selectedStart, "MMM d, yyyy")}
+                  </span>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-1">
+                      <span className="text-sm font-semibold text-slate-900">
+                        {format(selectedStart, "MMM d")}
+                      </span>
+                      <Arrow className="w-4 h-4 text-slate-400" />
+                    </div>
+                    <span className="text-sm font-semibold text-slate-900">
+                      {selectedEnd ? format(selectedEnd, "MMM d, yyyy") : "End"}
+                    </span>
+                  </>
+                )}
               </div>
-            )}
-          </div>
+              {selectedStart && selectedEnd && dateMode === "range" && (
+                <div className="text-xs text-slate-600 mt-2">
+                  {Math.ceil((selectedEnd.getTime() - selectedStart.getTime()) / (1000 * 60 * 60 * 24))} days selected
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Clear Button */}
+          {selectedStart && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                setSelectedStart(null)
+                setSelectedEnd(null)
+                setSelectionMode("start")
+                onChange(null, null)
+              }}
+              className="w-full mb-4 px-3 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200"
+            >
+              Clear Selection
+            </button>
+          )}
 
           {/* Calendar Navigation */}
           <div className="flex items-center justify-between mb-4">
@@ -221,8 +292,8 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
             ))}
           </div>
 
-          {/* Confirmation Summary - Show when both dates are selected */}
-          {selectedStart && selectedEnd && (
+          {/* Confirmation Summary - Show when range mode with both dates selected */}
+          {dateMode === "range" && selectedStart && selectedEnd && (
             <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg opacity-100 transition-opacity duration-300">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center">
