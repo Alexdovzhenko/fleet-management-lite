@@ -27,6 +27,40 @@ interface InvoicePreviewProps {
   }
 }
 
+// Helper function to format phone number
+function formatPhoneNumber(phone: string | undefined): string {
+  if (!phone) return ""
+  const cleaned = phone.replace(/\D/g, "")
+  if (cleaned.length === 10) {
+    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`
+  }
+  return phone
+}
+
+// Helper function to format trip type
+function formatTripType(tripType: string | undefined): string {
+  if (!tripType) return ""
+  return tripType
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ")
+}
+
+// Helper function to format vehicle type
+function formatVehicleType(vehicleType: string | undefined): string {
+  if (!vehicleType) return ""
+  const vehicleMap: Record<string, string> = {
+    SEDAN: "Sedan",
+    SUV: "SUV",
+    STRETCH_LIMO: "Stretch Limo",
+    SPRINTER: "Sprinter",
+    PARTY_BUS: "Party Bus",
+    COACH: "Coach",
+    OTHER: "Vehicle",
+  }
+  return vehicleMap[vehicleType] || vehicleType
+}
+
 export function InvoicePreview({
   billingData,
   invoiceNumber,
@@ -89,7 +123,7 @@ export function InvoicePreview({
                 <div className="text-slate-600 space-y-1">
                   {company?.address && <div>{company.address}</div>}
                   <div className="flex gap-3">
-                    {company?.phone && <div>{company.phone}</div>}
+                    {company?.phone && <div>{formatPhoneNumber(company.phone)}</div>}
                     {company?.email && <div>{company.email}</div>}
                   </div>
                 </div>
@@ -101,7 +135,7 @@ export function InvoicePreview({
                 <div className="text-slate-600 space-y-1">
                   {trip?.passengerName && <div>{trip.passengerName}</div>}
                   {trip?.passengerEmail && <div className="text-xs">{trip.passengerEmail}</div>}
-                  {trip?.passengerPhone && <div className="text-xs">{trip.passengerPhone}</div>}
+                  {trip?.passengerPhone && <div className="text-xs">{formatPhoneNumber(trip.passengerPhone)}</div>}
                 </div>
               </div>
             </div>
@@ -126,16 +160,16 @@ export function InvoicePreview({
                       )}
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      {trip?.vehicleType && (
-                        <div>
-                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Type</div>
-                          <div className="text-slate-900">{trip.vehicleType}</div>
-                        </div>
-                      )}
                       {trip?.tripType && (
                         <div>
                           <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Service Type</div>
-                          <div className="text-slate-900">{trip.tripType}</div>
+                          <div className="text-slate-900">{formatTripType(trip.tripType)}</div>
+                        </div>
+                      )}
+                      {trip?.vehicleType && (
+                        <div>
+                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Type</div>
+                          <div className="text-slate-900">{formatVehicleType(trip.vehicleType)}</div>
                         </div>
                       )}
                     </div>
