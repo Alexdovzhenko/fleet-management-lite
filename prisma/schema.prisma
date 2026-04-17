@@ -60,6 +60,7 @@ model Company {
   quoteRequests    QuoteRequest[]
   senderEmails     SenderEmail[]
   expenses         Expense[] @relation("CompanyExpenses")
+  expenseTemplates ExpenseTemplate[] @relation("CompanyExpenseTemplates")
 }
 
 model CompanyAddress {
@@ -182,6 +183,7 @@ model Vehicle {
   secondaryTrips Trip[] @relation("SecondaryVehicle")
   defaultDrivers Driver[] @relation("DefaultDriver")
   expenses       Expense[] @relation("VehicleExpenses")
+  expenseTemplates ExpenseTemplate[] @relation("VehicleExpenseTemplates")
 
   @@index([companyId])
 }
@@ -491,6 +493,27 @@ model Expense {
 enum ExpenseCategory {
   FIXED      // Insurance, car payments, maintenance contracts
   VARIABLE   // Gas, driver salaries, repairs, tolls
+}
+
+model ExpenseTemplate {
+  id            String        @id @default(cuid())
+  companyId     String
+  company       Company       @relation("CompanyExpenseTemplates", fields: [companyId], references: [id])
+
+  name          String        // "Gas for Sedan", "Monthly Insurance", etc.
+  category      ExpenseCategory
+  subcategory   String
+  defaultAmount Decimal       @db.Decimal(10, 2)
+  vehicleId     String?       // null = company-wide
+  vehicle       Vehicle?      @relation("VehicleExpenseTemplates", fields: [vehicleId], references: [id])
+
+  usageCount    Int           @default(0)
+  lastUsedAt    DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([companyId])
+  @@index([vehicleId])
 }
 
 // ============ SETTINGS ============

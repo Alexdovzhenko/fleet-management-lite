@@ -519,3 +519,18 @@ export interface Expense {
   createdAt: string
   updatedAt: string
 }
+
+export interface ExpenseTemplate {
+  id: string
+  companyId: string
+  name: string
+  category: ExpenseCategory
+  subcategory: string
+  defaultAmount: string
+  vehicleId?: string | null
+  vehicle?: { id: string; name: string } | null
+  usageCount: number
+  lastUsedAt?: string | null
+  createdAt: string
+  updatedAt: string
+}

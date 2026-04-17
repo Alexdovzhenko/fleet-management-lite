@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import type { Expense } from "@/types"
+import type { Expense, ExpenseTemplate } from "@/types"
 
 export interface EarningsSummary {
   period: { start: string; end: string }
@@ -207,5 +207,94 @@ export function useExpensesList(
     },
     enabled: !!startDate && !!endDate,
     staleTime: 5 * 60_000,
+  })
+}
+
+// Expense Templates
+
+export function useExpenseTemplates() {
+  return useQuery({
+    queryKey: ["expense-templates"],
+    queryFn: async () => {
+      const response = await fetch("/api/expense-templates")
+      if (!response.ok) throw new Error("Failed to fetch templates")
+      return response.json() as Promise<ExpenseTemplate[]>
+    },
+    staleTime: 10 * 60_000,
+  })
+}
+
+export function useCreateTemplateMutation() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (data: {
+      name: string
+      category: "FIXED" | "VARIABLE"
+      subcategory: string
+      defaultAmount: string
+      vehicleId?: string | null
+    }) => {
+      const response = await fetch("/api/expense-templates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+
+      if (!response.ok) throw new Error("Failed to create template")
+      return response.json() as Promise<ExpenseTemplate>
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["expense-templates"] })
+    },
+  })
+}
+
+export function useUseTemplateMutation() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({
+      templateId,
+      date,
+      amount,
+    }: {
+      templateId: string
+      date?: string
+      amount?: string
+    }) => {
+      const response = await fetch(`/api/expense-templates/${templateId}/use`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date, amount }),
+      })
+
+      if (!response.ok) throw new Error("Failed to use template")
+      return response.json() as Promise<Expense>
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["expenses-list"] })
+      queryClient.invalidateQueries({ queryKey: ["expense-templates"] })
+      queryClient.invalidateQueries({ queryKey: ["earnings-breakdown"] })
+      queryClient.invalidateQueries({ queryKey: ["earnings-summary"] })
+    },
+  })
+}
+
+export function useDeleteTemplateMutation() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (templateId: string) => {
+      const response = await fetch(`/api/expense-templates/${templateId}`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) throw new Error("Failed to delete template")
+      return response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["expense-templates"] })
+    },
   })
 }
