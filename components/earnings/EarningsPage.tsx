@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { useEarningsSummary, useEarningsBreakdown } from "@/lib/hooks/use-earnings"
 import { format, subDays } from "date-fns"
 import { MetricCard } from "./MetricCard"
@@ -51,34 +52,80 @@ export function EarningsPage() {
           </div>
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <MetricCard
-              icon="💰"
-              label="Total Revenue"
-              value={summary?.metrics.totalRevenue ?? 0}
-              trend={summary?.deltas.revenue}
-              isLoading={summaryLoading}
-            />
-            <MetricCard
-              icon="✅"
-              label="Collected"
-              value={summary?.metrics.collectedRevenue ?? 0}
-              isLoading={summaryLoading}
-            />
-            <MetricCard
-              icon="⏳"
-              label="Pending"
-              value={summary?.metrics.uncollectedRevenue ?? 0}
-              isLoading={summaryLoading}
-            />
-            <MetricCard
-              icon="📉"
-              label="Total Expenses"
-              value={summary?.metrics.totalExpenses ?? 0}
-              trend={summary?.deltas.expenses}
-              isLoading={summaryLoading}
-            />
-          </div>
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.1,
+                  delayChildren: 0.2,
+                },
+              },
+            }}
+          >
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 },
+              }}
+              transition={{ duration: 0.4 }}
+            >
+              <MetricCard
+                icon="💰"
+                label="Total Revenue"
+                value={summary?.metrics.totalRevenue ?? 0}
+                trend={summary?.deltas.revenue}
+                isLoading={summaryLoading}
+              />
+            </motion.div>
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 },
+              }}
+              transition={{ duration: 0.4 }}
+            >
+              <MetricCard
+                icon="✅"
+                label="Collected"
+                value={summary?.metrics.collectedRevenue ?? 0}
+                isLoading={summaryLoading}
+              />
+            </motion.div>
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 },
+              }}
+              transition={{ duration: 0.4 }}
+            >
+              <MetricCard
+                icon="⏳"
+                label="Pending"
+                value={summary?.metrics.uncollectedRevenue ?? 0}
+                isLoading={summaryLoading}
+              />
+            </motion.div>
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0 },
+              }}
+              transition={{ duration: 0.4 }}
+            >
+              <MetricCard
+                icon="📉"
+                label="Total Expenses"
+                value={summary?.metrics.totalExpenses ?? 0}
+                trend={summary?.deltas.expenses}
+                isLoading={summaryLoading}
+              />
+            </motion.div>
+          </motion.div>
 
           {/* Time Range Selector */}
           <TimeRangeSelector onRangeChange={handleRangeChange} />
@@ -107,18 +154,28 @@ export function EarningsPage() {
       {/* Tab Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="px-6 py-6">
-          {activeTab === "overview" && (
-            <OverviewTab data={breakdown} isLoading={breakdownLoading} />
-          )}
-          {activeTab === "expenses" && (
-            <ExpensesTab data={breakdown} isLoading={breakdownLoading} startDate={startDate} endDate={endDate} />
-          )}
-          {activeTab === "fleet" && (
-            <FleetTab data={breakdown} isLoading={breakdownLoading} />
-          )}
-          {activeTab === "compare" && (
-            <CompareTab startDate={startDate} endDate={endDate} />
-          )}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              {activeTab === "overview" && (
+                <OverviewTab data={breakdown} isLoading={breakdownLoading} />
+              )}
+              {activeTab === "expenses" && (
+                <ExpensesTab data={breakdown} isLoading={breakdownLoading} startDate={startDate} endDate={endDate} />
+              )}
+              {activeTab === "fleet" && (
+                <FleetTab data={breakdown} isLoading={breakdownLoading} />
+              )}
+              {activeTab === "compare" && (
+                <CompareTab startDate={startDate} endDate={endDate} />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>
