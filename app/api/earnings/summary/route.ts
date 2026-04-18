@@ -41,36 +41,50 @@ export async function GET(request: NextRequest) {
     })
 
     // Current period metrics
-    const [invoices, expenses] = await Promise.all([
-      prisma.invoice.findMany({
-        where: {
-          companyId,
-          OR: [
-            {
-              trip: {
-                pickupDate: {
-                  gte: startDate,
-                  lt: endDate,
-                },
-              },
-            },
-            {
-              tripId: null,
-              createdAt: {
-                gte: startDate,
-                lt: endDate,
-              },
-            },
-          ],
+    // Query invoices with trips that have pickupDate in range
+    const invoicesWithTrips = await prisma.invoice.findMany({
+      where: {
+        companyId,
+        tripId: { not: null },
+        trip: {
+          pickupDate: {
+            gte: startDate,
+            lt: endDate,
+          },
         },
-        select: {
-          status: true,
-          total: true,
-          paidAt: true,
-          tripId: true,
-          createdAt: true,
+      },
+      select: {
+        status: true,
+        total: true,
+        paidAt: true,
+        tripId: true,
+        createdAt: true,
+      },
+    })
+
+    // Query standalone invoices created in date range
+    const standaloneInvoices = await prisma.invoice.findMany({
+      where: {
+        companyId,
+        tripId: null,
+        createdAt: {
+          gte: startDate,
+          lt: endDate,
         },
-      }),
+      },
+      select: {
+        status: true,
+        total: true,
+        paidAt: true,
+        tripId: true,
+        createdAt: true,
+      },
+    })
+
+    const invoices = [...invoicesWithTrips, ...standaloneInvoices]
+
+    const [_, expenses] = await Promise.all([
+      Promise.resolve(undefined),
       prisma.expense.findMany({
         where: {
           companyId,

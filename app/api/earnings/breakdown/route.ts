@@ -119,21 +119,25 @@ async function getOverviewData(
     .sort((a, b) => a.date.localeCompare(b.date))
 
   // Calculate collection metrics
-  const invoices = await prisma.invoice.findMany({
+  const invoicesWithTrips = await prisma.invoice.findMany({
     where: {
       companyId,
-      OR: [
-        {
-          trip: { pickupDate: { gte: startDate, lt: endDate } },
-        },
-        {
-          tripId: null,
-          createdAt: { gte: startDate, lt: endDate },
-        },
-      ],
+      tripId: { not: null },
+      trip: { pickupDate: { gte: startDate, lt: endDate } },
     },
     select: { total: true, status: true },
   })
+
+  const standaloneInvoices = await prisma.invoice.findMany({
+    where: {
+      companyId,
+      tripId: null,
+      createdAt: { gte: startDate, lt: endDate },
+    },
+    select: { total: true, status: true },
+  })
+
+  const invoices = [...invoicesWithTrips, ...standaloneInvoices]
 
   const collected = invoices
     .filter((inv) => inv.status === "PAID" || inv.status === "SETTLED")
