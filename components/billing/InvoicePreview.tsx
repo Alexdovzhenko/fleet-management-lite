@@ -17,7 +17,7 @@ interface InvoicePreviewProps {
     dropoffAddress?: string
     vehicleType?: string | null
     tripType?: string | null
-    stops?: Array<{ order: number; address: string; notes?: string | null }>
+    stops?: Array<{ order: number; address: string; notes?: string | null; role?: string | null }>
   }
   company?: {
     name?: string
@@ -60,6 +60,18 @@ function formatVehicleType(vehicleType: string | undefined): string {
     OTHER: "Vehicle",
   }
   return vehicleMap[vehicleType] || vehicleType
+}
+
+// Helper function to format stop role/type
+function formatStopLabel(role: string | null | undefined): string {
+  if (!role) return "Stop"
+  const roleMap: Record<string, string> = {
+    pickup: "Pickup",
+    drop_off: "Drop-off",
+    stop: "Stop",
+    wait: "Wait",
+  }
+  return roleMap[role.toLowerCase()] || role
 }
 
 export function InvoicePreview({
@@ -178,70 +190,41 @@ export function InvoicePreview({
             )}
 
             {/* Unified Trip Route Section */}
-            {(trip?.pickupAddress || trip?.dropoffAddress || (trip?.stops && trip.stops.length > 0)) && (
+            {trip?.stops && trip.stops.length > 0 && (
               <div className="border-t border-slate-200 pt-6">
                 <h3 className="text-sm font-semibold text-slate-900 mb-6">Trip Route</h3>
 
                 <div className="space-y-4">
-                  {/* Pickup */}
-                  {trip?.pickupAddress && (
-                    <div className="flex gap-4">
-                      <div className="flex flex-col items-center flex-shrink-0">
-                        <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-900">
-                          1
-                        </div>
-                        {(trip?.stops && trip.stops.length > 0) || trip?.dropoffAddress ? (
-                          <div className="w-0.5 h-6 bg-slate-300 mt-2"></div>
-                        ) : null}
-                      </div>
-                      <div className="pb-2">
-                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Pickup</div>
-                        <div className="text-sm text-slate-900">{trip.pickupAddress}</div>
-                      </div>
-                    </div>
-                  )}
+                  {trip.stops.map((stop, idx) => {
+                    const isPickup = stop.role?.toLowerCase() === "pickup"
+                    const isDropoff = stop.role?.toLowerCase() === "drop_off"
+                    const isWait = stop.role?.toLowerCase() === "wait"
 
-                  {/* Intermediate Stops */}
-                  {trip?.stops && trip.stops.length > 0 && (
-                    <>
-                      {trip.stops.map((stop, idx) => (
-                        <div key={stop.order} className="flex gap-4">
-                          <div className="flex flex-col items-center flex-shrink-0">
-                            <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center text-xs font-bold text-amber-900">
-                              {idx + 2}
-                            </div>
-                            {idx < (trip.stops?.length ?? 0) - 1 || trip?.dropoffAddress ? (
-                              <div className="w-0.5 h-6 bg-slate-300 mt-2"></div>
-                            ) : null}
-                          </div>
-                          <div className="pb-2">
-                            <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
-                              Stop {stop.order}
-                            </div>
-                            <div className="text-sm text-slate-900">{stop.address}</div>
-                            {stop.notes && (
-                              <div className="text-xs text-slate-600 mt-1">Note: {stop.notes}</div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                  )}
+                    const badgeColor = isPickup ? "bg-blue-100 text-blue-900" : isDropoff ? "bg-slate-200 text-slate-700" : isWait ? "bg-amber-100 text-amber-900" : "bg-amber-100 text-amber-900"
+                    const badgeNum = idx + 1
 
-                  {/* Dropoff */}
-                  {trip?.dropoffAddress && trip?.dropoffAddress !== trip?.pickupAddress && (
-                    <div className="flex gap-4">
-                      <div className="flex flex-col items-center flex-shrink-0">
-                        <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-700">
-                          {(trip?.stops?.length ?? 0) + 2}
+                    return (
+                      <div key={stop.order} className="flex gap-4">
+                        <div className="flex flex-col items-center flex-shrink-0">
+                          <div className={`w-7 h-7 rounded-full ${badgeColor} flex items-center justify-center text-xs font-bold`}>
+                            {badgeNum}
+                          </div>
+                          {idx < (trip.stops?.length ?? 0) - 1 ? (
+                            <div className="w-0.5 h-6 bg-slate-300 mt-2"></div>
+                          ) : null}
+                        </div>
+                        <div className="pb-2">
+                          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+                            {formatStopLabel(stop.role)}
+                          </div>
+                          <div className="text-sm text-slate-900">{stop.address}</div>
+                          {stop.notes && (
+                            <div className="text-xs text-slate-600 mt-1">{stop.notes}</div>
+                          )}
                         </div>
                       </div>
-                      <div className="pb-2">
-                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Dropoff</div>
-                        <div className="text-sm text-slate-900">{trip.dropoffAddress}</div>
-                      </div>
-                    </div>
-                  )}
+                    )
+                  })}
                 </div>
               </div>
             )}

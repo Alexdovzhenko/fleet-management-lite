@@ -167,7 +167,7 @@ interface InvoiceData {
     dropoffAddress?: string
     vehicleType?: string | null
     tripType?: string | null
-    stops?: Array<{ order: number; address: string; notes?: string | null }>
+    stops?: Array<{ order: number; address: string; notes?: string | null; role?: string | null }>
   }
   lineItems: Array<{
     description: string

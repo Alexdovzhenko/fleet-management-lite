@@ -390,14 +390,11 @@ export async function GET(
       vehicleType: trip.vehicleType,
       tripType: trip.tripType,
       stops: trip.stops
-        ?.filter((s: any) =>
-          // Exclude stops that match pickup or dropoff addresses (they're not intermediate stops)
-          s.address !== trip.pickupAddress && s.address !== trip.dropoffAddress
-        )
-        .map((s: any) => ({
+        ?.map((s: any) => ({
           order: s.order,
           address: s.address,
           notes: s.notes,
+          role: s.role,
         })) || [],
     }
 

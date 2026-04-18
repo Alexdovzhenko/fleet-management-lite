@@ -33,7 +33,7 @@ interface BillingModalProps {
     dropoffAddress?: string
     vehicleType?: string | null
     tripType?: string | null
-    stops?: Array<{ order: number; address: string; notes?: string | null }>
+    stops?: Array<{ order: number; address: string; notes?: string | null; role?: string | null }>
     customer?: {
       name?: string
       email?: string
