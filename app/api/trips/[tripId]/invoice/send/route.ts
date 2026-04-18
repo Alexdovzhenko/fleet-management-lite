@@ -42,10 +42,11 @@ interface InvoiceData {
   trip?: {
     pickupDate?: string
     pickupTime?: string
-    vehicleType?: string
-    tripType?: string
+    vehicleType?: string | null
+    tripType?: string | null
     pickupAddress?: string
     dropoffAddress?: string
+    stops?: Array<{ order: number; address: string; notes?: string | null; role?: string | null }>
   }
   summary: {
     subtotal: number
@@ -348,6 +349,13 @@ function computeInvoiceData(billingData: any, trip: any, settings: any): Invoice
       tripType: trip.tripType,
       pickupAddress: trip.pickupAddress,
       dropoffAddress: trip.dropoffAddress,
+      stops: trip.stops
+        ?.map((s: any) => ({
+          order: s.order,
+          address: s.address,
+          notes: s.notes,
+          role: s.role,
+        })) || [],
     },
     summary: {
       subtotal,
@@ -402,6 +410,7 @@ export async function POST(
       where: { id: tripId, companyId },
       include: {
         customer: { select: { name: true, email: true, phone: true } },
+        stops: { orderBy: { order: "asc" } },
       },
     })
 

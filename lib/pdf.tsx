@@ -526,10 +526,11 @@ export interface PdfInvoiceData {
   trip?: {
     pickupDate?: string
     pickupTime?: string
-    vehicleType?: string
-    tripType?: string
+    vehicleType?: string | null
+    tripType?: string | null
     pickupAddress?: string
     dropoffAddress?: string
+    stops?: Array<{ order: number; address: string; notes?: string | null; role?: string | null }>
   }
   summary: {
     subtotal: number
@@ -609,6 +610,18 @@ const INV = StyleSheet.create({
   billToCol: { flex: 1, alignItems: "flex-end" },
   sectionLabel: { fontSize: 8, fontFamily: "Helvetica-Bold", color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 },
   invoiceNumberLabel: { fontSize: 8, fontFamily: "Helvetica-Bold", color: "#94a3b8", textTransform: "uppercase", letterSpacing: 1, marginBottom: 1 },
+  tripRouteSection: { marginTop: 16, paddingTop: 16, borderTop: "1 solid #e2e8f0" },
+  tripRouteTitle: { fontSize: 10, fontFamily: "Helvetica-Bold", color: "#0f172a", marginBottom: 12 },
+  stopItem: { marginBottom: 12, flexDirection: "row" },
+  stopBadge: { width: 20, height: 20, borderRadius: 10, backgroundColor: "#e2e8f0", justifyContent: "center", alignItems: "center", marginRight: 12, marginTop: 2 },
+  stopBadgeText: { fontSize: 8, fontFamily: "Helvetica-Bold", color: "#0f172a", textAlign: "center" },
+  stopBadgeBlue: { backgroundColor: "#dbeafe", color: "#1e40af" },
+  stopBadgeAmber: { backgroundColor: "#fef3c7", color: "#92400e" },
+  stopBadgeSlate: { backgroundColor: "#e2e8f0", color: "#1e293b" },
+  stopContent: { flex: 1 },
+  stopLabel: { fontSize: 8, fontFamily: "Helvetica-Bold", color: "#94a3b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2 },
+  stopAddress: { fontSize: 10, color: "#0f172a", marginBottom: 2 },
+  stopNotes: { fontSize: 8, color: "#64748b", fontStyle: "italic" },
 })
 
 function formatPickupDate(dateString?: string): string {
@@ -619,6 +632,28 @@ function formatPickupDate(dateString?: string): string {
   } catch {
     return dateString
   }
+}
+
+function formatStopLabel(role: string | null | undefined): string {
+  if (!role) return "Stop"
+  const roleMap: Record<string, string> = {
+    pickup: "Pickup",
+    drop_off: "Drop-off",
+    stop: "Stop",
+    wait: "Wait",
+  }
+  return roleMap[role.toLowerCase()] || role
+}
+
+function getStopBadgeStyle(role: string | null | undefined): string {
+  if (!role) return "slate"
+  const map: Record<string, string> = {
+    pickup: "blue",
+    drop_off: "slate",
+    stop: "amber",
+    wait: "amber",
+  }
+  return map[role.toLowerCase()] || "amber"
 }
 
 function InvoiceDoc({ invoice }: { invoice: PdfInvoiceData }) {
@@ -718,23 +753,28 @@ function InvoiceDoc({ invoice }: { invoice: PdfInvoiceData }) {
                 )}
               </View>
 
-              {/* Pickup Location */}
-              {invoice.trip?.pickupAddress && (
-                <View style={INV.tripRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={INV.tripLabel}>Pickup Location</Text>
-                    <Text style={INV.tripValue}>{invoice.trip.pickupAddress}</Text>
-                  </View>
-                </View>
-              )}
+              {/* Unified Trip Route Section */}
+              {invoice.trip?.stops && invoice.trip.stops.length > 0 && (
+                <View style={INV.tripRouteSection}>
+                  <Text style={INV.tripRouteTitle}>Trip Route</Text>
+                  {invoice.trip.stops.map((stop) => {
+                    const badgeStyle = getStopBadgeStyle(stop.role)
+                    const badgeColor = badgeStyle === "blue" ? "#dbeafe" : badgeStyle === "slate" ? "#e2e8f0" : "#fef3c7"
+                    const textColor = badgeStyle === "blue" ? "#1e40af" : badgeStyle === "slate" ? "#1e293b" : "#92400e"
 
-              {/* Dropoff Location */}
-              {invoice.trip?.dropoffAddress && (
-                <View style={INV.tripRow}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={INV.tripLabel}>Dropoff Location</Text>
-                    <Text style={INV.tripValue}>{invoice.trip.dropoffAddress}</Text>
-                  </View>
+                    return (
+                      <View key={stop.order} style={INV.stopItem}>
+                        <View style={[INV.stopBadge, { backgroundColor: badgeColor }]}>
+                          <Text style={[INV.stopBadgeText, { color: textColor }]}>{stop.order + 1}</Text>
+                        </View>
+                        <View style={INV.stopContent}>
+                          <Text style={INV.stopLabel}>{formatStopLabel(stop.role)}</Text>
+                          <Text style={INV.stopAddress}>{stop.address}</Text>
+                          {stop.notes && <Text style={INV.stopNotes}>{stop.notes}</Text>}
+                        </View>
+                      </View>
+                    )
+                  })}
                 </View>
               )}
             </View>
