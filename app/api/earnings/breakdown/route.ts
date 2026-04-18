@@ -122,6 +122,7 @@ async function getOverviewData(
   const invoicesWithTrips = await prisma.invoice.findMany({
     where: {
       companyId,
+      status: { not: "DRAFT" },
       tripId: { not: null },
       trip: { pickupDate: { gte: startDate, lt: endDate } },
     },
@@ -131,6 +132,7 @@ async function getOverviewData(
   const standaloneInvoices = await prisma.invoice.findMany({
     where: {
       companyId,
+      status: { not: "DRAFT" },
       tripId: null,
       createdAt: { gte: startDate, lt: endDate },
     },

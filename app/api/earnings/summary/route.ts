@@ -31,20 +31,12 @@ export async function GET(request: NextRequest) {
     const endDate = new Date(endDateStr)
     endDate.setDate(endDate.getDate() + 1) // Include entire end date
 
-    console.log("\n========== EARNINGS SUMMARY DEBUG ==========")
-    console.log("Query Parameters:", {
-      startDateStr,
-      endDateStr,
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
-      companyId,
-    })
-
     // Current period metrics
-    // Query invoices with trips that have pickupDate in range
+    // Query invoices with trips that have pickupDate in range (exclude DRAFT)
     const invoicesWithTrips = await prisma.invoice.findMany({
       where: {
         companyId,
+        status: { not: "DRAFT" },
         tripId: { not: null },
         trip: {
           pickupDate: {
@@ -62,10 +54,11 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    // Query standalone invoices created in date range
+    // Query standalone invoices created in date range (exclude DRAFT)
     const standaloneInvoices = await prisma.invoice.findMany({
       where: {
         companyId,
+        status: { not: "DRAFT" },
         tripId: null,
         createdAt: {
           gte: startDate,
@@ -99,34 +92,6 @@ export async function GET(request: NextRequest) {
         },
       }),
     ])
-
-    // Debug: Check total invoices for this company
-    const allInvoices = await prisma.invoice.findMany({
-      where: { companyId },
-      select: {
-        status: true,
-        total: true,
-        tripId: true,
-        createdAt: true,
-      },
-    })
-
-    console.log("[Earnings Summary] Found invoices:", {
-      count: invoices.length,
-      totalCompanyInvoices: allInvoices.length,
-      invoices: invoices.map((inv) => ({
-        status: inv.status,
-        total: inv.total?.toString(),
-        tripId: inv.tripId,
-        createdAt: inv.createdAt?.toISOString(),
-      })),
-      allCompanyInvoices: allInvoices.map((inv) => ({
-        status: inv.status,
-        total: inv.total?.toString(),
-        tripId: inv.tripId,
-        createdAt: inv.createdAt?.toISOString(),
-      })),
-    })
 
     // Calculate current period
     const totalRevenue = invoices.reduce(
@@ -168,6 +133,7 @@ export async function GET(request: NextRequest) {
       prisma.invoice.findMany({
         where: {
           companyId,
+          status: { not: "DRAFT" },
           OR: [
             {
               trip: {
