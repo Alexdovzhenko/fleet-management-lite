@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       ]
     }
 
-    // Filter by date range (pickup date of trip)
+    // Filter by date range (pickup date of trip, or createdAt for standalone invoices)
     if (dateStart || dateEnd) {
       const dateFilter: any = {}
 
@@ -53,14 +53,16 @@ export async function GET(request: NextRequest) {
         dateFilter.lt = endDate
       }
 
-      whereClause.trip = {
-        ...whereClause.trip,
-        pickupDate: dateFilter,
-      }
+      // Use OR so standalone invoices (tripId=null) are included via createdAt,
+      // and trip-linked invoices are matched by their trip's pickupDate
+      if (!whereClause.AND) whereClause.AND = []
+      whereClause.AND.push({
+        OR: [
+          { trip: { pickupDate: dateFilter } },
+          { tripId: null, createdAt: dateFilter },
+        ],
+      })
     }
-
-    // Debug: log the where clause
-    console.log("[billing/invoices] whereClause:", JSON.stringify(whereClause, null, 2))
 
     // Fetch invoices with customer and trip data
     const invoices = await prisma.invoice.findMany({
@@ -110,11 +112,6 @@ export async function GET(request: NextRequest) {
         total: parseFloat(inv.total.toString()),
       },
     }))
-
-    console.log("[billing/invoices] found:", invoices.length, "invoices")
-    invoices.forEach(inv => {
-      console.log(" -", inv.invoiceNumber, "status:", inv.status, "tripId:", inv.tripId, "pickupDate:", inv.trip?.pickupDate)
-    })
 
     return NextResponse.json(transformedInvoices)
   } catch (error) {
