@@ -2,12 +2,11 @@
 
 import { useState, useCallback } from "react"
 import { format, startOfDay, endOfDay, subDays, startOfMonth, endOfMonth, subMonths } from "date-fns"
-import { ChevronLeft, ChevronRight } from "lucide-react"
 import { BillingDatePicker } from "@/components/billing/BillingDatePicker"
 
 interface TimeRangeSelectorProps {
   onRangeChange: (startDate: string, endDate: string) => void
-  defaultPreset?: "last-7-days" | "today" | "this-month" | "last-month" | "last-12-months"
+  defaultPreset?: string
 }
 
 const PRESETS = [
@@ -90,38 +89,36 @@ export function TimeRangeSelector({
     [onRangeChange]
   )
 
-  // Get current range to show in date picker
   const currentPreset = PRESETS.find((p) => p.id === selectedPreset)
-  const currentRange = currentPreset
-    ? currentPreset.getRange()
-    : { start: "", end: "" }
+  const currentRange = currentPreset ? currentPreset.getRange() : { start: "", end: "" }
 
   return (
-    <div className="space-y-4">
-      {/* Date Picker */}
-      <div className="flex items-center gap-3">
-        <BillingDatePicker
-          startDate={currentRange.start}
-          endDate={currentRange.end}
-          onChange={handleCustomRange}
-        />
+    <div className="flex items-center gap-2 flex-wrap">
+      {/* Custom date picker */}
+      <BillingDatePicker
+        startDate={currentRange.start}
+        endDate={currentRange.end}
+        onChange={handleCustomRange}
+      />
 
-        {/* Preset buttons */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {PRESETS.map((preset) => (
-            <button
-              key={preset.id}
-              onClick={() => handlePresetClick(preset.id)}
-              className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
-                selectedPreset === preset.id
-                  ? "bg-emerald-600 text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
-            >
-              {preset.label}
-            </button>
-          ))}
-        </div>
+      {/* Divider */}
+      <div className="h-4 w-px bg-slate-200" />
+
+      {/* Preset chips */}
+      <div className="flex items-center gap-1">
+        {PRESETS.map((preset) => (
+          <button
+            key={preset.id}
+            onClick={() => handlePresetClick(preset.id)}
+            className={`px-2.5 py-1 text-[12px] font-medium rounded-full transition-all duration-150 cursor-pointer ${
+              selectedPreset === preset.id
+                ? "bg-slate-900 text-white"
+                : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+            }`}
+          >
+            {preset.label}
+          </button>
+        ))}
       </div>
     </div>
   )
