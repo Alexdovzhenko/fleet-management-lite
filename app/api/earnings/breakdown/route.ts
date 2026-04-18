@@ -140,7 +140,7 @@ async function getOverviewData(
     .reduce((sum, inv) => sum + Number(inv.total), 0)
 
   const uncollected = invoices
-    .filter((inv) => inv.status === "OPEN")
+    .filter((inv) => inv.status !== "PAID" && inv.status !== "SETTLED" && inv.status !== "CANCELLED")
     .reduce((sum, inv) => sum + Number(inv.total), 0)
 
   // Expense breakdown

@@ -85,8 +85,9 @@ export async function GET(request: NextRequest) {
       .filter((inv) => inv.status === "PAID" || inv.status === "SETTLED")
       .reduce((sum, inv) => sum + (inv.total ? Number(inv.total) : 0), 0)
 
+    // Uncollected = all non-collected, non-cancelled invoices (includes OPEN, SENT, VIEWED, OVERDUE, DRAFT)
     const uncollectedRevenue = invoices
-      .filter((inv) => inv.status === "OPEN")
+      .filter((inv) => inv.status !== "PAID" && inv.status !== "SETTLED" && inv.status !== "CANCELLED")
       .reduce((sum, inv) => sum + (inv.total ? Number(inv.total) : 0), 0)
 
     const totalExpenses = expenses.reduce(
