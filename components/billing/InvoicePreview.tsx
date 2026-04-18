@@ -67,7 +67,7 @@ function formatStopLabel(role: string | null | undefined): string {
   if (!role) return "Stop"
   const roleMap: Record<string, string> = {
     pickup: "Pickup",
-    drop_off: "Drop-off",
+    drop: "Drop-off",
     stop: "Stop",
     wait: "Wait",
   }
@@ -197,7 +197,7 @@ export function InvoicePreview({
                 <div className="space-y-4">
                   {trip.stops.map((stop, idx) => {
                     const isPickup = stop.role?.toLowerCase() === "pickup"
-                    const isDropoff = stop.role?.toLowerCase() === "drop_off"
+                    const isDropoff = stop.role?.toLowerCase() === "drop"
                     const isWait = stop.role?.toLowerCase() === "wait"
 
                     const badgeColor = isPickup ? "bg-blue-100 text-blue-900" : isDropoff ? "bg-red-100 text-red-900" : isWait ? "bg-amber-100 text-amber-900" : "bg-amber-100 text-amber-900"

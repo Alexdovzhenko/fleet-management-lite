@@ -639,7 +639,7 @@ function formatStopLabel(role: string | null | undefined): string {
   if (!role) return "Stop"
   const roleMap: Record<string, string> = {
     pickup: "Pickup",
-    drop_off: "Drop-off",
+    drop: "Drop-off",
     stop: "Stop",
     wait: "Wait",
   }
@@ -650,7 +650,7 @@ function getStopBadgeStyle(role: string | null | undefined): string {
   if (!role) return "slate"
   const map: Record<string, string> = {
     pickup: "blue",
-    drop_off: "red",
+    drop: "red",
     stop: "amber",
     wait: "amber",
   }
