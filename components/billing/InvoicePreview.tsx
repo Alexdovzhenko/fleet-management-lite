@@ -200,7 +200,7 @@ export function InvoicePreview({
                     const isDropoff = stop.role?.toLowerCase() === "drop_off"
                     const isWait = stop.role?.toLowerCase() === "wait"
 
-                    const badgeColor = isPickup ? "bg-blue-100 text-blue-900" : isDropoff ? "bg-slate-200 text-slate-700" : isWait ? "bg-amber-100 text-amber-900" : "bg-amber-100 text-amber-900"
+                    const badgeColor = isPickup ? "bg-blue-100 text-blue-900" : isDropoff ? "bg-red-100 text-red-900" : isWait ? "bg-amber-100 text-amber-900" : "bg-amber-100 text-amber-900"
                     const badgeNum = idx + 1
 
                     return (

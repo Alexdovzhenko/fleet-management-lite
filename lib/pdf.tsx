@@ -617,6 +617,7 @@ const INV = StyleSheet.create({
   stopBadgeText: { fontSize: 8, fontFamily: "Helvetica-Bold", color: "#0f172a", textAlign: "center" },
   stopBadgeBlue: { backgroundColor: "#dbeafe", color: "#1e40af" },
   stopBadgeAmber: { backgroundColor: "#fef3c7", color: "#92400e" },
+  stopBadgeRed: { backgroundColor: "#fee2e2", color: "#991b1b" },
   stopBadgeSlate: { backgroundColor: "#e2e8f0", color: "#1e293b" },
   stopContent: { flex: 1 },
   stopLabel: { fontSize: 8, fontFamily: "Helvetica-Bold", color: "#94a3b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2 },
@@ -649,7 +650,7 @@ function getStopBadgeStyle(role: string | null | undefined): string {
   if (!role) return "slate"
   const map: Record<string, string> = {
     pickup: "blue",
-    drop_off: "slate",
+    drop_off: "red",
     stop: "amber",
     wait: "amber",
   }
@@ -759,8 +760,8 @@ function InvoiceDoc({ invoice }: { invoice: PdfInvoiceData }) {
                   <Text style={INV.tripRouteTitle}>Trip Route</Text>
                   {invoice.trip.stops.map((stop) => {
                     const badgeStyle = getStopBadgeStyle(stop.role)
-                    const badgeColor = badgeStyle === "blue" ? "#dbeafe" : badgeStyle === "slate" ? "#e2e8f0" : "#fef3c7"
-                    const textColor = badgeStyle === "blue" ? "#1e40af" : badgeStyle === "slate" ? "#1e293b" : "#92400e"
+                    const badgeColor = badgeStyle === "blue" ? "#dbeafe" : badgeStyle === "red" ? "#fee2e2" : badgeStyle === "slate" ? "#e2e8f0" : "#fef3c7"
+                    const textColor = badgeStyle === "blue" ? "#1e40af" : badgeStyle === "red" ? "#991b1b" : badgeStyle === "slate" ? "#1e293b" : "#92400e"
 
                     return (
                       <View key={stop.order} style={INV.stopItem}>
