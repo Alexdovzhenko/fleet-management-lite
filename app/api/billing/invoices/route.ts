@@ -59,6 +59,9 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Debug: log the where clause
+    console.log("[billing/invoices] whereClause:", JSON.stringify(whereClause, null, 2))
+
     // Fetch invoices with customer and trip data
     const invoices = await prisma.invoice.findMany({
       where: whereClause,
@@ -107,6 +110,11 @@ export async function GET(request: NextRequest) {
         total: parseFloat(inv.total.toString()),
       },
     }))
+
+    console.log("[billing/invoices] found:", invoices.length, "invoices")
+    invoices.forEach(inv => {
+      console.log(" -", inv.invoiceNumber, "status:", inv.status, "tripId:", inv.tripId, "pickupDate:", inv.trip?.pickupDate)
+    })
 
     return NextResponse.json(transformedInvoices)
   } catch (error) {
