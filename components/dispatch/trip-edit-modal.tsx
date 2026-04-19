@@ -8,7 +8,7 @@ import { z } from "zod"
 import {
   X, Plane, Phone, Copy, Check, User, Car, UserCheck,
   ChevronDown, MapPin, Building2, Ship, Plus, Star,
-  AlertTriangle, Baby, ArrowRightLeft, Pencil, Send, Calendar, Loader2, ArrowLeftRight, GripVertical,
+  AlertTriangle, Baby, ArrowRightLeft, Pencil, Send, Calendar, Loader2, ArrowLeftRight, GripVertical, Clock,
 } from "lucide-react"
 import {
   DndContext,
@@ -1200,6 +1200,9 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const [notesTab, setNotesTab] = useState<"trip" | "internal">("trip")
   const [childSeats, setChildSeats] = useState({ forward: 0, rear: 0, booster: 0 })
   const [childSeatsOpen, setChildSeatsOpen] = useState(false)
+  const [pobTime, setPobTime] = useState<string>("")
+  const [pobEditing, setPobEditing] = useState(false)
+  const [pobWasEdited, setPobWasEdited] = useState(false)
 
   type AdditionalPax = { id: string; firstName: string; lastName: string; phone: string; email: string }
   const [additionalPassengers, setAdditionalPassengers] = useState<AdditionalPax[]>([])
@@ -1239,6 +1242,25 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     return isValid(d) ? format(d, "MM/dd/yyyy") : raw
   }
 
+  // POB helpers — converts UTC ISO ↔ datetime-local string (local timezone)
+  function toDatetimeLocal(iso: string | undefined | null): string {
+    if (!iso) return ""
+    const d = new Date(iso)
+    if (isNaN(d.getTime())) return ""
+    const pad = (n: number) => String(n).padStart(2, "0")
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+  }
+
+  function formatPobDisplay(dtLocal: string): string {
+    if (!dtLocal) return ""
+    const d = new Date(dtLocal)
+    if (isNaN(d.getTime())) return ""
+    return d.toLocaleString("en-US", {
+      month: "short", day: "numeric", year: "numeric",
+      hour: "numeric", minute: "2-digit", hour12: true,
+    })
+  }
+
 
   useEffect(() => {
     if (!currentTrip) return
@@ -1264,6 +1286,9 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     setCustomerPickerOpen(false)
     setCustomerSearch("")
     setSelectedCustomer(currentTrip.customer ?? null)
+    setPobTime(toDatetimeLocal(currentTrip.passengerOnBoardAt))
+    setPobEditing(false)
+    setPobWasEdited(false)
 
     // Parse existing child seat details
     const parsedSeats = { forward: 0, rear: 0, booster: 0 }
@@ -1460,6 +1485,7 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       curbsidePickup: data.curbsidePickup,
       vip:              data.vip,
       stops: stopsData as never,
+      ...(pobWasEdited ? { passengerOnBoardAt: (pobTime ? new Date(pobTime).toISOString() : null) as never } : {}),
     }, {
       onSuccess: () => {
         setSaveSuccess(true)
@@ -1913,6 +1939,109 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                               </button>
                             ))
                           )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* ── POB (Passenger On Board) Time ── */}
+                <div className="rounded-xl border overflow-hidden transition-all duration-200"
+                  style={{ borderColor: pobTime ? "#d1fae5" : "#e5e7eb" }}>
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-4 py-2.5"
+                    style={{ backgroundColor: pobTime ? "#f0fdf4" : "#f9fafb" }}>
+                    <div className="flex items-center gap-2"
+                      title="Passenger On Board (POB): The exact moment the passenger enters the vehicle. Auto-recorded when status changes to POB, or set manually.">
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors duration-300 ${pobTime ? "bg-emerald-500" : "bg-gray-300"}`} />
+                      <span className={`text-[10px] font-semibold uppercase tracking-widest transition-colors duration-200 ${pobTime ? "text-emerald-700" : "text-gray-500"}`}>
+                        Passenger On Board
+                      </span>
+                    </div>
+                    {pobTime && !pobEditing && (
+                      <button
+                        type="button"
+                        onClick={() => setPobEditing(true)}
+                        className="flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:text-blue-700 active:scale-95 transition-all duration-150"
+                      >
+                        <Pencil className="w-3 h-3" />
+                        Edit
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Body */}
+                  <div className="px-4 py-3 bg-white">
+                    {!pobEditing ? (
+                      pobTime ? (
+                        <div className="flex items-start gap-2.5">
+                          <Clock className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="text-[13px] font-semibold text-gray-900 leading-snug">
+                              {formatPobDisplay(pobTime)}
+                            </p>
+                            {pobWasEdited && (
+                              <span className="inline-flex items-center mt-1.5 text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full">
+                                Edited
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <p className="text-[12px] text-gray-400">Not yet recorded</p>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const now = toDatetimeLocal(new Date().toISOString())
+                                setPobTime(now)
+                                setPobWasEdited(true)
+                              }}
+                              className="flex-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg px-3 py-1.5 active:scale-95 transition-all duration-150"
+                            >
+                              Set Now
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setPobEditing(true)}
+                              className="flex-1 text-[11px] font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-3 py-1.5 active:scale-95 transition-all duration-150"
+                            >
+                              Pick Time
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    ) : (
+                      <div className="space-y-2.5">
+                        <input
+                          type="datetime-local"
+                          value={pobTime}
+                          onChange={(e) => {
+                            setPobTime(e.target.value)
+                            setPobWasEdited(true)
+                          }}
+                          className="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400 transition-all duration-150 bg-gray-50"
+                        />
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setPobEditing(false)}
+                            className="flex-1 text-[11px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg px-3 py-1.5 active:scale-95 transition-all duration-150"
+                          >
+                            Done
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPobTime("")
+                              setPobWasEdited(true)
+                              setPobEditing(false)
+                            }}
+                            className="text-[11px] font-semibold text-red-500 hover:text-red-600 px-2 py-1.5 active:scale-95 transition-all duration-150"
+                          >
+                            Clear
+                          </button>
                         </div>
                       </div>
                     )}
