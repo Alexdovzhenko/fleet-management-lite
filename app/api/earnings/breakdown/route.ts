@@ -86,7 +86,8 @@ async function getOverviewData(
 
   for (const trip of trips) {
     const dateKey = trip.pickupDate.toISOString().split("T")[0]
-    const revenue = trip.invoice ? Number(trip.invoice.total) : 0
+    const revenue =
+      trip.invoice && trip.invoice.status !== "DRAFT" ? Number(trip.invoice.total) : 0
 
     if (!trendMap.has(dateKey)) {
       trendMap.set(dateKey, { revenue: 0, trips: 0 })
@@ -170,7 +171,7 @@ async function getOverviewData(
       trips: {
         where: { pickupDate: { gte: startDate, lt: endDate } },
         include: {
-          invoice: { select: { total: true } },
+          invoice: { select: { total: true, status: true } },
         },
       },
     },
@@ -182,7 +183,13 @@ async function getOverviewData(
       name: v.name,
       type: v.type,
       trips: v.trips.length,
-      revenue: v.trips.reduce((sum, t) => sum + Number(t.invoice?.total || 0), 0),
+      revenue: v.trips.reduce(
+        (sum, t) =>
+          t.invoice && t.invoice.status !== "DRAFT"
+            ? sum + Number(t.invoice.total)
+            : sum,
+        0
+      ),
     }))
     .sort((a, b) => b.revenue - a.revenue)
 
@@ -259,7 +266,7 @@ async function getFleetData(
       trips: {
         where: { pickupDate: { gte: startDate, lt: endDate } },
         include: {
-          invoice: { select: { total: true } },
+          invoice: { select: { total: true, status: true } },
         },
       },
       expenses: {
@@ -271,7 +278,13 @@ async function getFleetData(
 
   const fleetPerformance = vehicles
     .map((v) => {
-      const revenue = v.trips.reduce((sum, t) => sum + Number(t.invoice?.total || 0), 0)
+      const revenue = v.trips.reduce(
+        (sum, t) =>
+          t.invoice && t.invoice.status !== "DRAFT"
+            ? sum + Number(t.invoice.total)
+            : sum,
+        0
+      )
       const expenses = v.expenses.reduce((sum, e) => sum + Number(e.amount), 0)
       const profitability = revenue - expenses
 
