@@ -149,8 +149,8 @@ export async function PUT(
     const statusTimestamps: Record<string, object> = {
       DRIVER_EN_ROUTE: { driverEnRouteAt: new Date() },
       DRIVER_ARRIVED: { driverArrivedAt: new Date() },
-      // Only auto-set POB if not already recorded AND no manual override provided
-      IN_PROGRESS: (data.passengerOnBoardAt === undefined && !existing.passengerOnBoardAt)
+      // Auto-set POB whenever status changes to IN_PROGRESS (unless user manually provides time)
+      IN_PROGRESS: data.passengerOnBoardAt === undefined
         ? { passengerOnBoardAt: new Date() }
         : {},
       COMPLETED: { tripCompletedAt: new Date() },

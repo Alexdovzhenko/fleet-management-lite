@@ -40,6 +40,7 @@ const SAVE_BUTTON_STYLES = `
     animation: saveSuccessPulse 2.2s ease-out forwards;
   }
 `
+import { toast } from "sonner"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -1487,9 +1488,15 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       stops: stopsData as never,
       ...(pobWasEdited ? { passengerOnBoardAt: (pobTime ? new Date(pobTime).toISOString() : null) as never } : {}),
     }, {
-      onSuccess: () => {
+      onSuccess: (updatedTrip) => {
         setSaveSuccess(true)
         setTimeout(() => setSaveSuccess(false), 2000)
+
+        // Show POB notification if status changed to IN_PROGRESS
+        if (updatedTrip.status === "IN_PROGRESS" && updatedTrip.passengerOnBoardAt) {
+          const pobTime = formatPobDisplay(toDatetimeLocal(updatedTrip.passengerOnBoardAt))
+          toast.success(`POB recorded at ${pobTime}`, { duration: 3000 })
+        }
       },
       onError: (err) => setSaveError(err instanceof Error ? err.message : "Failed to save changes"),
     })
