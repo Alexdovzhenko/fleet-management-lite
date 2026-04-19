@@ -1,107 +1,95 @@
 "use client"
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts"
+import { motion } from "framer-motion"
+
+function fmtAmt(v: number): string {
+  return v.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
+}
 
 interface ExpenseBreakdownChartProps {
   data: { fixed: number; variable: number }
 }
-
-const COLORS = ["#ef4444", "#f97316"]
 
 export function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartProps) {
   const total = data.fixed + data.variable
 
   if (total === 0) {
     return (
-      <div className="relative bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl p-6">
-        <p className="text-slate-600">No expense data</p>
+      <div className="bg-white rounded-2xl border border-slate-100 p-5 flex items-center justify-center h-[240px]">
+        <p className="text-[13px] text-slate-400">No expenses recorded</p>
       </div>
     )
   }
 
-  const chartData = [
-    {
-      name: "Fixed",
-      value: Math.round(data.fixed),
-      display: `$${(data.fixed / 1000).toFixed(1)}k`,
-    },
-    {
-      name: "Variable",
-      value: Math.round(data.variable),
-      display: `$${(data.variable / 1000).toFixed(1)}k`,
-    },
-  ]
-
-  const fixedPct = ((data.fixed / total) * 100).toFixed(0)
-  const variablePct = ((data.variable / total) * 100).toFixed(0)
+  const fixedPct = Math.round((data.fixed / total) * 100)
+  const variablePct = 100 - fixedPct
 
   return (
-    <div className="relative bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl p-6 space-y-4">
-      <h3 className="text-lg font-semibold text-slate-900">Expense Breakdown</h3>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.32, ease: [0.25, 0.1, 0.25, 1], delay: 0.12 }}
+      className="bg-white rounded-2xl border border-slate-100 p-5"
+    >
+      <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-4">
+        Expense Breakdown
+      </p>
 
-      <ResponsiveContainer width="100%" height={280}>
-        <BarChart
-          data={chartData}
-          margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-          <XAxis
-            dataKey="name"
-            stroke="#94a3b8"
-            style={{ fontSize: "12px" }}
-          />
-          <YAxis
-            stroke="#94a3b8"
-            style={{ fontSize: "12px" }}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-          />
-          <Tooltip
-            formatter={(value: any) =>
-              `$${typeof value === "number" ? value.toLocaleString("en-US") : 0}`
-            }
-            contentStyle={{
-              background: "rgba(255, 255, 255, 0.95)",
-              border: "1px solid #e2e8f0",
-              borderRadius: "8px",
-            }}
-          />
-          <Bar
-            dataKey="value"
-            fill="#ef4444"
-            radius={[8, 8, 0, 0]}
-            animationDuration={800}
-          >
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index]} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+      {/* Total */}
+      <p className="text-[28px] font-bold text-slate-900 tabular-nums tracking-tight leading-none">
+        {fmtAmt(total)}
+      </p>
+      <p className="text-[12px] text-slate-400 mt-1.5 mb-6">total expenses</p>
 
-      {/* Summary */}
-      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200">
-        <div>
-          <p className="text-xs text-slate-600 font-medium">Fixed</p>
-          <p className="text-lg font-bold text-red-600">{fixedPct}%</p>
-          <p className="text-sm text-slate-600 mt-1">
-            ${(data.fixed / 1000).toFixed(1)}k
-          </p>
-        </div>
-        <div>
-          <p className="text-xs text-slate-600 font-medium">Variable</p>
-          <p className="text-lg font-bold text-orange-600">{variablePct}%</p>
-          <p className="text-sm text-slate-600 mt-1">
-            ${(data.variable / 1000).toFixed(1)}k
-          </p>
-        </div>
+      {/* Stacked progress bar — clip-path reveal (GPU-accelerated, no layout shift) */}
+      <div className="h-3 rounded-full bg-slate-100 flex overflow-hidden mb-5">
+        {data.fixed > 0 && (
+          <motion.div
+            className="h-full bg-rose-500"
+            style={{ width: `${fixedPct}%` }}
+            initial={{ clipPath: "inset(0 100% 0 0)" }}
+            animate={{ clipPath: "inset(0 0% 0 0)" }}
+            transition={{ duration: 0.85, ease: [0.25, 0.1, 0.25, 1] }}
+          />
+        )}
+        {data.variable > 0 && (
+          <motion.div
+            className="h-full bg-amber-400"
+            style={{ width: `${variablePct}%` }}
+            initial={{ clipPath: "inset(0 100% 0 0)" }}
+            animate={{ clipPath: "inset(0 0% 0 0)" }}
+            transition={{ duration: 0.85, ease: [0.25, 0.1, 0.25, 1], delay: 0.14 }}
+          />
+        )}
       </div>
 
-      <div className="pt-4 border-t border-slate-200">
-        <p className="text-xs text-slate-600 font-medium">Total</p>
-        <p className="text-2xl font-bold text-slate-900">
-          ${(total / 1000).toFixed(1)}k
-        </p>
+      {/* Legend rows */}
+      <div className="space-y-3 pt-4 border-t border-slate-100">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0" />
+            <p className="text-[13px] text-slate-600 font-medium">Fixed</p>
+          </div>
+          <div className="text-right">
+            <span className="text-[14px] font-bold text-slate-900 tabular-nums">
+              {fmtAmt(data.fixed)}
+            </span>
+            <span className="text-[11px] text-slate-400 ml-2">{fixedPct}%</span>
+          </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0" />
+            <p className="text-[13px] text-slate-600 font-medium">Variable</p>
+          </div>
+          <div className="text-right">
+            <span className="text-[14px] font-bold text-slate-900 tabular-nums">
+              {fmtAmt(data.variable)}
+            </span>
+            <span className="text-[11px] text-slate-400 ml-2">{variablePct}%</span>
+          </div>
+        </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
