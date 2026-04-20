@@ -1538,6 +1538,11 @@ function SortableStopRow({
         {stop.tailNumber && (
           <div className="text-[11px] opacity-70">Tail: {stop.tailNumber}</div>
         )}
+        {stop.locType === "airport" && !stop.flightNumber && (
+          <div className="mt-1 text-[11px] font-medium text-amber-600">
+            {!stop.airlineCode ? "Missing Airline and Flight Info" : "Missing Flight Info"}
+          </div>
+        )}
         {stop.flightNumber && (
           <div className="text-[11px] opacity-70">
             Flight: {stop.flightNumber}
@@ -1806,10 +1811,11 @@ function RouteBuilder({
     const newStopId = `s${Date.now()}`
     const rawFlight = flightNumber.trim()
     const rawAirline = airlineCode.trim().toUpperCase()
-    // Build full IATA flight number (e.g. "AA620"). Don't double-prepend if user already typed "AA620".
-    const fullFlightNum = rawAirline && !rawFlight.toUpperCase().startsWith(rawAirline)
-      ? rawAirline + rawFlight
-      : rawFlight
+    // Build full IATA flight number (e.g. "AA620"). Only include airline if there's a flight number.
+    // Don't double-prepend if user already typed "AA620".
+    const fullFlightNum = rawFlight
+      ? (rawAirline && !rawFlight.toUpperCase().startsWith(rawAirline) ? rawAirline + rawFlight : rawFlight)
+      : ""
     setStops(prev => [...prev, {
       id: newStopId, locType, role,
       address: formattedAddress,
