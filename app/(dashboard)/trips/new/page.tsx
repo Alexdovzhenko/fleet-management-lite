@@ -1532,9 +1532,9 @@ function SortableStopRow({
       {/* Content */}
       <div className="flex-1 min-w-0">
         {stop.locationName && (
-          <div className="text-xs font-semibold truncate">{stop.locationName}</div>
+          <div className="text-xs font-semibold">{stop.locationName}</div>
         )}
-        <div className="text-sm font-medium truncate">{stop.address}</div>
+        <div className="text-sm font-medium text-gray-700">{stop.address}</div>
         {stop.tailNumber && (
           <div className="text-[11px] opacity-70">Tail: {stop.tailNumber}</div>
         )}
@@ -1798,8 +1798,8 @@ function RouteBuilder({
 
     let formattedAddress = ""
     if (locType === "address" || locType === "fbo") {
-      formattedAddress = [locationName || address1, address2, city, stateVal ? `${stateVal}${zip ? " " + zip : ""}` : zip].filter(Boolean).join(", ")
-      if (locType === "fbo") formattedAddress = [locationName || address1, city, stateVal].filter(Boolean).join(", ")
+      formattedAddress = [locationName, address1, address2, city, stateVal ? `${stateVal}${zip ? " " + zip : ""}` : zip].filter(Boolean).join(", ")
+      if (locType === "fbo") formattedAddress = [locationName, address1, city, stateVal].filter(Boolean).join(", ")
     } else if (locType === "airport") {
       const parts = [airportName || airportCode, airportCode && airportName ? `(${airportCode})` : ""].filter(Boolean)
       formattedAddress = parts.join(" ") || airportCode || airportName
