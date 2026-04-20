@@ -1801,7 +1801,7 @@ function RouteBuilder({
       formattedAddress = [locationName, address1, address2, city, stateVal ? `${stateVal}${zip ? " " + zip : ""}` : zip].filter(Boolean).join(", ")
       if (locType === "fbo") formattedAddress = [locationName, address1, city, stateVal].filter(Boolean).join(", ")
     } else if (locType === "airport") {
-      const parts = [airportName || airportCode, airportCode && airportName ? `(${airportCode})` : ""].filter(Boolean)
+      const parts = [airportName || airportCode, airportCode && airportName ? `(${airportCode})` : "", airlineName || airlineCode || ""].filter(Boolean)
       formattedAddress = parts.join(" ") || airportCode || airportName
     } else if (locType === "seaport") {
       formattedAddress = [portName || seaportCode, seaportCode && portName ? `(${seaportCode})` : ""].filter(Boolean).join(" ") || seaportCode || portName
