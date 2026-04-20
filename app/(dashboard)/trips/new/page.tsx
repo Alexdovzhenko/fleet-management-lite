@@ -1803,6 +1803,7 @@ function RouteBuilder({
     } else if (locType === "airport") {
       const parts = [airportName || airportCode, airportCode && airportName ? `(${airportCode})` : "", airlineName || airlineCode || ""].filter(Boolean)
       formattedAddress = parts.join(" ") || airportCode || airportName
+      console.log('[Airport Stop] airportName:', airportName, 'airportCode:', airportCode, 'airlineName:', airlineName, 'airlineCode:', airlineCode, 'parts:', parts, 'formattedAddress:', formattedAddress)
     } else if (locType === "seaport") {
       formattedAddress = [portName || seaportCode, seaportCode && portName ? `(${seaportCode})` : ""].filter(Boolean).join(" ") || seaportCode || portName
     }
