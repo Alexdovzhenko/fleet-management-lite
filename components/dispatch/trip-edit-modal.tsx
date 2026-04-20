@@ -52,7 +52,6 @@ import { FBOAutocomplete } from "@/components/ui/fbo-autocomplete"
 import { useUpdateTrip, useTrip } from "@/lib/hooks/use-trips"
 import { useDrivers } from "@/lib/hooks/use-drivers"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
-import { useInvoicesByCustomer } from "@/lib/hooks/use-billing"
 import { useVehicleTypes } from "@/lib/hooks/use-vehicle-types"
 import { useServiceTypes } from "@/lib/hooks/use-service-types"
 import { useCustomers } from "@/lib/hooks/use-customers"
@@ -1149,26 +1148,20 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const enabledTypes = serviceTypes.filter((t) => t.isEnabled)
   const { actions: statusActions } = useStatusActionsStore()
   const { data: billingSettings } = useBillingSettings()
-  const { data: invoicesByCustomer = [] } = useInvoicesByCustomer(currentTrip?.customerId)
 
   const isFarmedIn = !!currentTrip?.farmedIn
-  // Get invoice: prefer direct relation, fallback to customer invoices (most recent OPEN invoice)
-  const tripInvoice = currentTrip?.invoice ||
-    (invoicesByCustomer && invoicesByCustomer.length > 0
-      ? invoicesByCustomer.find((inv: any) => inv.status === 'OPEN') || invoicesByCustomer[0]
-      : null)
+  // Only show invoice directly linked to this trip (1:1 relationship)
+  const tripInvoice = currentTrip?.invoice || null
 
   // Debug invoice lookup
   useEffect(() => {
     if (currentTrip?.id) {
       console.log('[TripEditModal] Trip ID:', currentTrip.id)
-      console.log('[TripEditModal] Customer ID:', currentTrip.customerId)
       console.log('[TripEditModal] Direct invoice (from trip.invoice):', currentTrip?.invoice)
-      console.log('[TripEditModal] Invoices from customer search:', invoicesByCustomer)
       console.log('[TripEditModal] Final tripInvoice:', tripInvoice)
       console.log('[TripEditModal] Invoice total to pass:', tripInvoice?.total ? Number(tripInvoice.total) : null)
     }
-  }, [currentTrip, invoicesByCustomer, tripInvoice])
+  }, [currentTrip, tripInvoice])
 
   const [farmOutOpen, setFarmOutOpen]         = useState(false)
   const [sendEmailOpen, setSendEmailOpen]     = useState(false)
