@@ -1250,7 +1250,6 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     const d = new Date(dtLocal)
     if (isNaN(d.getTime())) return ""
     return d.toLocaleString("en-US", {
-      month: "short", day: "numeric", year: "numeric",
       hour: "numeric", minute: "2-digit", hour12: true,
     })
   }
