@@ -1245,6 +1245,17 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
   }
 
+  function extractTimeFromDatetimeLocal(dtLocal: string): string {
+    if (!dtLocal) return ""
+    const match = dtLocal.match(/T(\d{2}:\d{2})/)
+    return match ? match[1] : ""
+  }
+
+  function combineDatetimeLocal(dtLocal: string, timeStr: string): string {
+    if (!dtLocal || !timeStr) return dtLocal
+    return dtLocal.split("T")[0] + "T" + timeStr
+  }
+
   function formatPobDisplay(dtLocal: string): string {
     if (!dtLocal) return ""
     const d = new Date(dtLocal)
@@ -2014,10 +2025,11 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                     ) : (
                       <div className="space-y-2.5">
                         <input
-                          type="datetime-local"
-                          value={pobTime}
+                          type="time"
+                          value={extractTimeFromDatetimeLocal(pobTime)}
                           onChange={(e) => {
-                            setPobTime(e.target.value)
+                            const newDatetime = combineDatetimeLocal(pobTime, e.target.value)
+                            setPobTime(newDatetime)
                             setPobWasEdited(true)
                           }}
                           className="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400 transition-all duration-150 bg-gray-50"
