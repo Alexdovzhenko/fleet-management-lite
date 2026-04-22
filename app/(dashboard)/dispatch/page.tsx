@@ -179,7 +179,7 @@ function DispatchPageInner() {
 
       {/* ── Premium Header Card ── */}
       <div
-        className="bg-white rounded-2xl shrink-0 overflow-hidden"
+        className="bg-white rounded-2xl shrink-0"
         style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.04)" }}
       >
         {/* Top row */}
