@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Plus, Search, X, ChevronLeft, ChevronRight, Grid3X3, Settings2 } from "lucide-react"
+import { Plus, Search, X, ChevronLeft, ChevronRight, Grid3X3, Settings2, CalendarDays } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useTrips, useTrip, useCreateTrip } from "@/lib/hooks/use-trips"
@@ -14,7 +14,7 @@ import { FarmInNotification } from "@/components/dispatch/farm-in-notification"
 import { TripForm } from "@/components/trips/trip-form"
 import { EmptyState } from "@/components/shared/empty-state"
 import { TableSkeleton } from "@/components/shared/loading-skeleton"
-import { format, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, isToday, addMonths, subMonths, startOfWeek, endOfWeek } from "date-fns"
+import { format, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, isToday, addMonths, subMonths } from "date-fns"
 import { cn } from "@/lib/utils"
 import type { Trip } from "@/types"
 
@@ -124,7 +124,6 @@ function DispatchPageInner() {
     return () => document.removeEventListener("keydown", handleKey)
   }, [])
 
-  // When navigated from a notification (?open=tripId), open that trip's modal
   useEffect(() => {
     if (!openTrip) return
     const tripDate = new Date(openTrip.pickupDate)
@@ -154,7 +153,6 @@ function DispatchPageInner() {
     })
     .sort((a, b) => timeToMinutes(a.pickupTime) - timeToMinutes(b.pickupTime))
 
-  // Group by status for quick counts
   const counts = {
     all: trips?.length || 0,
     inProgress: trips?.filter((t) => ["IN_PROGRESS", "DRIVER_EN_ROUTE", "DRIVER_ARRIVED"].includes(t.status)).length || 0,
@@ -171,310 +169,336 @@ function DispatchPageInner() {
     })
   }
 
+  const visibleFilterOptions = ALL_STATUS_OPTIONS.filter(opt => visibleStatuses.includes(opt.value))
+  const allFilterTabs = [{ label: "All", value: "all" }, ...visibleFilterOptions]
+
   return (
     <>
     <FarmInNotification />
-    <div className="h-full flex flex-col space-y-4">
+    <div className="h-full flex flex-col gap-3">
 
-      {/* ── Header card ── */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.03)] shrink-0">
+      {/* ── Premium Header Card ── */}
+      <div
+        className="bg-white rounded-2xl shrink-0 overflow-hidden"
+        style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.04)" }}
+      >
+        {/* Top row */}
+        <div className="flex items-center justify-between gap-4 px-5 pt-5 pb-4">
 
-        {/* Top row: icon + title + stat boxes */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 px-4 sm:px-6 pt-4 sm:pt-5 pb-4 sm:pb-5">
+          {/* Left: icon + title + date */}
           <div className="flex items-center gap-3.5 min-w-0">
             <div
-              className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-              style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)", boxShadow: "0 4px 12px rgba(37,99,235,0.20)" }}
+              className="w-10 h-10 rounded-[13px] flex items-center justify-center shrink-0"
+              style={{ background: "linear-gradient(145deg, #1a3a6b 0%, #2563eb 55%, #3b82f6 100%)", boxShadow: "0 4px 14px rgba(37,99,235,0.28), inset 0 1px 0 rgba(255,255,255,0.15)" }}
             >
-              <Grid3X3 className="w-[17px] h-[17px] text-white" />
+              <Grid3X3 className="w-[17px] h-[17px] text-white" strokeWidth={2} />
             </div>
             <div className="min-w-0">
-              <h1 className="text-sm sm:text-[15px] font-bold text-gray-900 leading-tight">
+              <h1 className="text-[15px] font-bold text-[#1d1d1f] leading-tight tracking-[-0.01em]">
                 {isSearching ? "Search Results" : "Dispatch"}
               </h1>
-              <p className="text-[11px] sm:text-[12px] text-gray-400 mt-0.5 leading-tight truncate">
+              <p className="text-[12px] text-[#6e6e73] mt-0.5 leading-tight truncate font-medium">
                 {isSearching
                   ? `${counts.all} reservation${counts.all !== 1 ? "s" : ""} found`
-                  : isLoading ? "Loading…" : format(selectedDate, "EEEE, MMMM d, yyyy")}
+                  : isLoading ? "Loading…" : isToday(selectedDate) ? "Today · " + format(selectedDate, "MMMM d, yyyy") : format(selectedDate, "EEEE · MMMM d, yyyy")}
               </p>
             </div>
           </div>
 
-          <div className="flex items-stretch divide-x divide-gray-100 rounded-xl border border-gray-100 bg-gray-50/50 overflow-hidden shrink-0">
-            {([
-              { label: "Total",      value: counts.all,        dot: "bg-blue-500" },
-              { label: "Active",     value: counts.inProgress, dot: "bg-emerald-500" },
-              { label: "Unassigned", value: counts.unassigned, dot: "bg-amber-400" },
-            ]).map((stat) => (
-              <div key={stat.label} className="flex flex-col items-center justify-center px-3 sm:px-5 py-2 sm:py-3 min-w-[64px] sm:min-w-[80px]">
-                <span className="text-lg sm:text-[22px] font-bold leading-none tracking-tight text-gray-800">{stat.value}</span>
-                <span className="flex items-center gap-1 sm:gap-1.5 mt-1">
-                  <span className={cn("w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full shrink-0", stat.dot)} />
-                  <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium leading-none whitespace-nowrap">{stat.label}</span>
-                </span>
-              </div>
-            ))}
+          {/* Right: stat pills + new trip */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            {/* Stat pills */}
+            <div className="hidden sm:flex items-center gap-1.5">
+              {[
+                { label: "Total",       value: counts.all,        color: "bg-blue-50 text-blue-700",    dot: "bg-blue-500" },
+                { label: "Active",      value: counts.inProgress, color: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500" },
+                { label: "Unassigned",  value: counts.unassigned, color: "bg-amber-50 text-amber-700",  dot: "bg-amber-400" },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold", s.color)}
+                >
+                  <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", s.dot)} />
+                  <span className="tabular-nums">{s.value}</span>
+                  <span className="font-medium opacity-70">{s.label}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* New Trip CTA */}
+            <button
+              onClick={() => router.push("/trips/new")}
+              className="flex items-center gap-1.5 h-9 px-4 rounded-xl text-[13px] font-semibold text-white transition-all duration-150 active:scale-95 select-none cursor-pointer"
+              style={{ background: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)", boxShadow: "0 2px 10px rgba(37,99,235,0.30), inset 0 1px 0 rgba(255,255,255,0.15)" }}
+            >
+              <Plus className="w-4 h-4" strokeWidth={2.5} />
+              <span className="hidden sm:inline">New Reservation</span>
+              <span className="sm:hidden">New</span>
+            </button>
           </div>
         </div>
 
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-100 to-transparent mx-6" />
+        {/* Divider */}
+        <div className="h-px bg-[#f2f2f7] mx-5" />
 
-        {/* Bottom rows: date nav + filters + search + CTA (two rows on mobile) */}
-        <div className="flex flex-col gap-2 px-4 sm:px-6 py-3 sm:py-4">
-          {/* Row 1: Date navigator + Search + New Trip */}
-          <div className="flex items-center gap-2 flex-wrap">
+        {/* Bottom controls */}
+        <div className="flex flex-col gap-2.5 px-5 py-3.5">
+
+          {/* Row 1: Date nav + Search */}
+          <div className="flex items-center gap-2">
+
             {/* Date navigator */}
             {!isSearching && (
-              <div className="flex items-center gap-0.5 bg-gray-50 border border-gray-100 rounded-xl px-1 py-1 shrink-0">
-              <button
-                onClick={() => setSelectedDate((d) => subDays(d, 1))}
-                className="w-7 h-7 rounded-lg hover:bg-white hover:shadow-sm flex items-center justify-center transition-all"
-              >
-                <ChevronLeft className="w-3.5 h-3.5 text-gray-500" />
-              </button>
-              <div className="relative" ref={calendarRef}>
+              <div className="flex items-center gap-0 bg-[#f5f5f7] rounded-xl border border-[#e5e5ea] p-0.5 shrink-0">
                 <button
-                  onClick={() => { setShowCalendar((s) => !s); setCalendarMonth(selectedDate) }}
-                  className="text-[12px] font-semibold text-gray-700 px-2.5 py-1 hover:bg-white hover:shadow-sm rounded-lg min-w-[88px] text-center transition-all"
+                  onClick={() => setSelectedDate(d => subDays(d, 1))}
+                  className="w-7 h-7 rounded-[9px] hover:bg-white hover:shadow-sm flex items-center justify-center transition-all duration-150 active:scale-90 cursor-pointer"
                 >
-                  {isToday(selectedDate) ? "Today" : format(selectedDate, "MM/dd/yyyy")}
+                  <ChevronLeft className="w-3.5 h-3.5 text-[#6e6e73]" />
                 </button>
-                {showCalendar && (
-                  <div className="absolute top-full left-0 mt-2 z-50 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden">
-                    {!showSpecificDate ? (
-                      <div className="py-1 w-44">
-                        {[
-                          { label: "Today",     action: () => { setSelectedDate(new Date()); setShowCalendar(false) } },
-                          { label: "Tomorrow",  action: () => { setSelectedDate(addDays(new Date(), 1)); setShowCalendar(false) } },
-                          { label: "Yesterday", action: () => { setSelectedDate(subDays(new Date(), 1)); setShowCalendar(false) } },
-                        ].map(({ label, action }) => (
-                          <button key={label} onClick={action} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors">
-                            {label}
-                          </button>
-                        ))}
-                        <div className="border-t border-gray-100 my-1" />
-                        <button
-                          onClick={() => { setShowSpecificDate(true); setCalendarMonth(selectedDate) }}
-                          className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors flex items-center justify-between"
-                        >
-                          Specific Date <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="p-3 w-72">
-                        <div className="flex items-center gap-2 mb-3">
-                          <button onClick={() => setShowSpecificDate(false)} className="p-1 hover:bg-gray-100 rounded">
-                            <ChevronLeft className="w-4 h-4" />
-                          </button>
-                          <span className="text-sm font-semibold">Specific Date</span>
-                        </div>
-                        <div className="flex items-center justify-between mb-2">
-                          <button onClick={() => setCalendarMonth((m) => subMonths(m, 1))} className="p-1 hover:bg-gray-100 rounded">
-                            <ChevronLeft className="w-4 h-4" />
-                          </button>
-                          <span className="text-sm font-medium">{format(calendarMonth, "MMMM yyyy")}</span>
-                          <button onClick={() => setCalendarMonth((m) => addMonths(m, 1))} className="p-1 hover:bg-gray-100 rounded">
-                            <ChevronRight className="w-4 h-4" />
-                          </button>
-                        </div>
-                        <div className="grid grid-cols-7 mb-1">
-                          {["Su","Mo","Tu","We","Th","Fr","Sa"].map((d) => (
-                            <div key={d} className="text-center text-xs text-gray-400 font-medium py-1">{d}</div>
-                          ))}
-                        </div>
-                        <div className="grid grid-cols-7">
-                          {Array.from({ length: getDay(startOfMonth(calendarMonth)) }).map((_, i) => (
-                            <div key={`e-${i}`} />
-                          ))}
-                          {eachDayOfInterval({ start: startOfMonth(calendarMonth), end: endOfMonth(calendarMonth) }).map((day) => (
+
+                <div className="relative" ref={calendarRef}>
+                  <button
+                    onClick={() => { setShowCalendar(s => !s); setCalendarMonth(selectedDate) }}
+                    className="flex items-center gap-1.5 text-[12px] font-semibold text-[#1d1d1f] px-2.5 py-1 hover:bg-white hover:shadow-sm rounded-[9px] min-w-[90px] text-center justify-center transition-all duration-150 cursor-pointer"
+                  >
+                    <CalendarDays className="w-3 h-3 text-[#6e6e73]" />
+                    {isToday(selectedDate) ? "Today" : format(selectedDate, "MM/dd/yyyy")}
+                  </button>
+
+                  {showCalendar && (
+                    <div
+                      className="absolute top-full left-0 mt-2 z-50 bg-white rounded-2xl overflow-hidden"
+                      style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05)" }}
+                    >
+                      {!showSpecificDate ? (
+                        <div className="py-1.5 w-48">
+                          {[
+                            { label: "Today",     action: () => { setSelectedDate(new Date()); setShowCalendar(false) } },
+                            { label: "Tomorrow",  action: () => { setSelectedDate(addDays(new Date(), 1)); setShowCalendar(false) } },
+                            { label: "Yesterday", action: () => { setSelectedDate(subDays(new Date(), 1)); setShowCalendar(false) } },
+                          ].map(({ label, action }) => (
                             <button
-                              key={day.toISOString()}
-                              onClick={() => { setSelectedDate(day); setShowCalendar(false); setShowSpecificDate(false) }}
-                              className={cn(
-                                "text-center text-sm py-1 rounded transition-colors hover:bg-blue-50",
-                                isSameDay(day, selectedDate) && "bg-blue-600 text-white hover:bg-blue-600",
-                                isToday(day) && !isSameDay(day, selectedDate) && "font-semibold text-blue-600"
-                              )}
+                              key={label}
+                              onClick={action}
+                              className="w-full text-left px-4 py-2.5 text-[13px] font-medium text-[#1d1d1f] hover:bg-[#f5f5f7] transition-colors cursor-pointer"
                             >
-                              {format(day, "d")}
+                              {label}
                             </button>
                           ))}
+                          <div className="h-px bg-[#f2f2f7] mx-3 my-1" />
+                          <button
+                            onClick={() => { setShowSpecificDate(true); setCalendarMonth(selectedDate) }}
+                            className="w-full text-left px-4 py-2.5 text-[13px] font-medium text-[#1d1d1f] hover:bg-[#f5f5f7] transition-colors flex items-center justify-between cursor-pointer"
+                          >
+                            Pick a date <ChevronRight className="w-3.5 h-3.5 text-[#aeaeb2]" />
+                          </button>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-              <button
-                onClick={() => setSelectedDate((d) => addDays(d, 1))}
-                className="w-7 h-7 rounded-lg hover:bg-white hover:shadow-sm flex items-center justify-center transition-all"
-              >
-                <ChevronRight className="w-3.5 h-3.5 text-gray-500" />
-              </button>
-            </div>
-          )}
-
-          {/* Search */}
-          <div className="relative flex-1 min-w-0">
-            <Search className={cn(
-              "absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none transition-colors duration-150",
-              committed ? "text-blue-500" : "text-gray-400"
-            )} />
-            <input
-              ref={searchRef}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") setCommitted(search) }}
-              placeholder="Search by name, address…"
-              className={cn(
-                "h-9 pl-8 w-full text-xs sm:text-[12px] rounded-xl border outline-none transition-all duration-200 text-gray-700 placeholder:text-gray-400",
-                committed
-                  ? "pr-14 bg-white border-blue-300 ring-2 ring-blue-500/15"
-                  : "pr-8 bg-gray-50 border-gray-100 hover:border-gray-200 focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-500/15"
-              )}
-            />
-            {committed ? (
-              <button
-                onClick={() => { setSearch(""); setCommitted(""); searchRef.current?.focus() }}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[11px] font-semibold text-blue-500 hover:text-blue-700 transition-colors"
-              >
-                <X className="w-3 h-3" />
-                <span className="hidden sm:inline">Clear</span>
-              </button>
-            ) : search ? (
-              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                <kbd className="text-[10px] font-mono text-gray-400 bg-gray-100 border border-gray-100 rounded px-1.5 py-0.5 leading-none">↵</kbd>
-              </div>
-            ) : null}
-          </div>
-
-          <Button
-            onClick={() => router.push("/trips/new")}
-            className="h-9 text-xs sm:text-sm font-semibold text-white gap-1 sm:gap-1.5 px-2.5 sm:px-4 shrink-0 whitespace-nowrap"
-            style={{ background: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)", boxShadow: "0 2px 8px rgba(37,99,235,0.25)" }}
-          >
-            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span className="hidden sm:inline">New Trip</span>
-            <span className="sm:hidden">+</span>
-          </Button>
-          </div>
-
-          {/* Row 2: Status filters + customize + driver filter (scrollable on mobile) */}
-          <div className="flex items-center gap-1 p-1 bg-gray-50 rounded-xl border border-gray-100 overflow-x-auto">
-            {/* Vertical divider (hidden on mobile) */}
-            {!isSearching && <div className="w-px h-5 bg-gray-200 shrink-0 hidden sm:block" />}
-
-          {/* Status filter tabs + customize */}
-          <div className="flex items-center gap-1 shrink-0">
-            {/* "All" tab — always visible */}
-            <button
-              onClick={() => setStatusFilter("all")}
-              className={cn(
-                "px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150 whitespace-nowrap",
-                statusFilter === "all"
-                  ? "bg-white text-gray-800 shadow-sm border border-gray-100"
-                  : "text-gray-400 hover:text-gray-600"
-              )}
-            >
-              All
-            </button>
-
-            {/* User-selected status tabs */}
-            {ALL_STATUS_OPTIONS.filter(opt => visibleStatuses.includes(opt.value)).map((f) => (
-              <button
-                key={f.value}
-                onClick={() => setStatusFilter(f.value)}
-                className={cn(
-                  "px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150 whitespace-nowrap",
-                  statusFilter === f.value
-                    ? "bg-white text-gray-800 shadow-sm border border-gray-100"
-                    : "text-gray-400 hover:text-gray-600"
-                )}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Customize filter button */}
-          <div className="relative shrink-0" ref={filterConfigRef}>
-            <button
-              onClick={() => setShowFilterConfig(s => !s)}
-              className={cn(
-                "w-9 h-9 rounded-xl border flex items-center justify-center transition-all",
-                showFilterConfig
-                  ? "bg-blue-600 border-blue-600 text-white"
-                  : "bg-gray-50 border-gray-100 text-gray-400 hover:text-gray-600 hover:border-gray-200"
-              )}
-            >
-              <Settings2 className="w-3.5 h-3.5" />
-            </button>
-
-            {showFilterConfig && (
-              <div className="absolute top-full left-0 mt-2 z-50 bg-white border border-gray-100 rounded-xl shadow-lg w-52 overflow-hidden">
-                <div className="px-4 pt-3.5 pb-2">
-                  <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Visible Filters</p>
-                </div>
-                <div className="px-2 pb-2">
-                  {ALL_STATUS_OPTIONS.map((opt) => {
-                    const isEnabled = visibleStatuses.includes(opt.value)
-                    const isLast = isEnabled && visibleStatuses.length === 1
-                    return (
-                      <button
-                        key={opt.value}
-                        onClick={() => !isLast && toggleStatus(opt.value)}
-                        disabled={isLast}
-                        className={cn(
-                          "w-full flex items-center justify-between gap-3 px-2.5 py-2.5 rounded-lg transition-colors text-left",
-                          isLast ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-50"
-                        )}
-                      >
-                        <span className="text-[13px] font-medium text-gray-700">{opt.label}</span>
-                        <div className={cn(
-                          "w-8 h-[18px] rounded-full transition-colors relative shrink-0",
-                          isEnabled ? "bg-blue-600" : "bg-gray-200"
-                        )}>
-                          <div className={cn(
-                            "absolute top-[2px] w-[14px] h-[14px] rounded-full bg-white shadow-sm transition-all duration-200",
-                            isEnabled ? "right-[2px]" : "left-[2px]"
-                          )} />
+                      ) : (
+                        <div className="p-4 w-72">
+                          <div className="flex items-center gap-2 mb-4">
+                            <button
+                              onClick={() => setShowSpecificDate(false)}
+                              className="w-7 h-7 rounded-full hover:bg-[#f5f5f7] flex items-center justify-center transition-colors cursor-pointer"
+                            >
+                              <ChevronLeft className="w-4 h-4 text-[#6e6e73]" />
+                            </button>
+                            <span className="text-[13px] font-semibold text-[#1d1d1f]">Pick a date</span>
+                          </div>
+                          <div className="flex items-center justify-between mb-3">
+                            <button
+                              onClick={() => setCalendarMonth(m => subMonths(m, 1))}
+                              className="w-7 h-7 rounded-full hover:bg-[#f5f5f7] flex items-center justify-center transition-colors cursor-pointer"
+                            >
+                              <ChevronLeft className="w-3.5 h-3.5 text-[#6e6e73]" />
+                            </button>
+                            <span className="text-[13px] font-semibold text-[#1d1d1f]">{format(calendarMonth, "MMMM yyyy")}</span>
+                            <button
+                              onClick={() => setCalendarMonth(m => addMonths(m, 1))}
+                              className="w-7 h-7 rounded-full hover:bg-[#f5f5f7] flex items-center justify-center transition-colors cursor-pointer"
+                            >
+                              <ChevronRight className="w-3.5 h-3.5 text-[#6e6e73]" />
+                            </button>
+                          </div>
+                          <div className="grid grid-cols-7 mb-1">
+                            {["Su","Mo","Tu","We","Th","Fr","Sa"].map(d => (
+                              <div key={d} className="text-center text-[11px] font-semibold text-[#aeaeb2] py-1 uppercase tracking-wide">{d}</div>
+                            ))}
+                          </div>
+                          <div className="grid grid-cols-7 gap-y-0.5">
+                            {Array.from({ length: getDay(startOfMonth(calendarMonth)) }).map((_, i) => (
+                              <div key={`e-${i}`} />
+                            ))}
+                            {eachDayOfInterval({ start: startOfMonth(calendarMonth), end: endOfMonth(calendarMonth) }).map(day => (
+                              <button
+                                key={day.toISOString()}
+                                onClick={() => { setSelectedDate(day); setShowCalendar(false); setShowSpecificDate(false) }}
+                                className={cn(
+                                  "text-center text-[13px] py-1.5 rounded-full transition-all duration-150 font-medium cursor-pointer",
+                                  isSameDay(day, selectedDate)
+                                    ? "bg-blue-600 text-white"
+                                    : isToday(day)
+                                    ? "text-blue-600 font-bold hover:bg-blue-50"
+                                    : "text-[#1d1d1f] hover:bg-[#f5f5f7]"
+                                )}
+                              >
+                                {format(day, "d")}
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                      </button>
-                    )
-                  })}
+                      )}
+                    </div>
+                  )}
                 </div>
+
+                <button
+                  onClick={() => setSelectedDate(d => addDays(d, 1))}
+                  className="w-7 h-7 rounded-[9px] hover:bg-white hover:shadow-sm flex items-center justify-center transition-all duration-150 active:scale-90 cursor-pointer"
+                >
+                  <ChevronRight className="w-3.5 h-3.5 text-[#6e6e73]" />
+                </button>
               </div>
             )}
+
+            {/* Search */}
+            <div className="relative flex-1 min-w-0">
+              <Search className={cn(
+                "absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none transition-colors duration-200",
+                committed ? "text-blue-500" : "text-[#aeaeb2]"
+              )} />
+              <input
+                ref={searchRef}
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter") setCommitted(search) }}
+                placeholder="Search reservations…"
+                className={cn(
+                  "h-9 pl-8.5 w-full text-[13px] rounded-xl border outline-none transition-all duration-200 text-[#1d1d1f] placeholder:text-[#aeaeb2] font-medium",
+                  committed
+                    ? "pr-14 bg-white border-blue-300 ring-2 ring-blue-500/12"
+                    : "pr-8 bg-[#f5f5f7] border-[#e5e5ea] hover:border-[#d1d1d6] focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-500/12"
+                )}
+              />
+              {committed ? (
+                <button
+                  onClick={() => { setSearch(""); setCommitted(""); searchRef.current?.focus() }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[11px] font-semibold text-blue-500 hover:text-blue-700 transition-colors cursor-pointer"
+                >
+                  <X className="w-3 h-3" />
+                  <span>Clear</span>
+                </button>
+              ) : search ? (
+                <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <kbd className="text-[10px] font-mono text-[#aeaeb2] bg-[#f5f5f7] border border-[#e5e5ea] rounded-[5px] px-1.5 py-0.5 leading-none">↵</kbd>
+                </div>
+              ) : null}
+            </div>
           </div>
+
+          {/* Row 2: iOS-style segmented filter + driver select */}
+          <div className="flex items-center gap-2">
+
+            {/* Segmented control */}
+            <div className="flex items-center gap-0.5 bg-[#f2f2f7] rounded-[11px] p-1 border border-[#e5e5ea] flex-1 overflow-x-auto">
+              {allFilterTabs.map(tab => (
+                <button
+                  key={tab.value}
+                  onClick={() => setStatusFilter(tab.value)}
+                  className={cn(
+                    "px-3 py-1.5 rounded-[8px] text-[12px] font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex-shrink-0",
+                    statusFilter === tab.value
+                      ? "bg-white text-[#1d1d1f] shadow-[0_1px_4px_rgba(0,0,0,0.10),0_0_0_0.5px_rgba(0,0,0,0.06)]"
+                      : "text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/50"
+                  )}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Customize columns */}
+            <div className="relative shrink-0" ref={filterConfigRef}>
+              <button
+                onClick={() => setShowFilterConfig(s => !s)}
+                className={cn(
+                  "w-9 h-9 rounded-[10px] border flex items-center justify-center transition-all duration-150 cursor-pointer",
+                  showFilterConfig
+                    ? "bg-blue-600 border-blue-600 text-white shadow-sm"
+                    : "bg-[#f5f5f7] border-[#e5e5ea] text-[#6e6e73] hover:bg-white hover:border-[#d1d1d6] hover:shadow-sm"
+                )}
+              >
+                <Settings2 className="w-3.5 h-3.5" />
+              </button>
+
+              {showFilterConfig && (
+                <div
+                  className="absolute top-full right-0 mt-2 z-50 bg-white rounded-2xl w-52 overflow-hidden"
+                  style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05)" }}
+                >
+                  <div className="px-4 pt-3.5 pb-2">
+                    <p className="text-[10px] font-bold text-[#aeaeb2] uppercase tracking-[0.08em]">Visible Filters</p>
+                  </div>
+                  <div className="px-2 pb-2">
+                    {ALL_STATUS_OPTIONS.map(opt => {
+                      const isEnabled = visibleStatuses.includes(opt.value)
+                      const isLast = isEnabled && visibleStatuses.length === 1
+                      return (
+                        <button
+                          key={opt.value}
+                          onClick={() => !isLast && toggleStatus(opt.value)}
+                          disabled={isLast}
+                          className={cn(
+                            "w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl transition-colors text-left cursor-pointer",
+                            isLast ? "opacity-40 cursor-not-allowed" : "hover:bg-[#f5f5f7]"
+                          )}
+                        >
+                          <span className="text-[13px] font-medium text-[#1d1d1f]">{opt.label}</span>
+                          <div className={cn(
+                            "w-[34px] h-[20px] rounded-full transition-all duration-200 relative shrink-0",
+                            isEnabled ? "bg-blue-600" : "bg-[#e5e5ea]"
+                          )}>
+                            <div className={cn(
+                              "absolute top-[2px] w-4 h-4 rounded-full bg-white transition-all duration-200",
+                              isEnabled ? "right-[2px] shadow-[0_1px_4px_rgba(0,0,0,0.25)]" : "left-[2px] shadow-[0_1px_3px_rgba(0,0,0,0.15)]"
+                            )} />
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Driver filter */}
             <div className="relative shrink-0">
               <select
                 value={driverFilter}
-                onChange={(e) => setDriverFilter(e.target.value)}
+                onChange={e => setDriverFilter(e.target.value)}
                 className={cn(
-                  "appearance-none h-8 pl-2.5 pr-6 rounded-lg border text-[11px] sm:text-[12px] font-semibold cursor-pointer transition-all outline-none",
+                  "appearance-none h-9 pl-3 pr-7 rounded-[10px] border text-[12px] font-semibold cursor-pointer transition-all outline-none",
                   driverFilter !== "all"
                     ? "bg-blue-600 border-blue-600 text-white"
-                    : "bg-gray-50 border-gray-100 text-gray-600 hover:border-gray-200"
+                    : "bg-[#f5f5f7] border-[#e5e5ea] text-[#1d1d1f] hover:bg-white hover:border-[#d1d1d6] hover:shadow-sm"
                 )}
               >
                 <option value="all">All Drivers</option>
                 <option value="unassigned">Unassigned</option>
-                {drivers?.map((d) => (
+                {drivers?.map(d => (
                   <option key={d.id} value={d.id}>{d.name}</option>
                 ))}
               </select>
               <ChevronRight className={cn(
-                "absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none rotate-90",
-                driverFilter !== "all" ? "text-white/80" : "text-gray-400"
+                "absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none rotate-90",
+                driverFilter !== "all" ? "text-white/80" : "text-[#aeaeb2]"
               )} />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Trip Grid */}
+      {/* ── Trip Grid ── */}
       {isLoading ? (
         <TableSkeleton rows={8} />
       ) : !filteredTrips.length ? (
@@ -489,13 +513,12 @@ function DispatchPageInner() {
         <TripGrid
           trips={filteredTrips}
           selectedTripId={selectedTrip?.id}
-          onSelect={(trip) => setSelectedTrip(selectedTrip?.id === trip.id ? null : trip)}
+          onSelect={trip => setSelectedTrip(selectedTrip?.id === trip.id ? null : trip)}
           onDoubleClick={(trip, pos) => { setQuickTrip(trip); setQuickPos(pos) }}
           showDate={isSearching}
         />
       )}
 
-      {/* Quick Action Popup */}
       {quickTrip && (
         <QuickActionPopup
           trip={quickTrip}
@@ -504,14 +527,12 @@ function DispatchPageInner() {
         />
       )}
 
-      {/* Trip Edit Modal */}
       <TripEditModal
         trip={selectedTrip}
         open={!!selectedTrip}
         onClose={() => setSelectedTrip(null)}
       />
 
-      {/* New Trip Sheet */}
       <Sheet open={showNewTrip} onOpenChange={setShowNewTrip}>
         <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
           <SheetHeader>
