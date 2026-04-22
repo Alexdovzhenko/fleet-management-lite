@@ -1491,15 +1491,9 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
       stops: stopsData as never,
       ...(pobWasEdited ? { passengerOnBoardAt: (pobTime ? new Date(pobTime).toISOString() : null) as never } : {}),
     }, {
-      onSuccess: (updatedTrip) => {
+      onSuccess: () => {
         setSaveSuccess(true)
         setTimeout(() => setSaveSuccess(false), 2000)
-
-        // Show POB notification if status changed to IN_PROGRESS
-        if (updatedTrip.status === "IN_PROGRESS" && updatedTrip.passengerOnBoardAt) {
-          const pobTime = formatPobDisplay(toDatetimeLocal(updatedTrip.passengerOnBoardAt))
-          toast.success(`POB recorded at ${pobTime}`, { duration: 3000 })
-        }
       },
       onError: (err) => setSaveError(err instanceof Error ? err.message : "Failed to save changes"),
     })
