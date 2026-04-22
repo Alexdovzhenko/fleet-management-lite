@@ -146,16 +146,18 @@ export async function PUT(
     const body = await request.json()
     const data = updateTripSchema.parse(body)
 
+    const isStatusChanging = data.status !== undefined && data.status !== existing.status
+
     const statusTimestamps: Record<string, object> = {
       DRIVER_EN_ROUTE: { driverEnRouteAt: new Date() },
       DRIVER_ARRIVED: { driverArrivedAt: new Date() },
-      // Auto-set POB whenever status changes to IN_PROGRESS (unless user manually provides time)
+      // Auto-set POB only when status actually transitions to IN_PROGRESS
       IN_PROGRESS: data.passengerOnBoardAt === undefined
         ? { passengerOnBoardAt: new Date() }
         : {},
       COMPLETED: { tripCompletedAt: new Date() },
     }
-    const extraData = data.status ? (statusTimestamps[data.status] || {}) : {}
+    const extraData = (isStatusChanging && data.status) ? (statusTimestamps[data.status] || {}) : {}
 
     const isOwned = existing.companyId === companyId
 

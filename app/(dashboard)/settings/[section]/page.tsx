@@ -393,7 +393,10 @@ function AddressBookSection() {
     setFormError(""); setEditing(addr); setModal("edit")
   }
   function fieldSetter(k: keyof AddrForm) {
-    return (e: React.ChangeEvent<HTMLInputElement>) => setForm(f => ({ ...f, [k]: e.target.value }))
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = k === "phone" ? formatPhone(e.target.value) : e.target.value
+      setForm(f => ({ ...f, [k]: value }))
+    }
   }
 
   async function handleSave() {
@@ -1502,7 +1505,7 @@ function PersonalSection() {
                 <Input
                   type="tel"
                   value={profile.phone}
-                  onChange={e => { setProfile(p => ({ ...p, phone: e.target.value })); markDirty() }}
+                  onChange={e => { setProfile(p => ({ ...p, phone: formatPhone(e.target.value) })); markDirty() }}
                   placeholder="(305) 000-0000"
                   className="h-10 text-sm pl-9 transition-shadow focus:ring-2 focus:ring-blue-500/15 focus:border-blue-400"
                 />
