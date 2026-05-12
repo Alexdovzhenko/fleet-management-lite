@@ -175,16 +175,16 @@ function TabBar({ active, onChange, unreadCount }: {
   unreadCount: number
 }) {
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
-  const [indicator, setIndicator] = useState({ left: 0, width: 0, ready: false })
+  const [indicator, setIndicator] = useState({ x: 0, width: 0, ready: false })
 
   useEffect(() => {
     const idx = TABS.findIndex((t) => t.id === active)
     const el = tabRefs.current[idx]
-    if (el) setIndicator({ left: el.offsetLeft, width: el.offsetWidth, ready: true })
+    if (el) setIndicator({ x: el.offsetLeft, width: el.offsetWidth, ready: true })
   }, [active])
 
   return (
-    <div className="relative flex items-center overflow-x-auto">
+    <div className="relative flex items-center">
       {TABS.map((tab, i) => (
         <button
           key={tab.id}
@@ -203,12 +203,13 @@ function TabBar({ active, onChange, unreadCount }: {
       ))}
       {indicator.ready && (
         <div
-          className="absolute bottom-0 h-[2px] rounded-full pointer-events-none"
+          className="absolute bottom-0 left-0 h-[2px] rounded-full pointer-events-none"
           style={{
-            left: indicator.left,
             width: indicator.width,
+            transform: `translateX(${indicator.x}px)`,
             background: "#c9a87c",
-            transition: "left 0.28s cubic-bezier(0.23,1,0.32,1), width 0.28s cubic-bezier(0.23,1,0.32,1)",
+            transition: "transform 0.28s cubic-bezier(0.23,1,0.32,1), width 0.28s cubic-bezier(0.23,1,0.32,1)",
+            willChange: "transform",
           }}
         />
       )}
