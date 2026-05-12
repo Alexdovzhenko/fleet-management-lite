@@ -24,18 +24,18 @@ const ICON_MAP: Record<string, LucideIcon> = {
 }
 
 const glassPanel = {
-  background: "rgba(255,255,255,0.12)",
-  backdropFilter: "blur(20px) saturate(180%)",
-  WebkitBackdropFilter: "blur(20px) saturate(180%)",
-  border: "0.5px solid rgba(255,255,255,0.35)",
+  background: "rgba(18,28,48,0.82)",
+  backdropFilter: "blur(24px) saturate(180%)",
+  WebkitBackdropFilter: "blur(24px) saturate(180%)",
+  border: "0.5px solid rgba(255,255,255,0.14)",
   boxShadow:
-    "0 12px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), " +
-    "inset 0 0.5px 0 rgba(255,255,255,0.80), inset 0 -0.5px 0 rgba(0,0,0,0.03)",
+    "0 16px 48px rgba(0,0,0,0.40), 0 2px 8px rgba(0,0,0,0.20), " +
+    "inset 0 0.5px 0 rgba(255,255,255,0.12)",
 } as const
 
 const iconBase = {
-  background: "rgba(0,0,0,0.045)",
-  border: "0.5px solid rgba(0,0,0,0.07)",
+  background: "rgba(255,255,255,0.08)",
+  border: "0.5px solid rgba(255,255,255,0.12)",
   borderRadius: "16px",
 } as const
 
@@ -105,7 +105,7 @@ export function DockNav() {
             className="pointer-events-auto mb-2 px-3 py-2 flex items-center gap-2 rounded-2xl"
             style={glassPanel}
           >
-            <span className="text-xs text-gray-400/80 font-medium pr-1 tracking-tight">Add</span>
+            <span className="text-xs font-medium pr-1 tracking-tight" style={{ color: "rgba(200,218,240,0.55)" }}>Add</span>
             {available.map((item) => {
               const Icon = ICON_MAP[item.iconName] || LayoutGrid
               return (
@@ -114,10 +114,10 @@ export function DockNav() {
                   onClick={() => handleAddItem(item)}
                   className="flex flex-col items-center gap-1 px-2.5 py-1.5 rounded-xl transition-colors hover:bg-black/[0.05]"
                 >
-                  <div className="w-10 h-10 flex items-center justify-center text-gray-500" style={iconBase}>
+                  <div className="w-10 h-10 flex items-center justify-center" style={{ ...iconBase, color: "rgba(200,218,240,0.85)" }}>
                     <Icon className="w-4 h-4" />
                   </div>
-                  <span className="text-[10px] text-gray-500 font-medium tracking-tight">{item.label}</span>
+                  <span className="text-[10px] font-medium tracking-tight" style={{ color: "rgba(200,218,240,0.70)" }}>{item.label}</span>
                 </button>
               )
             })}
@@ -129,7 +129,7 @@ export function DockNav() {
       <div className="pointer-events-auto">
         <motion.div
           layout
-          className="flex items-end gap-1.5 px-3 py-3 rounded-3xl"
+          className="flex items-end gap-3 px-4 py-3 rounded-3xl"
           style={glassPanel}
         >
           {/* Edit mode — draggable */}
@@ -138,7 +138,7 @@ export function DockNav() {
               axis="x"
               values={items}
               onReorder={setItems}
-              className="flex items-end gap-1.5"
+              className="flex items-end gap-3"
               style={{ listStyle: "none", margin: 0, padding: 0 }}
             >
               {items.map((item) => {
@@ -164,16 +164,16 @@ export function DockNav() {
                       className="w-12 h-12 flex items-center justify-center dock-wobble"
                       style={active ? iconActive : { ...iconBase, color: "rgb(107,114,128)" }}
                     >
-                      <Icon className="w-5 h-5" style={active ? { color: "white" } : undefined} />
+                      <Icon className="w-5 h-5" style={active ? { color: "white" } : { color: "rgba(200,218,240,0.85)" }} />
                     </div>
-                    <span className="text-[10px] text-gray-500 mt-1.5 font-medium tracking-tight">{item.label}</span>
+                    <span className="text-[10px] mt-1.5 font-medium tracking-tight" style={{ color: "rgba(200,218,240,0.70)" }}>{item.label}</span>
                   </Reorder.Item>
                 )
               })}
             </Reorder.Group>
           ) : (
             /* Normal mode */
-            <div className="flex items-end gap-1.5">
+            <div className="flex items-end gap-3">
               {items.map((item) => {
                 const Icon = ICON_MAP[item.iconName] || LayoutGrid
                 const active = isActive(item.href)
@@ -191,12 +191,12 @@ export function DockNav() {
                       className="relative w-12 h-12 flex items-center justify-center"
                       style={active ? iconActive : iconBase}
                     >
-                      <Icon className="w-5 h-5" style={{ color: active ? "white" : "rgb(100,116,139)" }} />
+                      <Icon className="w-5 h-5" style={{ color: active ? "white" : "rgba(200,218,240,0.85)" }} />
                       <AnimatePresence>
                         {showBadge && <PendingBadge count={badgeCount} />}
                       </AnimatePresence>
                     </motion.div>
-                    <span className="text-[10px] text-gray-500 mt-1.5 font-medium tracking-tight">{item.label}</span>
+                    <span className="text-[10px] mt-1.5 font-medium tracking-tight" style={{ color: "rgba(200,218,240,0.70)" }}>{item.label}</span>
                     {active && (
                       <motion.div
                         layoutId="active-dot"
@@ -213,7 +213,7 @@ export function DockNav() {
           {/* Divider */}
           <div
             className="w-px h-8 self-center mx-1 flex-shrink-0"
-            style={{ background: "rgba(0,0,0,0.08)" }}
+            style={{ background: "rgba(255,255,255,0.14)" }}
           />
 
           {/* Edit / Done button */}
@@ -228,10 +228,10 @@ export function DockNav() {
             >
               <Settings2
                 className="w-5 h-5"
-                style={{ color: isEditing ? "white" : "rgb(100,116,139)" }}
+                style={{ color: isEditing ? "white" : "rgba(200,218,240,0.85)" }}
               />
             </motion.button>
-            <span className="text-[10px] text-gray-500 mt-1.5 font-medium tracking-tight">
+            <span className="text-[10px] mt-1.5 font-medium tracking-tight" style={{ color: "rgba(200,218,240,0.70)" }}>
               {isEditing ? "Done" : "Edit"}
             </span>
           </div>
@@ -256,9 +256,9 @@ export function DockNav() {
                     : iconBase
                   }
                 >
-                  <Plus className="w-5 h-5" style={{ color: showAddPanel ? "white" : "rgb(100,116,139)" }} />
+                  <Plus className="w-5 h-5" style={{ color: showAddPanel ? "white" : "rgba(200,218,240,0.85)" }} />
                 </motion.button>
-                <span className="text-[10px] text-gray-500 mt-1.5 font-medium tracking-tight">Add</span>
+                <span className="text-[10px] mt-1.5 font-medium tracking-tight" style={{ color: "rgba(200,218,240,0.70)" }}>Add</span>
               </motion.div>
             )}
           </AnimatePresence>

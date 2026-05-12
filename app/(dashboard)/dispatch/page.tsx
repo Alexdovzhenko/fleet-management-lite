@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Plus, Search, X, ChevronLeft, ChevronRight, Grid3X3, Settings2, CalendarDays } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useTrips, useTrip, useCreateTrip } from "@/lib/hooks/use-trips"
 import { useDrivers } from "@/lib/hooks/use-drivers"
@@ -175,378 +174,474 @@ function DispatchPageInner() {
   return (
     <>
     <FarmInNotification />
-    <div className="h-full flex flex-col gap-3">
 
-      {/* ── Premium Header Card ── */}
-      <div
-        className="bg-white rounded-2xl shrink-0"
-        style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.04)" }}
-      >
-        {/* Top row */}
-        <div className="flex items-center justify-between gap-4 px-5 pt-5 pb-4">
+    {/* Covers the dock nav padding-bottom area so bg-gray-50 layout doesn't bleed through */}
+    <div
+      className="fixed bottom-0 inset-x-0 pointer-events-none"
+      style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "#080c16", zIndex: 0 }}
+    />
 
-          {/* Left: icon + title + date */}
-          <div className="flex items-center gap-3.5 min-w-0">
-            <div
-              className="w-10 h-10 rounded-[13px] flex items-center justify-center shrink-0"
-              style={{ background: "linear-gradient(145deg, #1a3a6b 0%, #2563eb 55%, #3b82f6 100%)", boxShadow: "0 4px 14px rgba(37,99,235,0.28), inset 0 1px 0 rgba(255,255,255,0.15)" }}
-            >
-              <Grid3X3 className="w-[17px] h-[17px] text-white" strokeWidth={2} />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-[15px] font-bold text-[#1d1d1f] leading-tight tracking-[-0.01em]">
-                {isSearching ? "Search Results" : "Dispatch"}
-              </h1>
-              <p className="text-[12px] text-[#6e6e73] mt-0.5 leading-tight truncate font-medium">
-                {isSearching
-                  ? `${counts.all} reservation${counts.all !== 1 ? "s" : ""} found`
-                  : isLoading ? "Loading…" : isToday(selectedDate) ? "Today · " + format(selectedDate, "MMMM d, yyyy") : format(selectedDate, "EEEE · MMMM d, yyyy")}
-              </p>
-            </div>
-          </div>
+    {/* Full-bleed dark page wrapper — cancels main padding and extends background edge-to-edge */}
+    <div
+      className="-mx-4 -mt-4 md:-mx-6 md:-mt-6"
+      style={{ background: "#080c16", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
+    >
+      <div className="px-4 pt-4 md:px-6 md:pt-6 flex flex-col gap-3">
 
-          {/* Right: stat pills + new trip */}
-          <div className="flex items-center gap-2.5 shrink-0">
-            {/* Stat pills */}
-            <div className="hidden sm:flex items-center gap-1.5">
-              {[
-                { label: "Total",       value: counts.all,        color: "bg-blue-50 text-blue-700",    dot: "bg-blue-500" },
-                { label: "Active",      value: counts.inProgress, color: "bg-emerald-50 text-emerald-700", dot: "bg-emerald-500" },
-                { label: "Unassigned",  value: counts.unassigned, color: "bg-amber-50 text-amber-700",  dot: "bg-amber-400" },
-              ].map((s) => (
-                <div
-                  key={s.label}
-                  className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold", s.color)}
+        {/* ── Control Card ── */}
+        <div
+          className="rounded-2xl shrink-0"
+          style={{
+            background: "#0d1526",
+            border: "1px solid rgba(255,255,255,0.07)",
+            boxShadow: "0 4px 24px rgba(0,0,0,0.35)",
+          }}
+        >
+          {/* Top row */}
+          <div className="flex items-center justify-between gap-4 px-5 pt-5 pb-4">
+
+            {/* Left: icon + label + date */}
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div
+                className="w-10 h-10 rounded-[13px] flex items-center justify-center shrink-0"
+                style={{
+                  background: "rgba(201,168,124,0.10)",
+                  border: "1px solid rgba(201,168,124,0.20)",
+                }}
+              >
+                <Grid3X3 className="w-[17px] h-[17px]" style={{ color: "#c9a87c" }} strokeWidth={1.75} />
+              </div>
+              <div className="min-w-0">
+                <p style={{
+                  fontSize: "0.6rem", fontWeight: 500, letterSpacing: "0.18em",
+                  textTransform: "uppercase", color: "#c9a87c",
+                  fontFamily: "var(--font-outfit, system-ui)", marginBottom: "3px",
+                }}>
+                  Dispatch
+                </p>
+                <p
+                  className="leading-tight truncate"
+                  style={{ fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "-0.01em" }}
                 >
-                  <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", s.dot)} />
-                  <span className="tabular-nums">{s.value}</span>
-                  <span className="font-medium opacity-70">{s.label}</span>
-                </div>
-              ))}
+                  {isSearching
+                    ? `${counts.all} reservation${counts.all !== 1 ? "s" : ""} found`
+                    : isLoading ? "Loading…"
+                    : isToday(selectedDate) ? "Today · " + format(selectedDate, "MMMM d, yyyy")
+                    : format(selectedDate, "EEEE · MMMM d, yyyy")}
+                </p>
+              </div>
             </div>
 
-            {/* New Trip CTA */}
-            <button
-              onClick={() => router.push("/trips/new")}
-              className="flex items-center gap-1.5 h-9 px-4 rounded-xl text-[13px] font-semibold text-white transition-all duration-150 active:scale-95 select-none cursor-pointer"
-              style={{ background: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)", boxShadow: "0 2px 10px rgba(37,99,235,0.30), inset 0 1px 0 rgba(255,255,255,0.15)" }}
-            >
-              <Plus className="w-4 h-4" strokeWidth={2.5} />
-              <span className="hidden sm:inline">New Reservation</span>
-              <span className="sm:hidden">New</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Divider */}
-        <div className="h-px bg-[#f2f2f7] mx-5" />
-
-        {/* Bottom controls */}
-        <div className="flex flex-col gap-2.5 px-5 py-3.5">
-
-          {/* Row 1: Date nav + Search */}
-          <div className="flex items-center gap-2">
-
-            {/* Date navigator */}
-            {!isSearching && (
-              <div className="flex items-center gap-0 bg-[#f5f5f7] rounded-xl border border-[#e5e5ea] p-0.5 shrink-0">
-                <button
-                  onClick={() => setSelectedDate(d => subDays(d, 1))}
-                  className="w-7 h-7 rounded-[9px] hover:bg-white hover:shadow-sm flex items-center justify-center transition-all duration-150 active:scale-90 cursor-pointer"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5 text-[#6e6e73]" />
-                </button>
-
-                <div className="relative" ref={calendarRef}>
-                  <button
-                    onClick={() => { setShowCalendar(s => !s); setCalendarMonth(selectedDate) }}
-                    className="flex items-center gap-1.5 text-[12px] font-semibold text-[#1d1d1f] px-2.5 py-1 hover:bg-white hover:shadow-sm rounded-[9px] min-w-[90px] text-center justify-center transition-all duration-150 cursor-pointer"
+            {/* Right: stat pills + CTA */}
+            <div className="flex items-center gap-2.5 shrink-0">
+              {/* Stat pills */}
+              <div className="hidden sm:flex items-center gap-1.5">
+                {[
+                  { label: "Total",      value: counts.all,        bg: "rgba(201,168,124,0.10)", color: "rgba(201,168,124,0.90)", dot: "#c9a87c" },
+                  { label: "Active",     value: counts.inProgress, bg: "rgba(52,211,153,0.10)",  color: "rgba(52,211,153,0.90)",  dot: "#34d399" },
+                  { label: "Unassigned", value: counts.unassigned, bg: "rgba(251,191,36,0.10)",  color: "rgba(251,191,36,0.90)",  dot: "#fbbf24" },
+                ].map((s) => (
+                  <div
+                    key={s.label}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold"
+                    style={{ background: s.bg, color: s.color }}
                   >
-                    <CalendarDays className="w-3 h-3 text-[#6e6e73]" />
-                    {isToday(selectedDate) ? "Today" : format(selectedDate, "MM/dd/yyyy")}
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: s.dot }} />
+                    <span className="tabular-nums">{s.value}</span>
+                    <span className="font-medium" style={{ opacity: 0.7 }}>{s.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* New Reservation CTA — gold */}
+              <button
+                onClick={() => router.push("/trips/new")}
+                className="flex items-center gap-1.5 h-9 px-4 rounded-xl text-[13px] font-semibold transition-all duration-150 active:scale-95 select-none cursor-pointer"
+                style={{ background: "#c9a87c", color: "#080c16", boxShadow: "0 2px 12px rgba(201,168,124,0.28)" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#d4b98c" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#c9a87c" }}
+              >
+                <Plus className="w-4 h-4" strokeWidth={2.5} />
+                <span className="hidden sm:inline">New Reservation</span>
+                <span className="sm:hidden">New</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="h-px mx-5" style={{ background: "rgba(255,255,255,0.06)" }} />
+
+          {/* Bottom controls */}
+          <div className="flex flex-col gap-2.5 px-5 py-3.5">
+
+            {/* Row 1: Date nav + Search */}
+            <div className="flex items-center gap-2">
+
+              {/* Date navigator */}
+              {!isSearching && (
+                <div
+                  className="flex items-center gap-0 rounded-xl p-0.5 shrink-0"
+                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)" }}
+                >
+                  <button
+                    onClick={() => setSelectedDate(d => subDays(d, 1))}
+                    className="w-7 h-7 rounded-[9px] flex items-center justify-center transition-all duration-150 active:scale-90 cursor-pointer"
+                    style={{ color: "rgba(200,212,228,0.55)" }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)" }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
                   </button>
 
-                  {showCalendar && (
-                    <div
-                      className="absolute top-full left-0 mt-2 z-50 bg-white rounded-2xl overflow-hidden"
-                      style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05)" }}
+                  <div className="relative" ref={calendarRef}>
+                    <button
+                      onClick={() => { setShowCalendar(s => !s); setCalendarMonth(selectedDate) }}
+                      className="flex items-center gap-1.5 text-[12px] font-semibold px-2.5 py-1 rounded-[9px] min-w-[90px] text-center justify-center transition-all duration-150 cursor-pointer"
+                      style={{ color: "rgba(255,255,255,0.88)" }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)" }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
                     >
-                      {!showSpecificDate ? (
-                        <div className="py-1.5 w-48">
-                          {[
-                            { label: "Today",     action: () => { setSelectedDate(new Date()); setShowCalendar(false) } },
-                            { label: "Tomorrow",  action: () => { setSelectedDate(addDays(new Date(), 1)); setShowCalendar(false) } },
-                            { label: "Yesterday", action: () => { setSelectedDate(subDays(new Date(), 1)); setShowCalendar(false) } },
-                          ].map(({ label, action }) => (
-                            <button
-                              key={label}
-                              onClick={action}
-                              className="w-full text-left px-4 py-2.5 text-[13px] font-medium text-[#1d1d1f] hover:bg-[#f5f5f7] transition-colors cursor-pointer"
-                            >
-                              {label}
-                            </button>
-                          ))}
-                          <div className="h-px bg-[#f2f2f7] mx-3 my-1" />
-                          <button
-                            onClick={() => { setShowSpecificDate(true); setCalendarMonth(selectedDate) }}
-                            className="w-full text-left px-4 py-2.5 text-[13px] font-medium text-[#1d1d1f] hover:bg-[#f5f5f7] transition-colors flex items-center justify-between cursor-pointer"
-                          >
-                            Pick a date <ChevronRight className="w-3.5 h-3.5 text-[#aeaeb2]" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="p-4 w-72">
-                          <div className="flex items-center gap-2 mb-4">
-                            <button
-                              onClick={() => setShowSpecificDate(false)}
-                              className="w-7 h-7 rounded-full hover:bg-[#f5f5f7] flex items-center justify-center transition-colors cursor-pointer"
-                            >
-                              <ChevronLeft className="w-4 h-4 text-[#6e6e73]" />
-                            </button>
-                            <span className="text-[13px] font-semibold text-[#1d1d1f]">Pick a date</span>
-                          </div>
-                          <div className="flex items-center justify-between mb-3">
-                            <button
-                              onClick={() => setCalendarMonth(m => subMonths(m, 1))}
-                              className="w-7 h-7 rounded-full hover:bg-[#f5f5f7] flex items-center justify-center transition-colors cursor-pointer"
-                            >
-                              <ChevronLeft className="w-3.5 h-3.5 text-[#6e6e73]" />
-                            </button>
-                            <span className="text-[13px] font-semibold text-[#1d1d1f]">{format(calendarMonth, "MMMM yyyy")}</span>
-                            <button
-                              onClick={() => setCalendarMonth(m => addMonths(m, 1))}
-                              className="w-7 h-7 rounded-full hover:bg-[#f5f5f7] flex items-center justify-center transition-colors cursor-pointer"
-                            >
-                              <ChevronRight className="w-3.5 h-3.5 text-[#6e6e73]" />
-                            </button>
-                          </div>
-                          <div className="grid grid-cols-7 mb-1">
-                            {["Su","Mo","Tu","We","Th","Fr","Sa"].map(d => (
-                              <div key={d} className="text-center text-[11px] font-semibold text-[#aeaeb2] py-1 uppercase tracking-wide">{d}</div>
-                            ))}
-                          </div>
-                          <div className="grid grid-cols-7 gap-y-0.5">
-                            {Array.from({ length: getDay(startOfMonth(calendarMonth)) }).map((_, i) => (
-                              <div key={`e-${i}`} />
-                            ))}
-                            {eachDayOfInterval({ start: startOfMonth(calendarMonth), end: endOfMonth(calendarMonth) }).map(day => (
+                      <CalendarDays className="w-3 h-3" style={{ color: "rgba(200,212,228,0.45)" }} />
+                      {isToday(selectedDate) ? "Today" : format(selectedDate, "MM/dd/yyyy")}
+                    </button>
+
+                    {showCalendar && (
+                      <div
+                        className="absolute top-full left-0 mt-2 z-50 rounded-2xl overflow-hidden"
+                        style={{
+                          background: "#0d1526",
+                          border: "1px solid rgba(255,255,255,0.09)",
+                          boxShadow: "0 8px 40px rgba(0,0,0,0.55)",
+                        }}
+                      >
+                        {!showSpecificDate ? (
+                          <div className="py-1.5 w-48">
+                            {[
+                              { label: "Today",     action: () => { setSelectedDate(new Date()); setShowCalendar(false) } },
+                              { label: "Tomorrow",  action: () => { setSelectedDate(addDays(new Date(), 1)); setShowCalendar(false) } },
+                              { label: "Yesterday", action: () => { setSelectedDate(subDays(new Date(), 1)); setShowCalendar(false) } },
+                            ].map(({ label, action }) => (
                               <button
-                                key={day.toISOString()}
-                                onClick={() => { setSelectedDate(day); setShowCalendar(false); setShowSpecificDate(false) }}
-                                className={cn(
-                                  "text-center text-[13px] py-1.5 rounded-full transition-all duration-150 font-medium cursor-pointer",
-                                  isSameDay(day, selectedDate)
-                                    ? "bg-blue-600 text-white"
-                                    : isToday(day)
-                                    ? "text-blue-600 font-bold hover:bg-blue-50"
-                                    : "text-[#1d1d1f] hover:bg-[#f5f5f7]"
-                                )}
+                                key={label}
+                                onClick={action}
+                                className="w-full text-left px-4 py-2.5 text-[13px] font-medium transition-colors cursor-pointer"
+                                style={{ color: "rgba(255,255,255,0.88)" }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)" }}
+                                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
                               >
-                                {format(day, "d")}
+                                {label}
                               </button>
                             ))}
+                            <div className="h-px mx-3 my-1" style={{ background: "rgba(255,255,255,0.07)" }} />
+                            <button
+                              onClick={() => { setShowSpecificDate(true); setCalendarMonth(selectedDate) }}
+                              className="w-full text-left px-4 py-2.5 text-[13px] font-medium transition-colors flex items-center justify-between cursor-pointer"
+                              style={{ color: "rgba(255,255,255,0.88)" }}
+                              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)" }}
+                              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
+                            >
+                              Pick a date <ChevronRight className="w-3.5 h-3.5" style={{ color: "rgba(200,212,228,0.38)" }} />
+                            </button>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                <button
-                  onClick={() => setSelectedDate(d => addDays(d, 1))}
-                  className="w-7 h-7 rounded-[9px] hover:bg-white hover:shadow-sm flex items-center justify-center transition-all duration-150 active:scale-90 cursor-pointer"
-                >
-                  <ChevronRight className="w-3.5 h-3.5 text-[#6e6e73]" />
-                </button>
-              </div>
-            )}
-
-            {/* Search */}
-            <div className="relative flex-1 min-w-0">
-              <Search className={cn(
-                "absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none transition-colors duration-200",
-                committed ? "text-blue-500" : "text-[#aeaeb2]"
-              )} />
-              <input
-                ref={searchRef}
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                onKeyDown={e => { if (e.key === "Enter") setCommitted(search) }}
-                placeholder="Search reservations…"
-                className={cn(
-                  "h-9 pl-8.5 w-full text-[13px] rounded-xl border outline-none transition-all duration-200 text-[#1d1d1f] placeholder:text-[#aeaeb2] font-medium",
-                  committed
-                    ? "pr-14 bg-white border-blue-300 ring-2 ring-blue-500/12"
-                    : "pr-8 bg-[#f5f5f7] border-[#e5e5ea] hover:border-[#d1d1d6] focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-500/12"
-                )}
-              />
-              {committed ? (
-                <button
-                  onClick={() => { setSearch(""); setCommitted(""); searchRef.current?.focus() }}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[11px] font-semibold text-blue-500 hover:text-blue-700 transition-colors cursor-pointer"
-                >
-                  <X className="w-3 h-3" />
-                  <span>Clear</span>
-                </button>
-              ) : search ? (
-                <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                  <kbd className="text-[10px] font-mono text-[#aeaeb2] bg-[#f5f5f7] border border-[#e5e5ea] rounded-[5px] px-1.5 py-0.5 leading-none">↵</kbd>
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          {/* Row 2: iOS-style segmented filter + driver select */}
-          <div className="flex items-center gap-2">
-
-            {/* Segmented control */}
-            <div className="flex items-center gap-0.5 bg-[#f2f2f7] rounded-[11px] p-1 border border-[#e5e5ea] flex-1 overflow-x-auto">
-              {allFilterTabs.map(tab => (
-                <button
-                  key={tab.value}
-                  onClick={() => setStatusFilter(tab.value)}
-                  className={cn(
-                    "px-3 py-1.5 rounded-[8px] text-[12px] font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex-shrink-0",
-                    statusFilter === tab.value
-                      ? "bg-white text-[#1d1d1f] shadow-[0_1px_4px_rgba(0,0,0,0.10),0_0_0_0.5px_rgba(0,0,0,0.06)]"
-                      : "text-[#6e6e73] hover:text-[#1d1d1f] hover:bg-white/50"
-                  )}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Customize columns */}
-            <div className="relative shrink-0" ref={filterConfigRef}>
-              <button
-                onClick={() => setShowFilterConfig(s => !s)}
-                className={cn(
-                  "w-9 h-9 rounded-[10px] border flex items-center justify-center transition-all duration-150 cursor-pointer",
-                  showFilterConfig
-                    ? "bg-blue-600 border-blue-600 text-white shadow-sm"
-                    : "bg-[#f5f5f7] border-[#e5e5ea] text-[#6e6e73] hover:bg-white hover:border-[#d1d1d6] hover:shadow-sm"
-                )}
-              >
-                <Settings2 className="w-3.5 h-3.5" />
-              </button>
-
-              {showFilterConfig && (
-                <div
-                  className="absolute top-full right-0 mt-2 z-50 bg-white rounded-2xl w-52 overflow-hidden"
-                  style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05)" }}
-                >
-                  <div className="px-4 pt-3.5 pb-2">
-                    <p className="text-[10px] font-bold text-[#aeaeb2] uppercase tracking-[0.08em]">Visible Filters</p>
-                  </div>
-                  <div className="px-2 pb-2">
-                    {ALL_STATUS_OPTIONS.map(opt => {
-                      const isEnabled = visibleStatuses.includes(opt.value)
-                      const isLast = isEnabled && visibleStatuses.length === 1
-                      return (
-                        <button
-                          key={opt.value}
-                          onClick={() => !isLast && toggleStatus(opt.value)}
-                          disabled={isLast}
-                          className={cn(
-                            "w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl transition-colors text-left cursor-pointer",
-                            isLast ? "opacity-40 cursor-not-allowed" : "hover:bg-[#f5f5f7]"
-                          )}
-                        >
-                          <span className="text-[13px] font-medium text-[#1d1d1f]">{opt.label}</span>
-                          <div className={cn(
-                            "w-[34px] h-[20px] rounded-full transition-all duration-200 relative shrink-0",
-                            isEnabled ? "bg-blue-600" : "bg-[#e5e5ea]"
-                          )}>
-                            <div className={cn(
-                              "absolute top-[2px] w-4 h-4 rounded-full bg-white transition-all duration-200",
-                              isEnabled ? "right-[2px] shadow-[0_1px_4px_rgba(0,0,0,0.25)]" : "left-[2px] shadow-[0_1px_3px_rgba(0,0,0,0.15)]"
-                            )} />
+                        ) : (
+                          <div className="p-4 w-72">
+                            <div className="flex items-center gap-2 mb-4">
+                              <button
+                                onClick={() => setShowSpecificDate(false)}
+                                className="w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer"
+                                style={{ color: "rgba(200,212,228,0.55)" }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)" }}
+                                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
+                              >
+                                <ChevronLeft className="w-4 h-4" />
+                              </button>
+                              <span className="text-[13px] font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Pick a date</span>
+                            </div>
+                            <div className="flex items-center justify-between mb-3">
+                              <button
+                                onClick={() => setCalendarMonth(m => subMonths(m, 1))}
+                                className="w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer"
+                                style={{ color: "rgba(200,212,228,0.55)" }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)" }}
+                                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
+                              >
+                                <ChevronLeft className="w-3.5 h-3.5" />
+                              </button>
+                              <span className="text-[13px] font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>{format(calendarMonth, "MMMM yyyy")}</span>
+                              <button
+                                onClick={() => setCalendarMonth(m => addMonths(m, 1))}
+                                className="w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer"
+                                style={{ color: "rgba(200,212,228,0.55)" }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)" }}
+                                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
+                              >
+                                <ChevronRight className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-7 mb-1">
+                              {["Su","Mo","Tu","We","Th","Fr","Sa"].map(d => (
+                                <div key={d} className="text-center text-[11px] font-semibold py-1 uppercase tracking-wide" style={{ color: "rgba(200,212,228,0.38)" }}>{d}</div>
+                              ))}
+                            </div>
+                            <div className="grid grid-cols-7 gap-y-0.5">
+                              {Array.from({ length: getDay(startOfMonth(calendarMonth)) }).map((_, i) => (
+                                <div key={`e-${i}`} />
+                              ))}
+                              {eachDayOfInterval({ start: startOfMonth(calendarMonth), end: endOfMonth(calendarMonth) }).map(day => (
+                                <button
+                                  key={day.toISOString()}
+                                  onClick={() => { setSelectedDate(day); setShowCalendar(false); setShowSpecificDate(false) }}
+                                  className="text-center text-[13px] py-1.5 rounded-full transition-all duration-150 font-medium cursor-pointer"
+                                  style={
+                                    isSameDay(day, selectedDate)
+                                      ? { background: "#c9a87c", color: "#080c16" }
+                                      : isToday(day)
+                                      ? { color: "#c9a87c", fontWeight: 700 }
+                                      : { color: "rgba(255,255,255,0.80)" }
+                                  }
+                                  onMouseEnter={e => {
+                                    if (!isSameDay(day, selectedDate))
+                                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)"
+                                  }}
+                                  onMouseLeave={e => {
+                                    if (!isSameDay(day, selectedDate))
+                                      (e.currentTarget as HTMLButtonElement).style.background = "transparent"
+                                  }}
+                                >
+                                  {format(day, "d")}
+                                </button>
+                              ))}
+                            </div>
                           </div>
-                        </button>
-                      )
-                    })}
+                        )}
+                      </div>
+                    )}
                   </div>
+
+                  <button
+                    onClick={() => setSelectedDate(d => addDays(d, 1))}
+                    className="w-7 h-7 rounded-[9px] flex items-center justify-center transition-all duration-150 active:scale-90 cursor-pointer"
+                    style={{ color: "rgba(200,212,228,0.55)" }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)" }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
+                  >
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               )}
+
+              {/* Search */}
+              <div className="relative flex-1 min-w-0">
+                <Search
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none transition-colors duration-200"
+                  style={{ color: committed ? "#c9a87c" : "rgba(200,212,228,0.38)" }}
+                />
+                <input
+                  ref={searchRef}
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") setCommitted(search) }}
+                  placeholder="Search reservations…"
+                  className="h-9 pl-8.5 w-full text-[13px] rounded-xl outline-none transition-all duration-200 font-medium"
+                  style={{
+                    background: "rgba(255,255,255,0.05)",
+                    border: committed ? "1px solid rgba(201,168,124,0.45)" : "1px solid rgba(255,255,255,0.09)",
+                    color: "rgba(255,255,255,0.88)",
+                    paddingRight: committed || search ? "56px" : "12px",
+                    boxShadow: committed ? "0 0 0 2px rgba(201,168,124,0.10)" : "none",
+                  }}
+                  onFocus={e => {
+                    if (!committed) {
+                      (e.target as HTMLInputElement).style.border = "1px solid rgba(201,168,124,0.40)"
+                      ;(e.target as HTMLInputElement).style.boxShadow = "0 0 0 2px rgba(201,168,124,0.08)"
+                    }
+                  }}
+                  onBlur={e => {
+                    if (!committed) {
+                      (e.target as HTMLInputElement).style.border = "1px solid rgba(255,255,255,0.09)"
+                      ;(e.target as HTMLInputElement).style.boxShadow = "none"
+                    }
+                  }}
+                />
+                {committed ? (
+                  <button
+                    onClick={() => { setSearch(""); setCommitted(""); searchRef.current?.focus() }}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[11px] font-semibold transition-colors cursor-pointer"
+                    style={{ color: "#c9a87c" }}
+                  >
+                    <X className="w-3 h-3" />
+                    <span>Clear</span>
+                  </button>
+                ) : search ? (
+                  <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <kbd
+                      className="text-[10px] font-mono rounded-[5px] px-1.5 py-0.5 leading-none"
+                      style={{ color: "rgba(200,212,228,0.38)", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)" }}
+                    >↵</kbd>
+                  </div>
+                ) : null}
+              </div>
             </div>
 
-            {/* Driver filter */}
-            <div className="relative shrink-0">
-              <select
-                value={driverFilter}
-                onChange={e => setDriverFilter(e.target.value)}
-                className={cn(
-                  "appearance-none h-9 pl-3 pr-7 rounded-[10px] border text-[12px] font-semibold cursor-pointer transition-all outline-none",
-                  driverFilter !== "all"
-                    ? "bg-blue-600 border-blue-600 text-white"
-                    : "bg-[#f5f5f7] border-[#e5e5ea] text-[#1d1d1f] hover:bg-white hover:border-[#d1d1d6] hover:shadow-sm"
-                )}
+            {/* Row 2: Segmented filter + gear + driver select */}
+            <div className="flex items-center gap-2">
+
+              {/* Segmented control */}
+              <div
+                className="flex items-center gap-0.5 rounded-[11px] p-1 flex-1 overflow-x-auto"
+                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
               >
-                <option value="all">All Drivers</option>
-                <option value="unassigned">Unassigned</option>
-                {drivers?.map(d => (
-                  <option key={d.id} value={d.id}>{d.name}</option>
+                {allFilterTabs.map(tab => (
+                  <button
+                    key={tab.value}
+                    onClick={() => setStatusFilter(tab.value)}
+                    className="px-3 py-1.5 rounded-[8px] text-[12px] font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex-shrink-0"
+                    style={statusFilter === tab.value
+                      ? { background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.92)", boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }
+                      : { color: "rgba(200,212,228,0.55)" }
+                    }
+                  >
+                    {tab.label}
+                  </button>
                 ))}
-              </select>
-              <ChevronRight className={cn(
-                "absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none rotate-90",
-                driverFilter !== "all" ? "text-white/80" : "text-[#aeaeb2]"
-              )} />
+              </div>
+
+              {/* Filter config gear */}
+              <div className="relative shrink-0" ref={filterConfigRef}>
+                <button
+                  onClick={() => setShowFilterConfig(s => !s)}
+                  className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-all duration-150 cursor-pointer"
+                  style={showFilterConfig
+                    ? { background: "#c9a87c", border: "1px solid #c9a87c", color: "#080c16" }
+                    : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(200,212,228,0.55)" }
+                  }
+                >
+                  <Settings2 className="w-3.5 h-3.5" />
+                </button>
+
+                {showFilterConfig && (
+                  <div
+                    className="absolute top-full right-0 mt-2 z-50 rounded-2xl w-52 overflow-hidden"
+                    style={{
+                      background: "#0d1526",
+                      border: "1px solid rgba(255,255,255,0.09)",
+                      boxShadow: "0 8px 40px rgba(0,0,0,0.55)",
+                    }}
+                  >
+                    <div className="px-4 pt-3.5 pb-2">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.08em]" style={{ color: "rgba(200,212,228,0.38)" }}>Visible Filters</p>
+                    </div>
+                    <div className="px-2 pb-2">
+                      {ALL_STATUS_OPTIONS.map(opt => {
+                        const isEnabled = visibleStatuses.includes(opt.value)
+                        const isLast = isEnabled && visibleStatuses.length === 1
+                        return (
+                          <button
+                            key={opt.value}
+                            onClick={() => !isLast && toggleStatus(opt.value)}
+                            disabled={isLast}
+                            className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl transition-colors text-left cursor-pointer"
+                            style={{ opacity: isLast ? 0.4 : 1 }}
+                            onMouseEnter={e => { if (!isLast) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.06)" }}
+                            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
+                          >
+                            <span className="text-[13px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{opt.label}</span>
+                            <div
+                              className="w-[34px] h-[20px] rounded-full transition-all duration-200 relative shrink-0"
+                              style={{ background: isEnabled ? "#c9a87c" : "rgba(255,255,255,0.12)" }}
+                            >
+                              <div
+                                className={cn(
+                                  "absolute top-[2px] w-4 h-4 rounded-full bg-white transition-all duration-200",
+                                  isEnabled ? "right-[2px]" : "left-[2px]"
+                                )}
+                                style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.30)" }}
+                              />
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Driver filter */}
+              <div className="relative shrink-0">
+                <select
+                  value={driverFilter}
+                  onChange={e => setDriverFilter(e.target.value)}
+                  className="appearance-none h-9 pl-3 pr-7 rounded-[10px] text-[12px] font-semibold cursor-pointer transition-all outline-none"
+                  style={driverFilter !== "all"
+                    ? { background: "#c9a87c", border: "1px solid #c9a87c", color: "#080c16" }
+                    : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(255,255,255,0.80)" }
+                  }
+                >
+                  <option value="all">All Drivers</option>
+                  <option value="unassigned">Unassigned</option>
+                  {drivers?.map(d => (
+                    <option key={d.id} value={d.id}>{d.name}</option>
+                  ))}
+                </select>
+                <ChevronRight
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none rotate-90"
+                  style={{ color: driverFilter !== "all" ? "rgba(8,12,22,0.7)" : "rgba(200,212,228,0.38)" }}
+                />
+              </div>
             </div>
           </div>
         </div>
+
+        {/* ── Trip Grid ── */}
+        {isLoading ? (
+          <TableSkeleton rows={8} dark />
+        ) : !filteredTrips.length ? (
+          <EmptyState
+            icon={Grid3X3}
+            title={isSearching ? "No reservations found" : statusFilter === "all" && driverFilter === "all" ? "No trips scheduled" : "No trips match filters"}
+            description={isSearching ? "Try a different name, address, or reservation number." : statusFilter === "all" && driverFilter === "all" ? "Schedule a trip to get started." : "Try adjusting your filters."}
+            actionLabel={!isSearching && statusFilter === "all" && driverFilter === "all" ? "+ New Reservation" : undefined}
+            onAction={() => router.push("/trips/new")}
+          />
+        ) : (
+          <TripGrid
+            trips={filteredTrips}
+            selectedTripId={selectedTrip?.id}
+            onSelect={trip => setSelectedTrip(selectedTrip?.id === trip.id ? null : trip)}
+            onDoubleClick={(trip, pos) => { setQuickTrip(trip); setQuickPos(pos) }}
+            showDate={isSearching}
+          />
+        )}
+
+        {quickTrip && (
+          <QuickActionPopup
+            trip={quickTrip}
+            position={quickPos}
+            onClose={() => setQuickTrip(null)}
+          />
+        )}
+
+        <TripEditModal
+          trip={selectedTrip}
+          open={!!selectedTrip}
+          onClose={() => setSelectedTrip(null)}
+        />
+
+        <Sheet open={showNewTrip} onOpenChange={setShowNewTrip}>
+          <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>Schedule New Trip</SheetTitle>
+            </SheetHeader>
+            <div className="mt-4">
+              <TripForm
+                onSubmit={handleCreate}
+                onCancel={() => setShowNewTrip(false)}
+                isLoading={createTrip.isPending}
+              />
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
-
-      {/* ── Trip Grid ── */}
-      {isLoading ? (
-        <TableSkeleton rows={8} />
-      ) : !filteredTrips.length ? (
-        <EmptyState
-          icon={Grid3X3}
-          title={isSearching ? "No reservations found" : statusFilter === "all" && driverFilter === "all" ? "No trips scheduled" : "No trips match filters"}
-          description={isSearching ? "Try a different name, address, or reservation number." : statusFilter === "all" && driverFilter === "all" ? "Schedule a trip to get started." : "Try adjusting your filters."}
-          actionLabel={!isSearching && statusFilter === "all" && driverFilter === "all" ? "+ New Reservation" : undefined}
-          onAction={() => router.push("/trips/new")}
-        />
-      ) : (
-        <TripGrid
-          trips={filteredTrips}
-          selectedTripId={selectedTrip?.id}
-          onSelect={trip => setSelectedTrip(selectedTrip?.id === trip.id ? null : trip)}
-          onDoubleClick={(trip, pos) => { setQuickTrip(trip); setQuickPos(pos) }}
-          showDate={isSearching}
-        />
-      )}
-
-      {quickTrip && (
-        <QuickActionPopup
-          trip={quickTrip}
-          position={quickPos}
-          onClose={() => setQuickTrip(null)}
-        />
-      )}
-
-      <TripEditModal
-        trip={selectedTrip}
-        open={!!selectedTrip}
-        onClose={() => setSelectedTrip(null)}
-      />
-
-      <Sheet open={showNewTrip} onOpenChange={setShowNewTrip}>
-        <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>Schedule New Trip</SheetTitle>
-          </SheetHeader>
-          <div className="mt-4">
-            <TripForm
-              onSubmit={handleCreate}
-              onCancel={() => setShowNewTrip(false)}
-              isLoading={createTrip.isPending}
-            />
-          </div>
-        </SheetContent>
-      </Sheet>
     </div>
     </>
   )

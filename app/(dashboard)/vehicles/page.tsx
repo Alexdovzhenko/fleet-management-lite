@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useCallback, useEffect } from "react"
-import { Plus, Car, Users, Camera, X, Upload, Trash2, ChevronLeft, ChevronRight, Truck, Bus, CarFront, CircleDot, GripVertical, ImagePlus, Tag, Gauge, Palette, Info, ChevronDown, Pencil, Maximize2 } from "lucide-react"
+import { Plus, Car, Users, X, Upload, ChevronLeft, ChevronRight, Truck, Bus, CarFront, CircleDot, GripVertical, ImagePlus, Tag, Gauge, Palette, Info, ChevronDown, Pencil, Maximize2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useVehicles, useCreateVehicle, useUpdateVehicle } from "@/lib/hooks/use-vehicles"
@@ -57,9 +57,9 @@ const STATUS_DOT: Record<string, string> = {
 }
 
 const STATUS_CONFIG = {
-  ACTIVE:         { label: "Active",      dot: "bg-emerald-500", text: "text-emerald-700", badge: "bg-emerald-600 text-white shadow-sm" },
-  MAINTENANCE:    { label: "Maintenance", dot: "bg-amber-400",   text: "text-amber-600",   badge: "bg-amber-500 text-white shadow-sm" },
-  OUT_OF_SERVICE: { label: "Offline",     dot: "bg-red-500",     text: "text-red-600",     badge: "bg-red-600 text-white shadow-sm" },
+  ACTIVE:         { label: "Active",      dot: "#34d399", textColor: "rgba(52,211,153,0.90)",  bg: "rgba(52,211,153,0.12)"  },
+  MAINTENANCE:    { label: "Maintenance", dot: "#fbbf24", textColor: "rgba(251,191,36,0.90)",  bg: "rgba(251,191,36,0.12)"  },
+  OUT_OF_SERVICE: { label: "Offline",     dot: "#f87171", textColor: "rgba(248,113,113,0.90)", bg: "rgba(248,113,113,0.12)" },
 } as const
 
 type StatusKey = keyof typeof STATUS_CONFIG
@@ -77,7 +77,7 @@ const STATUS_OPTIONS: { value: VehicleFormData["status"]; label: string }[] = [
   { value: "OUT_OF_SERVICE", label: "Offline" },
 ]
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024
 
 async function uploadPhoto(file: File): Promise<string> {
   if (file.size > MAX_FILE_SIZE) {
@@ -107,19 +107,20 @@ async function uploadPhoto(file: File): Promise<string> {
 // ── Skeleton ─────────────────────────────────────────────────────────────────
 function CardSkeleton() {
   return (
-    <div className="bg-white rounded-3xl overflow-hidden ring-1 ring-black/5 shadow-sm animate-pulse">
-      <div className="aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-200" />
+    <div
+      className="rounded-2xl overflow-hidden animate-pulse"
+      style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+    >
+      <div className="aspect-[16/9]" style={{ background: "rgba(255,255,255,0.05)" }} />
       <div className="px-5 pt-4 pb-5 space-y-3">
-        <div>
-          <div className="h-5 bg-gray-200 rounded-full w-2/3" />
-          <div className="h-3.5 bg-gray-100 rounded-full w-1/2 mt-2" />
-        </div>
+        <div className="h-4 rounded-full w-2/3" style={{ background: "rgba(255,255,255,0.07)" }} />
+        <div className="h-3 rounded-full w-1/2" style={{ background: "rgba(255,255,255,0.04)" }} />
         <div className="flex items-center justify-between pt-1">
           <div className="flex gap-2">
-            <div className="h-7 bg-gray-100 rounded-xl w-16" />
-            <div className="h-7 bg-gray-100 rounded-xl w-20" />
+            <div className="h-7 rounded-xl w-16" style={{ background: "rgba(255,255,255,0.05)" }} />
+            <div className="h-7 rounded-xl w-20" style={{ background: "rgba(255,255,255,0.05)" }} />
           </div>
-          <div className="h-9 bg-gray-100 rounded-xl w-16" />
+          <div className="h-9 rounded-xl w-16" style={{ background: "rgba(255,255,255,0.05)" }} />
         </div>
       </div>
     </div>
@@ -227,6 +228,7 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
   const photos = vehicle.photos?.length ? vehicle.photos : vehicle.photoUrl ? [vehicle.photoUrl] : []
   const [idx, setIdx] = useState(0)
   const [lightbox, setLightbox] = useState(false)
+  const [hovered, setHovered] = useState(false)
   const thumb = photos[idx] ?? null
   const status = vehicle.status as StatusKey
   const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.ACTIVE
@@ -244,14 +246,24 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
 
   return (
     <>
-      <div className="group bg-white rounded-3xl overflow-hidden ring-1 ring-black/[0.06] shadow-md hover:shadow-2xl hover:shadow-black/10 hover:-translate-y-1 transition-all duration-300 ease-out">
-
+      <div
+        className="rounded-2xl overflow-hidden transition-all duration-300 ease-out"
+        style={{
+          background: hovered ? "#111e35" : "#0d1526",
+          border: hovered ? "1px solid rgba(255,255,255,0.13)" : "1px solid rgba(255,255,255,0.07)",
+          boxShadow: hovered ? "0 8px 32px rgba(0,0,0,0.45)" : "0 4px 16px rgba(0,0,0,0.30)",
+          transform: hovered ? "translateY(-2px)" : "translateY(0)",
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
         {/* ── Image Hero ── */}
         <div
           className={cn(
-            "relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200",
-            thumb && "cursor-zoom-in"
+            "relative aspect-[16/9] overflow-hidden",
+            thumb ? "cursor-zoom-in" : ""
           )}
+          style={{ background: "rgba(255,255,255,0.04)" }}
           onClick={() => thumb && setLightbox(true)}
         >
           {thumb ? (
@@ -260,20 +272,26 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
               key={thumb}
               src={thumb}
               alt={vehicle.name}
-              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+              className="w-full h-full object-cover transition-transform duration-700 ease-out"
+              style={{ transform: hovered ? "scale(1.04)" : "scale(1)" }}
             />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center gap-3">
-              <div className="w-14 h-14 rounded-2xl bg-gray-200/80 flex items-center justify-center">
-                <Car className="w-7 h-7 text-gray-400" />
+              <div
+                className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                style={{ background: "rgba(201,168,124,0.10)", border: "1px solid rgba(201,168,124,0.18)" }}
+              >
+                <Car className="w-7 h-7" style={{ color: "rgba(201,168,124,0.60)" }} />
               </div>
-              <span className="text-xs text-gray-400 font-medium tracking-wide">No photo added</span>
+              <span className="text-xs font-medium tracking-wide" style={{ color: "rgba(200,212,228,0.35)" }}>
+                No photo added
+              </span>
             </div>
           )}
 
           {/* Bottom gradient */}
           {thumb && (
-            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent pointer-events-none" />
           )}
 
           {/* Top gradient for badge legibility */}
@@ -281,21 +299,20 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
             <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-transparent pointer-events-none" />
           )}
 
-          {/* Glass status badge — top right */}
+          {/* Status badge — top right */}
           <div className="absolute top-3.5 right-3.5" onClick={e => e.stopPropagation()}>
-            <span className={cn(
-              "inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full",
-              "bg-white/90 shadow-sm backdrop-blur-md",
-              cfg.text
-            )}>
-              <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", cfg.dot)} />
+            <span
+              className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full"
+              style={{ background: cfg.bg, color: cfg.textColor }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: cfg.dot }} />
               {cfg.label}
             </span>
           </div>
 
           {/* Expand hint — top left on hover */}
-          {thumb && (
-            <div className="absolute top-3.5 left-3.5 w-8 h-8 rounded-xl bg-black/30 backdrop-blur-sm flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+          {thumb && hovered && (
+            <div className="absolute top-3.5 left-3.5 w-8 h-8 rounded-xl bg-black/40 backdrop-blur-sm flex items-center justify-center text-white pointer-events-none">
               <Maximize2 className="w-3.5 h-3.5" />
             </div>
           )}
@@ -306,27 +323,29 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
               {photos.map((_, i) => (
                 <span
                   key={i}
-                  className={cn(
-                    "rounded-full transition-all duration-200",
-                    i === idx ? "w-4 h-1.5 bg-white" : "w-1.5 h-1.5 bg-white/45"
-                  )}
+                  className="rounded-full transition-all duration-200"
+                  style={{
+                    width: i === idx ? "16px" : "6px",
+                    height: "6px",
+                    background: i === idx ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.40)",
+                  }}
                 />
               ))}
             </div>
           )}
 
           {/* Prev / Next arrows */}
-          {photos.length > 1 && (
+          {photos.length > 1 && hovered && (
             <>
               <button
                 onClick={prev}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/35 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/55"
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm text-white flex items-center justify-center transition-colors hover:bg-black/60 cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={next}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/35 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/55"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm text-white flex items-center justify-center transition-colors hover:bg-black/60 cursor-pointer"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -349,8 +368,14 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
           {/* Show name here only when there's no photo */}
           {!thumb && (
             <div className="mb-3.5">
-              <h3 className="text-[15px] font-bold text-gray-900 leading-snug tracking-tight">{vehicle.name}</h3>
-              {subtitle && <p className="text-[13px] text-gray-500 mt-0.5 font-medium">{subtitle}</p>}
+              <h3 className="text-[15px] font-bold leading-snug tracking-tight" style={{ color: "rgba(255,255,255,0.90)" }}>
+                {vehicle.name}
+              </h3>
+              {subtitle && (
+                <p className="text-[13px] mt-0.5 font-medium" style={{ color: "rgba(200,212,228,0.50)" }}>
+                  {subtitle}
+                </p>
+              )}
             </div>
           )}
 
@@ -359,28 +384,47 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
             <div className="flex items-center gap-2 flex-wrap min-w-0">
 
               {/* Capacity */}
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 bg-gray-100 px-2.5 py-1.5 rounded-xl">
-                <Users className="w-3 h-3 text-gray-400" />
+              <span
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-xl"
+                style={{ background: "rgba(201,168,124,0.10)", color: "rgba(201,168,124,0.80)", border: "1px solid rgba(201,168,124,0.15)" }}
+              >
+                <Users className="w-3 h-3" />
                 {vehicle.capacity} pax
               </span>
 
               {/* License plate */}
               {vehicle.licensePlate && (
-                <span className="inline-flex items-center text-[11px] font-mono font-bold text-gray-600 bg-gray-100 px-2.5 py-1.5 rounded-xl tracking-widest uppercase">
+                <span
+                  className="inline-flex items-center text-[11px] font-mono font-bold px-2.5 py-1.5 rounded-xl tracking-widest uppercase"
+                  style={{ background: "rgba(255,255,255,0.07)", color: "rgba(200,212,228,0.70)" }}
+                >
                   {vehicle.licensePlate}
                 </span>
               )}
 
               {/* Color */}
               {vehicle.color && (
-                <span className="text-[12px] text-gray-400 font-medium">{vehicle.color}</span>
+                <span className="text-[12px] font-medium" style={{ color: "rgba(200,212,228,0.45)" }}>
+                  {vehicle.color}
+                </span>
               )}
             </div>
 
             {/* Edit button */}
             <button
               onClick={onEdit}
-              className="flex-shrink-0 inline-flex items-center gap-1.5 h-9 px-4 rounded-xl text-xs font-bold text-gray-600 bg-gray-100 hover:bg-blue-600 hover:text-white transition-all duration-200"
+              className="flex-shrink-0 inline-flex items-center gap-1.5 h-9 px-4 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer"
+              style={{ background: "rgba(255,255,255,0.07)", color: "rgba(200,212,228,0.70)", border: "1px solid rgba(255,255,255,0.09)" }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLButtonElement).style.background = "rgba(201,168,124,0.15)"
+                ;(e.currentTarget as HTMLButtonElement).style.color = "#c9a87c"
+                ;(e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(201,168,124,0.30)"
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)"
+                ;(e.currentTarget as HTMLButtonElement).style.color = "rgba(200,212,228,0.70)"
+                ;(e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.09)"
+              }}
             >
               <Pencil className="w-3 h-3" />
               Edit
@@ -835,161 +879,206 @@ export default function VehiclesPage() {
     : []
 
   return (
-    <div className="space-y-4">
+    <>
+      {/* Dark backdrop behind dock nav */}
+      <div
+        className="fixed bottom-0 inset-x-0 pointer-events-none"
+        style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "#080c16", zIndex: 0 }}
+      />
 
-      {/* ── Header card ── */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-[0_1px_4px_rgba(0,0,0,0.04),0_4px_20px_rgba(0,0,0,0.03)] overflow-hidden">
+      {/* Full-bleed dark page wrapper */}
+      <div
+        className="-mx-4 -mt-4 md:-mx-6 md:-mt-6"
+        style={{ background: "#080c16", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
+      >
+        <div className="px-4 pt-4 md:px-6 md:pt-6 pb-6 max-w-6xl mx-auto space-y-3">
 
-        {/* Top row: icon + title + stat boxes */}
-        <div className="flex items-center justify-between gap-4 px-6 pt-5 pb-5">
-          <div className="flex items-center gap-3.5 min-w-0">
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-              style={{ background: "linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%)", boxShadow: "0 4px 12px rgba(37,99,235,0.20)" }}
-            >
-              <Car className="w-[18px] h-[18px] text-white" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-[15px] font-bold text-gray-900 leading-tight">Fleet</h1>
-              <p className="text-[12px] text-gray-400 mt-0.5 leading-tight">
-                {isLoading ? "Loading..." : totalCount === 0 ? "No vehicles yet" : `${totalCount} vehicle${totalCount !== 1 ? "s" : ""} in your fleet`}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-stretch divide-x divide-gray-100 rounded-xl border border-gray-100 bg-gray-50/50 overflow-hidden shrink-0">
-            {([
-              { label: "Total",       value: totalCount,       dot: "bg-blue-500" },
-              { label: "Active",      value: activeCount,      dot: "bg-emerald-500" },
-              { label: "Maintenance", value: maintenanceCount, dot: "bg-amber-400" },
-              { label: "Offline",     value: offlineCount,     dot: "bg-red-500" },
-            ]).map((stat) => (
-              <div key={stat.label} className="flex flex-col items-center justify-center px-5 py-3 min-w-[80px]">
-                <span className="text-[22px] font-bold leading-none tracking-tight text-gray-800">{stat.value}</span>
-                <span className="flex items-center gap-1.5 mt-1.5">
-                  <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", stat.dot)} />
-                  <span className="text-[11px] text-gray-400 font-medium leading-none whitespace-nowrap">{stat.label}</span>
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="h-px bg-gradient-to-r from-transparent via-gray-100 to-transparent mx-6" />
-
-        {/* Bottom row: filters + CTA */}
-        <div className="flex items-center gap-3 px-6 py-4">
-
-          {/* Status filter tabs */}
-          <div className="flex items-center gap-1 p-1 bg-gray-50 rounded-xl border border-gray-100">
-            {FILTERS.map(({ key, label }) => {
-              const count =
-                key === "ALL"         ? totalCount :
-                key === "ACTIVE"      ? activeCount :
-                key === "MAINTENANCE" ? maintenanceCount :
-                offlineCount
-              if (key !== "ALL" && count === 0) return null
-              return (
-                <button
-                  key={key}
-                  onClick={() => setFilter(key as typeof filter)}
-                  className={cn(
-                    "px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all duration-150 whitespace-nowrap",
-                    filter === key
-                      ? "bg-white text-gray-800 shadow-sm border border-gray-100"
-                      : "text-gray-400 hover:text-gray-600"
-                  )}
+          {/* ── Header card ── */}
+          <div
+            className="rounded-2xl overflow-hidden"
+            style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
+          >
+            {/* Top row */}
+            <div className="flex items-center justify-between gap-4 px-5 pt-5 pb-4">
+              <div className="flex items-center gap-3.5 min-w-0">
+                <div
+                  className="w-10 h-10 rounded-[13px] flex items-center justify-center shrink-0"
+                  style={{ background: "rgba(201,168,124,0.10)", border: "1px solid rgba(201,168,124,0.20)" }}
                 >
-                  {label}
-                </button>
-              )
-            })}
+                  <Car className="w-[17px] h-[17px]" style={{ color: "#c9a87c" }} strokeWidth={1.75} />
+                </div>
+                <div className="min-w-0">
+                  <p style={{
+                    fontSize: "0.6rem", fontWeight: 500, letterSpacing: "0.18em",
+                    textTransform: "uppercase", color: "#c9a87c",
+                    fontFamily: "var(--font-outfit, system-ui)", marginBottom: "3px",
+                  }}>
+                    Fleet
+                  </p>
+                  <p className="leading-tight" style={{ fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "-0.01em" }}>
+                    {isLoading ? "Loading…" : totalCount === 0 ? "No vehicles yet" : `${totalCount} vehicle${totalCount !== 1 ? "s" : ""} in your fleet`}
+                  </p>
+                </div>
+              </div>
+
+              {/* Stat pills */}
+              <div className="hidden sm:flex items-center gap-1.5 shrink-0">
+                {[
+                  { label: "Total",       value: totalCount,       bg: "rgba(201,168,124,0.10)", color: "rgba(201,168,124,0.90)", dot: "#c9a87c" },
+                  { label: "Active",      value: activeCount,      bg: "rgba(52,211,153,0.10)",  color: "rgba(52,211,153,0.90)",  dot: "#34d399" },
+                  { label: "Maintenance", value: maintenanceCount, bg: "rgba(251,191,36,0.10)",  color: "rgba(251,191,36,0.90)",  dot: "#fbbf24" },
+                  { label: "Offline",     value: offlineCount,     bg: "rgba(248,113,113,0.10)", color: "rgba(248,113,113,0.90)", dot: "#f87171" },
+                ].map(s => (
+                  <div
+                    key={s.label}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold"
+                    style={{ background: s.bg, color: s.color }}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: s.dot }} />
+                    <span className="tabular-nums">{s.value}</span>
+                    <span className="font-medium" style={{ opacity: 0.7 }}>{s.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="h-px mx-5" style={{ background: "rgba(255,255,255,0.06)" }} />
+
+            {/* Controls row */}
+            <div className="flex items-center gap-2.5 px-5 py-3.5 flex-wrap">
+
+              {/* Status filter tabs */}
+              <div
+                className="flex items-center gap-0.5 rounded-[11px] p-1"
+                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+              >
+                {FILTERS.map(({ key, label }) => {
+                  const count =
+                    key === "ALL"         ? totalCount :
+                    key === "ACTIVE"      ? activeCount :
+                    key === "MAINTENANCE" ? maintenanceCount :
+                    offlineCount
+                  if (key !== "ALL" && count === 0) return null
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setFilter(key as typeof filter)}
+                      className="px-3 py-1.5 rounded-[8px] text-[12px] font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer"
+                      style={filter === key
+                        ? { background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.92)", boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }
+                        : { color: "rgba(200,212,228,0.55)" }
+                      }
+                    >
+                      {label}
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* Type filter */}
+              {typesInFleet.length > 1 && (
+                <div className="relative">
+                  <select
+                    value={typeFilter}
+                    onChange={e => setTypeFilter(e.target.value as typeof typeFilter)}
+                    className="appearance-none h-9 pl-3 pr-7 rounded-xl text-xs font-semibold cursor-pointer transition-all outline-none"
+                    style={
+                      typeFilter !== "ALL"
+                        ? { background: "rgba(201,168,124,0.18)", border: "1px solid rgba(201,168,124,0.35)", color: "#c9a87c" }
+                        : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(200,212,228,0.70)" }
+                    }
+                  >
+                    <option value="ALL">All types</option>
+                    {typesInFleet.map(type => (
+                      <option key={type} value={type}>
+                        {vehicleTypes.find(t => t.value === type)?.label ?? type}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none"
+                    style={{ color: typeFilter !== "ALL" ? "#c9a87c" : "rgba(200,212,228,0.45)" }}
+                  />
+                </div>
+              )}
+
+              <div className="flex-1" />
+
+              {/* Add Vehicle CTA */}
+              <button
+                onClick={() => setShowAdd(true)}
+                className="flex items-center gap-1.5 h-9 px-4 rounded-xl text-[13px] font-semibold transition-all duration-150 active:scale-95 select-none cursor-pointer"
+                style={{ background: "#c9a87c", color: "#080c16", boxShadow: "0 2px 12px rgba(201,168,124,0.28)" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#d4b98c" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#c9a87c" }}
+              >
+                <Plus className="w-4 h-4" strokeWidth={2.5} />
+                <span className="hidden sm:inline">Add Vehicle</span>
+                <span className="sm:hidden">Add</span>
+              </button>
+            </div>
           </div>
 
-          {/* Type filter */}
-          {typesInFleet.length > 1 && (
-            <div className="relative">
-              <select
-                value={typeFilter}
-                onChange={e => setTypeFilter(e.target.value as typeof typeFilter)}
-                className={cn(
-                  "appearance-none h-9 pl-3 pr-7 rounded-xl border text-xs font-semibold cursor-pointer transition-all outline-none",
-                  typeFilter !== "ALL"
-                    ? "bg-blue-600 border-blue-600 text-white"
-                    : "bg-gray-50 border-gray-100 text-gray-600 hover:border-gray-200"
-                )}
+          {/* ── Gallery Grid ── */}
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+              {Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)}
+            </div>
+          ) : !vehicles?.length ? (
+            <div className="flex flex-col items-center justify-center py-28 text-center">
+              <div
+                className="w-20 h-20 rounded-3xl flex items-center justify-center mb-5"
+                style={{ background: "rgba(201,168,124,0.10)", border: "1px solid rgba(201,168,124,0.18)" }}
               >
-                <option value="ALL">All types</option>
-                {typesInFleet.map(type => (
-                  <option key={type} value={type}>
-                    {vehicleTypes.find(t => t.value === type)?.label ?? type}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className={cn(
-                "absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none",
-                typeFilter !== "ALL" ? "text-white/80" : "text-gray-400"
-              )} />
+                <Car className="w-9 h-9" style={{ color: "rgba(201,168,124,0.50)" }} />
+              </div>
+              <h3 className="text-lg font-bold tracking-tight" style={{ color: "rgba(255,255,255,0.88)" }}>
+                No vehicles yet
+              </h3>
+              <p className="text-sm mt-1.5 mb-6 max-w-xs leading-relaxed" style={{ color: "rgba(200,212,228,0.50)" }}>
+                Add your first vehicle to start assigning trips and managing your fleet.
+              </p>
+              <button
+                onClick={() => setShowAdd(true)}
+                className="flex items-center gap-2 px-5 h-10 rounded-xl font-semibold text-sm transition-all duration-150 active:scale-95 cursor-pointer"
+                style={{ background: "#c9a87c", color: "#080c16", boxShadow: "0 2px 12px rgba(201,168,124,0.28)" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#d4b98c" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#c9a87c" }}
+              >
+                <Plus className="w-4 h-4" strokeWidth={2.5} />
+                Add your first vehicle
+              </button>
+            </div>
+          ) : !filtered?.length ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <p className="text-sm" style={{ color: "rgba(200,212,228,0.50)" }}>
+                No vehicles match this filter.
+              </p>
+              <button
+                onClick={() => { setFilter("ALL"); setTypeFilter("ALL") }}
+                className="text-sm mt-1.5 font-medium transition-colors cursor-pointer"
+                style={{ color: "#c9a87c" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.75" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "1" }}
+              >
+                Clear filters
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+              {filtered.map((vehicle) => (
+                <VehicleCard
+                  key={vehicle.id}
+                  vehicle={vehicle}
+                  onEdit={() => setEditVehicle(vehicle)}
+                />
+              ))}
             </div>
           )}
 
-          <div className="flex-1" />
-
-          <Button
-            onClick={() => setShowAdd(true)}
-            className="h-9 text-sm font-semibold text-white gap-1.5 px-4"
-            style={{ background: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)", boxShadow: "0 2px 8px rgba(37,99,235,0.25)" }}
-          >
-            <Plus className="w-4 h-4" />
-            Add Vehicle
-          </Button>
         </div>
       </div>
-
-      {/* ── Gallery Grid ── */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)}
-        </div>
-      ) : !vehicles?.length ? (
-        <div className="flex flex-col items-center justify-center py-28 text-center">
-          <div className="w-20 h-20 rounded-3xl bg-gray-100 flex items-center justify-center mb-5 shadow-sm">
-            <Car className="w-9 h-9 text-gray-300" />
-          </div>
-          <h3 className="text-lg font-bold text-gray-900 tracking-tight">No vehicles yet</h3>
-          <p className="text-sm text-gray-500 mt-1.5 mb-6 max-w-xs leading-relaxed">
-            Add your first vehicle to start assigning trips and managing your fleet.
-          </p>
-          <Button
-            onClick={() => setShowAdd(true)}
-            className="text-white gap-2 px-5 h-10 rounded-xl font-semibold"
-            style={{ backgroundColor: "#2563EB" }}
-          >
-            <Plus className="w-4 h-4" />
-            Add your first vehicle
-          </Button>
-        </div>
-      ) : !filtered?.length ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <p className="text-sm text-gray-500">No vehicles match this filter.</p>
-          <button
-            onClick={() => { setFilter("ALL"); setTypeFilter("ALL") }}
-            className="text-sm text-blue-600 hover:underline mt-1.5 font-medium"
-          >
-            Clear filters
-          </button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filtered.map((vehicle) => (
-            <VehicleCard
-              key={vehicle.id}
-              vehicle={vehicle}
-              onEdit={() => setEditVehicle(vehicle)}
-            />
-          ))}
-        </div>
-      )}
 
       {/* ── Add Vehicle Dialog ── */}
       <Dialog open={showAdd} onOpenChange={(open) => { if (!open) setShowAdd(false) }}>
@@ -1043,6 +1132,6 @@ export default function VehiclesPage() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   )
 }

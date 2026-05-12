@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Toaster } from "sonner"
 import { DockNav } from "@/components/layout/dock-nav"
+import { AppHeader } from "@/components/layout/app-header"
 import { AuthProvider, useAuth } from "@/components/providers/auth-provider"
 
 function DashboardShell({ children }: { children: React.ReactNode }) {
@@ -17,8 +18,14 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   }, [isLoading, company, router])
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="px-4 md:px-6 pt-4 md:pt-6" style={{ paddingBottom: "max(121px, calc(121px + env(safe-area-inset-bottom)))" }}>{children}</main>
+    <div className="min-h-dvh bg-gray-50">
+      <AppHeader />
+      <main
+        className="px-4 md:px-6 pt-4 md:pt-6"
+        style={{ paddingBottom: "max(121px, calc(121px + env(safe-area-inset-bottom)))" }}
+      >
+        {children}
+      </main>
       <DockNav />
     </div>
   )
