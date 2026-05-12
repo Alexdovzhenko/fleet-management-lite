@@ -253,6 +253,256 @@ export function buildAffiliateEmailHtml(params: {
 </html>`
 }
 
+// ─── Password Reset Email ────────────────────────────────────────────────────
+
+export function buildPasswordResetEmailHtml(params: {
+  resetUrl: string
+  expiresInMinutes?: number
+}) {
+  const { resetUrl, expiresInMinutes = 60 } = params
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <title>Reset your password</title>
+</head>
+<body style="margin:0;padding:0;background:#0a0e18;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+
+  <!-- Preheader (hidden) -->
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">Reset your Livery Connect password — link expires in ${expiresInMinutes} minutes.</div>
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">&#847;&zwnj;&nbsp;</div>
+
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0a0e18;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;">
+
+          <!-- Logo / Brand header -->
+          <tr>
+            <td align="center" style="padding-bottom:28px;">
+              <table cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:0 12px;">
+                    <div style="width:64px;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,124,0.55));"></div>
+                  </td>
+                  <td>
+                    <span style="font-size:10px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#c9a87c;white-space:nowrap;">Livery Connect</span>
+                  </td>
+                  <td style="padding:0 12px;">
+                    <div style="width:64px;height:1px;background:linear-gradient(90deg,rgba(201,168,124,0.55),transparent);"></div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Card -->
+          <tr>
+            <td style="background:rgba(14,19,34,0.98);border:1px solid rgba(201,168,124,0.13);border-radius:16px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.6);">
+
+              <!-- Card top accent -->
+              <div style="height:3px;background:linear-gradient(90deg,rgba(201,168,124,0.0) 0%,rgba(201,168,124,0.7) 50%,rgba(201,168,124,0.0) 100%);"></div>
+
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:40px 40px 32px;">
+
+                    <!-- Icon -->
+                    <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+                      <tr>
+                        <td style="background:rgba(201,168,124,0.1);border:1px solid rgba(201,168,124,0.2);border-radius:14px;width:52px;height:52px;text-align:center;vertical-align:middle;">
+                          <span style="font-size:24px;line-height:52px;">🔐</span>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Heading -->
+                    <h1 style="margin:0 0 8px;font-size:24px;font-weight:700;color:#f1f5f9;letter-spacing:-0.02em;line-height:1.2;">Reset your password</h1>
+                    <p style="margin:0 0 28px;font-size:15px;color:#94a3b8;line-height:1.6;">
+                      We received a request to reset the password for your Livery Connect account. Click the button below to choose a new password.
+                    </p>
+
+                    <!-- CTA Button -->
+                    <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+                      <tr>
+                        <td style="background:linear-gradient(135deg,#2563eb 0%,#4f46e5 100%);border-radius:10px;box-shadow:0 4px 16px rgba(37,99,235,0.35);">
+                          <a href="${resetUrl}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;letter-spacing:-0.01em;white-space:nowrap;">
+                            Reset Password &rarr;
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Expiry notice -->
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+                      <tr>
+                        <td style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.18);border-radius:8px;padding:12px 16px;">
+                          <p style="margin:0;font-size:13px;color:#fbbf24;line-height:1.5;">
+                            ⏱ This link expires in <strong>${expiresInMinutes} minutes</strong>. If it expires, you can request a new one on the login page.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Security notice -->
+                    <p style="margin:0 0 16px;font-size:13px;color:#64748b;line-height:1.6;">
+                      If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged. No action is needed.
+                    </p>
+
+                    <!-- URL fallback -->
+                    <p style="margin:0;font-size:12px;color:#475569;line-height:1.5;">
+                      If the button doesn't work, copy and paste this link:<br/>
+                      <a href="${resetUrl}" style="color:#6d96f5;word-break:break-all;text-decoration:none;">${resetUrl}</a>
+                    </p>
+
+                  </td>
+                </tr>
+
+                <!-- Divider -->
+                <tr>
+                  <td style="padding:0 40px;">
+                    <div style="height:1px;background:rgba(255,255,255,0.06);"></div>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td style="padding:20px 40px 28px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td>
+                          <p style="margin:0;font-size:12px;color:#475569;line-height:1.6;">
+                            Sent by <strong style="color:#64748b;">Livery Connect</strong> — Fleet & Dispatch Management<br/>
+                            Need help? Contact <a href="mailto:support@liveryconnect.com" style="color:#6d96f5;text-decoration:none;">support@liveryconnect.com</a>
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+
+          <!-- Bottom caption -->
+          <tr>
+            <td align="center" style="padding-top:20px;">
+              <p style="margin:0;font-size:11px;color:#334155;">
+                © ${new Date().getFullYear()} Livery Connect · All rights reserved
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
+}
+
+// ─── Password Change OTP Email ───────────────────────────────────────────────
+
+export function buildPasswordChangeOtpEmailHtml(params: {
+  code: string
+  userName?: string
+}) {
+  const { code, userName } = params
+  const digits = code.split("")
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Your verification code</title>
+</head>
+<body style="margin:0;padding:0;background:#0a0e18;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">Your Livery Connect verification code: ${code}. Expires in 5 minutes.</div>
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">&#847;&zwnj;&nbsp;</div>
+
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#0a0e18;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;">
+
+          <!-- Brand -->
+          <tr>
+            <td align="center" style="padding-bottom:24px;">
+              <span style="font-size:10px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;color:#c9a87c;">Livery Connect</span>
+            </td>
+          </tr>
+
+          <!-- Card -->
+          <tr>
+            <td style="background:rgba(14,19,34,0.98);border:1px solid rgba(201,168,124,0.13);border-radius:16px;overflow:hidden;">
+              <div style="height:3px;background:linear-gradient(90deg,rgba(201,168,124,0) 0%,rgba(201,168,124,0.7) 50%,rgba(201,168,124,0) 100%);"></div>
+
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:36px 36px 28px;text-align:center;">
+
+                    <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#f1f5f9;">Verification Code</h1>
+                    <p style="margin:0 0 28px;font-size:14px;color:#94a3b8;line-height:1.6;">
+                      ${userName ? `Hi ${userName}, enter` : "Enter"} this code in Livery Connect to confirm your password change.
+                    </p>
+
+                    <!-- OTP digits -->
+                    <table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 28px;">
+                      <tr>
+                        ${digits.map(d => `
+                        <td style="padding:0 4px;">
+                          <div style="width:44px;height:56px;background:rgba(255,255,255,0.06);border:1px solid rgba(201,168,124,0.25);border-radius:10px;text-align:center;line-height:56px;font-size:26px;font-weight:700;font-family:monospace;color:#f1f5f9;letter-spacing:0;">${d}</div>
+                        </td>`).join("")}
+                      </tr>
+                    </table>
+
+                    <!-- Expiry -->
+                    <table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 24px;max-width:340px;width:100%;">
+                      <tr>
+                        <td style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.18);border-radius:8px;padding:10px 16px;text-align:center;">
+                          <p style="margin:0;font-size:13px;color:#fbbf24;">⏱ Expires in <strong>5 minutes</strong></p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p style="margin:0;font-size:13px;color:#64748b;line-height:1.6;">
+                      If you didn't request this, someone may be attempting to access your account. Please secure your account immediately.
+                    </p>
+
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:0 36px;">
+                    <div style="height:1px;background:rgba(255,255,255,0.06);"></div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:16px 36px 24px;text-align:center;">
+                    <p style="margin:0;font-size:12px;color:#475569;">
+                      Livery Connect — Fleet & Dispatch Management<br/>
+                      <a href="mailto:support@liveryconnect.com" style="color:#6d96f5;text-decoration:none;">support@liveryconnect.com</a>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
+}
+
 export function buildInvoiceEmailHtml(params: {
   companyName: string
   invoiceNumber: string

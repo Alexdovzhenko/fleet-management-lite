@@ -1401,6 +1401,414 @@ function RoleSelect({
   )
 }
 
+function getStrength(pw: string): { level: 0|1|2|3|4; label: string; color: string } {
+  if (!pw) return { level: 0, label: "", color: "" }
+  let s = 0
+  if (pw.length >= 8)  s++
+  if (pw.length >= 12) s++
+  if (/[A-Z]/.test(pw)) s++
+  if (/[0-9]/.test(pw)) s++
+  if (/[^A-Za-z0-9]/.test(pw)) s++
+  if (s <= 1) return { level: 1, label: "Weak",   color: "#ef4444" }
+  if (s === 2) return { level: 2, label: "Fair",   color: "#f59e0b" }
+  if (s === 3) return { level: 3, label: "Good",   color: "#3b82f6" }
+  return             { level: 4, label: "Strong",  color: "#10b981" }
+}
+
+const RESEND_COOLDOWN_S = 60
+
+function ChangePasswordSection() {
+  const [open, setOpen] = useState(false)
+  const [step, setStep] = useState<"form"|"otp"|"success">("form")
+
+  // Form fields
+  const [currentPw,  setCurrentPw]  = useState("")
+  const [newPw,      setNewPw]      = useState("")
+  const [confirmPw,  setConfirmPw]  = useState("")
+  const [showCurrent,setShowCurrent]= useState(false)
+  const [showNew,    setShowNew]    = useState(false)
+  const [showConfirm,setShowConfirm]= useState(false)
+
+  // OTP
+  const [digits, setDigits] = useState(["","","","","",""])
+  const digitRefs = [
+    useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null),
+  ]
+  const [maskedEmail, setMaskedEmail] = useState("")
+  const [cooldown, setCooldown]     = useState(0)
+  const cooldownRef = useRef<ReturnType<typeof setInterval>|null>(null)
+
+  // State
+  const [loading,  setLoading]  = useState(false)
+  const [error,    setError]    = useState("")
+  const [otpError, setOtpError] = useState("")
+
+  const strength  = getStrength(newPw)
+  const mismatch  = confirmPw.length > 0 && newPw !== confirmPw
+  const otpCode   = digits.join("")
+
+  function reset() {
+    setOpen(false); setStep("form")
+    setCurrentPw(""); setNewPw(""); setConfirmPw("")
+    setDigits(["","","","","",""])
+    setError(""); setOtpError(""); setMaskedEmail("")
+    setShowCurrent(false); setShowNew(false); setShowConfirm(false)
+    if (cooldownRef.current) clearInterval(cooldownRef.current)
+    setCooldown(0)
+  }
+
+  function startCooldown() {
+    if (cooldownRef.current) clearInterval(cooldownRef.current)
+    setCooldown(RESEND_COOLDOWN_S)
+    cooldownRef.current = setInterval(() => {
+      setCooldown(c => {
+        if (c <= 1) { clearInterval(cooldownRef.current!); return 0 }
+        return c - 1
+      })
+    }, 1000)
+  }
+
+  useEffect(() => () => { if (cooldownRef.current) clearInterval(cooldownRef.current) }, [])
+
+  // Step 1 → request OTP
+  async function handleRequestOtp(e: React.FormEvent) {
+    e.preventDefault()
+    setError("")
+    if (newPw.length < 8)      { setError("New password must be at least 8 characters."); return }
+    if (newPw !== confirmPw)   { setError("New passwords don't match."); return }
+    if (strength.level < 2)    { setError("Please choose a stronger password."); return }
+    if (!currentPw)            { setError("Please enter your current password."); return }
+
+    setLoading(true)
+    try {
+      const res = await fetch("/api/auth/change-password/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword: currentPw }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error || "Failed to send code"); return }
+      setMaskedEmail(data.email || "")
+      setStep("otp")
+      startCooldown()
+      setTimeout(() => digitRefs[0].current?.focus(), 100)
+    } catch { setError("Something went wrong. Please try again.") }
+    finally  { setLoading(false) }
+  }
+
+  // OTP digit input handling
+  function handleDigit(index: number, value: string) {
+    const char = value.replace(/\D/g, "").slice(-1)
+    const next = [...digits]
+    next[index] = char
+    setDigits(next)
+    setOtpError("")
+    if (char && index < 5) digitRefs[index + 1].current?.focus()
+  }
+
+  function handleDigitKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Backspace" && !digits[index] && index > 0) {
+      digitRefs[index - 1].current?.focus()
+    }
+    if (e.key === "ArrowLeft"  && index > 0) digitRefs[index - 1].current?.focus()
+    if (e.key === "ArrowRight" && index < 5) digitRefs[index + 1].current?.focus()
+  }
+
+  function handleDigitPaste(e: React.ClipboardEvent) {
+    const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6)
+    if (text.length === 6) {
+      setDigits(text.split(""))
+      digitRefs[5].current?.focus()
+    }
+  }
+
+  // Step 2 → verify OTP and update password
+  async function handleVerify(e: React.FormEvent) {
+    e.preventDefault()
+    if (otpCode.length < 6) { setOtpError("Enter all 6 digits."); return }
+    setLoading(true); setOtpError("")
+    try {
+      const res = await fetch("/api/auth/change-password/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newPassword: newPw, code: otpCode }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        if (data.expired) { setStep("form"); setError("Code expired. Please try again."); return }
+        setOtpError(data.error || "Incorrect code")
+        setDigits(["","","","","",""])
+        setTimeout(() => digitRefs[0].current?.focus(), 50)
+        return
+      }
+      setStep("success")
+    } catch { setOtpError("Something went wrong. Please try again.") }
+    finally  { setLoading(false) }
+  }
+
+  // Resend OTP
+  async function handleResend() {
+    if (cooldown > 0 || loading) return
+    setLoading(true); setOtpError("")
+    try {
+      const res = await fetch("/api/auth/change-password/resend", { method: "POST" })
+      const data = await res.json()
+      if (!res.ok) { setOtpError(data.error || "Failed to resend"); return }
+      startCooldown()
+      setDigits(["","","","","",""])
+      setTimeout(() => digitRefs[0].current?.focus(), 50)
+    } catch { setOtpError("Failed to resend. Please try again.") }
+    finally  { setLoading(false) }
+  }
+
+  const inputCls = "h-10 w-full rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-500/15 placeholder:text-gray-300"
+
+  return (
+    <div className="rounded-2xl border border-gray-200/80 bg-white shadow-sm overflow-hidden">
+      {/* Header row */}
+      <button
+        onClick={() => { if (open) reset(); else setOpen(true) }}
+        className="w-full flex items-center justify-between gap-3 px-6 py-4 hover:bg-gray-50/60 transition-colors cursor-pointer text-left"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center flex-shrink-0">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-gray-900">Change Password</div>
+            <div className="text-xs text-gray-400 mt-0.5">Update your account password with email verification</div>
+          </div>
+        </div>
+        <div className={cn(
+          "w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 flex-shrink-0",
+          open ? "bg-gray-200 text-gray-600" : "bg-gray-100 text-gray-400"
+        )}>
+          {open
+            ? <X className="w-3.5 h-3.5" />
+            : <ChevronRight className="w-3.5 h-3.5" />}
+        </div>
+      </button>
+
+      {open && (
+        <div className="border-t border-gray-100">
+
+          {/* ── Success ── */}
+          {step === "success" && (
+            <div className="px-6 py-8 flex flex-col items-center text-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <div>
+                <div className="text-base font-bold text-gray-900">Password changed successfully</div>
+                <div className="text-sm text-gray-500 mt-1">Your account is now secured with the new password.</div>
+              </div>
+              <button
+                onClick={reset}
+                className="mt-2 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
+          )}
+
+          {/* ── Step 1: Password form ── */}
+          {step === "form" && (
+            <form onSubmit={handleRequestOtp} className="px-6 py-5 space-y-4">
+              {error && (
+                <div className="px-3.5 py-2.5 bg-red-50 border border-red-100 rounded-xl text-sm text-red-600">
+                  {error}
+                </div>
+              )}
+
+              {/* Current password */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-gray-400 block">Current Password</Label>
+                <div className="relative">
+                  <input
+                    type={showCurrent ? "text" : "password"}
+                    value={currentPw}
+                    onChange={e => { setCurrentPw(e.target.value); setError("") }}
+                    placeholder="Your current password"
+                    autoComplete="current-password"
+                    required
+                    className={cn(inputCls, "pr-10")}
+                  />
+                  <button type="button" tabIndex={-1} onClick={() => setShowCurrent(s=>!s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
+                    {showCurrent ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
+                  </button>
+                </div>
+              </div>
+
+              {/* New password */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-gray-400 block">New Password</Label>
+                <div className="relative">
+                  <input
+                    type={showNew ? "text" : "password"}
+                    value={newPw}
+                    onChange={e => { setNewPw(e.target.value); setError("") }}
+                    placeholder="At least 8 characters"
+                    autoComplete="new-password"
+                    required
+                    className={cn(inputCls, "pr-10")}
+                  />
+                  <button type="button" tabIndex={-1} onClick={() => setShowNew(s=>!s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
+                    {showNew ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
+                  </button>
+                </div>
+                {/* Strength meter */}
+                {newPw.length > 0 && (
+                  <div className="space-y-1.5 pt-0.5">
+                    <div className="flex gap-1">
+                      {[1,2,3,4].map(i => (
+                        <div key={i} className="flex-1 h-1 rounded-full transition-all duration-200"
+                          style={{ background: i <= strength.level ? strength.color : "#e5e7eb" }} />
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-semibold" style={{ color: strength.color }}>{strength.label}</span>
+                      <div className="flex gap-1.5">
+                        {[
+                          { label: "8+",  met: newPw.length >= 8 },
+                          { label: "A-Z", met: /[A-Z]/.test(newPw) },
+                          { label: "0-9", met: /[0-9]/.test(newPw) },
+                          { label: "#@!", met: /[^A-Za-z0-9]/.test(newPw) },
+                        ].map(r => (
+                          <span key={r.label} className={cn(
+                            "text-[10px] font-semibold px-1.5 py-0.5 rounded-full transition-all",
+                            r.met ? "bg-emerald-50 text-emerald-600" : "bg-gray-100 text-gray-400"
+                          )}>{r.met ? "✓" : ""} {r.label}</span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Confirm password */}
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium text-gray-400 block">Confirm New Password</Label>
+                <div className="relative">
+                  <input
+                    type={showConfirm ? "text" : "password"}
+                    value={confirmPw}
+                    onChange={e => { setConfirmPw(e.target.value); setError("") }}
+                    placeholder="Repeat new password"
+                    autoComplete="new-password"
+                    required
+                    className={cn(inputCls, "pr-10", mismatch && "border-red-300 focus:border-red-400 focus:ring-red-500/15")}
+                  />
+                  <button type="button" tabIndex={-1} onClick={() => setShowConfirm(s=>!s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
+                    {showConfirm ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
+                  </button>
+                </div>
+                {mismatch && <p className="text-[11px] text-red-500 font-medium">Passwords don&apos;t match</p>}
+                {confirmPw.length > 0 && !mismatch && <p className="text-[11px] text-emerald-600 font-medium">✓ Passwords match</p>}
+              </div>
+
+              <div className="flex gap-2 pt-1">
+                <button type="button" onClick={reset}
+                  className="flex-1 h-9 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer">
+                  Cancel
+                </button>
+                <button type="submit" disabled={loading}
+                  className="flex-1 h-9 rounded-xl text-sm font-semibold text-white transition-all duration-150 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ background: "linear-gradient(135deg,#2563eb 0%,#4f46e5 100%)" }}>
+                  {loading ? "Sending code…" : "Send Verification Code"}
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* ── Step 2: OTP verification ── */}
+          {step === "otp" && (
+            <form onSubmit={handleVerify} className="px-6 py-5">
+              <div className="flex flex-col items-center text-center mb-5">
+                <div className="w-11 h-11 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mb-3">
+                  <Mail className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="text-sm font-semibold text-gray-900">Check your email</div>
+                <div className="text-xs text-gray-500 mt-1 leading-relaxed">
+                  We sent a 6-digit code to {maskedEmail || "your email"}.<br/>
+                  It expires in <strong>5 minutes</strong>.
+                </div>
+              </div>
+
+              {otpError && (
+                <div className="px-3.5 py-2.5 bg-red-50 border border-red-100 rounded-xl text-sm text-red-600 mb-4 text-center">
+                  {otpError}
+                </div>
+              )}
+
+              {/* 6-digit OTP cells */}
+              <div className="flex gap-2 justify-center mb-5">
+                {digits.map((d, i) => (
+                  <input
+                    key={i}
+                    ref={digitRefs[i]}
+                    type="text"
+                    inputMode="numeric"
+                    pattern="\d*"
+                    maxLength={1}
+                    value={d}
+                    onChange={e => handleDigit(i, e.target.value)}
+                    onKeyDown={e => handleDigitKeyDown(i, e)}
+                    onPaste={i === 0 ? handleDigitPaste : undefined}
+                    className={cn(
+                      "w-11 h-13 text-center text-xl font-bold rounded-xl border-2 outline-none transition-all duration-150",
+                      "text-gray-900 bg-gray-50 tabular-nums",
+                      d
+                        ? "border-blue-500 bg-white shadow-sm shadow-blue-500/10"
+                        : "border-gray-200 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-500/15"
+                    )}
+                    style={{ height: "52px" }}
+                  />
+                ))}
+              </div>
+
+              <div className="flex gap-2 mb-4">
+                <button type="button" onClick={() => { setStep("form"); setOtpError(""); setDigits(["","","","","",""]) }}
+                  className="flex-1 h-9 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer">
+                  ← Back
+                </button>
+                <button type="submit" disabled={loading || otpCode.length < 6}
+                  className="flex-1 h-9 rounded-xl text-sm font-semibold text-white transition-all duration-150 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ background: "linear-gradient(135deg,#2563eb 0%,#4f46e5 100%)" }}>
+                  {loading ? "Verifying…" : "Verify & Change Password"}
+                </button>
+              </div>
+
+              {/* Resend */}
+              <div className="text-center">
+                {cooldown > 0 ? (
+                  <p className="text-xs text-gray-400">
+                    Resend available in <span className="tabular-nums font-semibold text-gray-600">{cooldown}s</span>
+                  </p>
+                ) : (
+                  <button type="button" onClick={handleResend} disabled={loading}
+                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors disabled:opacity-50 cursor-pointer">
+                    {loading ? "Sending…" : "Resend code"}
+                  </button>
+                )}
+              </div>
+            </form>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function PersonalSection() {
   const [profile, setProfile] = useState({
     firstName: "",
@@ -1554,6 +1962,9 @@ function PersonalSection() {
           }
         </Button>
       </div>
+
+      {/* Change Password */}
+      <ChangePasswordSection />
     </div>
   )
 }
