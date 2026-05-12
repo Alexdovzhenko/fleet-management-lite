@@ -506,7 +506,7 @@ function DispatchPageInner() {
           icon={Grid3X3}
           title={isSearching ? "No reservations found" : statusFilter === "all" && driverFilter === "all" ? "No trips scheduled" : "No trips match filters"}
           description={isSearching ? "Try a different name, address, or reservation number." : statusFilter === "all" && driverFilter === "all" ? "Schedule a trip to get started." : "Try adjusting your filters."}
-          actionLabel={!isSearching && statusFilter === "all" && driverFilter === "all" ? "Schedule Trip" : undefined}
+          actionLabel={!isSearching && statusFilter === "all" && driverFilter === "all" ? "+ New Reservation" : undefined}
           onAction={() => router.push("/trips/new")}
         />
       ) : (
