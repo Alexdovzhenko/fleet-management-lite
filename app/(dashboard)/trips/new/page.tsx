@@ -257,15 +257,27 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
             </div>
           )}
         </div>
-        <Button
+        <button
           type="button"
-          variant="ghost"
           onClick={() => setShowCreate(true)}
-          className="h-10 px-3 text-sm text-blue-600 hover:bg-blue-50 border border-dashed border-blue-200 gap-1.5 flex-shrink-0"
+          className="h-10 px-3 text-sm font-semibold rounded-xl flex items-center gap-1.5 flex-shrink-0 transition-all"
+          style={{ border: "1px dashed rgba(201,168,124,0.35)", color: "rgba(201,168,124,0.80)", background: "transparent" }}
+          onMouseEnter={e => {
+            const el = e.currentTarget as HTMLElement
+            el.style.borderColor = "rgba(201,168,124,0.60)"
+            el.style.color = "#c9a87c"
+            el.style.background = "rgba(201,168,124,0.06)"
+          }}
+          onMouseLeave={e => {
+            const el = e.currentTarget as HTMLElement
+            el.style.borderColor = "rgba(201,168,124,0.35)"
+            el.style.color = "rgba(201,168,124,0.80)"
+            el.style.background = "transparent"
+          }}
         >
           <UserPlus className="w-3.5 h-3.5" />
           New Account
-        </Button>
+        </button>
       </div>
 
       {selected && (
