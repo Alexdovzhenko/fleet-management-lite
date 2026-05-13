@@ -199,6 +199,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
           "--ring": "#c9a87c",
           "--foreground": "rgba(255,255,255,0.88)",
           "--muted-foreground": "rgba(200,212,228,0.50)",
+          color: "rgba(255,255,255,0.88)",
         } as React.CSSProperties}
       >
         {children}
