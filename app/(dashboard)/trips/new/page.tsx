@@ -2647,7 +2647,7 @@ export default function NewTripPage() {
                 {/* Booked By sub-section */}
                 {selectedAccount && (
                   <div className="px-5 pt-4 pb-4 border-b" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: "rgba(200,212,228,0.60)" }}>
+                    <p className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.88)" }}>
                       <span className="w-1 h-3 rounded-full inline-block flex-shrink-0" style={{ background: "rgba(200,212,228,0.40)" }} />
                       Booked By
                     </p>
@@ -2680,10 +2680,10 @@ export default function NewTripPage() {
 
                 {/* Passenger sub-section */}
                 <div className="px-5 pt-4 pb-5">
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: "rgba(200,212,228,0.60)" }}>
-                    <span className="w-1 h-3 rounded-full inline-block flex-shrink-0" style={{ background: "rgba(200,212,228,0.40)" }} />
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.88)" }}>
+                    <span className="w-1 h-3 rounded-full inline-block flex-shrink-0" style={{ background: "#c9a87c" }} />
                     Passengers
-                    <span className="font-normal normal-case" style={{ color: "rgba(200,212,228,0.40)" }}>— if different from account holder</span>
+                    <span className="font-normal normal-case" style={{ color: "rgba(255,255,255,0.45)" }}>— if different from account holder</span>
                   </p>
                   <div className="space-y-2.5">
                     {/* Primary passenger */}
@@ -2694,23 +2694,23 @@ export default function NewTripPage() {
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-2.5">
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>First Name</Label>
-                          <Input {...register("passengerFirstName")} className="h-9 text-sm bg-white" />
+                          <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>First Name</Label>
+                          <Input {...register("passengerFirstName")} className="h-10 text-sm" />
                         </div>
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>Last Name</Label>
-                          <Input {...register("passengerLastName")} className="h-9 text-sm bg-white" />
+                          <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Last Name</Label>
+                          <Input {...register("passengerLastName")} className="h-10 text-sm" />
                         </div>
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>Company</Label>
-                          <Input {...register("passengerCompany")} className="h-9 text-sm bg-white" />
+                          <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Company</Label>
+                          <Input {...register("passengerCompany")} className="h-10 text-sm" />
                         </div>
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>Phone</Label>
+                          <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Phone</Label>
                           <Input
                             {...register("passengerPhone")}
                             type="tel"
-                            className="h-9 text-sm bg-white"
+                            className="h-10 text-sm"
                             onChange={(e) => {
                               const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
                               let formatted = digits
@@ -2725,8 +2725,8 @@ export default function NewTripPage() {
                       </div>
                       <div className="w-[calc(75%-6px)]">
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>Email</Label>
-                          <Input {...register("passengerEmail")} type="email" className="h-9 text-sm bg-white" />
+                          <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Email</Label>
+                          <Input {...register("passengerEmail")} type="email" className="h-10 text-sm" />
                         </div>
                       </div>
                     </div>
@@ -2749,15 +2749,15 @@ export default function NewTripPage() {
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>First Name</Label>
+                            <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>First Name</Label>
                             <Input value={pax.firstName} onChange={(e) => updateAdditionalPassenger(pax.id, "firstName", e.target.value)} className="h-10 text-sm" />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>Last Name</Label>
+                            <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Last Name</Label>
                             <Input value={pax.lastName} onChange={(e) => updateAdditionalPassenger(pax.id, "lastName", e.target.value)} className="h-10 text-sm" />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>Phone</Label>
+                            <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Phone</Label>
                             <Input
                               type="tel"
                               value={pax.phone}
@@ -2773,7 +2773,7 @@ export default function NewTripPage() {
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>Email</Label>
+                            <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Email</Label>
                             <Input value={pax.email} type="email" onChange={(e) => updateAdditionalPassenger(pax.id, "email", e.target.value)} className="h-10 text-sm" />
                           </div>
                         </div>
