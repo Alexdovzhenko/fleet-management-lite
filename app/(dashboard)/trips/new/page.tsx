@@ -186,11 +186,11 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
             </button>
           )}
           {showDropdown && (
-            <div className="absolute top-full left-0 right-0 mt-1 z-50 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden max-h-64 overflow-y-auto">
+            <div className="absolute top-full left-0 right-0 mt-1 z-50 rounded-xl overflow-hidden max-h-64 overflow-y-auto" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }}>
               {/* Customer results */}
               {hasCustomers && (
                 <>
-                  <div className="px-3 py-1.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
+                  <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
                     Accounts
                   </div>
                   {customerResults.map((c) => (
@@ -198,21 +198,21 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
                       key={c.id}
                       type="button"
                       onClick={() => handleSelect(c)}
-                      className="w-full text-left px-4 py-2.5 hover:bg-gray-50 transition-colors flex items-center gap-3"
+                      className="w-full text-left px-4 py-2.5 transition-colors flex items-center gap-3 hover:bg-white/5"
                     >
-                      <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                      <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.12)" }}>
                         <User className="w-3.5 h-3.5" style={{ color: "rgba(200,212,228,0.40)" }} />
                       </div>
                       <div className="flex-1 min-w-0">
                         {c.company && (
-                          <div className="text-xs font-semibold text-gray-500 truncate">{c.company}</div>
+                          <div className="text-xs font-semibold truncate" style={{ color: "rgba(200,212,228,0.50)" }}>{c.company}</div>
                         )}
-                        <div className="text-sm font-medium text-gray-900 truncate">{c.name}</div>
+                        <div className="text-sm font-medium truncate" style={{ color: "rgba(255,255,255,0.85)" }}>{c.name}</div>
                         {(c.phone || c.email) && (
-                          <div className="text-xs text-gray-400 truncate">{c.phone ? formatPhone(c.phone) : c.email}</div>
+                          <div className="text-xs truncate" style={{ color: "rgba(200,212,228,0.45)" }}>{c.phone ? formatPhone(c.phone) : c.email}</div>
                         )}
                       </div>
-                      {c.customerNumber && <span className="text-xs font-mono text-gray-300 flex-shrink-0">#{c.customerNumber}</span>}
+                      {c.customerNumber && <span className="text-xs font-mono flex-shrink-0" style={{ color: "rgba(200,212,228,0.40)" }}>#{c.customerNumber}</span>}
                     </button>
                   ))}
                 </>
@@ -221,7 +221,7 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
               {/* Affiliate results */}
               {hasAffiliates && (
                 <>
-                  <div className="px-3 py-1.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100 border-t border-t-gray-100">
+                  <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.07)", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
                     Affiliates
                   </div>
                   {affiliateResults.map((a) => (
@@ -230,19 +230,19 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
                       type="button"
                       onClick={() => handleSelectAffiliate(a)}
                       disabled={affiliateLoading}
-                      className="w-full text-left px-4 py-2.5 hover:bg-blue-50 transition-colors flex items-center gap-3"
+                      className="w-full text-left px-4 py-2.5 transition-colors flex items-center gap-3 hover:bg-white/5"
                     >
-                      <div className="w-7 h-7 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-blue-600">
+                      <div className="w-7 h-7 rounded-xl flex items-center justify-center flex-shrink-0 text-[10px] font-bold" style={{ background: "rgba(201,168,124,0.15)", color: "#c9a87c" }}>
                         {a.name.slice(0, 2).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-gray-900">{a.name}</div>
-                        <div className="text-xs text-gray-400 truncate">
+                        <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.85)" }}>{a.name}</div>
+                        <div className="text-xs truncate" style={{ color: "rgba(200,212,228,0.45)" }}>
                           {[a.city, a.state].filter(Boolean).join(", ") || a.email || ""}
                         </div>
                       </div>
                       {a.affiliateCode && (
-                        <span className="text-[11px] font-mono font-semibold text-blue-600 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded flex-shrink-0">
+                        <span className="text-[11px] font-mono font-semibold px-1.5 py-0.5 rounded flex-shrink-0" style={{ background: "rgba(201,168,124,0.12)", color: "#c9a87c", border: "1px solid rgba(201,168,124,0.25)" }}>
                           {a.affiliateCode}
                         </span>
                       )}
@@ -372,10 +372,10 @@ const STOP_ROLES: { value: StopRole; label: string }[] = [
 ]
 
 const STOP_ROLE_STYLE: Record<StopRole, { dot: string; pill: string }> = {
-  pickup: { dot: "bg-emerald-500 ring-emerald-100", pill: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  drop:   { dot: "bg-red-500 ring-red-100",         pill: "bg-red-50 text-red-700 border-red-200" },
-  stop:   { dot: "bg-blue-500 ring-blue-100",       pill: "bg-blue-50 text-blue-700 border-blue-200" },
-  wait:   { dot: "bg-amber-500 ring-amber-100",     pill: "bg-amber-50 text-amber-700 border-amber-200" },
+  pickup: { dot: "bg-emerald-500 ring-emerald-900", pill: "bg-emerald-900/30 text-emerald-400 border-emerald-700/50" },
+  drop:   { dot: "bg-red-500 ring-red-900",         pill: "bg-red-900/30 text-red-400 border-red-700/50" },
+  stop:   { dot: "bg-blue-500 ring-blue-900",       pill: "bg-blue-900/30 text-blue-400 border-blue-700/50" },
+  wait:   { dot: "bg-amber-500 ring-amber-900",     pill: "bg-amber-900/30 text-amber-400 border-amber-700/50" },
 }
 
 const ROLE_PREFIX: Record<StopRole, string> = {
@@ -810,31 +810,32 @@ function AirportPicker({
     <div className="grid grid-cols-2 gap-2">
       {/* Code field */}
       <div className="space-y-1.5">
-        <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airport Code</Label>
+        <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Airport Code</Label>
         <div ref={codeRef} className="relative">
           <input
             value={codeQuery}
             onChange={(e) => { setCodeQuery(e.target.value); onCodeChange(e.target.value); openCodeDrop() }}
             onFocus={openCodeDrop}
             autoComplete="new-password"
-            className={`w-full h-9 text-sm border rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-gray-800 ${codeError ? "border-red-400" : "border-gray-200"}`}
+            className="w-full h-9 text-sm border rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]"
+            style={{ background: "rgba(255,255,255,0.05)", borderColor: codeError ? "rgba(248,113,113,0.70)" : "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.85)" }}
           />
           {codeOpen && codeFiltered.length > 0 && createPortal(
-            <div ref={codeDropRef} style={codeDropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+            <div ref={codeDropRef} style={{ ...codeDropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
               <div className="max-h-60 overflow-y-auto">
                 {codeFiltered.map((a) => (
                   <button
                     key={a.iata}
                     type="button"
                     onMouseDown={(e) => { e.preventDefault(); selectAirport(a) }}
-                    className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors flex items-center gap-2.5 ${a.iata === codeValue ? "bg-blue-50" : ""}`}
+                    className={`w-full text-left px-3 py-2 transition-colors flex items-center gap-2.5 hover:bg-white/5 ${a.iata === codeValue ? "bg-white/8" : ""}`}
                   >
-                    <span className="text-xs font-mono font-bold text-gray-900 w-8 flex-shrink-0">{a.iata}</span>
+                    <span className="text-xs font-mono font-bold w-8 flex-shrink-0" style={{ color: "#c9a87c" }}>{a.iata}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs text-gray-700 truncate">{a.name}</div>
-                      <div className="text-[10px] text-gray-400">{a.city}, {a.country}</div>
+                      <div className="text-xs truncate" style={{ color: "rgba(255,255,255,0.80)" }}>{a.name}</div>
+                      <div className="text-[10px]" style={{ color: "rgba(200,212,228,0.45)" }}>{a.city}, {a.country}</div>
                     </div>
-                    {a.iata === codeValue && <Check className="w-3 h-3 text-blue-500 flex-shrink-0" />}
+                    {a.iata === codeValue && <Check className="w-3 h-3 flex-shrink-0" style={{ color: "#c9a87c" }} />}
                   </button>
                 ))}
               </div>
@@ -845,31 +846,31 @@ function AirportPicker({
       </div>
       {/* Name field */}
       <div className="space-y-1.5">
-        <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airport Name</Label>
+        <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Airport Name</Label>
         <div ref={nameRef} className="relative">
           <input
             value={nameQuery}
             onChange={(e) => { setNameQuery(e.target.value); onNameChange(e.target.value); if (e.target.value) { openNameDrop() } else { setNameOpen(false) } }}
             onFocus={() => { if (nameQuery) openNameDrop() }}
             autoComplete="new-password"
-            className="w-full h-9 text-sm border border-gray-200 rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-gray-800"
+            className="w-full h-9 text-sm rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.85)" }}
           />
           {nameOpen && nameFiltered.length > 0 && createPortal(
-            <div ref={nameDropRef} style={nameDropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+            <div ref={nameDropRef} style={{ ...nameDropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
               <div className="max-h-60 overflow-y-auto">
                 {nameFiltered.map((a) => (
                   <button
                     key={a.iata}
                     type="button"
                     onMouseDown={(e) => { e.preventDefault(); selectAirport(a) }}
-                    className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors flex items-center gap-2.5 ${a.iata === codeValue ? "bg-blue-50" : ""}`}
+                    className={`w-full text-left px-3 py-2 transition-colors flex items-center gap-2.5 hover:bg-white/5 ${a.iata === codeValue ? "bg-white/8" : ""}`}
                   >
-                    <span className="text-xs font-mono font-bold text-gray-900 w-8 flex-shrink-0">{a.iata}</span>
+                    <span className="text-xs font-mono font-bold w-8 flex-shrink-0" style={{ color: "#c9a87c" }}>{a.iata}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs text-gray-700 truncate">{a.name}</div>
-                      <div className="text-[10px] text-gray-400">{a.city}, {a.country}</div>
+                      <div className="text-xs truncate" style={{ color: "rgba(255,255,255,0.80)" }}>{a.name}</div>
+                      <div className="text-[10px]" style={{ color: "rgba(200,212,228,0.45)" }}>{a.city}, {a.country}</div>
                     </div>
-                    {a.iata === codeValue && <Check className="w-3 h-3 text-blue-500 flex-shrink-0" />}
+                    {a.iata === codeValue && <Check className="w-3 h-3 flex-shrink-0" style={{ color: "#c9a87c" }} />}
                   </button>
                 ))}
               </div>
@@ -1104,28 +1105,28 @@ function AirlinePicker({
   return (
     <div className="grid grid-cols-[100px_1fr] gap-2">
       <div className="space-y-1.5">
-        <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airline Code</Label>
+        <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Airline Code</Label>
         <div ref={codeRef} className="relative">
           <input
             value={codeQuery}
             onChange={(e) => { setCodeQuery(e.target.value); onCodeChange(e.target.value); openCodeDrop() }}
             onFocus={openCodeDrop}
             autoComplete="new-password"
-            className="w-full h-9 text-sm border border-gray-200 rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-gray-800"
+            className="w-full h-9 text-sm rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.85)" }}
           />
           {codeOpen && codeFiltered.length > 0 && createPortal(
-            <div ref={codeDropRef} style={codeDropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+            <div ref={codeDropRef} style={{ ...codeDropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
               <div className="max-h-60 overflow-y-auto">
                 {codeFiltered.map((a) => (
                   <button key={a.iata} type="button" onMouseDown={(e) => { e.preventDefault(); selectAirline(a) }}
-                    className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors flex items-center gap-2.5 ${a.iata === codeValue ? "bg-blue-50" : ""}`}
+                    className={`w-full text-left px-3 py-2 transition-colors flex items-center gap-2.5 hover:bg-white/5 ${a.iata === codeValue ? "bg-white/8" : ""}`}
                   >
                     <span className="text-xs font-mono font-bold text-gray-900 w-6 flex-shrink-0">{a.iata}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs text-gray-700 truncate">{a.name}</div>
-                      <div className="text-[10px] text-gray-400">{a.country}</div>
+                      <div className="text-xs truncate" style={{ color: "rgba(255,255,255,0.80)" }}>{a.name}</div>
+                      <div className="text-[10px]" style={{ color: "rgba(200,212,228,0.45)" }}>{a.country}</div>
                     </div>
-                    {a.iata === codeValue && <Check className="w-3 h-3 text-blue-500 flex-shrink-0" />}
+                    {a.iata === codeValue && <Check className="w-3 h-3 flex-shrink-0" style={{ color: "#c9a87c" }} />}
                   </button>
                 ))}
               </div>
@@ -1135,28 +1136,28 @@ function AirlinePicker({
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airline Name</Label>
+        <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Airline Name</Label>
         <div ref={nameRef} className="relative">
           <input
             value={nameQuery}
             onChange={(e) => { setNameQuery(e.target.value); onNameChange(e.target.value); if (e.target.value) { openNameDrop() } else { setNameOpen(false) } }}
             onFocus={() => { if (nameQuery) openNameDrop() }}
             autoComplete="new-password"
-            className="w-full h-9 text-sm border border-gray-200 rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-gray-800"
+            className="w-full h-9 text-sm rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.85)" }}
           />
           {nameOpen && nameFiltered.length > 0 && createPortal(
-            <div ref={nameDropRef} style={nameDropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+            <div ref={nameDropRef} style={{ ...nameDropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
               <div className="max-h-60 overflow-y-auto">
                 {nameFiltered.map((a) => (
                   <button key={a.iata} type="button" onMouseDown={(e) => { e.preventDefault(); selectAirline(a) }}
-                    className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors flex items-center gap-2.5 ${a.iata === codeValue ? "bg-blue-50" : ""}`}
+                    className={`w-full text-left px-3 py-2 transition-colors flex items-center gap-2.5 hover:bg-white/5 ${a.iata === codeValue ? "bg-white/8" : ""}`}
                   >
                     <span className="text-xs font-mono font-bold text-gray-900 w-6 flex-shrink-0">{a.iata}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs text-gray-700 truncate">{a.name}</div>
-                      <div className="text-[10px] text-gray-400">{a.country}</div>
+                      <div className="text-xs truncate" style={{ color: "rgba(255,255,255,0.80)" }}>{a.name}</div>
+                      <div className="text-[10px]" style={{ color: "rgba(200,212,228,0.45)" }}>{a.country}</div>
                     </div>
-                    {a.iata === codeValue && <Check className="w-3 h-3 text-blue-500 flex-shrink-0" />}
+                    {a.iata === codeValue && <Check className="w-3 h-3 flex-shrink-0" style={{ color: "#c9a87c" }} />}
                   </button>
                 ))}
               </div>
@@ -1221,22 +1222,22 @@ function StateCombobox({ value, onChange }: { value: string; onChange: (v: strin
         onChange={(e) => { setQuery(e.target.value); openDropdown() }}
         onFocus={openDropdown}
         autoComplete="new-password"
-        className="w-full h-9 text-sm border border-gray-200 rounded-md pl-2.5 pr-6 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-gray-800"
+        className="w-full h-9 text-sm rounded-md pl-2.5 pr-6 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.85)" }}
       />
       <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
       {open && filtered.length > 0 && createPortal(
-        <div ref={dropRef} style={dropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+        <div ref={dropRef} style={{ ...dropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
           <div className="max-h-52 overflow-y-auto">
             {filtered.map((s) => (
               <button
                 key={s.code}
                 type="button"
                 onClick={() => handleSelect(s.code)}
-                className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors flex items-center gap-2.5 ${s.code === value ? "bg-blue-50" : ""}`}
+                className={`w-full text-left px-3 py-2 transition-colors flex items-center gap-2.5 hover:bg-white/5 ${s.code === value ? "bg-white/8" : ""}`}
               >
-                <span className="text-xs font-mono font-bold text-gray-900 w-7 flex-shrink-0">{s.code}</span>
-                <span className="text-xs text-gray-500 flex-1">{s.name}</span>
-                {s.code === value && <Check className="w-3 h-3 text-blue-500 flex-shrink-0" />}
+                <span className="text-xs font-mono font-bold w-7 flex-shrink-0" style={{ color: "#c9a87c" }}>{s.code}</span>
+                <span className="text-xs flex-1" style={{ color: "rgba(200,212,228,0.60)" }}>{s.name}</span>
+                {s.code === value && <Check className="w-3 h-3 flex-shrink-0" style={{ color: "#c9a87c" }} />}
               </button>
             ))}
           </div>
@@ -1358,22 +1359,22 @@ function CountryCombobox({ value, onChange }: { value: string; onChange: (v: str
         onChange={(e) => { setQuery(e.target.value); openDropdown() }}
         onFocus={openDropdown}
         autoComplete="new-password"
-        className="w-full h-9 text-sm border border-gray-200 rounded-md pl-2.5 pr-6 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-gray-800"
+        className="w-full h-9 text-sm rounded-md pl-2.5 pr-6 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.85)" }}
       />
       <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
       {open && filtered.length > 0 && createPortal(
-        <div ref={dropRef} style={dropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
+        <div ref={dropRef} style={{ ...dropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
           <div className="max-h-52 overflow-y-auto">
             {filtered.map((c) => (
               <button
                 key={c.code}
                 type="button"
                 onClick={() => handleSelect(c.code)}
-                className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors flex items-center gap-2.5 ${c.code === value ? "bg-blue-50" : ""}`}
+                className={`w-full text-left px-3 py-2 transition-colors flex items-center gap-2.5 hover:bg-white/5 ${c.code === value ? "bg-white/8" : ""}`}
               >
-                <span className="text-xs font-mono font-bold text-gray-900 w-8 flex-shrink-0">{c.code}</span>
-                <span className="text-xs text-gray-500 flex-1">{c.name}</span>
-                {c.code === value && <Check className="w-3 h-3 text-blue-500 flex-shrink-0" />}
+                <span className="text-xs font-mono font-bold w-8 flex-shrink-0" style={{ color: "#c9a87c" }}>{c.code}</span>
+                <span className="text-xs flex-1" style={{ color: "rgba(200,212,228,0.60)" }}>{c.name}</span>
+                {c.code === value && <Check className="w-3 h-3 flex-shrink-0" style={{ color: "#c9a87c" }} />}
               </button>
             ))}
           </div>
@@ -1389,8 +1390,8 @@ type FlightTrackingData = StopEntry["flightTracking"]
 function FlightTrackingBadge({ tracking }: { tracking: NonNullable<FlightTrackingData> }) {
   if (tracking.loading) {
     return (
-      <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-blue-500">
-        <div className="w-3 h-3 border-[1.5px] border-blue-400 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+      <div className="mt-1.5 flex items-center gap-1.5 text-[11px]" style={{ color: "#c9a87c" }}>
+        <div className="w-3 h-3 border-[1.5px] border-t-transparent rounded-full animate-spin flex-shrink-0" style={{ borderColor: "rgba(201,168,124,0.50)", borderTopColor: "transparent" }} />
         <span>Fetching live flight data…</span>
       </div>
     )
@@ -1875,15 +1876,16 @@ function RouteBuilder({
   return (
     <div className="space-y-3">
       {/* Entry form */}
-      <div className="border border-gray-200 rounded-xl overflow-hidden">
+      <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
         {/* Location type tabs */}
-        <div className="flex items-center border-b border-gray-100 bg-gray-50/80">
+        <div className="flex items-center border-b" style={{ background: "rgba(255,255,255,0.025)", borderColor: "rgba(255,255,255,0.07)" }}>
           {STOP_LOC_TABS.map(({ type: t, label, Icon }) => (
             <button
               key={t} type="button" onClick={() => handleLocTab(t)}
-              className={`flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-all ${
-                locType === t ? "border-blue-500 text-blue-600 bg-white" : "border-transparent text-gray-400 hover:text-gray-600"
+              className={`flex items-center gap-1.5 px-3 py-2.5 text-xs font-semibold border-b-2 transition-all ${
+                locType === t ? "border-[#c9a87c]" : "border-transparent"
               }`}
+              style={{ color: locType === t ? "#c9a87c" : "rgba(200,212,228,0.40)" }}
             >
               <Icon className="w-3 h-3" />{label}
             </button>
@@ -1891,11 +1893,11 @@ function RouteBuilder({
         </div>
 
         {/* Fields */}
-        <div className="p-3 bg-white space-y-2">
+        <div className="p-3 space-y-2">
           {locType === "address" && (
             <>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Location Description / Name</Label>
+                <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Location Description / Name</Label>
                 <AddressAutocomplete
                   value={locationName}
                   onChange={(v) => setLocationName(v)}
@@ -1905,7 +1907,7 @@ function RouteBuilder({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Address 1 *</Label>
+                <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Address 1 *</Label>
                 <AddressAutocomplete
                   value={address1}
                   onChange={(v) => { setAddress1(v); setAddError("") }}
@@ -1915,44 +1917,44 @@ function RouteBuilder({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Address 2</Label>
+                <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Address 2</Label>
                 <Input value={address2} onChange={(e) => setAddress2(e.target.value)}
                   className="h-9 text-sm" autoComplete="off" />
               </div>
               <div className="grid grid-cols-[2fr_90px_80px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">City</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>City</Label>
                   <CityAutocomplete value={city} onChange={setCity} onStateChange={setStateVal} placeholder="Miami" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">State</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>State</Label>
                   <StateCombobox value={stateVal} onChange={setStateVal} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Zip</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Zip</Label>
                   <Input value={zip} onChange={(e) => setZip(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Country</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Country</Label>
                   <CountryCombobox value={country} onChange={setCountry} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Phone Number</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     type="tel" className="h-9 text-sm" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Time In</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Notes</Label>
+                <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Notes</Label>
                 <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                   className="h-8 text-xs" />
               </div>
@@ -1975,32 +1977,32 @@ function RouteBuilder({
                   onNameChange={setAirlineName}
                 />
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Flight #</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Flight #</Label>
                   <Input value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-[120px_120px_1fr_120px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Arr/Dep</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Arr/Dep</Label>
                   <select value={arrDep} onChange={(e) => setArrDep(e.target.value)}
-                    className="w-full h-9 text-sm border border-gray-200 rounded-md px-2 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    className="w-full h-9 text-sm rounded-md px-2 focus:outline-none focus:ring-1" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.80)", outline: "none" }}>
                     <option value="Arrival">Arrival</option>
                     <option value="Departure">Departure</option>
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Terminal/Gate</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Terminal/Gate</Label>
                   <Input value={terminalGate} onChange={(e) => setTerminalGate(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Airport Instructions</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Airport Instructions</Label>
                   <Input value={airportInstructions} onChange={(e) => setAirportInstructions(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">ETA/ETD</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>ETA/ETD</Label>
                   <Input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)}
                     onBlur={(e) => setEtaEtd(formatTime(e.target.value))}
                     className="h-9 text-sm" autoComplete="off" />
@@ -2008,9 +2010,9 @@ function RouteBuilder({
               </div>
               <div className="grid grid-cols-[140px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Meet Option</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Meet Option</Label>
                   <select value={meetOption} onChange={(e) => setMeetOption(e.target.value)}
-                    className="w-full h-9 text-sm border border-gray-200 rounded-md px-2 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    className="w-full h-9 text-sm rounded-md px-2 focus:outline-none focus:ring-1" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.80)", outline: "none" }}>
                     <option value="">Select…</option>
                     <option value="Curbside">Curbside</option>
                     <option value="Inside">Inside</option>
@@ -2019,19 +2021,19 @@ function RouteBuilder({
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Notes</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Notes</Label>
                   <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                     placeholder="Driver instructions, special requests…" className="h-9 text-sm" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Phone Number</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     placeholder="(305) 555-0000" type="tel" className="h-9 text-sm" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Time In</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
                     placeholder="e.g. 3:00 PM" className="h-9 text-sm" autoComplete="off" />
@@ -2043,43 +2045,43 @@ function RouteBuilder({
             <>
               <div className="grid grid-cols-[120px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Seaport Code *</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Seaport Code *</Label>
                   <Input value={seaportCode} onChange={(e) => { setSeaportCode(e.target.value.toUpperCase()); setAddError("") }}
                     placeholder="MIA" className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" maxLength={6} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Port of Call Name</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Port of Call Name</Label>
                   <Input value={portName} onChange={(e) => { setPortName(e.target.value); setAddError("") }}
                     placeholder="Port of Miami" className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Cruise Ship Name</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Cruise Ship Name</Label>
                   <Input value={cruiseShipName} onChange={(e) => setCruiseShipName(e.target.value)}
                     placeholder="Symphony of the Seas" className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Cruise Line Name</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Cruise Line Name</Label>
                   <Input value={cruiseLineName} onChange={(e) => setCruiseLineName(e.target.value)}
                     placeholder="Royal Caribbean" className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Arriving From / Departing To</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Arriving From / Departing To</Label>
                   <Input value={arrivingDepartingTo} onChange={(e) => setArrivingDepartingTo(e.target.value)}
                     placeholder="Nassau, Bahamas" className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">ETA / ETD</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>ETA / ETD</Label>
                   <Input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)}
                     onBlur={(e) => setEtaEtd(formatTime(e.target.value))}
                     placeholder="e.g. 9:00 AM" className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Seaport Instructions</Label>
+                <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Seaport Instructions</Label>
                 <Select value={seaportInstructions} onValueChange={(v) => typeof v === "string" && setSeaportInstructions(v)}>
                   <SelectTrigger className="h-9 text-sm">
                     <SelectValue placeholder="Select instructions…" />
@@ -2094,18 +2096,18 @@ function RouteBuilder({
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Notes</Label>
+                <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Notes</Label>
                 <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                   placeholder="Pier, terminal, additional instructions…" className="h-8 text-xs" />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Phone Number</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     placeholder="+1 (555) 000-0000" className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Time In</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
                     placeholder="e.g. 9:30 AM" className="h-9 text-sm" autoComplete="off" />
@@ -2117,7 +2119,7 @@ function RouteBuilder({
             <>
               <div className="grid grid-cols-[1fr_140px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Location Description / FBO Name *</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Location Description / FBO Name *</Label>
                   <FBOAutocomplete
                     value={locationName}
                     onChange={(v) => { setLocationName(v); setAddError("") }}
@@ -2135,14 +2137,14 @@ function RouteBuilder({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Tail #</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Tail #</Label>
                   <Input value={tailNumber} onChange={(e) => setTailNumber(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Address 1</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Address 1</Label>
                   <AddressAutocomplete
                     value={address1}
                     onChange={(v) => setAddress1(v)}
@@ -2151,43 +2153,43 @@ function RouteBuilder({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Address 2</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Address 2</Label>
                   <Input value={address2} onChange={(e) => setAddress2(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-[2fr_90px_80px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">City</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>City</Label>
                   <CityAutocomplete value={city} onChange={setCity} onStateChange={setStateVal} placeholder="Miami" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">State</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>State</Label>
                   <StateCombobox value={stateVal} onChange={setStateVal} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Zip</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Zip</Label>
                   <Input value={zip} onChange={(e) => setZip(e.target.value)}
                     className="h-9 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Country</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Country</Label>
                   <CountryCombobox value={country} onChange={setCountry} />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Notes</Label>
+                <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Notes</Label>
                 <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                   className="h-8 text-xs" />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Phone Number</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     type="tel" className="h-9 text-sm" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-900 uppercase tracking-wide">Time In</Label>
+                  <Label className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.55)" }}>Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
                     className="h-9 text-sm" autoComplete="off" />
@@ -2204,8 +2206,9 @@ function RouteBuilder({
             <label
               key={value}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium cursor-pointer transition-all border ${
-                role === value ? STOP_ROLE_STYLE[value].pill : "bg-transparent border-transparent text-gray-400 hover:text-gray-600"
+                role === value ? STOP_ROLE_STYLE[value].pill : "bg-transparent border-transparent"
               }`}
+              style={role !== value ? { color: "rgba(200,212,228,0.45)" } : {}}
             >
               <input type="radio" name="entry-role" value={value} checked={role === value}
                 onChange={() => setRole(value)} className="sr-only" />
@@ -2213,14 +2216,14 @@ function RouteBuilder({
                 role === value
                   ? value === "pickup" ? "bg-emerald-500" : value === "drop" ? "bg-red-500"
                   : value === "wait" ? "bg-amber-500" : "bg-blue-500"
-                  : "bg-gray-300"
+                  : "bg-white/20"
               }`} />
               {label}
             </label>
           ))}
           <button
             type="button" onClick={handleAdd}
-            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors" style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.80)" }}
+            className="ml-auto flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all" style={{ background: "#c9a87c", color: "#0d1526" }}
           >
             <Plus className="w-3 h-3" />
             Add to Route
