@@ -2956,7 +2956,7 @@ export default function NewTripPage() {
                 <div className="px-4 py-3.5 space-y-2.5">
                   {/* Driver label row with inline Primary/Secondary toggle */}
                   <div className="flex items-center justify-between">
-                    <Label className="text-xs font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>Driver</Label>
+                    <Label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)" }}>Driver</Label>
                     <div className="flex items-center gap-0.5 rounded-lg p-0.5" style={{ background: "rgba(255,255,255,0.06)" }}>
                       <button
                         type="button"
@@ -3000,7 +3000,7 @@ export default function NewTripPage() {
                             }
                           }}
                         >
-                          <SelectTrigger id="vehicle-type" className="w-full">
+                          <SelectTrigger id="vehicle-type" className="w-full h-10 text-sm">
                             <SelectValue placeholder="Select vehicle type..." />
                           </SelectTrigger>
                           <SelectContent>
