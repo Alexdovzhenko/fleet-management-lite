@@ -810,7 +810,7 @@ function AirportPicker({
     <div className="grid grid-cols-2 gap-2">
       {/* Code field */}
       <div className="space-y-1.5">
-        <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Airport Code</Label>
+        <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Airport Code</Label>
         <div ref={codeRef} className="relative">
           <input
             value={codeQuery}
@@ -846,7 +846,7 @@ function AirportPicker({
       </div>
       {/* Name field */}
       <div className="space-y-1.5">
-        <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Airport Name</Label>
+        <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Airport Name</Label>
         <div ref={nameRef} className="relative">
           <input
             value={nameQuery}
@@ -1105,7 +1105,7 @@ function AirlinePicker({
   return (
     <div className="grid grid-cols-[100px_1fr] gap-2">
       <div className="space-y-1.5">
-        <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Airline Code</Label>
+        <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Airline Code</Label>
         <div ref={codeRef} className="relative">
           <input
             value={codeQuery}
@@ -1136,7 +1136,7 @@ function AirlinePicker({
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Airline Name</Label>
+        <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Airline Name</Label>
         <div ref={nameRef} className="relative">
           <input
             value={nameQuery}
@@ -1901,7 +1901,7 @@ function RouteBuilder({
           {locType === "address" && (
             <>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.55)" }}>Location name <span style={{ color: "rgba(200,212,228,0.30)", fontWeight: 400 }}>(optional)</span></Label>
+                <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.85)" }}>Location name <span style={{ color: "rgba(200,212,228,0.30)", fontWeight: 400 }}>(optional)</span></Label>
                 <AddressAutocomplete
                   value={locationName}
                   onChange={(v) => setLocationName(v)}
@@ -1911,7 +1911,7 @@ function RouteBuilder({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-medium flex items-center gap-1.5" style={{ color: "rgba(200,212,228,0.75)" }}>
+                <Label className="text-[11px] font-medium flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.88)" }}>
                   Address line 1
                   <span style={{ color: "#c9a87c", fontSize: "10px" }}>required</span>
                 </Label>
@@ -1924,26 +1924,26 @@ function RouteBuilder({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.55)" }}>Address line 2 <span style={{ color: "rgba(200,212,228,0.30)", fontWeight: 400 }}>(optional)</span></Label>
+                <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.85)" }}>Address line 2 <span style={{ color: "rgba(200,212,228,0.30)", fontWeight: 400 }}>(optional)</span></Label>
                 <Input value={address2} onChange={(e) => setAddress2(e.target.value)}
                   className="h-10 text-sm" autoComplete="off" />
               </div>
               <div className="grid grid-cols-[2fr_90px_80px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>City</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>City</Label>
                   <CityAutocomplete value={city} onChange={setCity} onStateChange={setStateVal} placeholder="Miami" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>State</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>State</Label>
                   <StateCombobox value={stateVal} onChange={setStateVal} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Zip</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Zip</Label>
                   <Input value={zip} onChange={(e) => setZip(e.target.value)}
                     className="h-10 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Country</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Country</Label>
                   <CountryCombobox value={country} onChange={setCountry} />
                 </div>
               </div>
@@ -1955,13 +1955,13 @@ function RouteBuilder({
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Phone number</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Phone number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     type="tel" className="h-10 text-sm" />
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-1.5">
-                    <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Time in</Label>
+                    <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Time in</Label>
                     <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded" style={{ background: "rgba(201,168,124,0.10)", color: "rgba(201,168,124,0.70)" }}>KEY</span>
                   </div>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
@@ -1970,7 +1970,7 @@ function RouteBuilder({
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Notes <span style={{ color: "rgba(200,212,228,0.35)", fontWeight: 400 }}>(optional)</span></Label>
+                <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Notes <span style={{ color: "rgba(200,212,228,0.35)", fontWeight: 400 }}>(optional)</span></Label>
                 <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                   className="h-9 text-xs" />
               </div>
@@ -1993,14 +1993,14 @@ function RouteBuilder({
                   onNameChange={setAirlineName}
                 />
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Flight #</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Flight #</Label>
                   <Input value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)}
                     className="h-10 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-[120px_120px_1fr_120px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Arr/Dep</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Arr/Dep</Label>
                   <select value={arrDep} onChange={(e) => setArrDep(e.target.value)}
                     className="w-full h-9 text-sm rounded-md px-2 focus:outline-none focus:ring-1" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.80)", outline: "none" }}>
                     <option value="Arrival">Arrival</option>
@@ -2008,17 +2008,17 @@ function RouteBuilder({
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Terminal/Gate</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Terminal/Gate</Label>
                   <Input value={terminalGate} onChange={(e) => setTerminalGate(e.target.value)}
                     className="h-10 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Airport Instructions</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Airport Instructions</Label>
                   <Input value={airportInstructions} onChange={(e) => setAirportInstructions(e.target.value)}
                     className="h-10 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>ETA/ETD</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>ETA/ETD</Label>
                   <Input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)}
                     onBlur={(e) => setEtaEtd(formatTime(e.target.value))}
                     className="h-10 text-sm" autoComplete="off" />
@@ -2026,7 +2026,7 @@ function RouteBuilder({
               </div>
               <div className="grid grid-cols-[140px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Meet Option</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Meet Option</Label>
                   <select value={meetOption} onChange={(e) => setMeetOption(e.target.value)}
                     className="w-full h-9 text-sm rounded-md px-2 focus:outline-none focus:ring-1" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.80)", outline: "none" }}>
                     <option value="">Select…</option>
@@ -2037,19 +2037,19 @@ function RouteBuilder({
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Notes</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Notes</Label>
                   <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                     placeholder="Driver instructions, special requests…" className="h-10 text-sm" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Phone Number</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     placeholder="(305) 555-0000" type="tel" className="h-10 text-sm" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Time In</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
                     placeholder="e.g. 3:00 PM" className="h-10 text-sm" autoComplete="off" />
@@ -2061,43 +2061,43 @@ function RouteBuilder({
             <>
               <div className="grid grid-cols-[120px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Seaport Code *</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Seaport Code *</Label>
                   <Input value={seaportCode} onChange={(e) => { setSeaportCode(e.target.value.toUpperCase()); setAddError("") }}
                     placeholder="MIA" className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" maxLength={6} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Port of Call Name</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Port of Call Name</Label>
                   <Input value={portName} onChange={(e) => { setPortName(e.target.value); setAddError("") }}
                     placeholder="Port of Miami" className="h-10 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Cruise Ship Name</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Cruise Ship Name</Label>
                   <Input value={cruiseShipName} onChange={(e) => setCruiseShipName(e.target.value)}
                     placeholder="Symphony of the Seas" className="h-10 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Cruise Line Name</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Cruise Line Name</Label>
                   <Input value={cruiseLineName} onChange={(e) => setCruiseLineName(e.target.value)}
                     placeholder="Royal Caribbean" className="h-10 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Arriving From / Departing To</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Arriving From / Departing To</Label>
                   <Input value={arrivingDepartingTo} onChange={(e) => setArrivingDepartingTo(e.target.value)}
                     placeholder="Nassau, Bahamas" className="h-10 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>ETA / ETD</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>ETA / ETD</Label>
                   <Input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)}
                     onBlur={(e) => setEtaEtd(formatTime(e.target.value))}
                     placeholder="e.g. 9:00 AM" className="h-10 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Seaport Instructions</Label>
+                <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Seaport Instructions</Label>
                 <Select value={seaportInstructions} onValueChange={(v) => typeof v === "string" && setSeaportInstructions(v)}>
                   <SelectTrigger className="h-10 text-sm">
                     <SelectValue placeholder="Select instructions…" />
@@ -2112,18 +2112,18 @@ function RouteBuilder({
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Notes</Label>
+                <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Notes</Label>
                 <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                   placeholder="Pier, terminal, additional instructions…" className="h-9 text-xs" />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Phone Number</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     placeholder="+1 (555) 000-0000" className="h-10 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Time In</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
                     placeholder="e.g. 9:30 AM" className="h-10 text-sm" autoComplete="off" />
@@ -2135,7 +2135,7 @@ function RouteBuilder({
             <>
               <div className="grid grid-cols-[1fr_140px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Location Description / FBO Name *</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Location Description / FBO Name *</Label>
                   <FBOAutocomplete
                     value={locationName}
                     onChange={(v) => { setLocationName(v); setAddError("") }}
@@ -2153,14 +2153,14 @@ function RouteBuilder({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Tail #</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Tail #</Label>
                   <Input value={tailNumber} onChange={(e) => setTailNumber(e.target.value)}
                     className="h-10 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Address 1</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Address 1</Label>
                   <AddressAutocomplete
                     value={address1}
                     onChange={(v) => setAddress1(v)}
@@ -2169,43 +2169,43 @@ function RouteBuilder({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Address 2</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Address 2</Label>
                   <Input value={address2} onChange={(e) => setAddress2(e.target.value)}
                     className="h-10 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-[2fr_90px_80px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>City</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>City</Label>
                   <CityAutocomplete value={city} onChange={setCity} onStateChange={setStateVal} placeholder="Miami" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>State</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>State</Label>
                   <StateCombobox value={stateVal} onChange={setStateVal} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Zip</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Zip</Label>
                   <Input value={zip} onChange={(e) => setZip(e.target.value)}
                     className="h-10 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Country</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Country</Label>
                   <CountryCombobox value={country} onChange={setCountry} />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Notes</Label>
+                <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Notes</Label>
                 <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                   className="h-9 text-xs" />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Phone Number</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     type="tel" className="h-10 text-sm" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.65)" }}>Time In</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
                     className="h-10 text-sm" autoComplete="off" />
@@ -2544,7 +2544,7 @@ export default function NewTripPage() {
         <button
           type="button"
           onClick={() => router.push("/dispatch")}
-          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors flex-shrink-0" style={{ color: "rgba(200,212,228,0.55)" }} onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.88)" }} onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.55)" }}
+          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors flex-shrink-0" style={{ color: "rgba(255,255,255,0.85)" }} onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.88)" }} onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.55)" }}
           aria-label="Go to dispatch"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -2951,7 +2951,7 @@ export default function NewTripPage() {
               <div className="rounded-2xl" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
                 <div className="flex items-center gap-2.5 px-4 py-3 border-b rounded-t-2xl" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
                   <Car className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
-                  <h4 className="text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.55)" }}>Dispatch</h4>
+                  <h4 className="text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.85)" }}>Dispatch</h4>
                 </div>
                 <div className="px-4 py-3.5 space-y-2.5">
                   {/* Driver label row with inline Primary/Secondary toggle */}
@@ -2990,7 +2990,7 @@ export default function NewTripPage() {
                       />
                       {/* Type Dropdown */}
                       <div>
-                        <Label htmlFor="vehicle-type" className="text-xs font-semibold uppercase tracking-wide block mb-2" style={{ color: "rgba(200,212,228,0.55)" }}>Type</Label>
+                        <Label htmlFor="vehicle-type" className="text-xs font-semibold uppercase tracking-wide block mb-2" style={{ color: "rgba(255,255,255,0.85)" }}>Type</Label>
                         <Select
                           value={vehicleTypeValue}
                           onValueChange={(value) => {
@@ -3088,7 +3088,7 @@ export default function NewTripPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
                       <div className="w-1 h-4 rounded-full" style={{ background: "#c9a87c" }} />
-                      <h3 className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: "rgba(200,212,228,0.55)" }}>ADD-ONS</h3>
+                      <h3 className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: "rgba(255,255,255,0.85)" }}>ADD-ONS</h3>
                     </div>
                   </div>
 
