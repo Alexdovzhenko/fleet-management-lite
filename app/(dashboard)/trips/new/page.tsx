@@ -1886,7 +1886,7 @@ function RouteBuilder({
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
                 style={locType === t
                   ? { background: "#c9a87c", color: "#0d1526", boxShadow: "0 1px 6px rgba(201,168,124,0.35)" }
-                  : { background: "transparent", color: "rgba(200,212,228,0.50)" }
+                  : { background: "transparent", color: "rgba(255,255,255,0.75)" }
                 }
               >
                 <Icon className="w-3 h-3" />{label}
