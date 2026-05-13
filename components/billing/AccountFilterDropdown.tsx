@@ -70,7 +70,7 @@ export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: 
               <>
                 <div
                   className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-widest"
-                  style={{ color: "rgba(200,212,228,0.35)", letterSpacing: "0.14em", borderTop: "1px solid rgba(255,255,255,0.06)", marginTop: "2px", paddingTop: "8px" }}
+                  style={{ color: "rgba(200,212,228,0.55)", letterSpacing: "0.14em", borderTop: "1px solid rgba(255,255,255,0.06)", marginTop: "2px", paddingTop: "8px" }}
                 >
                   Customers
                 </div>
@@ -95,7 +95,7 @@ export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: 
               <>
                 <div
                   className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-widest"
-                  style={{ color: "rgba(200,212,228,0.35)", letterSpacing: "0.14em", borderTop: "1px solid rgba(255,255,255,0.06)", marginTop: "2px", paddingTop: "8px" }}
+                  style={{ color: "rgba(200,212,228,0.55)", letterSpacing: "0.14em", borderTop: "1px solid rgba(255,255,255,0.06)", marginTop: "2px", paddingTop: "8px" }}
                 >
                   Affiliates
                 </div>
@@ -116,7 +116,7 @@ export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: 
             )}
 
             {customers.length === 0 && affiliates.length === 0 && (
-              <div className="px-4 py-3 text-[13px] text-center" style={{ color: "rgba(200,212,228,0.45)" }}>
+              <div className="px-4 py-3 text-[13px] text-center" style={{ color: "rgba(200,212,228,0.65)" }}>
                 No accounts available
               </div>
             )}

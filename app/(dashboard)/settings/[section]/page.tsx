@@ -117,7 +117,7 @@ function SectionHeader({ title, description }: { title: string; description: str
   return (
     <div className="mb-6">
       <h2 className="text-xl font-bold text-white/90">{title}</h2>
-      <p className="text-sm text-[rgba(200,212,228,0.35)] mt-0.5 leading-relaxed">{description}</p>
+      <p className="text-sm text-[rgba(200,212,228,0.55)] mt-0.5 leading-relaxed">{description}</p>
     </div>
   )
 }
@@ -141,7 +141,7 @@ function ServiceTypeRow({ type }: { type: ServiceType }) {
             <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full" style={{ background: "rgba(167,139,250,0.15)", color: "rgba(167,139,250,0.80)" }}>Custom</span>
           )}
         </div>
-        {type.description && <p className="text-xs text-[rgba(200,212,228,0.35)] truncate">{type.description}</p>}
+        {type.description && <p className="text-xs text-[rgba(200,212,228,0.55)] truncate">{type.description}</p>}
       </div>
       <button
         onClick={() => toggle.mutate({ id: type.id, isEnabled: !type.isEnabled })}
@@ -150,7 +150,7 @@ function ServiceTypeRow({ type }: { type: ServiceType }) {
         <span className={cn("absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-all", type.isEnabled ? "left-4.5" : "left-0.5")} />
       </button>
       {!type.isBuiltIn && (
-        <button onClick={() => del.mutate(type.id)} className="opacity-0 group-hover:opacity-100 transition-opacity text-[rgba(200,212,228,0.25)] hover:text-red-400 ml-1">
+        <button onClick={() => del.mutate(type.id)} className="opacity-0 group-hover:opacity-100 transition-opacity text-[rgba(200,212,228,0.40)] hover:text-red-400 ml-1">
           <Trash2 className="w-3.5 h-3.5" />
         </button>
       )}
@@ -185,25 +185,25 @@ function CreateServiceTypeDialog({ onClose }: { onClose: () => void }) {
               <SelectedIcon className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-white/90">{label || <span className="text-[rgba(200,212,228,0.25)]">Service name</span>}</p>
-              <p className="text-xs text-[rgba(200,212,228,0.35)]">{description || <span className="text-[rgba(200,212,228,0.25)]">Short description</span>}</p>
+              <p className="text-sm font-semibold text-white/90">{label || <span className="text-[rgba(200,212,228,0.40)]">Service name</span>}</p>
+              <p className="text-xs text-[rgba(200,212,228,0.55)]">{description || <span className="text-[rgba(200,212,228,0.40)]">Short description</span>}</p>
             </div>
           </div>
           <div>
-            <Label className="text-xs font-medium text-[rgba(200,212,228,0.45)] mb-1.5 block">Service Name *</Label>
+            <Label className="text-xs font-medium text-[rgba(200,212,228,0.65)] mb-1.5 block">Service Name *</Label>
             <Input value={label} onChange={(e) => setLabel(e.target.value)} className="h-10 text-sm" placeholder="e.g. Executive Transfer" autoFocus />
           </div>
           <div>
-            <Label className="text-xs font-medium text-[rgba(200,212,228,0.45)] mb-1.5 block">Short Description</Label>
+            <Label className="text-xs font-medium text-[rgba(200,212,228,0.65)] mb-1.5 block">Short Description</Label>
             <Input value={description} onChange={(e) => setDescription(e.target.value)} className="h-10 text-sm" placeholder="e.g. Premium VIP service" />
           </div>
           <div>
-            <Label className="text-xs font-medium text-[rgba(200,212,228,0.45)] mb-2 block">Icon</Label>
+            <Label className="text-xs font-medium text-[rgba(200,212,228,0.65)] mb-2 block">Icon</Label>
             <div className="grid grid-cols-10 gap-1.5">
               {ICON_PICKER_OPTIONS.map(({ name, Icon }) => (
                 <button key={name} onClick={() => setIconName(name)}
                   className={cn("w-8 h-8 rounded-lg flex items-center justify-center transition-all",
-                    iconName === name ? "bg-[rgba(201,168,124,0.18)] text-[#c9a87c] ring-2 ring-[#c9a87c] ring-offset-1 ring-offset-[#0d1526]" : "bg-white/[0.05] text-[rgba(200,212,228,0.45)] hover:bg-white/[0.08]"
+                    iconName === name ? "bg-[rgba(201,168,124,0.18)] text-[#c9a87c] ring-2 ring-[#c9a87c] ring-offset-1 ring-offset-[#0d1526]" : "bg-white/[0.05] text-[rgba(200,212,228,0.65)] hover:bg-white/[0.08]"
                   )}>
                   <Icon className="w-4 h-4" />
                 </button>
@@ -211,7 +211,7 @@ function CreateServiceTypeDialog({ onClose }: { onClose: () => void }) {
             </div>
           </div>
           <div>
-            <Label className="text-xs font-medium text-[rgba(200,212,228,0.45)] mb-2 block">Color</Label>
+            <Label className="text-xs font-medium text-[rgba(200,212,228,0.65)] mb-2 block">Color</Label>
             <div className="flex flex-wrap gap-1.5">
               {COLOR_OPTIONS.map(({ label: clabel, value: cval }) => (
                 <button key={cval} onClick={() => setColor(cval)} title={clabel}
@@ -280,7 +280,7 @@ function StatusActionRow({ action }: { action: StatusAction }) {
         {!action.isBuiltIn && (
           <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ background: "rgba(167,139,250,0.15)", color: "rgba(167,139,250,0.80)" }}>Custom</span>
         )}
-        <span className="text-xs text-[rgba(200,212,228,0.35)] truncate">{STATUS_LABEL_MAP[action.dbStatus]}</span>
+        <span className="text-xs text-[rgba(200,212,228,0.55)] truncate">{STATUS_LABEL_MAP[action.dbStatus]}</span>
       </div>
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
         {ALL_COLORS.map((c) => (
@@ -293,7 +293,7 @@ function StatusActionRow({ action }: { action: StatusAction }) {
         <span className={cn("absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-all", action.isEnabled ? "left-4.5" : "left-0.5")} />
       </button>
       {!action.isBuiltIn && (
-        <button onClick={() => removeAction(action.id)} className="opacity-0 group-hover:opacity-100 transition-opacity text-[rgba(200,212,228,0.25)] hover:text-red-400 ml-1">
+        <button onClick={() => removeAction(action.id)} className="opacity-0 group-hover:opacity-100 transition-opacity text-[rgba(200,212,228,0.40)] hover:text-red-400 ml-1">
           <Trash2 className="w-3.5 h-3.5" />
         </button>
       )}
@@ -323,22 +323,22 @@ function CreateStatusActionDialog({ onClose }: { onClose: () => void }) {
         <div className="p-6 space-y-4">
           <div className="flex items-center gap-2 p-3 bg-white/[0.04] rounded-xl">
             <div className={cn("w-2.5 h-2.5 rounded-full", ACTION_DOT[color] ?? "bg-gray-400")} />
-            <span className="text-sm font-semibold text-white/90">{label || <span className="text-[rgba(200,212,228,0.25)]">Button label</span>}</span>
-            <span className="text-xs text-[rgba(200,212,228,0.35)] ml-auto">{STATUS_LABEL_MAP[dbStatus]}</span>
+            <span className="text-sm font-semibold text-white/90">{label || <span className="text-[rgba(200,212,228,0.40)]">Button label</span>}</span>
+            <span className="text-xs text-[rgba(200,212,228,0.55)] ml-auto">{STATUS_LABEL_MAP[dbStatus]}</span>
           </div>
           <div>
-            <Label className="text-xs font-medium text-[rgba(200,212,228,0.45)] mb-1.5 block">Button Label *</Label>
+            <Label className="text-xs font-medium text-[rgba(200,212,228,0.65)] mb-1.5 block">Button Label *</Label>
             <Input value={label} onChange={(e) => setLabel(e.target.value)} className="h-10 text-sm" placeholder='"At Hotel"' autoFocus />
           </div>
           <div>
-            <Label className="text-xs font-medium text-[rgba(200,212,228,0.45)] mb-1.5 block">Maps to Status</Label>
+            <Label className="text-xs font-medium text-[rgba(200,212,228,0.65)] mb-1.5 block">Maps to Status</Label>
             <select value={dbStatus} onChange={(e) => setDbStatus(e.target.value as TripStatus)}
               className="w-full h-10 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] px-3 text-white/90 outline-none focus:border-[#c9a87c]" style={{ background: "#0d1526" }}>
               {ALL_STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABEL_MAP[s]}</option>)}
             </select>
           </div>
           <div>
-            <Label className="text-xs font-medium text-[rgba(200,212,228,0.45)] mb-2 block">Color</Label>
+            <Label className="text-xs font-medium text-[rgba(200,212,228,0.65)] mb-2 block">Color</Label>
             <div className="flex flex-wrap gap-2">
               {ALL_COLORS.map((c) => (
                 <button key={c} onClick={() => setColor(c)}
@@ -426,14 +426,14 @@ function AddressBookSection() {
             </div>
             <div>
               <span className="text-sm font-semibold text-white/80">Address Book</span>
-              <p className="text-[11px] text-[rgba(200,212,228,0.35)] mt-0.5">Shared across your entire company</p>
+              <p className="text-[11px] text-[rgba(200,212,228,0.55)] mt-0.5">Shared across your entire company</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[rgba(200,212,228,0.25)] pointer-events-none" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[rgba(200,212,228,0.40)] pointer-events-none" />
               <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search addresses…"
-                className="h-8 pl-8 pr-3 text-xs rounded-lg border border-[rgba(255,255,255,0.10)] bg-white/[0.04] text-white/70 placeholder:text-[rgba(200,212,228,0.25)] outline-none focus:border-[#c9a87c] focus:bg-[rgba(255,255,255,0.07)] transition-colors w-48" />
+                className="h-8 pl-8 pr-3 text-xs rounded-lg border border-[rgba(255,255,255,0.10)] bg-white/[0.04] text-white/70 placeholder:text-[rgba(200,212,228,0.40)] outline-none focus:border-[#c9a87c] focus:bg-[rgba(255,255,255,0.07)] transition-colors w-48" />
             </div>
             <button onClick={openAdd} className="h-8 px-3 text-xs font-semibold rounded-lg text-[#0d1526] font-semibold bg-[#c9a87c] hover:bg-[#d4b688] flex items-center gap-1.5 transition-colors">
               <Plus className="w-3.5 h-3.5" />Add Address
@@ -451,11 +451,11 @@ function AddressBookSection() {
               <MapPin className="w-5 h-5 text-gray-200" />
             </div>
             {search ? (
-              <p className="text-sm text-[rgba(200,212,228,0.35)]">No addresses match <span className="font-medium text-[rgba(200,212,228,0.60)]">"{search}"</span></p>
+              <p className="text-sm text-[rgba(200,212,228,0.55)]">No addresses match <span className="font-medium text-[rgba(200,212,228,0.60)]">"{search}"</span></p>
             ) : (
               <>
-                <p className="text-sm font-semibold text-[rgba(200,212,228,0.45)]">No saved addresses yet</p>
-                <p className="text-xs text-[rgba(200,212,228,0.35)] mt-1 mb-4">Addresses are auto-saved when you add stops to reservations</p>
+                <p className="text-sm font-semibold text-[rgba(200,212,228,0.65)]">No saved addresses yet</p>
+                <p className="text-xs text-[rgba(200,212,228,0.55)] mt-1 mb-4">Addresses are auto-saved when you add stops to reservations</p>
                 <button onClick={openAdd} className="text-xs font-semibold text-[#c9a87c] hover:text-[#c9a87c]">+ Add one manually</button>
               </>
             )}
@@ -469,21 +469,21 @@ function AddressBookSection() {
                 </div>
                 <div className="flex-1 min-w-0">
                   {addr.name && <p className="text-[12px] font-semibold text-white/80 truncate">{addr.name}</p>}
-                  <p className={cn("truncate", addr.name ? "text-xs text-[rgba(200,212,228,0.45)]" : "text-sm font-medium text-white/80")}>
-                    {addr.address1}{addr.address2 && <span className="text-[rgba(200,212,228,0.35)]">, {addr.address2}</span>}
+                  <p className={cn("truncate", addr.name ? "text-xs text-[rgba(200,212,228,0.65)]" : "text-sm font-medium text-white/80")}>
+                    {addr.address1}{addr.address2 && <span className="text-[rgba(200,212,228,0.55)]">, {addr.address2}</span>}
                   </p>
                   {(addr.city || addr.state || addr.zip) && (
-                    <p className="text-[11px] text-[rgba(200,212,228,0.35)] truncate">{[addr.city, addr.state, addr.zip].filter(Boolean).join(", ")}</p>
+                    <p className="text-[11px] text-[rgba(200,212,228,0.55)] truncate">{[addr.city, addr.state, addr.zip].filter(Boolean).join(", ")}</p>
                   )}
                 </div>
                 {addr.useCount > 1 && (
-                  <span className="text-[10px] font-semibold text-[rgba(200,212,228,0.25)] flex-shrink-0 bg-white/[0.04] px-1.5 py-0.5 rounded-full">{addr.useCount}×</span>
+                  <span className="text-[10px] font-semibold text-[rgba(200,212,228,0.40)] flex-shrink-0 bg-white/[0.04] px-1.5 py-0.5 rounded-full">{addr.useCount}×</span>
                 )}
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                  <button onClick={() => openEdit(addr)} className="w-7 h-7 rounded-lg flex items-center justify-center text-[rgba(200,212,228,0.25)] hover:text-[#c9a87c] hover:bg-[rgba(201,168,124,0.10)] transition-all">
+                  <button onClick={() => openEdit(addr)} className="w-7 h-7 rounded-lg flex items-center justify-center text-[rgba(200,212,228,0.40)] hover:text-[#c9a87c] hover:bg-[rgba(201,168,124,0.10)] transition-all">
                     <Pencil className="w-3.5 h-3.5" />
                   </button>
-                  <button onClick={() => setConfirmId(addr.id)} className="w-7 h-7 rounded-lg flex items-center justify-center text-[rgba(200,212,228,0.25)] hover:text-red-500 hover:bg-red-500/10 transition-all">
+                  <button onClick={() => setConfirmId(addr.id)} className="w-7 h-7 rounded-lg flex items-center justify-center text-[rgba(200,212,228,0.40)] hover:text-red-500 hover:bg-red-500/10 transition-all">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -502,58 +502,58 @@ function AddressBookSection() {
             </div>
             <div className="p-6 space-y-3">
               <div>
-                <label className="text-xs font-medium text-[rgba(200,212,228,0.45)] block mb-1.5">Location Name <span className="text-[rgba(200,212,228,0.25)]">(hotel, venue…)</span></label>
+                <label className="text-xs font-medium text-[rgba(200,212,228,0.65)] block mb-1.5">Location Name <span className="text-[rgba(200,212,228,0.40)]">(hotel, venue…)</span></label>
                 <input value={form.name} onChange={fieldSetter("name")} placeholder="e.g. Miami International Airport"
-                  className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.25)]" />
+                  className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.40)]" />
               </div>
               <div>
-                <label className="text-xs font-medium text-[rgba(200,212,228,0.45)] block mb-1.5">Street Address <span className="text-red-400">*</span></label>
+                <label className="text-xs font-medium text-[rgba(200,212,228,0.65)] block mb-1.5">Street Address <span className="text-red-400">*</span></label>
                 <input value={form.address1} onChange={fieldSetter("address1")} placeholder="123 Main St"
-                  className={cn("w-full h-10 px-3 text-sm border rounded-lg outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.25)]", formError ? "border-red-400" : "border-[rgba(255,255,255,0.10)]")} />
+                  className={cn("w-full h-10 px-3 text-sm border rounded-lg outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.40)]", formError ? "border-red-400" : "border-[rgba(255,255,255,0.10)]")} />
                 {formError && <p className="text-xs text-red-500 mt-1">{formError}</p>}
               </div>
               <div>
-                <label className="text-xs font-medium text-[rgba(200,212,228,0.45)] block mb-1.5">Address 2</label>
+                <label className="text-xs font-medium text-[rgba(200,212,228,0.65)] block mb-1.5">Address 2</label>
                 <input value={form.address2} onChange={fieldSetter("address2")} placeholder="Suite, floor, apt…"
-                  className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.25)]" />
+                  className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.40)]" />
               </div>
               <div className="grid grid-cols-[2fr_1fr_1fr] gap-2">
                 <div>
-                  <label className="text-xs font-medium text-[rgba(200,212,228,0.45)] block mb-1.5">City</label>
+                  <label className="text-xs font-medium text-[rgba(200,212,228,0.65)] block mb-1.5">City</label>
                   <input value={form.city} onChange={fieldSetter("city")} placeholder="Miami"
-                    className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.25)]" />
+                    className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.40)]" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-[rgba(200,212,228,0.45)] block mb-1.5">State</label>
+                  <label className="text-xs font-medium text-[rgba(200,212,228,0.65)] block mb-1.5">State</label>
                   <input value={form.state} onChange={fieldSetter("state")} placeholder="FL"
-                    className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.25)]" />
+                    className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.40)]" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-[rgba(200,212,228,0.45)] block mb-1.5">Zip</label>
+                  <label className="text-xs font-medium text-[rgba(200,212,228,0.65)] block mb-1.5">Zip</label>
                   <input value={form.zip} onChange={fieldSetter("zip")} placeholder="33101"
-                    className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.25)]" />
+                    className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.40)]" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-xs font-medium text-[rgba(200,212,228,0.45)] block mb-1.5">Country</label>
+                  <label className="text-xs font-medium text-[rgba(200,212,228,0.65)] block mb-1.5">Country</label>
                   <input value={form.country} onChange={fieldSetter("country")} placeholder="USA"
-                    className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.25)]" />
+                    className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.40)]" />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-[rgba(200,212,228,0.45)] block mb-1.5">Phone</label>
+                  <label className="text-xs font-medium text-[rgba(200,212,228,0.65)] block mb-1.5">Phone</label>
                   <input value={form.phone} onChange={fieldSetter("phone")} placeholder="(305) 555-0000" type="tel"
-                    className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.25)]" />
+                    className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.40)]" />
                 </div>
               </div>
               <div>
-                <label className="text-xs font-medium text-[rgba(200,212,228,0.45)] block mb-1.5">Notes</label>
+                <label className="text-xs font-medium text-[rgba(200,212,228,0.65)] block mb-1.5">Notes</label>
                 <input value={form.notes} onChange={fieldSetter("notes")} placeholder="Gate code, entrance instructions…"
-                  className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.25)]" />
+                  className="w-full h-10 px-3 text-sm rounded-lg border border-[rgba(255,255,255,0.10)] outline-none focus:border-[#c9a87c] transition-colors placeholder:text-[rgba(200,212,228,0.40)]" />
               </div>
             </div>
             <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[rgba(255,255,255,0.05)] bg-white/[0.02]">
-              <button onClick={() => setModal(null)} className="h-9 px-4 text-sm text-[rgba(200,212,228,0.45)] hover:text-white/80 font-medium transition-colors">Cancel</button>
+              <button onClick={() => setModal(null)} className="h-9 px-4 text-sm text-[rgba(200,212,228,0.65)] hover:text-white/80 font-medium transition-colors">Cancel</button>
               <button onClick={handleSave} disabled={isPending}
                 className="h-9 px-5 text-sm font-semibold rounded-xl text-[#0d1526] font-semibold bg-[#c9a87c] hover:bg-[#d4b688] transition-colors disabled:opacity-60">
                 {isPending ? "Saving…" : modal === "add" ? "Save Address" : "Save Changes"}
@@ -570,7 +570,7 @@ function AddressBookSection() {
               <Trash2 className="w-5 h-5 text-red-500" />
             </div>
             <h3 className="text-sm font-bold text-white/90 mb-1">Delete address?</h3>
-            <p className="text-xs text-[rgba(200,212,228,0.35)] mb-6">This will remove it from your company address book permanently.</p>
+            <p className="text-xs text-[rgba(200,212,228,0.55)] mb-6">This will remove it from your company address book permanently.</p>
             <div className="flex gap-2">
               <button onClick={() => setConfirmId(null)} className="flex-1 h-10 rounded-xl border border-[rgba(255,255,255,0.10)] text-sm font-medium text-[rgba(200,212,228,0.60)] hover:bg-white/[0.04] transition-colors">Cancel</button>
               <button onClick={() => { del.mutate(confirmId); setConfirmId(null) }}
@@ -606,12 +606,12 @@ function FleetVehicleCard({ vehicle }: { vehicle: import("@/types").Vehicle }) {
         ) : (
           <div className="w-full h-full flex items-center justify-center"
             style={{ background: "linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)" }}>
-            <Car className="w-8 h-8 text-[rgba(200,212,228,0.25)]" />
+            <Car className="w-8 h-8 text-[rgba(200,212,228,0.40)]" />
           </div>
         )}
         {hidden && (
           <div className="absolute inset-0 flex items-end justify-center pb-2 bg-white/20">
-            <span className="text-[9px] font-bold text-[rgba(200,212,228,0.45)] bg-white/90 px-2 py-0.5 rounded-full tracking-wide uppercase">Hidden</span>
+            <span className="text-[9px] font-bold text-[rgba(200,212,228,0.65)] bg-white/90 px-2 py-0.5 rounded-full tracking-wide uppercase">Hidden</span>
           </div>
         )}
         <button
@@ -621,7 +621,7 @@ function FleetVehicleCard({ vehicle }: { vehicle: import("@/types").Vehicle }) {
             "absolute top-1.5 right-1.5 w-6 h-6 rounded-lg flex items-center justify-center transition-all shadow-sm",
             hidden
               ? "bg-gray-700 text-white hover:bg-gray-600"
-              : "bg-white/90 text-[rgba(200,212,228,0.45)] hover:bg-white hover:text-white/70"
+              : "bg-white/90 text-[rgba(200,212,228,0.65)] hover:bg-white hover:text-white/70"
           )}
           title={hidden ? "Show on profile" : "Hide from profile"}
         >
@@ -630,7 +630,7 @@ function FleetVehicleCard({ vehicle }: { vehicle: import("@/types").Vehicle }) {
       </div>
       <div className="px-2.5 py-2">
         <p className="text-xs font-semibold text-white/80 truncate leading-tight">{vehicle.name}</p>
-        <p className="text-[10px] text-[rgba(200,212,228,0.35)] mt-0.5 truncate">
+        <p className="text-[10px] text-[rgba(200,212,228,0.55)] mt-0.5 truncate">
           {[vehicle.year, VEHICLE_TYPE_LABELS[vehicle.type]].filter(Boolean).join(" · ")}
         </p>
       </div>
@@ -658,7 +658,7 @@ function ClientFleetVehicleCard({
         ) : (
           <div className="w-full h-full flex items-center justify-center"
             style={{ background: "linear-gradient(135deg,#1a2540,#0d1526)" }}>
-            <Car className="w-8 h-8 text-[rgba(200,212,228,0.25)]" />
+            <Car className="w-8 h-8 text-[rgba(200,212,228,0.40)]" />
           </div>
         )}
         <div className={cn(
@@ -670,7 +670,7 @@ function ClientFleetVehicleCard({
       </div>
       <div className="px-2.5 py-2">
         <p className="text-xs font-semibold text-white/80 truncate">{vehicle.name}</p>
-        <p className="text-[10px] text-[rgba(200,212,228,0.35)] mt-0.5 truncate">
+        <p className="text-[10px] text-[rgba(200,212,228,0.55)] mt-0.5 truncate">
           {[vehicle.year, VEHICLE_TYPE_LABELS[vehicle.type]].filter(Boolean).join(" · ")}
         </p>
       </div>
@@ -852,7 +852,7 @@ function ProfileSection() {
           <div className="flex items-start justify-between gap-4 mb-4">
             <div>
               <h2 className="text-xl font-bold text-white/90">Company Profile</h2>
-              <p className="text-sm text-[rgba(200,212,228,0.35)] mt-0.5">Manage your public presence for partners and clients.</p>
+              <p className="text-sm text-[rgba(200,212,228,0.55)] mt-0.5">Manage your public presence for partners and clients.</p>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0 mt-0.5">
               <button
@@ -948,7 +948,7 @@ function ProfileSection() {
               </div>
             </div>
             <p className="text-sm font-bold text-white/90 leading-tight">
-              {form.name || <span className="text-[rgba(200,212,228,0.25)]">Your Company Name</span>}
+              {form.name || <span className="text-[rgba(200,212,228,0.40)]">Your Company Name</span>}
             </p>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1">
               {form.email && <span className="flex items-center gap-1 text-xs text-white/90"><Mail className="w-3 h-3 text-[#c9a87c] flex-shrink-0" />{form.email}</span>}
@@ -964,24 +964,24 @@ function ProfileSection() {
             <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "rgba(201,168,124,0.12)" }}><Building2 className="w-3.5 h-3.5 text-[#c9a87c]" /></div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold text-white/80">Company Information</span>
-              <span className="text-[10px] font-semibold text-[rgba(200,212,228,0.35)] bg-white/[0.05] px-1.5 py-0.5 rounded-full uppercase tracking-wide">Shared</span>
+              <span className="text-[10px] font-semibold text-[rgba(200,212,228,0.55)] bg-white/[0.05] px-1.5 py-0.5 rounded-full uppercase tracking-wide">Shared</span>
             </div>
           </div>
           <div className="p-6 grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] mb-1.5 block">Company Name</Label>
+              <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] mb-1.5 block">Company Name</Label>
               <Input value={form.name} onChange={(e) => set('name', e.target.value)} className="h-10 text-sm" placeholder="Apex Limousine Service" />
             </div>
             <div>
-              <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] mb-1.5 block">Email</Label>
+              <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] mb-1.5 block">Email</Label>
               <Input type="email" value={form.email} onChange={(e) => set('email', e.target.value)} className="h-10 text-sm" placeholder="info@company.com" />
             </div>
             <div>
-              <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] mb-1.5 block">Phone</Label>
+              <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] mb-1.5 block">Phone</Label>
               <Input type="tel" value={formatPhone(form.phone)} onChange={(e) => set('phone', e.target.value.replace(/D/g, ''))} className="h-10 text-sm" placeholder="(305) 555-0100" />
             </div>
             <div className="col-span-2">
-              <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] mb-1.5 flex items-center gap-1.5"><Globe className="w-3 h-3" /> Website</Label>
+              <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] mb-1.5 flex items-center gap-1.5"><Globe className="w-3 h-3" /> Website</Label>
               <Input type="url" value={form.website} onChange={(e) => set('website', e.target.value)} className="h-10 text-sm" placeholder="https://company.com" />
             </div>
           </div>
@@ -995,7 +995,7 @@ function ProfileSection() {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold text-white/80">Social Media</span>
-              <span className="text-[10px] font-semibold text-[rgba(200,212,228,0.35)] bg-white/[0.05] px-1.5 py-0.5 rounded-full uppercase tracking-wide">Shared</span>
+              <span className="text-[10px] font-semibold text-[rgba(200,212,228,0.55)] bg-white/[0.05] px-1.5 py-0.5 rounded-full uppercase tracking-wide">Shared</span>
             </div>
           </div>
           <div className="p-6 grid grid-cols-1 gap-3">
@@ -1014,7 +1014,7 @@ function ProfileSection() {
                   {icon}
                 </div>
                 <div className="flex-1">
-                  <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] mb-1 block">{label}</Label>
+                  <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] mb-1 block">{label}</Label>
                   <Input
                     type="url"
                     value={form[field] as string}
@@ -1042,7 +1042,7 @@ function ProfileSection() {
                   {!isClient ? 'Affiliate Profile' : 'Client Profile'}
                 </span>
               </div>
-              <p className="text-xs text-[rgba(200,212,228,0.35)] mt-0.5">
+              <p className="text-xs text-[rgba(200,212,228,0.55)] mt-0.5">
                 {!isClient ? 'Tell partner companies about your business' : 'Tell private clients about your services'}
               </p>
             </div>
@@ -1058,13 +1058,13 @@ function ProfileSection() {
               }
               rows={5}
               maxLength={1000}
-              className="w-full text-sm text-white/90 placeholder:text-[rgba(200,212,228,0.25)] border border-[rgba(255,255,255,0.10)] rounded-xl px-4 py-3 resize-none outline-none focus:border-[#c9a87c] focus:ring-2 focus:ring-blue-500/10 transition-all leading-relaxed"
+              className="w-full text-sm text-white/90 placeholder:text-[rgba(200,212,228,0.40)] border border-[rgba(255,255,255,0.10)] rounded-xl px-4 py-3 resize-none outline-none focus:border-[#c9a87c] focus:ring-2 focus:ring-blue-500/10 transition-all leading-relaxed"
             />
             <div className="flex items-center justify-between mt-2">
-              <p className="text-xs text-[rgba(200,212,228,0.35)]">
+              <p className="text-xs text-[rgba(200,212,228,0.55)]">
                 {!isClient ? 'Visible on your affiliate profile' : 'Visible on your client profile'}
               </p>
-              <span className="text-xs text-[rgba(200,212,228,0.25)]">
+              <span className="text-xs text-[rgba(200,212,228,0.40)]">
                 {(isClient ? form.clientAbout : form.affiliateAbout).length}/1000
               </span>
             </div>
@@ -1086,13 +1086,13 @@ function ProfileSection() {
                     {!isClient ? 'Affiliate Profile' : 'Client Profile'}
                   </span>
                 </div>
-                <p className="text-xs text-[rgba(200,212,228,0.35)] mt-0.5">
+                <p className="text-xs text-[rgba(200,212,228,0.55)] mt-0.5">
                   {!isClient ? 'Toggle which vehicles appear on your affiliate profile' : 'Select which vehicles to show private clients'}
                 </p>
               </div>
             </div>
             {!vehiclesLoading && vehicles.length > 0 && (
-              <span className="text-xs font-semibold text-[rgba(200,212,228,0.35)] bg-white/[0.05] px-2.5 py-1 rounded-full">
+              <span className="text-xs font-semibold text-[rgba(200,212,228,0.55)] bg-white/[0.05] px-2.5 py-1 rounded-full">
                 {isClient ? `${form.clientVehicleIds.length} selected` : `${vehicles.filter(v => !v.hideFromProfile).length} visible`}
               </span>
             )}
@@ -1114,8 +1114,8 @@ function ProfileSection() {
               <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center mx-auto mb-3">
                 <Car className="w-5 h-5 text-gray-200" />
               </div>
-              <p className="text-sm font-semibold text-[rgba(200,212,228,0.35)]">No vehicles added yet</p>
-              <p className="text-xs text-[rgba(200,212,228,0.25)] mt-1">Add vehicles in the Fleet section to showcase your fleet</p>
+              <p className="text-sm font-semibold text-[rgba(200,212,228,0.55)]">No vehicles added yet</p>
+              <p className="text-xs text-[rgba(200,212,228,0.40)] mt-1">Add vehicles in the Fleet section to showcase your fleet</p>
             </div>
           ) : isClient ? (
             <div className="p-5 grid grid-cols-3 gap-3">
@@ -1143,25 +1143,25 @@ function ProfileSection() {
             <div className="w-7 h-7 rounded-lg bg-rose-50 flex items-center justify-center"><MapPin className="w-3.5 h-3.5 text-rose-500" /></div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold text-white/80">Address</span>
-              <span className="text-[10px] font-semibold text-[rgba(200,212,228,0.35)] bg-white/[0.05] px-1.5 py-0.5 rounded-full uppercase tracking-wide">Shared</span>
+              <span className="text-[10px] font-semibold text-[rgba(200,212,228,0.55)] bg-white/[0.05] px-1.5 py-0.5 rounded-full uppercase tracking-wide">Shared</span>
             </div>
           </div>
           <div className="p-6 space-y-4">
             <div>
-              <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] mb-1.5 block">Street Address</Label>
+              <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] mb-1.5 block">Street Address</Label>
               <Input value={form.address} onChange={(e) => set('address', e.target.value)} className="h-10 text-sm" placeholder="123 Main Street" />
             </div>
             <div className="grid grid-cols-[1fr_100px_80px] gap-3">
               <div>
-                <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] mb-1.5 block">City</Label>
+                <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] mb-1.5 block">City</Label>
                 <Input value={form.city} onChange={(e) => set('city', e.target.value)} className="h-10 text-sm" placeholder="Miami" />
               </div>
               <div>
-                <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] mb-1.5 block">State</Label>
+                <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] mb-1.5 block">State</Label>
                 <Input value={form.state} onChange={(e) => set('state', e.target.value)} className="h-10 text-sm" placeholder="FL" />
               </div>
               <div>
-                <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] mb-1.5 block">ZIP</Label>
+                <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] mb-1.5 block">ZIP</Label>
                 <Input value={form.zip} onChange={(e) => set('zip', e.target.value)} className="h-10 text-sm" placeholder="33101" />
               </div>
             </div>
@@ -1201,7 +1201,7 @@ function ServiceTypesSection() {
               <span className="text-sm font-semibold text-white/80">Service Types</span>
             </div>
             <div className="flex items-center gap-2">
-              {!isLoading && <span className="text-xs font-semibold text-[rgba(200,212,228,0.35)] bg-white/[0.05] px-2.5 py-1 rounded-full">{enabledCount} enabled</span>}
+              {!isLoading && <span className="text-xs font-semibold text-[rgba(200,212,228,0.55)] bg-white/[0.05] px-2.5 py-1 rounded-full">{enabledCount} enabled</span>}
               <Button size="sm" onClick={() => setCreateOpen(true)} className="h-8 px-3 text-xs text-[#0d1526] font-semibold bg-[#c9a87c] hover:bg-[#d4b688] gap-1.5">
                 <Plus className="w-3.5 h-3.5" />Add Custom
               </Button>
@@ -1247,8 +1247,8 @@ function StatusActionsSection() {
               <span className="text-sm font-semibold text-white/80">Status Actions</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-[rgba(200,212,228,0.35)] bg-white/[0.05] px-2.5 py-1 rounded-full">{enabledCount} enabled</span>
-              <Button size="sm" variant="ghost" onClick={resetStatusActions} className="h-8 px-3 text-xs text-[rgba(200,212,228,0.35)] hover:text-[rgba(200,212,228,0.60)]">Reset</Button>
+              <span className="text-xs font-semibold text-[rgba(200,212,228,0.55)] bg-white/[0.05] px-2.5 py-1 rounded-full">{enabledCount} enabled</span>
+              <Button size="sm" variant="ghost" onClick={resetStatusActions} className="h-8 px-3 text-xs text-[rgba(200,212,228,0.55)] hover:text-[rgba(200,212,228,0.60)]">Reset</Button>
               <Button size="sm" onClick={() => setCreateOpen(true)} className="h-8 px-3 text-xs text-[#0d1526] font-semibold bg-[#c9a87c] hover:bg-[#d4b688] gap-1.5">
                 <Plus className="w-3.5 h-3.5" />Add Custom
               </Button>
@@ -1279,9 +1279,9 @@ function GridColumnsSection() {
             <span className="text-sm font-semibold text-white/80">Visible Columns</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-[rgba(200,212,228,0.35)] bg-white/[0.05] px-2.5 py-1 rounded-full">{visibleCount} visible</span>
+            <span className="text-xs font-semibold text-[rgba(200,212,228,0.55)] bg-white/[0.05] px-2.5 py-1 rounded-full">{visibleCount} visible</span>
             {hiddenColumns.length > 0 && (
-              <Button size="sm" variant="ghost" onClick={reset} className="h-8 px-3 text-xs text-[rgba(200,212,228,0.35)] hover:text-[rgba(200,212,228,0.60)]">Reset</Button>
+              <Button size="sm" variant="ghost" onClick={reset} className="h-8 px-3 text-xs text-[rgba(200,212,228,0.55)] hover:text-[rgba(200,212,228,0.60)]">Reset</Button>
             )}
           </div>
         </div>
@@ -1294,12 +1294,12 @@ function GridColumnsSection() {
                 className={cn("flex items-center gap-4 px-5 py-3 transition-colors", isLast ? "opacity-40" : "hover:bg-white/[0.03] cursor-pointer")}
                 onClick={() => !isLast && toggleColumnVisibility(col.key)}
               >
-                <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors", isVisible ? "bg-sky-50 text-sky-500" : "bg-white/[0.05] text-[rgba(200,212,228,0.25)]")}>
+                <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors", isVisible ? "bg-sky-50 text-sky-500" : "bg-white/[0.05] text-[rgba(200,212,228,0.40)]")}>
                   {isVisible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={cn("text-sm font-semibold transition-colors", isVisible ? "text-white/90" : "text-[rgba(200,212,228,0.35)]")}>{col.label}</p>
-                  <p className="text-xs text-[rgba(200,212,228,0.35)] truncate">{col.description}</p>
+                  <p className={cn("text-sm font-semibold transition-colors", isVisible ? "text-white/90" : "text-[rgba(200,212,228,0.55)]")}>{col.label}</p>
+                  <p className="text-xs text-[rgba(200,212,228,0.55)] truncate">{col.description}</p>
                 </div>
                 <div className={cn("w-10 h-6 rounded-full transition-colors relative flex-shrink-0", isVisible ? "bg-[#c9a87c]" : "bg-gray-200")}>
                   <span className={cn("absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-all", isVisible ? "left-4.5" : "left-0.5")} />
@@ -1366,7 +1366,7 @@ function RoleSelect({
           </div>
           <span className="font-medium text-white/80">{current.label}</span>
         </div>
-        <ChevronRight className={cn("w-3.5 h-3.5 text-[rgba(200,212,228,0.35)] transition-transform", open && "rotate-90")} />
+        <ChevronRight className={cn("w-3.5 h-3.5 text-[rgba(200,212,228,0.55)] transition-transform", open && "rotate-90")} />
       </button>
 
       {open && (
@@ -1392,7 +1392,7 @@ function RoleSelect({
               </div>
               <div className="min-w-0">
                 <div className="text-sm font-medium text-white/80">{opt.label}</div>
-                <div className="text-xs text-[rgba(200,212,228,0.35)] mt-0.5">{opt.description}</div>
+                <div className="text-xs text-[rgba(200,212,228,0.55)] mt-0.5">{opt.description}</div>
               </div>
               {opt.value === value && <Check className="w-3.5 h-3.5 text-[#c9a87c] ml-auto flex-shrink-0" />}
             </button>
@@ -1565,7 +1565,7 @@ function ChangePasswordSection() {
     finally  { setLoading(false) }
   }
 
-  const inputCls = "h-10 w-full rounded-xl border border-[rgba(255,255,255,0.10)] bg-white/[0.04] px-3 text-sm text-white/90 outline-none transition-all focus:border-[#c9a87c] focus:ring-2 focus:ring-[#c9a87c]/15 placeholder:text-[rgba(200,212,228,0.25)]"
+  const inputCls = "h-10 w-full rounded-xl border border-[rgba(255,255,255,0.10)] bg-white/[0.04] px-3 text-sm text-white/90 outline-none transition-all focus:border-[#c9a87c] focus:ring-2 focus:ring-[#c9a87c]/15 placeholder:text-[rgba(200,212,228,0.40)]"
 
   return (
     <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
@@ -1583,12 +1583,12 @@ function ChangePasswordSection() {
           </div>
           <div>
             <div className="text-sm font-semibold text-white/90">Change Password</div>
-            <div className="text-xs text-[rgba(200,212,228,0.35)] mt-0.5">Update your account password with email verification</div>
+            <div className="text-xs text-[rgba(200,212,228,0.55)] mt-0.5">Update your account password with email verification</div>
           </div>
         </div>
         <div className={cn(
           "w-6 h-6 rounded-full flex items-center justify-center transition-all duration-200 flex-shrink-0",
-          open ? "bg-gray-200 text-[rgba(200,212,228,0.60)]" : "bg-white/[0.05] text-[rgba(200,212,228,0.35)]"
+          open ? "bg-gray-200 text-[rgba(200,212,228,0.60)]" : "bg-white/[0.05] text-[rgba(200,212,228,0.55)]"
         )}>
           {open
             ? <X className="w-3.5 h-3.5" />
@@ -1609,7 +1609,7 @@ function ChangePasswordSection() {
               </div>
               <div>
                 <div className="text-base font-bold text-white/90">Password changed successfully</div>
-                <div className="text-sm text-[rgba(200,212,228,0.45)] mt-1">Your account is now secured with the new password.</div>
+                <div className="text-sm text-[rgba(200,212,228,0.65)] mt-1">Your account is now secured with the new password.</div>
               </div>
               <button
                 onClick={reset}
@@ -1631,7 +1631,7 @@ function ChangePasswordSection() {
 
               {/* Current password */}
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] block">Current Password</Label>
+                <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] block">Current Password</Label>
                 <div className="relative">
                   <input
                     type={showCurrent ? "text" : "password"}
@@ -1643,7 +1643,7 @@ function ChangePasswordSection() {
                     className={cn(inputCls, "pr-10")}
                   />
                   <button type="button" tabIndex={-1} onClick={() => setShowCurrent(s=>!s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,212,228,0.35)] hover:text-gray-600 transition-colors cursor-pointer">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,212,228,0.55)] hover:text-gray-600 transition-colors cursor-pointer">
                     {showCurrent ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
                   </button>
                 </div>
@@ -1651,7 +1651,7 @@ function ChangePasswordSection() {
 
               {/* New password */}
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] block">New Password</Label>
+                <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] block">New Password</Label>
                 <div className="relative">
                   <input
                     type={showNew ? "text" : "password"}
@@ -1663,7 +1663,7 @@ function ChangePasswordSection() {
                     className={cn(inputCls, "pr-10")}
                   />
                   <button type="button" tabIndex={-1} onClick={() => setShowNew(s=>!s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,212,228,0.35)] hover:text-gray-600 transition-colors cursor-pointer">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,212,228,0.55)] hover:text-gray-600 transition-colors cursor-pointer">
                     {showNew ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
                   </button>
                 </div>
@@ -1687,7 +1687,7 @@ function ChangePasswordSection() {
                         ].map(r => (
                           <span key={r.label} className={cn(
                             "text-[10px] font-semibold px-1.5 py-0.5 rounded-full transition-all",
-                            r.met ? "bg-emerald-50 text-emerald-600" : "bg-white/[0.05] text-[rgba(200,212,228,0.35)]"
+                            r.met ? "bg-emerald-50 text-emerald-600" : "bg-white/[0.05] text-[rgba(200,212,228,0.55)]"
                           )}>{r.met ? "✓" : ""} {r.label}</span>
                         ))}
                       </div>
@@ -1698,7 +1698,7 @@ function ChangePasswordSection() {
 
               {/* Confirm password */}
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] block">Confirm New Password</Label>
+                <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] block">Confirm New Password</Label>
                 <div className="relative">
                   <input
                     type={showConfirm ? "text" : "password"}
@@ -1710,7 +1710,7 @@ function ChangePasswordSection() {
                     className={cn(inputCls, "pr-10", mismatch && "border-red-300 focus:border-red-400 focus:ring-red-500/15")}
                   />
                   <button type="button" tabIndex={-1} onClick={() => setShowConfirm(s=>!s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,212,228,0.35)] hover:text-gray-600 transition-colors cursor-pointer">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(200,212,228,0.55)] hover:text-gray-600 transition-colors cursor-pointer">
                     {showConfirm ? <EyeOff className="w-4 h-4"/> : <Eye className="w-4 h-4"/>}
                   </button>
                 </div>
@@ -1740,7 +1740,7 @@ function ChangePasswordSection() {
                   <Mail className="w-5 h-5 text-[#c9a87c]" />
                 </div>
                 <div className="text-sm font-semibold text-white/90">Check your email</div>
-                <div className="text-xs text-[rgba(200,212,228,0.45)] mt-1 leading-relaxed">
+                <div className="text-xs text-[rgba(200,212,228,0.65)] mt-1 leading-relaxed">
                   We sent a 6-digit code to {maskedEmail || "your email"}.<br/>
                   It expires in <strong>5 minutes</strong>.
                 </div>
@@ -1793,7 +1793,7 @@ function ChangePasswordSection() {
               {/* Resend */}
               <div className="text-center">
                 {cooldown > 0 ? (
-                  <p className="text-xs text-[rgba(200,212,228,0.35)]">
+                  <p className="text-xs text-[rgba(200,212,228,0.55)]">
                     Resend available in <span className="tabular-nums font-semibold text-[rgba(200,212,228,0.60)]">{cooldown}s</span>
                   </p>
                 ) : (
@@ -1872,7 +1872,7 @@ function PersonalSection() {
             <div className="text-sm font-semibold text-white/90 leading-tight">
               {[profile.firstName, profile.lastName].filter(Boolean).join(" ") || "Your Account"}
             </div>
-            <div className="text-xs text-[rgba(200,212,228,0.35)] mt-0.5 truncate">{profile.email}</div>
+            <div className="text-xs text-[rgba(200,212,228,0.55)] mt-0.5 truncate">{profile.email}</div>
           </div>
           <div className={cn(
             "ml-auto flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold",
@@ -1887,7 +1887,7 @@ function PersonalSection() {
           {/* Row 1: First + Last */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] block">First Name</Label>
+              <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] block">First Name</Label>
               <Input
                 value={profile.firstName}
                 onChange={e => { setProfile(p => ({ ...p, firstName: e.target.value })); markDirty() }}
@@ -1896,7 +1896,7 @@ function PersonalSection() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] block">Last Name</Label>
+              <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] block">Last Name</Label>
               <Input
                 value={profile.lastName}
                 onChange={e => { setProfile(p => ({ ...p, lastName: e.target.value })); markDirty() }}
@@ -1909,9 +1909,9 @@ function PersonalSection() {
           {/* Row 2: Phone + Role */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] block">Phone Number</Label>
+              <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] block">Phone Number</Label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[rgba(200,212,228,0.35)] pointer-events-none" />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[rgba(200,212,228,0.55)] pointer-events-none" />
                 <Input
                   type="tel"
                   value={profile.phone}
@@ -1922,7 +1922,7 @@ function PersonalSection() {
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] block">Role</Label>
+              <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] block">Role</Label>
               <RoleSelect value={profile.role} onChange={v => { setProfile(p => ({ ...p, role: v })); markDirty() }} />
             </div>
           </div>
@@ -1930,15 +1930,15 @@ function PersonalSection() {
           {/* Row 3: Email (read-only) */}
           <div className="space-y-1.5">
             <div className="flex items-center gap-1.5">
-              <Label className="text-xs font-medium text-[rgba(200,212,228,0.35)] block">Email Address</Label>
-              <span className="text-[10px] font-medium text-[rgba(200,212,228,0.35)] bg-white/[0.05] px-1.5 py-0.5 rounded-full leading-none">read-only</span>
+              <Label className="text-xs font-medium text-[rgba(200,212,228,0.55)] block">Email Address</Label>
+              <span className="text-[10px] font-medium text-[rgba(200,212,228,0.55)] bg-white/[0.05] px-1.5 py-0.5 rounded-full leading-none">read-only</span>
             </div>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[rgba(200,212,228,0.35)] pointer-events-none" />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[rgba(200,212,228,0.55)] pointer-events-none" />
               <Input
                 value={profile.email}
                 readOnly
-                className="h-10 text-sm pl-9 bg-white/[0.04] text-[rgba(200,212,228,0.35)] cursor-default select-none"
+                className="h-10 text-sm pl-9 bg-white/[0.04] text-[rgba(200,212,228,0.55)] cursor-default select-none"
               />
             </div>
           </div>
@@ -2040,7 +2040,7 @@ function TeamSection() {
                   <Check className="w-4 h-4 flex-shrink-0" />Invite created! Share this link with your team member.
                 </div>
                 <div className="flex items-center gap-2">
-                  <Input value={inviteUrl} readOnly className="h-9 text-xs font-mono text-[rgba(200,212,228,0.45)] bg-white/[0.04]" />
+                  <Input value={inviteUrl} readOnly className="h-9 text-xs font-mono text-[rgba(200,212,228,0.65)] bg-white/[0.04]" />
                   <Button size="sm" variant="outline" onClick={handleCopy} className="h-9 px-3 flex-shrink-0 gap-1.5 text-xs">
                     {copied ? <><Check className="w-3.5 h-3.5 text-emerald-500" />Copied</> : <><Copy className="w-3.5 h-3.5" />Copy</>}
                   </Button>
@@ -2051,11 +2051,11 @@ function TeamSection() {
               <form onSubmit={(e) => { e.preventDefault(); setFormError(""); invite.mutate({ email, role }) }} className="space-y-4">
                 {formError && <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-xl px-4 py-3">{formError}</div>}
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium text-[rgba(200,212,228,0.45)]">Email address *</Label>
+                  <Label className="text-xs font-medium text-[rgba(200,212,228,0.65)]">Email address *</Label>
                   <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="colleague@yourlimo.com" required className="h-10 text-sm" autoFocus />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-medium text-[rgba(200,212,228,0.45)]">Role</Label>
+                  <Label className="text-xs font-medium text-[rgba(200,212,228,0.65)]">Role</Label>
                   <div className="grid grid-cols-2 gap-2">
                     {(["DISPATCHER", "VIEWER"] as const).map((r) => (
                       <button key={r} type="button" onClick={() => setRole(r)}
@@ -2063,7 +2063,7 @@ function TeamSection() {
                           role === r ? "border-blue-400 bg-[rgba(201,168,124,0.10)] ring-1 ring-blue-300" : "border-[rgba(255,255,255,0.10)] hover:border-[rgba(255,255,255,0.20)] hover:bg-white/[0.04]"
                         )}>
                         <span className="text-xs font-semibold text-white/90">{ROLE_LABELS[r]}</span>
-                        <span className="text-[10px] text-[rgba(200,212,228,0.35)]">{r === "DISPATCHER" ? "Can create & manage trips" : "Read-only access"}</span>
+                        <span className="text-[10px] text-[rgba(200,212,228,0.55)]">{r === "DISPATCHER" ? "Can create & manage trips" : "Read-only access"}</span>
                       </button>
                     ))}
                   </div>
@@ -2084,7 +2084,7 @@ function TeamSection() {
         <div className="flex items-center gap-2.5 px-6 py-4 border-b border-[rgba(255,255,255,0.05)]">
           <div className="w-7 h-7 rounded-lg flex items-center justify-center"><Users className="w-3.5 h-3.5 text-[#c9a87c]" /></div>
           <span className="text-sm font-semibold text-white/80">Team Members</span>
-          {data && <span className="ml-auto text-xs font-semibold text-[rgba(200,212,228,0.35)] bg-white/[0.05] px-2.5 py-1 rounded-full">{data.users.length} {data.users.length === 1 ? "member" : "members"}</span>}
+          {data && <span className="ml-auto text-xs font-semibold text-[rgba(200,212,228,0.55)] bg-white/[0.05] px-2.5 py-1 rounded-full">{data.users.length} {data.users.length === 1 ? "member" : "members"}</span>}
         </div>
         {isLoading ? (
           <div className="divide-y divide-[rgba(255,255,255,0.05)]">
@@ -2108,11 +2108,11 @@ function TeamSection() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-semibold text-white/90 truncate">{member.name}</p>
-                    {member.id === user?.id && <span className="text-[10px] font-medium text-[rgba(200,212,228,0.35)] bg-white/[0.05] px-1.5 py-0.5 rounded-full">You</span>}
+                    {member.id === user?.id && <span className="text-[10px] font-medium text-[rgba(200,212,228,0.55)] bg-white/[0.05] px-1.5 py-0.5 rounded-full">You</span>}
                   </div>
-                  <p className="text-xs text-[rgba(200,212,228,0.35)] truncate">{member.email}</p>
+                  <p className="text-xs text-[rgba(200,212,228,0.55)] truncate">{member.email}</p>
                 </div>
-                <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full", ROLE_COLORS[member.role] ?? "bg-white/[0.05] text-[rgba(200,212,228,0.45)]")}>
+                <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full", ROLE_COLORS[member.role] ?? "bg-white/[0.05] text-[rgba(200,212,228,0.65)]")}>
                   {ROLE_LABELS[member.role] ?? member.role}
                 </span>
               </div>
@@ -2131,12 +2131,12 @@ function TeamSection() {
           <div className="divide-y divide-[rgba(255,255,255,0.05)]">
             {data.invites.map(inv => (
               <div key={inv.id} className="flex items-center gap-4 px-6 py-4">
-                <div className="w-9 h-9 rounded-full bg-white/[0.05] flex items-center justify-center flex-shrink-0"><Mail className="w-4 h-4 text-[rgba(200,212,228,0.35)]" /></div>
+                <div className="w-9 h-9 rounded-full bg-white/[0.05] flex items-center justify-center flex-shrink-0"><Mail className="w-4 h-4 text-[rgba(200,212,228,0.55)]" /></div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white/70 truncate">{inv.email}</p>
-                  <p className="text-xs text-[rgba(200,212,228,0.35)]">Expires {new Date(inv.expiresAt).toLocaleDateString()}</p>
+                  <p className="text-xs text-[rgba(200,212,228,0.55)]">Expires {new Date(inv.expiresAt).toLocaleDateString()}</p>
                 </div>
-                <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full", ROLE_COLORS[inv.role] ?? "bg-white/[0.05] text-[rgba(200,212,228,0.45)]")}>{ROLE_LABELS[inv.role] ?? inv.role}</span>
+                <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full", ROLE_COLORS[inv.role] ?? "bg-white/[0.05] text-[rgba(200,212,228,0.65)]")}>{ROLE_LABELS[inv.role] ?? inv.role}</span>
               </div>
             ))}
           </div>
@@ -2144,7 +2144,7 @@ function TeamSection() {
       )}
 
       {!isLoading && data?.users.length === 0 && (
-        <div className="text-center py-12 text-[rgba(200,212,228,0.35)]">
+        <div className="text-center py-12 text-[rgba(200,212,228,0.55)]">
           <Shield className="w-10 h-10 mx-auto mb-3 opacity-30" />
           <p className="text-sm">No team members yet</p>
         </div>
@@ -2235,7 +2235,7 @@ function SenderEmailsSection() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-white/90 truncate">{s.email}</p>
-                {s.label && <p className="text-xs text-[rgba(200,212,228,0.35)] mt-0.5">{s.label}</p>}
+                {s.label && <p className="text-xs text-[rgba(200,212,228,0.55)] mt-0.5">{s.label}</p>}
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
                 {s.isDefault ? (
@@ -2246,7 +2246,7 @@ function SenderEmailsSection() {
                   <button
                     type="button"
                     onClick={() => updateSender.mutate({ id: s.id, isDefault: true })}
-                    className="text-[10px] font-semibold text-[rgba(200,212,228,0.35)] hover:text-indigo-600 px-2 py-1 rounded-lg hover:bg-indigo-50 transition-colors"
+                    className="text-[10px] font-semibold text-[rgba(200,212,228,0.55)] hover:text-indigo-600 px-2 py-1 rounded-lg hover:bg-indigo-50 transition-colors"
                   >
                     Set Default
                   </button>
@@ -2254,7 +2254,7 @@ function SenderEmailsSection() {
                 <button
                   type="button"
                   onClick={() => openEdit(s)}
-                  className="w-7 h-7 flex items-center justify-center rounded-lg text-[rgba(200,212,228,0.35)] hover:text-white/80 hover:bg-white/[0.05] transition-colors"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg text-[rgba(200,212,228,0.55)] hover:text-white/80 hover:bg-white/[0.05] transition-colors"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                 </button>
@@ -2270,7 +2270,7 @@ function SenderEmailsSection() {
                     <button
                       type="button"
                       onClick={() => setConfirmDeleteId(null)}
-                      className="text-[11px] text-[rgba(200,212,228,0.35)] px-2 py-1 rounded-lg hover:bg-white/[0.05] transition-colors"
+                      className="text-[11px] text-[rgba(200,212,228,0.55)] px-2 py-1 rounded-lg hover:bg-white/[0.05] transition-colors"
                     >
                       Cancel
                     </button>
@@ -2279,7 +2279,7 @@ function SenderEmailsSection() {
                   <button
                     type="button"
                     onClick={() => setConfirmDeleteId(s.id)}
-                    className="w-7 h-7 flex items-center justify-center rounded-lg text-[rgba(200,212,228,0.35)] hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                    className="w-7 h-7 flex items-center justify-center rounded-lg text-[rgba(200,212,228,0.55)] hover:text-red-500 hover:bg-red-500/10 transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -2348,7 +2348,7 @@ function SenderEmailsSection() {
         <button
           type="button"
           onClick={openCreate}
-          className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed border-gray-300 text-sm text-[rgba(200,212,228,0.45)] hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50/30 transition-all"
+          className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed border-gray-300 text-sm text-[rgba(200,212,228,0.65)] hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50/30 transition-all"
         >
           <Plus className="w-4 h-4" />
           Add Email Address
@@ -2460,7 +2460,7 @@ function PdfBrandingSection() {
           </p>
         </div>
         <div className="px-5 py-3 border-t border-[rgba(255,255,255,0.05)]">
-          <p className="text-[11px] text-[rgba(200,212,228,0.35)] leading-relaxed">
+          <p className="text-[11px] text-[rgba(200,212,228,0.55)] leading-relaxed">
             {addressPreview || "Company address"}{addressPreview && " · "}
             {form.website || ""}
           </p>
@@ -2521,7 +2521,7 @@ function PdfBrandingSection() {
 
       <div className="mt-6 px-4 py-4 rounded-xl bg-white/[0.04] border border-[rgba(255,255,255,0.05)]">
         <p className="text-xs font-semibold text-[rgba(200,212,228,0.60)] mb-1">Logo on PDFs</p>
-        <p className="text-xs text-[rgba(200,212,228,0.35)] leading-relaxed">
+        <p className="text-xs text-[rgba(200,212,228,0.55)] leading-relaxed">
           Your company logo is uploaded in the <button type="button" className="text-[#c9a87c] hover:underline">Profile</button> section and automatically appears on all PDFs. Use a square or horizontally-compact image for best results.
         </p>
       </div>
@@ -2548,7 +2548,7 @@ export default async function SettingsSectionPage({
   if (!validSections.includes(sectionParam)) {
     return (
       <div className="p-8 text-center">
-        <p className="text-[rgba(200,212,228,0.45)]">Invalid settings section.</p>
+        <p className="text-[rgba(200,212,228,0.65)]">Invalid settings section.</p>
       </div>
     )
   }

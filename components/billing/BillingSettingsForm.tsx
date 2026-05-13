@@ -354,7 +354,7 @@ export function BillingSettingsForm() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[600px]">
-        <div className="text-sm" style={{ color: "rgba(200,212,228,0.45)" }}>Loading billing settings...</div>
+        <div className="text-sm" style={{ color: "rgba(200,212,228,0.65)" }}>Loading billing settings...</div>
       </div>
     )
   }
@@ -453,7 +453,7 @@ export function BillingSettingsForm() {
 
               {/* Company Name */}
               <div className="p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <label htmlFor="companyName" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>
+                <label htmlFor="companyName" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
                   Company Name
                 </label>
                 <Input
@@ -469,7 +469,7 @@ export function BillingSettingsForm() {
 
               {/* Street Address */}
               <div className="p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <label htmlFor="streetAddress" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>
+                <label htmlFor="streetAddress" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
                   Street Address
                 </label>
                 <Input
@@ -485,7 +485,7 @@ export function BillingSettingsForm() {
 
               {/* City with Autocomplete */}
               <div className="p-6 relative" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <label htmlFor="city" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>
+                <label htmlFor="city" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
                   City
                 </label>
                 <Input
@@ -522,7 +522,7 @@ export function BillingSettingsForm() {
               {/* State & Zip Code */}
               <div className="p-6 grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="state" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>
+                  <label htmlFor="state" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
                     State
                   </label>
                   <Input
@@ -537,7 +537,7 @@ export function BillingSettingsForm() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="zipCode" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>
+                  <label htmlFor="zipCode" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
                     Zip Code
                   </label>
                   <Input
@@ -565,7 +565,7 @@ export function BillingSettingsForm() {
             <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
               {/* Phone */}
               <div className="p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <label htmlFor="phone" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>
+                <label htmlFor="phone" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
                   Phone
                 </label>
                 <PhoneInput
@@ -581,7 +581,7 @@ export function BillingSettingsForm() {
 
               {/* Billing Email */}
               <div className="p-6">
-                <label htmlFor="billingEmail" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>
+                <label htmlFor="billingEmail" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
                   Billing Email
                 </label>
                 <Input
@@ -608,7 +608,7 @@ export function BillingSettingsForm() {
             <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
               {/* Invoice Prefix */}
               <div className="p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <label htmlFor="invoicePrefix" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>
+                <label htmlFor="invoicePrefix" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
                   Invoice Prefix
                 </label>
                 <Input
@@ -627,7 +627,7 @@ export function BillingSettingsForm() {
 
               {/* Date Format */}
               <div className="p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <label htmlFor="dateFormat" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>
+                <label htmlFor="dateFormat" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
                   Date Format
                 </label>
                 <select
@@ -653,7 +653,7 @@ export function BillingSettingsForm() {
 
               {/* Payment Terms */}
               <div className="p-6">
-                <label htmlFor="paymentTerms" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>
+                <label htmlFor="paymentTerms" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
                   Payment Terms
                 </label>
                 <select
@@ -689,7 +689,7 @@ export function BillingSettingsForm() {
             </div>
 
             <div className="rounded-2xl p-6" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
-              <label htmlFor="footerNote" className="block text-xs font-medium uppercase tracking-wide mb-3" style={{ color: "rgba(200,212,228,0.45)" }}>
+              <label htmlFor="footerNote" className="block text-xs font-medium uppercase tracking-wide mb-3" style={{ color: "rgba(200,212,228,0.65)" }}>
                 Footer Message
               </label>
               <textarea

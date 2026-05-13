@@ -107,7 +107,7 @@ export function InvoiceList({
       {/* Count label */}
       <p
         className="text-[11px] font-semibold uppercase tracking-widest px-1"
-        style={{ color: "rgba(200,212,228,0.35)", letterSpacing: "0.14em" }}
+        style={{ color: "rgba(200,212,228,0.55)", letterSpacing: "0.14em" }}
       >
         {invoices.length} invoice{invoices.length !== 1 ? "s" : ""}
       </p>

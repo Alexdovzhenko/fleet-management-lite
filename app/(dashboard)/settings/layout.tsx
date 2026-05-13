@@ -195,8 +195,10 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
         className="flex-1 min-w-0 overflow-y-auto"
         style={{
           "--border": "rgba(255,255,255,0.08)",
-          "--input": "rgba(255,255,255,0.08)",
+          "--input": "rgba(255,255,255,0.06)",
           "--ring": "#c9a87c",
+          "--foreground": "rgba(255,255,255,0.88)",
+          "--muted-foreground": "rgba(200,212,228,0.50)",
         } as React.CSSProperties}
       >
         {children}

@@ -170,7 +170,7 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
                     {format(selectedStart, "MMM d")}
                   </span>
                   <Arrow className="w-4 h-4" style={{ color: "rgba(201,168,124,0.50)" }} />
-                  <span className="text-[13px] font-semibold" style={{ color: selectedEnd ? "#c9a87c" : "rgba(200,212,228,0.35)" }}>
+                  <span className="text-[13px] font-semibold" style={{ color: selectedEnd ? "#c9a87c" : "rgba(200,212,228,0.55)" }}>
                     {selectedEnd ? format(selectedEnd, "MMM d, yyyy") : "End date"}
                   </span>
                 </>
@@ -219,7 +219,7 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
           {/* Day headers */}
           <div className="grid grid-cols-7 gap-0.5 mb-1">
             {["Su","Mo","Tu","We","Th","Fr","Sa"].map((d) => (
-              <div key={d} className="h-8 flex items-center justify-center text-[11px] font-semibold" style={{ color: "rgba(200,212,228,0.35)" }}>
+              <div key={d} className="h-8 flex items-center justify-center text-[11px] font-semibold" style={{ color: "rgba(200,212,228,0.55)" }}>
                 {d}
               </div>
             ))}
