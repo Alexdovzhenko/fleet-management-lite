@@ -1134,9 +1134,11 @@ interface TripEditModalProps {
   trip: Trip | null
   open: boolean
   onClose: () => void
+  defaultBillingOpen?: boolean
+  onBillingChange?: (isOpen: boolean) => void
 }
 
-export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
+export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false, onBillingChange }: TripEditModalProps) {
   const updateTrip = useUpdateTrip()
   const { data: freshTrip } = useTrip(trip?.id ?? "")
   // Use the fresh trip data if available (so attachments update), otherwise fall back to prop
@@ -1167,7 +1169,17 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
   const [sendEmailOpen, setSendEmailOpen]     = useState(false)
   const [copyOpen, setCopyOpen]               = useState(false)
   const [roundTripOpen, setRoundTripOpen]     = useState(false)
-  const [billingOpen, setBillingOpen]         = useState(false)
+  const [billingOpen, setBillingOpen]         = useState(defaultBillingOpen)
+
+  function openBilling() {
+    setBillingOpen(true)
+    onBillingChange?.(true)
+  }
+
+  function closeBilling() {
+    setBillingOpen(false)
+    onBillingChange?.(false)
+  }
   const { data: farmOuts } = useTripFarmOuts(isFarmedIn ? null : (currentTrip?.id ?? null))
   const pendingFarmOut = farmOuts?.find((f) => f.status === "PENDING")
   const acceptedFarmOut = farmOuts?.find((f) => f.status === "ACCEPTED")
@@ -2207,11 +2219,11 @@ export function TripEditModal({ trip, open, onClose }: TripEditModalProps) {
                       billingData={currentTrip?.billingData}
                       payments={currentTrip?.payments}
                       invoiceTotal={tripInvoice?.total ? Number(tripInvoice.total) : null}
-                      onClick={() => setBillingOpen(true)}
+                      onClick={openBilling}
                     />
                     <BillingModal
                       open={billingOpen}
-                      onClose={() => setBillingOpen(false)}
+                      onClose={closeBilling}
                       mode="edit"
                       tripId={currentTrip?.id}
                       trip={currentTrip}

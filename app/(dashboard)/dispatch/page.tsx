@@ -43,6 +43,7 @@ function DispatchPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const openTripId = searchParams.get("open")
+  const billingFromUrl = searchParams.get("billing") === "1"
   const { data: openTrip } = useTrip(openTripId ?? "")
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null)
@@ -128,7 +129,9 @@ function DispatchPageInner() {
     const tripDate = new Date(openTrip.pickupDate)
     setSelectedDate(tripDate)
     setSelectedTrip(openTrip)
-    router.replace("/dispatch")
+    // Keep ?open=tripId (+ billing if present) so reload restores state
+    const params = billingFromUrl ? `?open=${openTrip.id}&billing=1` : `?open=${openTrip.id}`
+    router.replace(`/dispatch${params}`)
   }, [openTrip]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const { data: trips, isLoading } = useTrips(
@@ -624,7 +627,16 @@ function DispatchPageInner() {
         <TripEditModal
           trip={selectedTrip}
           open={!!selectedTrip}
-          onClose={() => setSelectedTrip(null)}
+          defaultBillingOpen={billingFromUrl && !!selectedTrip}
+          onBillingChange={(isOpen) => {
+            if (!selectedTrip) return
+            const params = isOpen ? `?open=${selectedTrip.id}&billing=1` : `?open=${selectedTrip.id}`
+            router.replace(`/dispatch${params}`)
+          }}
+          onClose={() => {
+            setSelectedTrip(null)
+            router.replace("/dispatch")
+          }}
         />
 
         <Sheet open={showNewTrip} onOpenChange={setShowNewTrip}>
