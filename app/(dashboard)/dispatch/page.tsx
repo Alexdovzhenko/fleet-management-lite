@@ -627,7 +627,7 @@ function DispatchPageInner() {
         <TripEditModal
           trip={selectedTrip}
           open={!!selectedTrip}
-          defaultBillingOpen={billingFromUrl && !!selectedTrip}
+          defaultBillingOpen={billingFromUrl}
           onBillingChange={(isOpen) => {
             if (!selectedTrip) return
             const params = isOpen ? `?open=${selectedTrip.id}&billing=1` : `?open=${selectedTrip.id}`

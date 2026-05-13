@@ -1169,7 +1169,14 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
   const [sendEmailOpen, setSendEmailOpen]     = useState(false)
   const [copyOpen, setCopyOpen]               = useState(false)
   const [roundTripOpen, setRoundTripOpen]     = useState(false)
-  const [billingOpen, setBillingOpen]         = useState(defaultBillingOpen)
+  const [billingOpen, setBillingOpen]         = useState(false)
+
+  // When the trip modal opens (trip data loaded), auto-open billing if URL says so
+  useEffect(() => {
+    if (open && defaultBillingOpen) {
+      setBillingOpen(true)
+    }
+  }, [open]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function openBilling() {
     setBillingOpen(true)
