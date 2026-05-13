@@ -11,7 +11,7 @@ import {
   User, Users, Calendar, MapPin, Car, Building2,
   Star, Baby, Accessibility, UserCheck, ChevronDown, Ship,
   FileText, AlertTriangle, CheckCircle2, Copy, Check, Pencil,
-  Clock, Navigation, ArrowRight, ArrowUpRight, DollarSign, GripVertical,
+  Clock, Navigation, ArrowRight, ArrowUpRight, DollarSign, GripVertical, Layers,
 } from "lucide-react"
 import {
   DndContext,
@@ -3000,8 +3000,13 @@ export default function NewTripPage() {
                             }
                           }}
                         >
-                          <SelectTrigger id="vehicle-type" className="w-full h-10 text-sm">
-                            <SelectValue placeholder="Select vehicle type..." />
+                          <SelectTrigger id="vehicle-type" className="w-full h-10 text-sm pl-2">
+                            <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                              <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.10)", border: "1px solid rgba(201,168,124,0.18)" }}>
+                                <Layers className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
+                              </div>
+                              <SelectValue placeholder="Select vehicle type..." />
+                            </div>
                           </SelectTrigger>
                           <SelectContent>
                             {vehicleTypes.map((type) => (
