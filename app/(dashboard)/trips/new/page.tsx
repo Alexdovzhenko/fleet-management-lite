@@ -1920,7 +1920,7 @@ function RouteBuilder({
                   onChange={(v) => { setAddress1(v); setAddError("") }}
                   onSelect={handleAddressBookSelect}
                   error={!!addError}
-                  placeholder="123 Main St"
+                  placeholder=""
                 />
               </div>
               <div className="space-y-1.5">
@@ -2165,7 +2165,7 @@ function RouteBuilder({
                     value={address1}
                     onChange={(v) => setAddress1(v)}
                     onSelect={handleAddressBookSelect}
-                    placeholder="123 Main St"
+                    placeholder=""
                   />
                 </div>
                 <div className="space-y-1.5">
