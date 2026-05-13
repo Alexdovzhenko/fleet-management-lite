@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useState, useRef, useEffect } from "react"
 
 interface InvoiceTabsProps {
   activeTab: "OPEN" | "SETTLED"
@@ -9,67 +9,61 @@ interface InvoiceTabsProps {
   settledCount: number
 }
 
-export function InvoiceTabs({
-  activeTab,
-  onTabChange,
-  openCount,
-  settledCount,
-}: InvoiceTabsProps) {
+const TABS: { id: "OPEN" | "SETTLED"; label: string }[] = [
+  { id: "OPEN",    label: "Open"    },
+  { id: "SETTLED", label: "Settled" },
+]
+
+export function InvoiceTabs({ activeTab, onTabChange, openCount, settledCount }: InvoiceTabsProps) {
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
+  const [indicator, setIndicator] = useState({ x: 0, width: 0, ready: false })
+
+  useEffect(() => {
+    const idx = TABS.findIndex((t) => t.id === activeTab)
+    const el = tabRefs.current[idx]
+    if (el) setIndicator({ x: el.offsetLeft, width: el.offsetWidth, ready: true })
+  }, [activeTab])
+
+  const counts: Record<"OPEN" | "SETTLED", number> = { OPEN: openCount, SETTLED: settledCount }
+
   return (
-    <div className="flex gap-0">
-      <button
-        onClick={() => onTabChange("OPEN")}
-        className={`relative px-0 py-3 text-sm font-semibold transition-colors duration-200 ${
-          activeTab === "OPEN"
-            ? "text-slate-900"
-            : "text-slate-500 hover:text-slate-700"
-        }`}
-      >
-        <div className="flex items-center gap-2">
-          <span>Open</span>
-          {openCount > 0 && (
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold">
-              {openCount}
+    <div className="relative flex items-center">
+      {TABS.map((tab, i) => (
+        <button
+          key={tab.id}
+          ref={(el) => { tabRefs.current[i] = el }}
+          onClick={() => onTabChange(tab.id)}
+          className="flex items-center gap-2 px-4 py-3 text-sm font-semibold transition-colors duration-150 select-none cursor-pointer whitespace-nowrap"
+          style={activeTab === tab.id ? { color: "rgba(255,255,255,0.92)" } : { color: "rgba(200,212,228,0.50)" }}
+        >
+          {tab.label}
+          {counts[tab.id] > 0 && (
+            <span
+              className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold leading-none tabular-nums"
+              style={activeTab === tab.id
+                ? tab.id === "OPEN"
+                  ? { background: "rgba(251,191,36,0.15)", color: "rgba(251,191,36,0.90)" }
+                  : { background: "rgba(52,211,153,0.12)", color: "rgba(52,211,153,0.90)" }
+                : { background: "rgba(255,255,255,0.08)", color: "rgba(200,212,228,0.50)" }
+              }
+            >
+              {counts[tab.id]}
             </span>
           )}
-        </div>
-
-        {/* Animated underline */}
-        {activeTab === "OPEN" && (
-          <motion.div
-            layoutId="active-tab-indicator"
-            className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-900 rounded-t-full"
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          />
-        )}
-      </button>
-
-      <button
-        onClick={() => onTabChange("SETTLED")}
-        className={`relative px-0 py-3 ml-6 text-sm font-semibold transition-colors duration-200 ${
-          activeTab === "SETTLED"
-            ? "text-slate-900"
-            : "text-slate-500 hover:text-slate-700"
-        }`}
-      >
-        <div className="flex items-center gap-2">
-          <span>Settled</span>
-          {settledCount > 0 && (
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-100 text-green-700 text-xs font-bold">
-              {settledCount}
-            </span>
-          )}
-        </div>
-
-        {/* Animated underline */}
-        {activeTab === "SETTLED" && (
-          <motion.div
-            layoutId="active-tab-indicator"
-            className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-900 rounded-t-full"
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          />
-        )}
-      </button>
+        </button>
+      ))}
+      {indicator.ready && (
+        <div
+          className="absolute bottom-0 left-0 h-[2px] rounded-full pointer-events-none"
+          style={{
+            width: indicator.width,
+            transform: `translateX(${indicator.x}px)`,
+            background: "#c9a87c",
+            transition: "transform 0.28s cubic-bezier(0.23,1,0.32,1), width 0.28s cubic-bezier(0.23,1,0.32,1)",
+            willChange: "transform",
+          }}
+        />
+      )}
     </div>
   )
 }

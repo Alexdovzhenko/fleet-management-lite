@@ -1,7 +1,7 @@
 "use client"
 
+import { useState } from "react"
 import { format } from "date-fns"
-import type { Invoice } from "@/types"
 import { ChevronRight } from "lucide-react"
 
 interface InvoiceCardProps {
@@ -11,80 +11,89 @@ interface InvoiceCardProps {
   isSettledTab?: boolean
 }
 
-export function InvoiceCard({
-  invoice,
-  onMarkSettled,
-  onViewDetails,
-  isSettledTab,
-}: InvoiceCardProps) {
-  const customerName = invoice.customer?.name || "Unknown"
-  const reservationNumber = invoice.trip?.tripNumber || "N/A"
-  const serviceDate = invoice.trip?.pickupDate
-    ? format(new Date(invoice.trip.pickupDate), "MMM d, yyyy")
-    : "N/A"
-  const dispatcherName = invoice.trip?.createdBy?.name || "—"
-  const invoiceNumber = invoice.invoiceNumber || "—"
+export function InvoiceCard({ invoice, onMarkSettled, onViewDetails, isSettledTab }: InvoiceCardProps) {
+  const [hovered, setHovered] = useState(false)
 
-  const isOpen = invoice.status === "OPEN"
+  const customerName    = invoice.customer?.name || "Unknown"
+  const reservationNum  = invoice.trip?.tripNumber || "N/A"
+  const serviceDate     = invoice.trip?.pickupDate ? format(new Date(invoice.trip.pickupDate), "MMM d, yyyy") : "N/A"
+  const invoiceNumber   = invoice.invoiceNumber || "—"
+  const isOpen          = invoice.status === "OPEN"
+  const amount          = parseFloat(String(invoice.total || 0)).toFixed(2)
 
   return (
     <div
-      className="group bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200 overflow-hidden cursor-pointer rounded-xl"
       onClick={onViewDetails}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="flex items-center gap-4 px-4 py-3.5 rounded-xl cursor-pointer transition-all duration-150"
+      style={{
+        background: hovered ? "#111e35" : "#0d1526",
+        border: `1px solid ${hovered ? "rgba(255,255,255,0.11)" : "rgba(255,255,255,0.07)"}`,
+      }}
     >
-      {/* Single Row Layout - Compact */}
-      <div className="px-4 py-3 flex items-center justify-between gap-3">
-        {/* Left: Customer Info */}
-        <div className="flex-1 min-w-0 space-y-0.5">
-          <h3 className="text-sm font-semibold text-slate-900 truncate">
+      {/* Left: customer + meta */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-0.5">
+          <span className="text-[13px] font-semibold truncate" style={{ color: "rgba(255,255,255,0.90)" }}>
             {customerName}
-          </h3>
-          <div className="flex items-center gap-3 text-xs text-slate-500">
-            <span>INV {invoiceNumber}</span>
-            <span>•</span>
-            <span>{serviceDate}</span>
-            <span>•</span>
-            <span>#{reservationNumber}</span>
-          </div>
-        </div>
-
-        {/* Right: Amount + Status + Action */}
-        <div className="flex items-center gap-4 shrink-0">
-          {/* Amount */}
-          <div className="text-right min-w-[80px]">
-            <p className="text-lg font-bold text-slate-900">
-              ${parseFloat(invoice.total).toFixed(2)}
-            </p>
-          </div>
-
-          {/* Status Badge */}
-          <span
-            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold shrink-0 transition-colors ${
-              isOpen
-                ? "bg-amber-100/80 text-amber-700"
-                : "bg-green-100/80 text-green-700"
-            }`}
-          >
-            <span className={`w-1.5 h-1.5 rounded-full mr-1 ${isOpen ? "bg-amber-500" : "bg-green-500"}`} />
-            {isOpen ? "Open" : "Settled"}
           </span>
-
-          {/* Chevron */}
-          <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-colors shrink-0" />
+          <span className="text-[11px] font-mono shrink-0" style={{ color: "rgba(200,212,228,0.38)" }}>
+            #{invoiceNumber}
+          </span>
         </div>
+        <div className="flex items-center gap-2 text-[12px]" style={{ color: "rgba(200,212,228,0.50)" }}>
+          <span>{serviceDate}</span>
+          <span style={{ opacity: 0.4 }}>·</span>
+          <span>Res #{reservationNum}</span>
+        </div>
+      </div>
 
-        {/* Mark as Settled - Quick Action Button (only on Open tab) */}
+      {/* Right: amount + badge + settle + chevron */}
+      <div className="flex items-center gap-3 shrink-0">
+        <span
+          className="text-[15px] font-bold tabular-nums"
+          style={{ color: isOpen ? "rgba(255,255,255,0.90)" : "rgba(255,255,255,0.55)" }}
+        >
+          ${amount}
+        </span>
+
+        <span
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold shrink-0"
+          style={isOpen
+            ? { background: "rgba(251,191,36,0.12)", color: "rgba(251,191,36,0.90)" }
+            : { background: "rgba(52,211,153,0.10)",  color: "rgba(52,211,153,0.85)"  }
+          }
+        >
+          <span
+            className="w-1.5 h-1.5 rounded-full shrink-0"
+            style={{ background: isOpen ? "#fbbf24" : "#34d399" }}
+          />
+          {isOpen ? "Open" : "Settled"}
+        </span>
+
         {isOpen && !isSettledTab && onMarkSettled && (
           <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onMarkSettled()
+            onClick={(e) => { e.stopPropagation(); onMarkSettled() }}
+            className="px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all duration-150 active:scale-95 cursor-pointer shrink-0"
+            style={{ color: "#c9a87c", background: "rgba(201,168,124,0.08)", border: "1px solid rgba(201,168,124,0.18)" }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLElement).style.background = "rgba(201,168,124,0.15)"
+              ;(e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,124,0.30)"
             }}
-            className="px-3 py-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg active:scale-95 transition-all duration-150 shrink-0"
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLElement).style.background = "rgba(201,168,124,0.08)"
+              ;(e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,124,0.18)"
+            }}
           >
             Settle
           </button>
         )}
+
+        <ChevronRight
+          className="w-4 h-4 shrink-0 transition-colors duration-150"
+          style={{ color: hovered ? "rgba(200,212,228,0.60)" : "rgba(200,212,228,0.28)" }}
+        />
       </div>
     </div>
   )

@@ -9,24 +9,40 @@ interface BillingSearchBarProps {
 
 export function BillingSearchBar({ value, onChange }: BillingSearchBarProps) {
   return (
-    <div className="relative group">
-      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-        <Search className="w-5 h-5" />
-      </div>
+    <div className="relative">
+      <Search
+        className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none"
+        style={{ color: "rgba(200,212,228,0.38)" }}
+      />
       <input
         type="text"
-        placeholder="Search invoices..."
+        placeholder="Search invoices…"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full pl-11 pr-10 py-3 text-base rounded-xl bg-white border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 hover:border-slate-300 transition-all duration-150"
+        className="h-9 pl-8.5 pr-8 w-full text-[13px] rounded-xl outline-none transition-all duration-200 font-medium"
+        style={{
+          background: "rgba(255,255,255,0.05)",
+          border: "1px solid rgba(255,255,255,0.09)",
+          color: "rgba(255,255,255,0.88)",
+        }}
+        onFocus={(e) => {
+          e.target.style.border = "1px solid rgba(201,168,124,0.40)"
+          e.target.style.boxShadow = "0 0 0 2px rgba(201,168,124,0.08)"
+        }}
+        onBlur={(e) => {
+          e.target.style.border = "1px solid rgba(255,255,255,0.09)"
+          e.target.style.boxShadow = "none"
+        }}
       />
       {value && (
         <button
           onClick={() => onChange("")}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 active:scale-90 transition-all duration-150 p-1"
-          aria-label="Clear search"
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer"
+          style={{ color: "rgba(200,212,228,0.38)" }}
+          onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.70)"}
+          onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.38)"}
         >
-          <X className="w-5 h-5" />
+          <X className="w-3.5 h-3.5" />
         </button>
       )}
     </div>

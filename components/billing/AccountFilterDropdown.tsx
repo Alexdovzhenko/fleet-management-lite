@@ -16,95 +16,112 @@ interface AccountFilterDropdownProps {
   isLoading?: boolean
 }
 
-export function AccountFilterDropdown({
-  accounts,
-  value,
-  onChange,
-  isLoading,
-}: AccountFilterDropdownProps) {
+export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: AccountFilterDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
 
-  const customers = accounts.filter((a) => a.type === "CUSTOMER")
+  const customers  = accounts.filter((a) => a.type === "CUSTOMER")
   const affiliates = accounts.filter((a) => a.type === "AFFILIATE")
-
-  const selectedLabel =
-    accounts.find((a) => a.id === value)?.name || "All Accounts"
+  const selectedLabel = accounts.find((a) => a.id === value)?.name || "All Accounts"
+  const isActive = !!value
 
   return (
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
         disabled={isLoading}
-        className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white border border-slate-200 text-sm text-slate-600 hover:border-slate-300 transition-colors disabled:opacity-50"
+        className="flex items-center gap-2 h-9 px-3 rounded-xl text-[13px] font-medium transition-all duration-150 cursor-pointer disabled:opacity-50 whitespace-nowrap"
+        style={isActive
+          ? { background: "rgba(201,168,124,0.15)", border: "1px solid rgba(201,168,124,0.30)", color: "#c9a87c" }
+          : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(200,212,228,0.70)" }
+        }
       >
-        <span>{selectedLabel}</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        <span className="max-w-[120px] truncate">{selectedLabel}</span>
+        <ChevronDown
+          className="w-3.5 h-3.5 shrink-0 transition-transform duration-150"
+          style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+        />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full mt-2 left-0 right-0 z-10 bg-white border border-slate-200 rounded-lg shadow-lg">
-          {/* All Accounts option */}
-          <button
-            onClick={() => {
-              onChange(null)
-              setIsOpen(false)
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+          <div
+            className="absolute top-full mt-1.5 left-0 z-20 rounded-xl overflow-hidden py-1 min-w-[180px]"
+            style={{
+              background: "#0d1526",
+              border: "1px solid rgba(255,255,255,0.10)",
+              boxShadow: "0 16px 48px rgba(0,0,0,0.60)",
             }}
-            className="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors flex items-center justify-between border-b border-slate-100"
           >
-            All Accounts
-            {!value && <Check className="w-4 h-4 text-blue-600" />}
-          </button>
+            {/* All Accounts */}
+            <button
+              onClick={() => { onChange(null); setIsOpen(false) }}
+              className="w-full text-left px-4 py-2.5 text-[13px] flex items-center justify-between transition-colors duration-100 cursor-pointer"
+              style={{ color: "rgba(255,255,255,0.80)" }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
+            >
+              All Accounts
+              {!value && <Check className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />}
+            </button>
 
-          {/* Customers section */}
-          {customers.length > 0 && (
-            <>
-              <div className="px-4 py-2 text-xs uppercase font-semibold text-slate-500 bg-slate-50">
-                Customers
-              </div>
-              {customers.map((account) => (
-                <button
-                  key={account.id}
-                  onClick={() => {
-                    onChange(account.id)
-                    setIsOpen(false)
-                  }}
-                  className="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors flex items-center justify-between"
+            {/* Customers */}
+            {customers.length > 0 && (
+              <>
+                <div
+                  className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-widest"
+                  style={{ color: "rgba(200,212,228,0.35)", letterSpacing: "0.14em", borderTop: "1px solid rgba(255,255,255,0.06)", marginTop: "2px", paddingTop: "8px" }}
                 >
-                  {account.name}
-                  {value === account.id && <Check className="w-4 h-4 text-blue-600" />}
-                </button>
-              ))}
-            </>
-          )}
+                  Customers
+                </div>
+                {customers.map((a) => (
+                  <button
+                    key={a.id}
+                    onClick={() => { onChange(a.id); setIsOpen(false) }}
+                    className="w-full text-left px-4 py-2.5 text-[13px] flex items-center justify-between transition-colors duration-100 cursor-pointer"
+                    style={{ color: value === a.id ? "#c9a87c" : "rgba(255,255,255,0.72)" }}
+                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"}
+                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
+                  >
+                    <span className="truncate max-w-[160px]">{a.name}</span>
+                    {value === a.id && <Check className="w-3.5 h-3.5 shrink-0" style={{ color: "#c9a87c" }} />}
+                  </button>
+                ))}
+              </>
+            )}
 
-          {/* Affiliates section */}
-          {affiliates.length > 0 && (
-            <>
-              <div className="px-4 py-2 text-xs uppercase font-semibold text-slate-500 bg-slate-50">
-                Affiliates
-              </div>
-              {affiliates.map((account) => (
-                <button
-                  key={account.id}
-                  onClick={() => {
-                    onChange(account.id)
-                    setIsOpen(false)
-                  }}
-                  className="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 transition-colors flex items-center justify-between"
+            {/* Affiliates */}
+            {affiliates.length > 0 && (
+              <>
+                <div
+                  className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-widest"
+                  style={{ color: "rgba(200,212,228,0.35)", letterSpacing: "0.14em", borderTop: "1px solid rgba(255,255,255,0.06)", marginTop: "2px", paddingTop: "8px" }}
                 >
-                  {account.name}
-                  {value === account.id && <Check className="w-4 h-4 text-blue-600" />}
-                </button>
-              ))}
-            </>
-          )}
+                  Affiliates
+                </div>
+                {affiliates.map((a) => (
+                  <button
+                    key={a.id}
+                    onClick={() => { onChange(a.id); setIsOpen(false) }}
+                    className="w-full text-left px-4 py-2.5 text-[13px] flex items-center justify-between transition-colors duration-100 cursor-pointer"
+                    style={{ color: value === a.id ? "#c9a87c" : "rgba(255,255,255,0.72)" }}
+                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"}
+                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
+                  >
+                    <span className="truncate max-w-[160px]">{a.name}</span>
+                    {value === a.id && <Check className="w-3.5 h-3.5 shrink-0" style={{ color: "#c9a87c" }} />}
+                  </button>
+                ))}
+              </>
+            )}
 
-          {customers.length === 0 && affiliates.length === 0 && (
-            <div className="px-4 py-3 text-sm text-slate-500 text-center">
-              No accounts available
-            </div>
-          )}
-        </div>
+            {customers.length === 0 && affiliates.length === 0 && (
+              <div className="px-4 py-3 text-[13px] text-center" style={{ color: "rgba(200,212,228,0.45)" }}>
+                No accounts available
+              </div>
+            )}
+          </div>
+        </>
       )}
     </div>
   )
