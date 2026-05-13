@@ -26,23 +26,36 @@ export function BillingTriggerButton({ billingData, payments = [], invoiceTotal,
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-white rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-sm transition-all group"
+      className="w-full rounded-2xl overflow-hidden transition-all group"
+      style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,124,0.30)" }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)" }}
     >
-      <div className="flex items-center gap-3 flex-1 min-w-0">
-        <DollarSign className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-        <div className="text-left min-w-0">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Billing</p>
-          {hasData ? (
-            <p className="text-sm font-bold text-gray-900">
-              {formatCurrency(displayTotal)}
-              {totals.balance > 0 && <span className="ml-2 text-xs text-rose-600">({totals.balance > 0 ? 'Balance due' : 'Paid'})</span>}
-            </p>
-          ) : (
-            <p className="text-sm text-gray-400">Set up pricing →</p>
-          )}
+      <div className="px-4 py-3.5 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          {/* Gold accent bar + icon */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-1 h-4 rounded-full flex-shrink-0" style={{ background: "#c9a87c" }} />
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.12)", border: "1px solid rgba(201,168,124,0.20)" }}>
+              <DollarSign className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
+            </div>
+          </div>
+          <div className="text-left min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: "rgba(200,212,228,0.55)" }}>Billing</p>
+            {hasData ? (
+              <p className="text-sm font-bold tabular-nums" style={{ color: "rgba(255,255,255,0.90)" }}>
+                {formatCurrency(displayTotal)}
+                {totals.balance > 0 && (
+                  <span className="ml-2 text-xs font-medium" style={{ color: "rgba(248,113,113,0.80)" }}>Balance due</span>
+                )}
+              </p>
+            ) : (
+              <p className="text-sm" style={{ color: "rgba(200,212,228,0.45)" }}>Set up pricing →</p>
+            )}
+          </div>
         </div>
+        <ChevronRight className="w-4 h-4 flex-shrink-0 transition-colors" style={{ color: "rgba(200,212,228,0.30)" }} />
       </div>
-      <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors flex-shrink-0" />
     </button>
   )
 }

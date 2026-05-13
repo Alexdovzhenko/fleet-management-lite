@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import type React from "react"
 import { cn } from "@/lib/utils"
 
 // ── Role display helpers ─────────────────────────────────────────────────────
@@ -11,10 +12,10 @@ const ROLE_LABEL: Record<string, string> = {
   VIEWER:     "Viewer",
 }
 
-const ROLE_STYLE: Record<string, string> = {
-  OWNER:      "bg-indigo-50 text-indigo-600",
-  DISPATCHER: "bg-sky-50 text-sky-600",
-  VIEWER:     "bg-gray-100 text-gray-500",
+const ROLE_STYLE: Record<string, React.CSSProperties> = {
+  OWNER:      { background: "rgba(99,102,241,0.15)", color: "rgba(165,180,252,0.90)" },
+  DISPATCHER: { background: "rgba(14,165,233,0.12)", color: "rgba(125,211,252,0.90)" },
+  VIEWER:     { background: "rgba(255,255,255,0.06)", color: "rgba(200,212,228,0.60)" },
 }
 
 // ── Date/time helpers ────────────────────────────────────────────────────────
@@ -81,13 +82,11 @@ export function ReservationMetadata({ createdAt, createdByUser, className }: Res
   const roleStyle = ROLE_STYLE[role] ?? ROLE_STYLE.DISPATCHER
 
   return (
-    <div className={cn("rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden", className)}>
+    <div className={cn("rounded-2xl overflow-hidden", className)} style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
       {/* Header */}
-      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100 bg-gray-50/40">
-        <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
-        </svg>
-        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.14em]">
+      <div className="flex items-center gap-2.5 px-4 py-3 border-b" style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}>
+        <div className="w-1 h-4 rounded-full flex-shrink-0" style={{ background: "#c9a87c" }} />
+        <span className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: "rgba(200,212,228,0.55)" }}>
           {isNew ? "Creating As" : "Reservation Details"}
         </span>
       </div>
@@ -98,46 +97,46 @@ export function ReservationMetadata({ createdAt, createdByUser, className }: Res
         {/* Date + Time row */}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-0.5">
-            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-[0.12em]">
+            <p className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.45)" }}>
               {isNew ? "Today" : "Created"}
             </p>
-            <p className="text-sm font-semibold text-gray-800 tabular-nums">{date}</p>
+            <p className="text-sm font-semibold tabular-nums" style={{ color: "rgba(255,255,255,0.88)" }}>{date}</p>
           </div>
           <div className="space-y-0.5">
-            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-[0.12em]">Time</p>
-            <p className="text-sm font-semibold text-gray-800 tabular-nums">{time}</p>
+            <p className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.45)" }}>Time</p>
+            <p className="text-sm font-semibold tabular-nums" style={{ color: "rgba(255,255,255,0.88)" }}>{time}</p>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-100" />
+        <div className="border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }} />
 
         {/* Creator row */}
         {displayUser ? (
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "linear-gradient(135deg, #6366f1, #4f46e5)", boxShadow: "0 2px 8px rgba(99,102,241,0.35)" }}>
               <span className="text-[10px] font-bold text-white leading-none">{initials}</span>
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-gray-800 truncate leading-tight">{name}</p>
-              <p className="text-[10px] text-gray-400 leading-tight mt-0.5">
+              <p className="text-xs font-semibold truncate leading-tight" style={{ color: "rgba(255,255,255,0.88)" }}>{name}</p>
+              <p className="text-[10px] leading-tight mt-0.5" style={{ color: "rgba(200,212,228,0.45)" }}>
                 {isNew ? "Creating this reservation" : "Created this reservation"}
               </p>
             </div>
-            <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0", roleStyle)}>
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0" style={roleStyle}>
               {roleLabel}
             </span>
           </div>
         ) : !isNew ? (
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-              <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} style={{ color: "rgba(200,212,228,0.40)" }}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
               </svg>
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-gray-400 truncate leading-tight">Not recorded</p>
-              <p className="text-[10px] text-gray-300 leading-tight mt-0.5">Created before tracking was enabled</p>
+              <p className="text-xs font-semibold truncate leading-tight" style={{ color: "rgba(200,212,228,0.55)" }}>Not recorded</p>
+              <p className="text-[10px] leading-tight mt-0.5" style={{ color: "rgba(200,212,228,0.35)" }}>Created before tracking was enabled</p>
             </div>
           </div>
         ) : null}
