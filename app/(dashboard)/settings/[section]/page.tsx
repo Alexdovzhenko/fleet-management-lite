@@ -845,7 +845,7 @@ function ProfileSection() {
         </div>
       )}
 
-      <div className="p-8 space-y-6 max-w-2xl mx-auto w-full">
+      <div className="p-8 space-y-6 max-w-2xl w-full">
 
         {/* ── Header ─────────────────────────────────────────────────────────── */}
         <div>
@@ -1192,7 +1192,7 @@ function ServiceTypesSection() {
   return (
     <>
       {createOpen && <CreateServiceTypeDialog onClose={() => setCreateOpen(false)} />}
-      <div className="p-8 space-y-6 max-w-2xl mx-auto w-full">
+      <div className="p-8 space-y-6 max-w-2xl w-full">
         <SectionHeader title="Service Types" description="Enable or disable trip service categories. Enabled types appear when booking a reservation." />
         <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
           <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(255,255,255,0.05)]">
@@ -1238,7 +1238,7 @@ function StatusActionsSection() {
   return (
     <>
       {createOpen && <CreateStatusActionDialog onClose={() => setCreateOpen(false)} />}
-      <div className="p-8 space-y-6 max-w-2xl mx-auto w-full">
+      <div className="p-8 space-y-6 max-w-2xl w-full">
         <SectionHeader title="Trip Status Actions" description="Customize the quick-action buttons shown in the dispatch popup when managing a trip." />
         <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
           <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(255,255,255,0.05)]">
@@ -1270,7 +1270,7 @@ function GridColumnsSection() {
   const visibleCount = COLUMN_DEFS.length - hiddenColumns.length
 
   return (
-    <div className="p-8 space-y-6 max-w-2xl mx-auto w-full">
+    <div className="p-8 space-y-6 max-w-2xl w-full">
       <SectionHeader title="Grid Columns" description="Choose which columns are visible in the dispatch grid. Drag column headers directly in the grid to reorder them." />
       <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
         <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(255,255,255,0.05)]">
@@ -1859,7 +1859,7 @@ function PersonalSection() {
   const initials = [profile.firstName[0], profile.lastName[0]].filter(Boolean).join("").toUpperCase() || "?"
 
   return (
-    <div className="p-8 space-y-5 max-w-2xl mx-auto">
+    <div className="p-8 space-y-5 max-w-2xl">
       <SectionHeader title="Personal Details" description="Manage your own account name and credentials." />
 
       {/* Avatar + identity strip */}
@@ -2013,7 +2013,7 @@ function TeamSection() {
   async function handleCopy() { await navigator.clipboard.writeText(inviteUrl); setCopied(true); setTimeout(() => setCopied(false), 2500) }
 
   return (
-    <div className="p-8 space-y-6 max-w-2xl mx-auto w-full">
+    <div className="p-8 space-y-6 max-w-2xl w-full">
       <div className="flex items-start justify-between gap-4">
         <SectionHeader title="Team Members" description="Manage who has access to your company workspace." />
         {isOwner && !showInviteForm && (
@@ -2214,7 +2214,7 @@ function SenderEmailsSection() {
   }
 
   return (
-    <div className="p-8 max-w-2xl mx-auto w-full">
+    <div className="p-8 max-w-2xl w-full">
       <SectionHeader
         title="Sender Emails"
         description="Choose which email addresses replies will go to when sending reservation emails. Add or remove addresses as needed."
@@ -2431,7 +2431,7 @@ function PdfBrandingSection() {
   }
 
   return (
-    <div className="p-8 max-w-2xl mx-auto w-full">
+    <div className="p-8 max-w-2xl w-full">
       <SectionHeader
         title="PDF Branding"
         description="Company information shown on all generated PDFs — Job Orders, Reservation Confirmations, and Affiliate copies."
@@ -2558,7 +2558,7 @@ export default async function SettingsSectionPage({
     <>
       {sectionParam === "profile"        && <ProfileSection />}
       {sectionParam === "address-book"   && (
-        <div className="p-8 space-y-6 max-w-2xl mx-auto w-full">
+        <div className="p-8 space-y-6 max-w-2xl w-full">
           <SectionHeader title="Address Book" description="Saved pickup and dropoff locations, shared across your entire company." />
           <AddressBookSection />
         </div>
