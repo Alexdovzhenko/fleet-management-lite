@@ -60,7 +60,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* PRIMARY CHARGES SECTION */}
       <CollapsibleSection title="Primary Charges" defaultOpen={true} type="primary">
         {/* Flat Rate */}
@@ -95,13 +95,13 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   const { perHourQty: _, ...rest } = inputValues
                   setInputValues(rest)
                 }}
-                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
+                className="w-20 px-3 py-2 rounded-lg text-sm focus:outline-none tabular-nums" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
               />
-              <span className="text-sm font-medium text-slate-500 min-w-max">Hrs</span>
+              <span className="text-sm font-medium min-w-max" style={{ color: "rgba(200,212,228,0.55)" }}>Hrs</span>
             </div>
-            <span className="text-slate-500 font-medium">×</span>
+            <span className="font-medium" style={{ color: "rgba(200,212,228,0.40)" }}>×</span>
             <div className="relative flex items-center w-20">
-              <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+              <span className="absolute left-3 text-sm font-semibold font-mono pointer-events-none" style={{ color: "rgba(200,212,228,0.55)" }}>$</span>
               <input
                 type="text"
                 inputMode="decimal"
@@ -117,7 +117,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   const { perHourRate: _, ...rest } = inputValues
                   setInputValues(rest)
                 }}
-                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
+                className="w-full pl-6 pr-3 py-2 rounded-lg text-sm focus:outline-none tabular-nums" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
               />
             </div>
           </div>
@@ -145,13 +145,13 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   const { travelTimeQty: _, ...rest } = inputValues
                   setInputValues(rest)
                 }}
-                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
+                className="w-20 px-3 py-2 rounded-lg text-sm focus:outline-none tabular-nums" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
               />
-              <span className="text-sm font-medium text-slate-500 min-w-max">Hrs</span>
+              <span className="text-sm font-medium min-w-max" style={{ color: "rgba(200,212,228,0.55)" }}>Hrs</span>
             </div>
-            <span className="text-slate-500 font-medium">×</span>
+            <span className="font-medium" style={{ color: "rgba(200,212,228,0.40)" }}>×</span>
             <div className="relative flex items-center w-20">
-              <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+              <span className="absolute left-3 text-sm font-semibold font-mono pointer-events-none" style={{ color: "rgba(200,212,228,0.55)" }}>$</span>
               <input
                 type="text"
                 inputMode="decimal"
@@ -167,7 +167,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   const { travelTimeRate: _, ...rest } = inputValues
                   setInputValues(rest)
                 }}
-                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
+                className="w-full pl-6 pr-3 py-2 rounded-lg text-sm focus:outline-none tabular-nums" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
               />
             </div>
           </div>
@@ -195,13 +195,13 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   const { waitTimeQty: _, ...rest } = inputValues
                   setInputValues(rest)
                 }}
-                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
+                className="w-20 px-3 py-2 rounded-lg text-sm focus:outline-none tabular-nums" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
               />
-              <span className="text-sm font-medium text-slate-500 min-w-max">Hrs</span>
+              <span className="text-sm font-medium min-w-max" style={{ color: "rgba(200,212,228,0.55)" }}>Hrs</span>
             </div>
-            <span className="text-slate-500 font-medium">×</span>
+            <span className="font-medium" style={{ color: "rgba(200,212,228,0.40)" }}>×</span>
             <div className="relative flex items-center w-20">
-              <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+              <span className="absolute left-3 text-sm font-semibold font-mono pointer-events-none" style={{ color: "rgba(200,212,228,0.55)" }}>$</span>
               <input
                 type="text"
                 inputMode="decimal"
@@ -217,7 +217,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   const { waitTimeRate: _, ...rest } = inputValues
                   setInputValues(rest)
                 }}
-                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
+                className="w-full pl-6 pr-3 py-2 rounded-lg text-sm focus:outline-none tabular-nums" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
               />
             </div>
           </div>
@@ -238,13 +238,13 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 onChange={(e) => onChange("extraStopsQty", parseIntegerInput(e.target.value))}
                 onFocus={() => setFocusedField("extraStopsQty")}
                 onBlur={() => setFocusedField(null)}
-                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
+                className="w-20 px-3 py-2 rounded-lg text-sm focus:outline-none tabular-nums" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
               />
-              <span className="text-sm font-medium text-slate-500 min-w-max">ea.</span>
+              <span className="text-sm font-medium min-w-max" style={{ color: "rgba(200,212,228,0.55)" }}>ea.</span>
             </div>
-            <span className="text-slate-500 font-medium">×</span>
+            <span className="font-medium" style={{ color: "rgba(200,212,228,0.40)" }}>×</span>
             <div className="relative flex items-center w-20">
-              <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+              <span className="absolute left-3 text-sm font-semibold font-mono pointer-events-none" style={{ color: "rgba(200,212,228,0.55)" }}>$</span>
               <input
                 type="text"
                 inputMode="decimal"
@@ -260,7 +260,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   const { extraStopsRate: _, ...rest } = inputValues
                   setInputValues(rest)
                 }}
-                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
+                className="w-full pl-6 pr-3 py-2 rounded-lg text-sm focus:outline-none tabular-nums" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
               />
             </div>
           </div>
@@ -311,13 +311,13 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 onChange={(e) => onChange("carSeatQty", parseIntegerInput(e.target.value))}
                 onFocus={() => setFocusedField("carSeatQty")}
                 onBlur={() => setFocusedField(null)}
-                className="w-20 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
+                className="w-20 px-3 py-2 rounded-lg text-sm focus:outline-none tabular-nums" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
               />
-              <span className="text-sm font-medium text-slate-500 min-w-max">ea.</span>
+              <span className="text-sm font-medium min-w-max" style={{ color: "rgba(200,212,228,0.55)" }}>ea.</span>
             </div>
-            <span className="text-slate-500 font-medium">×</span>
+            <span className="font-medium" style={{ color: "rgba(200,212,228,0.40)" }}>×</span>
             <div className="relative flex items-center w-20">
-              <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+              <span className="absolute left-3 text-sm font-semibold font-mono pointer-events-none" style={{ color: "rgba(200,212,228,0.55)" }}>$</span>
               <input
                 type="text"
                 inputMode="decimal"
@@ -333,7 +333,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                   const { carSeatRate: _, ...rest } = inputValues
                   setInputValues(rest)
                 }}
-                className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-1 focus:ring-slate-400 focus:outline-none"
+                className="w-full pl-6 pr-3 py-2 rounded-lg text-sm focus:outline-none tabular-nums" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
               />
             </div>
           </div>
@@ -353,12 +353,12 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
       {/* ADDITIONAL CHARGES SECTION */}
       <CollapsibleSection title="Additional Charges" defaultOpen={false} type="additional">
         {/* Misc Fee 1 */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between gap-4 py-2">
-            <label className="text-sm font-medium text-slate-700">Misc Fee 1</label>
+        <div className="space-y-2.5 pb-1">
+          <div className="flex items-center justify-between gap-4 py-2.5" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+            <label className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.80)" }}>Misc Fee 1</label>
             <div className="min-w-[110px]">
               <div className="relative flex items-center">
-                <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+                <span className="absolute left-3 text-sm font-semibold font-mono pointer-events-none" style={{ color: "rgba(200,212,228,0.55)" }}>$</span>
                 <input
                   type="text"
                   inputMode="decimal"
@@ -374,7 +374,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                     const { miscFee1: _, ...rest } = inputValues
                     setInputValues(rest)
                   }}
-                  className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
+                  className="w-full pl-6 pr-3 py-2 rounded-lg text-right text-sm font-semibold font-mono cursor-text focus:outline-none tabular-nums transition-colors" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
                 />
               </div>
             </div>
@@ -389,17 +389,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 onChange("miscFee1Label", "")
               }
             }}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 placeholder-slate-400 focus:ring-1 focus:ring-slate-400 focus:outline-none"
+            className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.75)" }}
           />
         </div>
 
         {/* Misc Fee 2 */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between gap-4 py-2">
-            <label className="text-sm font-medium text-slate-700">Misc Fee 2</label>
+        <div className="space-y-2.5 pb-1">
+          <div className="flex items-center justify-between gap-4 py-2.5" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+            <label className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.80)" }}>Misc Fee 2</label>
             <div className="min-w-[110px]">
               <div className="relative flex items-center">
-                <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+                <span className="absolute left-3 text-sm font-semibold font-mono pointer-events-none" style={{ color: "rgba(200,212,228,0.55)" }}>$</span>
                 <input
                   type="text"
                   inputMode="decimal"
@@ -415,7 +415,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                     const { miscFee2: _, ...rest } = inputValues
                     setInputValues(rest)
                   }}
-                  className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
+                  className="w-full pl-6 pr-3 py-2 rounded-lg text-right text-sm font-semibold font-mono cursor-text focus:outline-none tabular-nums transition-colors" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
                 />
               </div>
             </div>
@@ -430,17 +430,17 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 onChange("miscFee2Label", "")
               }
             }}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 placeholder-slate-400 focus:ring-1 focus:ring-slate-400 focus:outline-none"
+            className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.75)" }}
           />
         </div>
 
         {/* Misc Fee 3 */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between gap-4 py-2">
-            <label className="text-sm font-medium text-slate-700">Misc Fee 3</label>
+        <div className="space-y-2.5 pb-1">
+          <div className="flex items-center justify-between gap-4 py-2.5" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+            <label className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.80)" }}>Misc Fee 3</label>
             <div className="min-w-[110px]">
               <div className="relative flex items-center">
-                <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+                <span className="absolute left-3 text-sm font-semibold font-mono pointer-events-none" style={{ color: "rgba(200,212,228,0.55)" }}>$</span>
                 <input
                   type="text"
                   inputMode="decimal"
@@ -456,7 +456,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                     const { miscFee3: _, ...rest } = inputValues
                     setInputValues(rest)
                   }}
-                  className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
+                  className="w-full pl-6 pr-3 py-2 rounded-lg text-right text-sm font-semibold font-mono cursor-text focus:outline-none tabular-nums transition-colors" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
                 />
               </div>
             </div>
@@ -471,7 +471,7 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 onChange("miscFee3Label", "")
               }
             }}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-slate-700 placeholder-slate-400 focus:ring-1 focus:ring-slate-400 focus:outline-none"
+            className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.75)" }}
           />
         </div>
 
@@ -497,9 +497,9 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 const { gratuityPct: _, ...rest } = inputValues
                 setInputValues(rest)
               }}
-              className="w-full pr-6 pl-3 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
+              className="w-full pr-6 pl-3 py-2 rounded-lg text-sm text-right focus:outline-none tabular-nums" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
             />
-            <span className="absolute right-3 text-sm font-semibold text-slate-500 pointer-events-none">%</span>
+            <span className="absolute right-3 text-sm font-semibold pointer-events-none" style={{ color: "rgba(200,212,228,0.55)" }}>%</span>
           </div>
         </FormRow>
 
@@ -525,9 +525,9 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 const { discountPct: _, ...rest } = inputValues
                 setInputValues(rest)
               }}
-              className="w-full pr-6 pl-3 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
+              className="w-full pr-6 pl-3 py-2 rounded-lg text-sm text-right focus:outline-none tabular-nums" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
             />
-            <span className="absolute right-3 text-sm font-semibold text-slate-500 pointer-events-none">%</span>
+            <span className="absolute right-3 text-sm font-semibold pointer-events-none" style={{ color: "rgba(200,212,228,0.55)" }}>%</span>
           </div>
         </FormRow>
 
@@ -553,9 +553,9 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
                 const { creditCardFeePct: _, ...rest } = inputValues
                 setInputValues(rest)
               }}
-              className="w-full pr-6 pl-3 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none"
+              className="w-full pr-6 pl-3 py-2 rounded-lg text-sm text-right focus:outline-none tabular-nums" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
             />
-            <span className="absolute right-3 text-sm font-semibold text-slate-500 pointer-events-none">%</span>
+            <span className="absolute right-3 text-sm font-semibold pointer-events-none" style={{ color: "rgba(200,212,228,0.55)" }}>%</span>
           </div>
         </FormRow>
       </CollapsibleSection>
@@ -646,9 +646,9 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutFuelSurcharge || ""}
               onChange={(e) => onChange("farmOutFuelSurcharge", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-full pr-6 pl-3 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              className="w-full pr-6 pl-3 py-2 rounded-lg text-sm text-right focus:outline-none tabular-nums [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
             />
-            <span className="absolute right-3 text-sm font-semibold text-slate-500 pointer-events-none">%</span>
+            <span className="absolute right-3 text-sm font-semibold pointer-events-none" style={{ color: "rgba(200,212,228,0.55)" }}>%</span>
           </div>
         </FormRow>
 
@@ -686,9 +686,9 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutDiscountPct || ""}
               onChange={(e) => onChange("farmOutDiscountPct", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-full pr-6 pl-3 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              className="w-full pr-6 pl-3 py-2 rounded-lg text-sm text-right focus:outline-none tabular-nums [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
             />
-            <span className="absolute right-3 text-sm font-semibold text-slate-500 pointer-events-none">%</span>
+            <span className="absolute right-3 text-sm font-semibold pointer-events-none" style={{ color: "rgba(200,212,228,0.55)" }}>%</span>
           </div>
         </FormRow>
 
@@ -706,9 +706,9 @@ export function BillingFormBlocks({ data, onChange }: BillingFormBlocksProps) {
               placeholder="0.00"
               value={data.farmOutCCFeePct || ""}
               onChange={(e) => onChange("farmOutCCFeePct", e.target.value ? parseFloat(e.target.value) : 0)}
-              className="w-full pr-6 pl-3 py-2 border border-slate-300 rounded-lg text-sm text-right focus:ring-1 focus:ring-slate-400 focus:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-inner-spin-button]:m-0"
+              className="w-full pr-6 pl-3 py-2 rounded-lg text-sm text-right focus:outline-none tabular-nums [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
             />
-            <span className="absolute right-3 text-sm font-semibold text-slate-500 pointer-events-none">%</span>
+            <span className="absolute right-3 text-sm font-semibold pointer-events-none" style={{ color: "rgba(200,212,228,0.55)" }}>%</span>
           </div>
         </FormRow>
       </CollapsibleSection>
@@ -741,28 +741,36 @@ function FormRow({ label, labelColor = "text-slate-900", formula, result, childr
     })
   }
 
+  // Map legacy label color classes to dark-mode equivalents
+  const darkLabelStyle = labelColor === "text-blue-600"
+    ? { color: "rgba(125,211,252,0.90)" }
+    : labelColor === "text-red-600"
+    ? { color: "rgba(248,113,113,0.85)" }
+    : { color: "rgba(255,255,255,0.80)" }
+
   return (
-    <div className="flex items-center justify-between gap-4 py-3 lg:py-4">
+    <div
+      className="flex items-center justify-between gap-4 py-2.5"
+      style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+    >
       <div className="flex-1 min-w-[100px]">
-        <label className={`text-sm font-medium text-slate-700 ${labelColor === "text-slate-900" ? "" : labelColor}`}>{label}</label>
+        <label className="text-sm font-medium" style={darkLabelStyle}>{label}</label>
       </div>
       <div className="flex items-center gap-3 flex-1">
         {children}
-        {formula && <span className="font-mono text-sm text-slate-600 min-w-fit">{formula}</span>}
+        {formula && <span className="font-mono text-sm min-w-fit" style={{ color: "rgba(200,212,228,0.55)" }}>{formula}</span>}
       </div>
       <div className="min-w-[110px]">
         {editable ? (
           <div className="relative flex items-center">
-            <span className="absolute left-3 text-sm font-semibold font-mono text-slate-900 pointer-events-none">$</span>
+            <span className="absolute left-3 text-sm font-semibold font-mono pointer-events-none" style={{ color: "rgba(200,212,228,0.55)" }}>$</span>
             <input
               type="text"
               inputMode="decimal"
               placeholder="0.00"
               value={fieldId && focusedEditableField === fieldId ? (editableInputValues[fieldId] || String(editableValue || "")) : formatCurrencyInput(editableValue)}
               onChange={(e) => {
-                if (fieldId) {
-                  setEditableInputValues({ ...editableInputValues, [fieldId]: e.target.value })
-                }
+                if (fieldId) setEditableInputValues({ ...editableInputValues, [fieldId]: e.target.value })
                 onEditChange?.(e.target.value)
               }}
               onFocus={() => fieldId && setFocusedEditableField(fieldId)}
@@ -773,11 +781,15 @@ function FormRow({ label, labelColor = "text-slate-900", formula, result, childr
                   setEditableInputValues(rest)
                 }
               }}
-              className="w-full pl-6 pr-3 py-2 border border-slate-300 rounded-lg text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50 cursor-text focus:bg-white focus:ring-1 focus:ring-slate-400 focus:outline-none transition-colors"
+              className="w-full pl-6 pr-3 py-2 rounded-lg text-right text-sm font-semibold font-mono tabular-nums focus:outline-none transition-colors"
+              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.88)" }}
             />
           </div>
         ) : (
-          <div className="border border-slate-300 rounded-lg px-3 py-2 text-right text-sm font-semibold font-mono text-slate-900 bg-slate-50">
+          <div
+            className="rounded-lg px-3 py-2 text-right text-sm font-semibold font-mono tabular-nums"
+            style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(200,212,228,0.70)" }}
+          >
             {result}
           </div>
         )}
