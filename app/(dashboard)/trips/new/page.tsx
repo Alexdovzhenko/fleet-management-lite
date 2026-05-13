@@ -2644,9 +2644,9 @@ export default function NewTripPage() {
                   />
                   {/* Client Reference # */}
                   <div className="mt-3 space-y-1.5">
-                    <Label className="text-[11px] font-medium flex items-center gap-1.5" style={{ color: "rgba(200,212,228,0.60)" }}>
+                    <Label className="text-[11px] font-semibold flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.88)" }}>
                       Client Reference #
-                      <span className="text-[10px] font-normal normal-case" style={{ color: "rgba(200,212,228,0.40)" }}>— affiliate&apos;s confirmation number for this job</span>
+                      <span className="text-[10px] font-normal normal-case" style={{ color: "rgba(200,212,228,0.55)" }}>— affiliate&apos;s confirmation number for this job</span>
                     </Label>
                     <Input
                       {...register("clientRef")}
