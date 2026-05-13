@@ -2892,8 +2892,8 @@ export default function NewTripPage() {
 
               {/* ── Card 4: Notes (tabbed) ── */}
               <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
-                <div className="flex items-center gap-3 px-5 py-3.5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-                  <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.15)" }}>
+                <div className="flex items-center gap-3 px-4 py-3.5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}>
+                  <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.12)", border: "1px solid rgba(201,168,124,0.20)" }}>
                     <FileText className="w-3 h-3" style={{ color: "#c9a87c" }} />
                   </div>
                   <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Notes</h3>
@@ -2911,7 +2911,7 @@ export default function NewTripPage() {
                     ))}
                   </div>
                 </div>
-                <div className="px-5 py-4">
+                <div className="px-4 py-3.5">
                   {notesTab === "trip" ? (
                     <Textarea
                       {...register("tripNotes")}
