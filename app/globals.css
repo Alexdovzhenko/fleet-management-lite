@@ -126,6 +126,47 @@ body {
 .status-driver-en-route { color: #D97706; background: #FFFBEB; }
 .status-driver-arrived  { color: #059669; background: #ECFDF5; }
 
+/* Empty state animations */
+@keyframes empty-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes empty-glow-pulse {
+  0%, 100% { opacity: 0.25; transform: scale(1); }
+  50%       { opacity: 0.45; transform: scale(1.08); }
+}
+.empty-state-float {
+  animation: empty-float 3.2s ease-in-out infinite;
+}
+.empty-state-glow {
+  animation: empty-glow-pulse 3.2s ease-in-out infinite;
+}
+
+/* Glow border on hover */
+.empty-state-card {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+}
+.empty-state-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  padding: 1px;
+  background: radial-gradient(
+    300px circle at var(--mouse-x) var(--mouse-y),
+    rgba(201,168,124,0.35),
+    transparent 60%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.empty-state-card:hover::before { opacity: 1; }
+
 /* Dock wobble animation */
 @keyframes dock-wobble {
   0%, 100% { transform: rotate(0deg); }
