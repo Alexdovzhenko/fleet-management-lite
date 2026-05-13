@@ -201,7 +201,7 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
                       className="w-full text-left px-4 py-2.5 hover:bg-gray-50 transition-colors flex items-center gap-3"
                     >
                       <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                        <User className="w-3.5 h-3.5 text-gray-400" />
+                        <User className="w-3.5 h-3.5" style={{ color: "rgba(200,212,228,0.40)" }} />
                       </div>
                       <div className="flex-1 min-w-0">
                         {c.company && (
@@ -1534,7 +1534,7 @@ function SortableStopRow({
         {stop.locationName && (
           <div className="text-xs font-semibold">{stop.locationName}</div>
         )}
-        <div className="text-sm font-medium text-gray-700">{stop.address}</div>
+        <div className="text-sm font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>{stop.address}</div>
         {stop.tailNumber && (
           <div className="text-[11px] opacity-70">Tail: {stop.tailNumber}</div>
         )}
@@ -2199,7 +2199,7 @@ function RouteBuilder({
         </div>
 
         {/* Role selector + Add button */}
-        <div className="flex items-center gap-1.5 px-3 py-2.5 bg-gray-50/50 border-t border-gray-100">
+        <div className="flex items-center gap-1.5 px-3 py-2.5 border-t" style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}>
           {STOP_ROLES.map(({ value, label }) => (
             <label
               key={value}
@@ -2220,7 +2220,7 @@ function RouteBuilder({
           ))}
           <button
             type="button" onClick={handleAdd}
-            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold rounded-lg transition-colors"
+            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors" style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.80)" }}
           >
             <Plus className="w-3 h-3" />
             Add to Route
@@ -2231,9 +2231,9 @@ function RouteBuilder({
       {/* Route list */}
       {stops.length > 0 ? (
         <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <div className="rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-3 py-2 bg-gray-50 border-b border-gray-100">
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Routing Information</p>
+          <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
+            <div className="px-3 py-2 border-b" style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.06)" }}>
+              <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)" }}>Routing Information</p>
             </div>
             <SortableContext items={stops.map((s) => s.id)} strategy={verticalListSortingStrategy}>
               {stops.map((stop) => (
@@ -2260,7 +2260,7 @@ function RouteBuilder({
           </DragOverlay>
         </DndContext>
       ) : (
-        <div className="text-xs text-gray-400 text-center py-6 border border-dashed border-gray-200 rounded-xl">
+        <div className="text-xs text-center py-6 rounded-xl" style={{ color: "rgba(200,212,228,0.40)", border: "1px dashed rgba(255,255,255,0.10)" }}>
           Add locations above to build the trip itinerary
         </div>
       )}
@@ -2320,12 +2320,12 @@ function formatTime(raw: string): string {
 function StepHeader({ step, icon: Icon, title, subtitle }: { step: number; icon: React.ElementType; title: string; subtitle?: string }) {
   return (
     <div className="flex items-center gap-2.5 mb-4">
-      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-900 text-white text-[10px] font-bold flex-shrink-0">
+      <span className="flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold flex-shrink-0" style={{ background: "rgba(201,168,124,0.20)", color: "#c9a87c" }}>
         {step}
       </span>
-      <Icon className="w-3.5 h-3.5 text-gray-400" />
-      <h4 className="text-sm font-semibold text-gray-800">{title}</h4>
-      {subtitle && <span className="text-xs text-gray-400">{subtitle}</span>}
+      <Icon className="w-3.5 h-3.5" style={{ color: "rgba(200,212,228,0.40)" }} />
+      <h4 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>{title}</h4>
+      {subtitle && <span className="text-xs" style={{ color: "rgba(200,212,228,0.45)" }}>{subtitle}</span>}
     </div>
   )
 }
@@ -2514,18 +2514,18 @@ export default function NewTripPage() {
     <div className="h-full flex flex-col">
 
       {/* ─── Header ─── */}
-      <div className="flex items-center gap-3 px-5 py-3 border-b bg-white flex-shrink-0">
+      <div className="flex items-center gap-3 px-5 py-3 border-b flex-shrink-0" style={{ background: "#0d1526", borderColor: "rgba(255,255,255,0.07)" }}>
         <button
           type="button"
           onClick={() => router.push("/dispatch")}
-          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors flex-shrink-0" style={{ color: "rgba(200,212,228,0.55)" }} onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.88)" }} onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.55)" }}
           aria-label="Go to dispatch"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
-        <div className="h-5 w-px bg-gray-200 flex-shrink-0" />
-        <h1 className="text-sm font-semibold text-gray-900">New Reservation</h1>
-        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-600 border border-amber-200 flex-shrink-0">
+        <div className="h-5 w-px flex-shrink-0" style={{ background: "rgba(255,255,255,0.08)" }} />
+        <h1 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.90)" }}>New Reservation</h1>
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full flex-shrink-0" style={{ background: "rgba(245,158,11,0.12)", color: "rgba(251,191,36,0.90)", border: "1px solid rgba(245,158,11,0.25)" }}>
           <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" />
           Draft
         </span>
@@ -2538,17 +2538,17 @@ export default function NewTripPage() {
             setHeaderCopied(true)
             setTimeout(() => setHeaderCopied(false), 2000)
           }}
-          className="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg px-3 py-1.5 transition-colors group"
+          className="flex items-center gap-2 rounded-lg px-3 py-1.5 transition-colors group" style={{ background: "rgba(201,168,124,0.08)", border: "1px solid rgba(201,168,124,0.25)" }}
           title="Click to copy confirmation number"
           aria-label="Copy confirmation number"
         >
           <div className="flex flex-col items-start leading-none">
-            <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-blue-400 mb-0.5">Confirmation #</span>
-            <span className="text-sm font-mono font-bold text-blue-700 tracking-wide">{confirmationNumber}</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.12em] mb-0.5" style={{ color: "rgba(201,168,124,0.60)" }}>Confirmation #</span>
+            <span className="text-sm font-mono font-bold tracking-wide" style={{ color: "#c9a87c" }}>{confirmationNumber}</span>
           </div>
           {headerCopied
             ? <Check className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
-            : <Copy className="w-3.5 h-3.5 text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+            : <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" style={{ color: "#c9a87c" }} />
           }
         </button>
 
@@ -2557,14 +2557,14 @@ export default function NewTripPage() {
           form="new-trip-form"
           type="submit"
           disabled={createTrip.isPending}
-          className="bg-[#2563EB] hover:bg-blue-700 text-white h-9 px-5 text-sm font-semibold"
+          className="h-9 px-5 text-sm font-semibold rounded-xl transition-colors" style={{ background: "#c9a87c", color: "#0d1526" }}
         >
           {createTrip.isPending ? "Creating…" : "Create Reservation"}
         </Button>
       </div>
 
       {/* ─── Body ─── */}
-      <div className="overflow-y-auto flex-1 bg-[#f0f2f5]">
+      <div className="overflow-y-auto flex-1" style={{ background: "#080c16", "--border": "rgba(255,255,255,0.08)", "--input": "rgba(255,255,255,0.06)", "--ring": "#c9a87c", "--foreground": "rgba(255,255,255,0.88)", "--muted-foreground": "rgba(200,212,228,0.50)", color: "rgba(255,255,255,0.88)" } as React.CSSProperties}>
         <form id="new-trip-form" onSubmit={handleSubmit(onSubmit, (errs) => {
           const labels: Record<string, string> = {
             customerId: "Account (Bill To)", pickupDate: "Pickup Date",
@@ -2579,20 +2579,18 @@ export default function NewTripPage() {
             <div className="flex-1 min-w-0 space-y-4 w-full">
 
               {/* ── Card 1: Bill To & Passenger ── */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100"
-                  style={{ background: "linear-gradient(90deg, rgba(37,99,235,0.05) 0%, transparent 70%)" }}>
-                  <div className="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0"
-                    style={{ boxShadow: "0 2px 8px rgba(37,99,235,0.30)" }}>
-                    <User className="w-3 h-3 text-white" />
+              <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <div className="flex items-center gap-3 px-5 py-3.5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                  <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.15)" }}>
+                    <User className="w-3 h-3" style={{ color: "#c9a87c" }} />
                   </div>
-                  <h3 className="text-sm font-semibold text-gray-800">Bill To &amp; Passenger</h3>
+                  <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Bill To &amp; Passenger</h3>
                 </div>
 
                 {/* Account sub-section */}
-                <div className="px-5 pt-4 pb-4 border-b border-gray-50">
-                  <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
-                    <span className="w-1 h-3 rounded-full bg-blue-400 inline-block flex-shrink-0" />
+                <div className="px-5 pt-4 pb-4 border-b" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-2.5 flex items-center gap-1.5" style={{ color: "#c9a87c" }}>
+                    <span className="w-1 h-3 rounded-full inline-block flex-shrink-0" style={{ background: "#c9a87c" }} />
                     Account
                   </p>
                   <CustomerSearch
@@ -2608,9 +2606,9 @@ export default function NewTripPage() {
                   />
                   {/* Client Reference # */}
                   <div className="mt-3 space-y-1.5">
-                    <Label className="text-[11px] font-medium text-gray-500 flex items-center gap-1.5">
+                    <Label className="text-[11px] font-medium flex items-center gap-1.5" style={{ color: "rgba(200,212,228,0.60)" }}>
                       Client Reference #
-                      <span className="text-[10px] font-normal text-gray-400 normal-case">— affiliate&apos;s confirmation number for this job</span>
+                      <span className="text-[10px] font-normal normal-case" style={{ color: "rgba(200,212,228,0.40)" }}>— affiliate&apos;s confirmation number for this job</span>
                     </Label>
                     <Input
                       {...register("clientRef")}
@@ -2622,32 +2620,32 @@ export default function NewTripPage() {
 
                 {/* Booked By sub-section */}
                 {selectedAccount && (
-                  <div className="px-5 pt-4 pb-4 border-b border-gray-50">
-                    <p className="text-[10px] font-bold text-teal-600 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                      <span className="w-1 h-3 rounded-full bg-teal-400 inline-block flex-shrink-0" />
+                  <div className="px-5 pt-4 pb-4 border-b" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+                    <p className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: "rgba(200,212,228,0.60)" }}>
+                      <span className="w-1 h-3 rounded-full inline-block flex-shrink-0" style={{ background: "rgba(200,212,228,0.40)" }} />
                       Booked By
                     </p>
                     <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
                       <div>
-                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Name</p>
-                        <p className="text-sm font-medium text-gray-800">{selectedAccount.name}</p>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "rgba(200,212,228,0.40)" }}>Name</p>
+                        <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{selectedAccount.name}</p>
                       </div>
                       {selectedAccount.company && (
                         <div>
-                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Company</p>
-                          <p className="text-sm font-medium text-gray-800">{selectedAccount.company}</p>
+                          <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "rgba(200,212,228,0.40)" }}>Company</p>
+                          <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{selectedAccount.company}</p>
                         </div>
                       )}
                       {selectedAccount.phone && (
                         <div>
-                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Phone</p>
-                          <p className="text-sm text-gray-700">{formatPhone(selectedAccount.phone)}</p>
+                          <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "rgba(200,212,228,0.40)" }}>Phone</p>
+                          <p className="text-sm" style={{ color: "rgba(200,212,228,0.70)" }}>{formatPhone(selectedAccount.phone)}</p>
                         </div>
                       )}
                       {selectedAccount.email && (
                         <div>
-                          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">Email</p>
-                          <p className="text-sm text-gray-700">{selectedAccount.email}</p>
+                          <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "rgba(200,212,228,0.40)" }}>Email</p>
+                          <p className="text-sm" style={{ color: "rgba(200,212,228,0.70)" }}>{selectedAccount.email}</p>
                         </div>
                       )}
                     </div>
@@ -2656,33 +2654,33 @@ export default function NewTripPage() {
 
                 {/* Passenger sub-section */}
                 <div className="px-5 pt-4 pb-5">
-                  <p className="text-[10px] font-bold text-purple-500 uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                    <span className="w-1 h-3 rounded-full bg-purple-400 inline-block flex-shrink-0" />
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: "rgba(200,212,228,0.60)" }}>
+                    <span className="w-1 h-3 rounded-full inline-block flex-shrink-0" style={{ background: "rgba(200,212,228,0.40)" }} />
                     Passengers
-                    <span className="font-normal text-gray-400 normal-case">— if different from account holder</span>
+                    <span className="font-normal normal-case" style={{ color: "rgba(200,212,228,0.40)" }}>— if different from account holder</span>
                   </p>
                   <div className="space-y-2.5">
                     {/* Primary passenger */}
-                    <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl px-4 py-3.5">
+                    <div className="rounded-xl px-4 py-3.5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-500 text-white text-[9px] font-bold shadow-sm shadow-indigo-200">1</span>
-                        <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Primary</span>
+                        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-bold" style={{ background: "rgba(201,168,124,0.20)", color: "#c9a87c" }}>1</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#c9a87c" }}>Primary</span>
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-2.5">
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium text-gray-500">First Name</Label>
+                          <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>First Name</Label>
                           <Input {...register("passengerFirstName")} className="h-9 text-sm bg-white" />
                         </div>
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium text-gray-500">Last Name</Label>
+                          <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>Last Name</Label>
                           <Input {...register("passengerLastName")} className="h-9 text-sm bg-white" />
                         </div>
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium text-gray-500">Company</Label>
+                          <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>Company</Label>
                           <Input {...register("passengerCompany")} className="h-9 text-sm bg-white" />
                         </div>
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium text-gray-500">Phone</Label>
+                          <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>Phone</Label>
                           <Input
                             {...register("passengerPhone")}
                             type="tel"
@@ -2701,7 +2699,7 @@ export default function NewTripPage() {
                       </div>
                       <div className="w-[calc(75%-6px)]">
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium text-gray-500">Email</Label>
+                          <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>Email</Label>
                           <Input {...register("passengerEmail")} type="email" className="h-9 text-sm bg-white" />
                         </div>
                       </div>
@@ -2709,31 +2707,31 @@ export default function NewTripPage() {
 
                     {/* Additional passengers */}
                     {additionalPassengers.map((pax, idx) => (
-                      <div key={pax.id} className="group relative bg-white border border-gray-200 rounded-xl px-4 py-3.5">
+                      <div key={pax.id} className="group relative rounded-xl px-4 py-3.5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-2">
-                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-[9px] font-bold">{idx + 2}</span>
-                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Additional</span>
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-bold" style={{ background: "rgba(255,255,255,0.08)", color: "rgba(200,212,228,0.65)" }}>{idx + 2}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)" }}>Additional</span>
                           </div>
                           <button
                             type="button"
                             onClick={() => removeAdditionalPassenger(pax.id)}
-                            className="w-6 h-6 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all"
+                            className="w-6 h-6 rounded-full flex items-center justify-center transition-all" style={{ color: "rgba(200,212,228,0.30)" }}
                           >
                             <X className="w-3.5 h-3.5" />
                           </button>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium text-gray-500">First Name</Label>
+                            <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>First Name</Label>
                             <Input value={pax.firstName} onChange={(e) => updateAdditionalPassenger(pax.id, "firstName", e.target.value)} className="h-9 text-sm" />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium text-gray-500">Last Name</Label>
+                            <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>Last Name</Label>
                             <Input value={pax.lastName} onChange={(e) => updateAdditionalPassenger(pax.id, "lastName", e.target.value)} className="h-9 text-sm" />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium text-gray-500">Phone</Label>
+                            <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>Phone</Label>
                             <Input
                               type="tel"
                               value={pax.phone}
@@ -2749,7 +2747,7 @@ export default function NewTripPage() {
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium text-gray-500">Email</Label>
+                            <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.60)" }}>Email</Label>
                             <Input value={pax.email} type="email" onChange={(e) => updateAdditionalPassenger(pax.id, "email", e.target.value)} className="h-9 text-sm" />
                           </div>
                         </div>
@@ -2760,7 +2758,7 @@ export default function NewTripPage() {
                     <button
                       type="button"
                       onClick={addAdditionalPassenger}
-                      className="w-full h-9 flex items-center justify-center gap-1.5 border border-dashed border-gray-200 hover:border-indigo-300 rounded-xl text-[12px] font-medium text-gray-400 hover:text-indigo-500 hover:bg-indigo-50/40 transition-all"
+                      className="w-full h-9 flex items-center justify-center gap-1.5 border border-dashed rounded-xl text-[12px] font-medium transition-all" style={{ borderColor: "rgba(255,255,255,0.10)", color: "rgba(200,212,228,0.40)" }}
                     >
                       <Plus className="w-3.5 h-3.5" />
                       Add passenger
@@ -2770,19 +2768,17 @@ export default function NewTripPage() {
               </div>
 
               {/* ── Card 2: Schedule ── */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100"
-                  style={{ background: "linear-gradient(90deg, rgba(99,102,241,0.05) 0%, transparent 70%)" }}>
-                  <div className="w-6 h-6 rounded-lg bg-indigo-500 flex items-center justify-center flex-shrink-0"
-                    style={{ boxShadow: "0 2px 8px rgba(99,102,241,0.30)" }}>
-                    <Calendar className="w-3 h-3 text-white" />
+              <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <div className="flex items-center gap-3 px-5 py-3.5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                  <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.15)" }}>
+                    <Calendar className="w-3 h-3" style={{ color: "#c9a87c" }} />
                   </div>
-                  <h3 className="text-sm font-semibold text-gray-800">Schedule</h3>
+                  <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Schedule</h3>
                 </div>
                 <div className="px-4 sm:px-5 py-4">
                   <div className="grid grid-cols-2 sm:grid-cols-[180px_160px_1fr_72px_72px] gap-2 sm:gap-3">
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-900">Pickup Date</Label>
+                      <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>Pickup Date</Label>
                       <DatePickerInput
                         value={watch("pickupDate") || ""}
                         onChange={(v) => setValue("pickupDate", v, { shouldValidate: true })}
@@ -2791,7 +2787,7 @@ export default function NewTripPage() {
                       {errors.pickupDate && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-900">Pickup Time</Label>
+                      <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>Pickup Time</Label>
                       <Input
                         type="text"
                         value={watch("pickupTime") || ""}
@@ -2804,7 +2800,7 @@ export default function NewTripPage() {
                       {errors.pickupTime && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-900">Service Type</Label>
+                      <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>Service Type</Label>
                       <Select
                         value={tripTypeValue}
                         onValueChange={(v) => {
@@ -2815,7 +2811,7 @@ export default function NewTripPage() {
                         }}
                       >
                         <SelectTrigger className={`h-9 text-sm w-full ${errors.tripType ? "border-red-400" : ""}`}>
-                          <span className={tripTypeValue ? "text-gray-900 text-sm" : "text-gray-400 text-sm"}>
+                          <span className="text-sm" style={{ color: tripTypeValue ? "rgba(255,255,255,0.88)" : "rgba(200,212,228,0.35)" }}>
                             {tripTypeValue
                               ? (enabledTypes.find(t => t.value === tripTypeValue)?.label ?? tripTypeValue)
                               : "Select type"}
@@ -2830,7 +2826,7 @@ export default function NewTripPage() {
                       {errors.tripType && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-900">Pax</Label>
+                      <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>Pax</Label>
                       <Input
                         type="number" min={1}
                         {...register("passengerCount", { valueAsNumber: true })}
@@ -2838,7 +2834,7 @@ export default function NewTripPage() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium text-gray-900">Bags</Label>
+                      <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>Bags</Label>
                       <Input
                         type="number" min={0}
                         {...register("luggageCount", { valueAsNumber: true })}
@@ -2851,16 +2847,14 @@ export default function NewTripPage() {
               </div>
 
               {/* ── Card 3: Route ── */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100"
-                  style={{ background: "linear-gradient(90deg, rgba(16,185,129,0.05) 0%, transparent 70%)" }}>
-                  <div className="w-6 h-6 rounded-lg bg-emerald-500 flex items-center justify-center flex-shrink-0"
-                    style={{ boxShadow: "0 2px 8px rgba(16,185,129,0.30)" }}>
-                    <MapPin className="w-3 h-3 text-white" />
+              <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <div className="flex items-center gap-3 px-5 py-3.5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                  <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.15)" }}>
+                    <MapPin className="w-3 h-3" style={{ color: "#c9a87c" }} />
                   </div>
-                  <h3 className="text-sm font-semibold text-gray-800">Route</h3>
+                  <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Route</h3>
                   {stops.length > 0 && (
-                    <span className="ml-auto text-[11px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-0.5 rounded-full">
+                    <span className="ml-auto text-[11px] font-semibold px-2.5 py-0.5 rounded-full" style={{ background: "rgba(52,211,153,0.12)", color: "rgba(52,211,153,0.90)", border: "1px solid rgba(52,211,153,0.20)" }}>
                       {stops.length} stop{stops.length !== 1 ? "s" : ""} added
                     </span>
                   )}
@@ -2871,25 +2865,20 @@ export default function NewTripPage() {
               </div>
 
               {/* ── Card 4: Notes (tabbed) ── */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100"
-                  style={{ background: "linear-gradient(90deg, rgba(245,158,11,0.05) 0%, transparent 70%)" }}>
-                  <div className="w-6 h-6 rounded-lg bg-amber-400 flex items-center justify-center flex-shrink-0"
-                    style={{ boxShadow: "0 2px 8px rgba(245,158,11,0.30)" }}>
-                    <FileText className="w-3 h-3 text-white" />
+              <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <div className="flex items-center gap-3 px-5 py-3.5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                  <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.15)" }}>
+                    <FileText className="w-3 h-3" style={{ color: "#c9a87c" }} />
                   </div>
-                  <h3 className="text-sm font-semibold text-gray-800">Notes</h3>
-                  <div className="ml-auto flex items-center bg-gray-100 rounded-lg p-0.5">
+                  <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Notes</h3>
+                  <div className="ml-auto flex items-center rounded-lg p-0.5" style={{ background: "rgba(255,255,255,0.06)" }}>
                     {(["trip", "internal"] as const).map((tab) => (
                       <button
                         key={tab}
                         type="button"
                         onClick={() => setNotesTab(tab)}
-                        className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
-                          notesTab === tab
-                            ? "bg-white text-gray-900 shadow-sm"
-                            : "text-gray-500 hover:text-gray-700"
-                        }`}
+                        className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${notesTab === tab ? "text-white shadow-sm" : ""}`}
+                        style={{ background: notesTab === tab ? "rgba(255,255,255,0.12)" : "transparent", color: notesTab === tab ? "rgba(255,255,255,0.90)" : "rgba(200,212,228,0.50)" }}
                       >
                         {tab === "trip" ? "Trip Notes" : "Internal"}
                       </button>
@@ -2912,7 +2901,7 @@ export default function NewTripPage() {
                         className="text-sm resize-none"
                         placeholder="Dispatch notes, reminders (not visible to customer)…"
                       />
-                      <p className="mt-2 text-[11px] text-amber-500 flex items-center gap-1.5">
+                      <p className="mt-2 text-[11px] flex items-center gap-1.5" style={{ color: "rgba(251,191,36,0.70)" }}>
                         <AlertTriangle className="w-3 h-3 flex-shrink-0" />
                         Internal only — not visible to the customer
                       </p>
@@ -2933,37 +2922,29 @@ export default function NewTripPage() {
             <div className="w-full lg:w-[288px] lg:flex-shrink-0 lg:sticky lg:top-5 space-y-4">
 
               {/* Dispatch card */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
-                <div className="flex items-center gap-2.5 px-4 py-3 border-b border-gray-100 rounded-t-2xl">
-                  <Car className="w-3.5 h-3.5 text-gray-400" />
-                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Dispatch</h4>
+              <div className="rounded-2xl" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <div className="flex items-center gap-2.5 px-4 py-3 border-b rounded-t-2xl" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                  <Car className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
+                  <h4 className="text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.55)" }}>Dispatch</h4>
                 </div>
                 <div className="px-4 py-3.5 space-y-2.5">
                   {/* Driver label row with inline Primary/Secondary toggle */}
                   <div className="flex items-center justify-between">
-                    <Label className="text-xs font-medium text-gray-900">Driver</Label>
-                    <div className="flex items-center gap-0.5 bg-gray-100 rounded-lg p-0.5">
+                    <Label className="text-xs font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>Driver</Label>
+                    <div className="flex items-center gap-0.5 rounded-lg p-0.5" style={{ background: "rgba(255,255,255,0.06)" }}>
                       <button
                         type="button"
                         onClick={() => setDispatchTab("primary")}
-                        className={cn(
-                          "px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150",
-                          dispatchTab === "primary"
-                            ? "bg-white text-gray-800 shadow-sm"
-                            : "text-gray-400 hover:text-gray-600"
-                        )}
+                        className={cn("px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150", dispatchTab === "primary" ? "text-white shadow-sm" : "")}
+                        style={{ background: dispatchTab === "primary" ? "rgba(255,255,255,0.12)" : "transparent", color: dispatchTab === "primary" ? "rgba(255,255,255,0.90)" : "rgba(200,212,228,0.45)" }}
                       >
                         Primary
                       </button>
                       <button
                         type="button"
                         onClick={() => setDispatchTab("secondary")}
-                        className={cn(
-                          "relative px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150",
-                          dispatchTab === "secondary"
-                            ? "bg-white text-gray-800 shadow-sm"
-                            : "text-gray-400 hover:text-gray-600"
-                        )}
+                        className={cn("relative px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150", dispatchTab === "secondary" ? "text-white shadow-sm" : "")}
+                        style={{ background: dispatchTab === "secondary" ? "rgba(255,255,255,0.12)" : "transparent", color: dispatchTab === "secondary" ? "rgba(255,255,255,0.90)" : "rgba(200,212,228,0.45)" }}
                       >
                         Secondary
                         {(secondaryDriverIdValue || secondaryVehicleIdValue) && (
@@ -2983,7 +2964,7 @@ export default function NewTripPage() {
                       />
                       {/* Type Dropdown */}
                       <div>
-                        <Label htmlFor="vehicle-type" className="text-xs font-semibold text-gray-600 uppercase tracking-wide block mb-2">Type</Label>
+                        <Label htmlFor="vehicle-type" className="text-xs font-semibold uppercase tracking-wide block mb-2" style={{ color: "rgba(200,212,228,0.55)" }}>Type</Label>
                         <Select
                           value={vehicleTypeValue}
                           onValueChange={(value) => {
@@ -3038,7 +3019,7 @@ export default function NewTripPage() {
                             setValue("secondaryDriverId", "")
                             setValue("secondaryVehicleId", "")
                           }}
-                          className="w-full text-[11px] text-red-400 hover:text-red-600 transition-colors text-center py-1"
+                          className="w-full text-[11px] transition-colors text-center py-1" style={{ color: "rgba(248,113,113,0.65)" }}
                         >
                           Clear secondary assignment
                         </button>
@@ -3075,13 +3056,13 @@ export default function NewTripPage() {
               />
 
               {/* ADD-ONS — Refined Modern Design (Matching Edit Modal) */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
                 <div className="px-4 py-3.5 space-y-4">
                   {/* Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-1 h-4 rounded-full bg-gradient-to-b from-blue-500 to-blue-400" />
-                      <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-gray-700">ADD-ONS</h3>
+                      <div className="w-1 h-4 rounded-full" style={{ background: "#c9a87c" }} />
+                      <h3 className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: "rgba(200,212,228,0.55)" }}>ADD-ONS</h3>
                     </div>
                   </div>
 
@@ -3092,17 +3073,14 @@ export default function NewTripPage() {
                         key={name}
                         type="button"
                         onClick={() => setValue(name, !active)}
-                        className={`
-                          flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-xl
-                          border-2 transition-all duration-150 group
-                          ${active
-                            ? "bg-blue-50 border-blue-300 shadow-sm"
-                            : "bg-white border-gray-200 hover:border-blue-200 hover:bg-blue-50/30"
-                          }
-                        `}
+                        className="flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-xl border-2 transition-all duration-150 group"
+                        style={active
+                          ? { background: "rgba(201,168,124,0.12)", border: "2px solid rgba(201,168,124,0.50)" }
+                          : { background: "rgba(255,255,255,0.03)", border: "2px solid rgba(255,255,255,0.08)" }
+                        }
                       >
-                        <Icon className={`w-5 h-5 transition-colors ${active ? "text-blue-600" : "text-gray-400 group-hover:text-blue-500"}`} />
-                        <span className={`text-[11px] font-semibold text-center leading-tight transition-colors ${active ? "text-blue-700" : "text-gray-600"}`}>
+                        <Icon className="w-5 h-5 transition-colors" style={{ color: active ? "#c9a87c" : "rgba(200,212,228,0.40)" }} />
+                        <span className="text-[11px] font-semibold text-center leading-tight transition-colors" style={{ color: active ? "#c9a87c" : "rgba(200,212,228,0.55)" }}>
                           {label}
                         </span>
                       </button>
@@ -3110,52 +3088,50 @@ export default function NewTripPage() {
                   </div>
 
                   {/* Child Seats — Integrated Cohesively */}
-                  <div className="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
+                  <div className="rounded-xl overflow-hidden" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
                     <button
                       type="button"
                       onClick={() => setChildSeatsOpen((o) => !o)}
-                      className={`
-                        w-full flex items-center justify-between px-4 py-3 transition-all
-                        ${totalChildSeats > 0 ? "bg-blue-50/50 border-b border-blue-100" : "hover:bg-gray-100"}
-                      `}
+                      className={`w-full flex items-center justify-between px-4 py-3 transition-all ${totalChildSeats > 0 ? "border-b" : ""}`}
+                      style={totalChildSeats > 0 ? { background: "rgba(201,168,124,0.06)", borderColor: "rgba(255,255,255,0.06)" } : {}}
                     >
                       <div className="flex items-center gap-3">
-                        <Baby className={`w-5 h-5 flex-shrink-0 transition-colors ${totalChildSeats > 0 ? "text-blue-600" : "text-gray-400"}`} />
-                        <span className={`text-sm font-semibold transition-colors ${totalChildSeats > 0 ? "text-blue-700" : "text-gray-700"}`}>
+                        <Baby className="w-5 h-5 flex-shrink-0 transition-colors" style={{ color: totalChildSeats > 0 ? "#c9a87c" : "rgba(200,212,228,0.40)" }} />
+                        <span className="text-sm font-semibold transition-colors" style={{ color: totalChildSeats > 0 ? "#c9a87c" : "rgba(200,212,228,0.70)" }}>
                           Child Seats
                         </span>
                       </div>
                       <div className="flex items-center gap-2.5">
                         {totalChildSeats > 0 && (
-                          <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                          <span className="text-xs font-bold px-2 py-1 rounded-full" style={{ background: "rgba(201,168,124,0.15)", color: "#c9a87c" }}>
                             {totalChildSeats}
                           </span>
                         )}
-                        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${childSeatsOpen ? "rotate-180" : ""}`} />
+                        <ChevronDown className={`w-4 h-4 transition-transform flex-shrink-0 ${childSeatsOpen ? "rotate-180" : ""}`} style={{ color: "rgba(200,212,228,0.45)" }} />
                       </div>
                     </button>
 
                     {childSeatsOpen && (
-                      <div className="divide-y divide-gray-200">
+                      <div className="divide-y" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
                         {CHILD_SEAT_TYPES.map(({ key, label }) => (
-                          <div key={key} className="flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 transition-colors">
-                            <span className="text-sm font-medium text-gray-700">{label}</span>
+                          <div key={key} className="flex items-center justify-between px-4 py-3 transition-colors" style={{ }}>
+                            <span className="text-sm font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>{label}</span>
                             <div className="flex items-center gap-2.5">
                               <button
                                 type="button"
                                 onClick={() => setChildSeats((s) => ({ ...s, [key]: Math.max(0, s[key] - 1) }))}
                                 disabled={childSeats[key] === 0}
-                                className="w-7 h-7 rounded-lg border border-gray-300 bg-white flex items-center justify-center text-gray-600 hover:text-blue-600 hover:border-blue-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-base leading-none font-light"
+                                className="w-7 h-7 rounded-lg flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed transition-all text-base leading-none font-light" style={{ border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)", color: "rgba(200,212,228,0.65)" }}
                               >
                                 −
                               </button>
-                              <span className={`w-6 text-center text-sm font-bold tabular-nums ${childSeats[key] > 0 ? "text-blue-700" : "text-gray-400"}`}>
+                              <span className="w-6 text-center text-sm font-bold tabular-nums" style={{ color: childSeats[key] > 0 ? "#c9a87c" : "rgba(200,212,228,0.35)" }}>
                                 {childSeats[key]}
                               </span>
                               <button
                                 type="button"
                                 onClick={() => setChildSeats((s) => ({ ...s, [key]: s[key] + 1 }))}
-                                className="w-7 h-7 rounded-lg border border-gray-300 bg-white flex items-center justify-center text-gray-600 hover:text-blue-600 hover:border-blue-300 transition-all text-base leading-none"
+                                className="w-7 h-7 rounded-lg flex items-center justify-center transition-all text-base leading-none" style={{ border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)", color: "rgba(200,212,228,0.65)" }}
                               >
                                 +
                               </button>
@@ -3173,7 +3149,7 @@ export default function NewTripPage() {
 
               {/* Submit */}
               {submitError && (
-                <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600 flex items-start gap-2">
+                <div className="rounded-xl px-4 py-3 text-sm flex items-start gap-2" style={{ background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.25)", color: "rgba(248,113,113,0.85)" }}>
                   <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                   <span>{submitError}</span>
                 </div>
@@ -3182,8 +3158,8 @@ export default function NewTripPage() {
                 form="new-trip-form"
                 type="submit"
                 disabled={createTrip.isPending}
-                className="w-full bg-[#2563EB] hover:bg-blue-700 text-white h-11 text-sm font-semibold rounded-xl"
-                style={{ boxShadow: "0 4px 14px rgba(37,99,235,0.30)" }}
+                className="w-full h-11 text-sm font-semibold rounded-xl transition-colors"
+                style={{ background: "#c9a87c", color: "#0d1526", boxShadow: "0 4px 14px rgba(201,168,124,0.25)" }}
               >
                 {createTrip.isPending ? "Creating…" : "Create Reservation"}
               </Button>
