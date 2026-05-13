@@ -3000,7 +3000,23 @@ export default function NewTripPage() {
                             }
                           }}
                         >
-                          <SelectTrigger id="vehicle-type" className="w-full h-10 text-sm pl-2">
+                          <SelectTrigger
+                            id="vehicle-type"
+                            className="w-full text-sm px-3 py-2.5 h-auto"
+                            style={{ border: "1px dashed rgba(255,255,255,0.12)", borderRadius: "0.75rem", background: "transparent", color: "rgba(200,212,228,0.50)" }}
+                            onMouseEnter={(e) => {
+                              const el = e.currentTarget as HTMLElement
+                              el.style.borderColor = "rgba(201,168,124,0.35)"
+                              el.style.color = "rgba(201,168,124,0.80)"
+                              el.style.background = "rgba(201,168,124,0.04)"
+                            }}
+                            onMouseLeave={(e) => {
+                              const el = e.currentTarget as HTMLElement
+                              el.style.borderColor = "rgba(255,255,255,0.12)"
+                              el.style.color = "rgba(200,212,228,0.50)"
+                              el.style.background = "transparent"
+                            }}
+                          >
                             <div className="flex items-center gap-2.5 flex-1 min-w-0">
                               <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.10)", border: "1px solid rgba(201,168,124,0.18)" }}>
                                 <Layers className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
