@@ -2238,7 +2238,7 @@ function RouteBuilder({
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all select-none ${
                   role === value ? STOP_ROLE_STYLE[value].pill : "border-transparent"
                 }`}
-                style={role !== value ? { color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" } : {}}
+                style={role !== value ? { color: "rgba(255,255,255,0.88)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" } : {}}
               >
                 <input type="radio" name="entry-role" value={value} checked={role === value}
                   onChange={() => setRole(value)} className="sr-only" />
