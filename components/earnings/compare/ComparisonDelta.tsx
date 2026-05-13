@@ -7,68 +7,57 @@ interface ComparisonDeltaProps {
   isExpense?: boolean
 }
 
-export function ComparisonDelta({
-  label,
-  period1Value,
-  period2Value,
-  isExpense = false,
-}: ComparisonDeltaProps) {
-  const diff = period2Value - period1Value
-  const pctChange =
-    period1Value !== 0 ? (diff / Math.abs(period1Value)) * 100 : 0
-  const isIncreasing = diff > 0
+export function ComparisonDelta({ label, period1Value, period2Value, isExpense = false }: ComparisonDeltaProps) {
+  const diff      = period2Value - period1Value
+  const pctChange = period1Value !== 0 ? (diff / Math.abs(period1Value)) * 100 : 0
+  const isIncrease = diff > 0
+  const isGood    = isExpense ? !isIncrease : isIncrease
 
-  // For revenue/profit: increase is good. For expenses: decrease is good
-  const isGood = isExpense ? !isIncreasing : isIncreasing
+  const arrow = isIncrease ? "↑" : diff < 0 ? "↓" : "→"
 
-  const arrow = isIncreasing ? "↑" : diff < 0 ? "↓" : "→"
+  const badgeStyle: React.CSSProperties = isGood
+    ? { background: "rgba(52,211,153,0.12)", color: "rgba(52,211,153,0.90)" }
+    : { background: "rgba(248,113,113,0.12)", color: "rgba(248,113,113,0.90)" }
 
   return (
-    <div className="bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl p-6">
-      <p className="text-sm font-medium text-slate-600 mb-3">{label}</p>
+    <div
+      className="rounded-2xl p-5"
+      style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+    >
+      <p className="text-[11px] font-semibold uppercase tracking-widest mb-4" style={{ color: "rgba(200,212,228,0.38)", letterSpacing: "0.12em" }}>
+        {label}
+      </p>
 
       <div className="space-y-3">
-        {/* Period 2 Value with Delta */}
         <div>
           <div className="flex items-baseline gap-2 mb-1">
-            <span className="text-3xl font-bold text-slate-900">
+            <span className="text-[28px] font-bold tabular-nums tracking-tight leading-none" style={{ color: "rgba(255,255,255,0.92)" }}>
               ${(period2Value / 1000).toFixed(1)}k
             </span>
             {diff !== 0 && (
               <span
-                className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-sm font-semibold ${
-                  isGood
-                    ? "bg-emerald-100 text-emerald-700"
-                    : "bg-red-100 text-red-700"
-                }`}
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[12px] font-semibold"
+                style={badgeStyle}
               >
                 {arrow} {Math.abs(pctChange).toFixed(1)}%
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-[12px]" style={{ color: "rgba(200,212,228,0.40)" }}>
             vs{" "}
-            <span className="font-medium text-slate-600">
+            <span style={{ color: "rgba(200,212,228,0.65)", fontWeight: 600 }}>
               ${(period1Value / 1000).toFixed(1)}k
             </span>
           </p>
         </div>
 
-        {/* Absolute Change */}
         {diff !== 0 && (
-          <div className="pt-2 border-t border-slate-200">
-            <p className="text-xs text-slate-600 font-medium">Absolute Change</p>
-            <p
-              className={`text-lg font-bold ${
-                isGood ? "text-emerald-600" : "text-red-600"
-              }`}
-            >
-              {isIncreasing && !isExpense ? "+" : ""}
-              {!isIncreasing && isExpense ? "+" : ""}
-              {!isIncreasing ? "-" : ""}
-              ${Math.abs(diff).toLocaleString("en-US", {
-                maximumFractionDigits: 0,
-              })}
+          <div className="pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+            <p className="text-[11px] uppercase tracking-widest mb-1" style={{ color: "rgba(200,212,228,0.35)", letterSpacing: "0.12em" }}>
+              Absolute Change
+            </p>
+            <p className="text-[16px] font-bold tabular-nums" style={{ color: isGood ? "rgba(52,211,153,0.90)" : "rgba(248,113,113,0.90)" }}>
+              {isIncrease ? "+" : "-"}${Math.abs(diff).toLocaleString("en-US", { maximumFractionDigits: 0 })}
             </p>
           </div>
         )}

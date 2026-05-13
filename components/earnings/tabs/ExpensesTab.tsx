@@ -14,19 +14,16 @@ interface ExpensesTabProps {
 export function ExpensesTab({ data, isLoading, startDate, endDate }: ExpensesTabProps) {
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="h-96 bg-white/70 rounded-2xl animate-pulse" />
-        <div className="h-96 bg-white/70 rounded-2xl animate-pulse" />
+      <div className="space-y-4">
+        <div className="h-64 rounded-2xl animate-pulse" style={{ background: "#0d1526" }} />
+        <div className="h-64 rounded-2xl animate-pulse" style={{ background: "#0d1526" }} />
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      {/* Add Expense Form */}
+    <div className="space-y-4">
       <ExpenseForm />
-
-      {/* Expenses List */}
       <ExpensesList startDate={startDate} endDate={endDate} />
     </div>
   )

@@ -2,46 +2,30 @@
 
 import { motion } from "framer-motion"
 
-interface FleetPerformanceTableProps {
-  vehicles: Array<{
-    vehicleId: string
-    name: string
-    type: string
-    revenue: number
-    expenses: number
-    profitability: number
-    trips: number
-    status: "ok" | "warning" | "alert"
-  }>
+interface Vehicle {
+  vehicleId: string; name: string; type: string
+  revenue: number; expenses: number; profitability: number; trips: number
+  status: "ok" | "warning" | "alert"
 }
 
-function fmtAmt(v: number): string {
+function fmtAmt(v: number) {
   return v.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })
 }
 
 const STATUS_CONFIG = {
-  ok: {
-    badge: "bg-emerald-50 text-emerald-700",
-    label: "Healthy",
-    bar: "bg-emerald-500",
-  },
-  warning: {
-    badge: "bg-amber-50 text-amber-700",
-    label: "Low Margin",
-    bar: "bg-amber-400",
-  },
-  alert: {
-    badge: "bg-red-50 text-red-600",
-    label: "Loss",
-    bar: "bg-red-500",
-  },
+  ok:      { bg: "rgba(52,211,153,0.12)",  color: "rgba(52,211,153,0.90)",  label: "Healthy",    bar: "#34d399" },
+  warning: { bg: "rgba(251,191,36,0.12)",  color: "rgba(251,191,36,0.90)",  label: "Low Margin", bar: "#fbbf24" },
+  alert:   { bg: "rgba(248,113,113,0.12)", color: "rgba(248,113,113,0.90)", label: "Loss",       bar: "#f87171" },
 }
 
-export function FleetPerformanceTable({ vehicles }: FleetPerformanceTableProps) {
+export function FleetPerformanceTable({ vehicles }: { vehicles: Vehicle[] }) {
   if (!vehicles || vehicles.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-slate-100 p-5 flex items-center justify-center h-[160px]">
-        <p className="text-[13px] text-slate-400">No fleet data for this period</p>
+      <div
+        className="rounded-2xl p-5 flex items-center justify-center h-[160px]"
+        style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <p className="text-[13px]" style={{ color: "rgba(200,212,228,0.40)" }}>No fleet data for this period</p>
       </div>
     )
   }
@@ -53,10 +37,11 @@ export function FleetPerformanceTable({ vehicles }: FleetPerformanceTableProps) 
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.32, ease: [0.25, 0.1, 0.25, 1] }}
-      className="bg-white rounded-2xl border border-slate-100 overflow-hidden"
+      className="rounded-2xl overflow-hidden"
+      style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 4px 24px rgba(0,0,0,0.25)" }}
     >
-      <div className="px-5 py-4 border-b border-slate-100">
-        <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
+      <div className="px-5 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+        <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.38)", letterSpacing: "0.14em" }}>
           Fleet Profitability
         </p>
       </div>
@@ -64,35 +49,23 @@ export function FleetPerformanceTable({ vehicles }: FleetPerformanceTableProps) 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-100">
-              <th className="px-5 py-3 text-left text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
-                Vehicle
-              </th>
-              <th className="px-4 py-3 text-center text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
-                Trips
-              </th>
-              <th className="px-4 py-3 text-right text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
-                Revenue
-              </th>
-              <th className="px-4 py-3 text-right text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
-                Expenses
-              </th>
-              <th className="px-4 py-3 text-right text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
-                Profit
-              </th>
-              <th className="px-5 py-3 text-center text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
-                Status
-              </th>
+            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+              {["Vehicle", "Trips", "Revenue", "Expenses", "Profit", "Status"].map((h, i) => (
+                <th
+                  key={h}
+                  className={`px-4 py-3 text-[10px] font-semibold uppercase tracking-widest ${i === 0 ? "text-left pl-5" : i >= 4 ? "text-center" : "text-right"} ${i === 5 ? "pr-5" : ""}`}
+                  style={{ color: "rgba(200,212,228,0.35)", letterSpacing: "0.12em" }}
+                >
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody>
             {vehicles.map((vehicle, idx) => {
-              const cfg = STATUS_CONFIG[vehicle.status]
-              const marginPct =
-                vehicle.revenue > 0
-                  ? Math.round((vehicle.profitability / vehicle.revenue) * 100)
-                  : 0
-              const barPct = (vehicle.revenue / maxRevenue) * 100
+              const cfg       = STATUS_CONFIG[vehicle.status]
+              const marginPct = vehicle.revenue > 0 ? Math.round((vehicle.profitability / vehicle.revenue) * 100) : 0
+              const barPct    = (vehicle.revenue / maxRevenue) * 100
 
               return (
                 <motion.tr
@@ -100,53 +73,53 @@ export function FleetPerformanceTable({ vehicles }: FleetPerformanceTableProps) 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.22, delay: idx * 0.05 }}
-                  className="hover:bg-slate-50/60 transition-colors duration-150"
+                  style={{ borderBottom: idx < vehicles.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.025)"}
+                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
                 >
-                  <td className="px-5 py-3.5">
-                    <div className="font-semibold text-[13px] text-slate-900">{vehicle.name}</div>
-                    <div className="text-[10px] text-slate-400 font-medium bg-slate-100 px-1.5 py-0.5 rounded-full w-fit mt-1">
+                  <td className="pl-5 pr-4 py-3.5">
+                    <div className="font-semibold text-[13px]" style={{ color: "rgba(255,255,255,0.88)" }}>{vehicle.name}</div>
+                    <div
+                      className="text-[10px] font-medium px-1.5 py-0.5 rounded-full w-fit mt-1"
+                      style={{ background: "rgba(255,255,255,0.07)", color: "rgba(200,212,228,0.50)" }}
+                    >
                       {vehicle.type}
                     </div>
-                    {/* Inline revenue bar */}
-                    <div className="mt-2 h-1 bg-slate-100 rounded-full overflow-hidden w-28">
+                    <div className="mt-2 h-1 rounded-full overflow-hidden w-28" style={{ background: "rgba(255,255,255,0.06)" }}>
                       <motion.div
-                        className={`h-full rounded-full ${cfg.bar}`}
-                        style={{ width: `${barPct}%` }}
+                        className="h-full rounded-full"
+                        style={{ width: `${barPct}%`, background: cfg.bar }}
                         initial={{ clipPath: "inset(0 100% 0 0)" }}
                         animate={{ clipPath: "inset(0 0% 0 0)" }}
-                        transition={{
-                          duration: 0.7,
-                          ease: [0.25, 0.1, 0.25, 1],
-                          delay: 0.15 + idx * 0.07,
-                        }}
+                        transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1], delay: 0.15 + idx * 0.07 }}
                       />
                     </div>
                   </td>
-                  <td className="px-4 py-3.5 text-center text-[13px] text-slate-500 tabular-nums">
+                  <td className="px-4 py-3.5 text-center text-[13px] tabular-nums" style={{ color: "rgba(200,212,228,0.55)" }}>
                     {vehicle.trips}
                   </td>
-                  <td className="px-4 py-3.5 text-right text-[13px] font-semibold text-emerald-600 tabular-nums">
+                  <td className="px-4 py-3.5 text-right text-[13px] font-semibold tabular-nums" style={{ color: "#34d399" }}>
                     {fmtAmt(vehicle.revenue)}
                   </td>
-                  <td className="px-4 py-3.5 text-right text-[13px] text-slate-500 tabular-nums">
+                  <td className="px-4 py-3.5 text-right text-[13px] tabular-nums" style={{ color: "rgba(200,212,228,0.55)" }}>
                     {fmtAmt(vehicle.expenses)}
                   </td>
                   <td className="px-4 py-3.5 text-right">
                     <p
-                      className={`text-[13px] font-bold tabular-nums ${
-                        vehicle.profitability < 0 ? "text-red-600" : "text-emerald-600"
-                      }`}
+                      className="text-[13px] font-bold tabular-nums"
+                      style={{ color: vehicle.profitability < 0 ? "#f87171" : "#34d399" }}
                     >
                       {vehicle.profitability < 0 ? "-" : ""}
                       {fmtAmt(Math.abs(vehicle.profitability))}
                     </p>
-                    <p className="text-[10px] text-slate-400 tabular-nums mt-0.5">
+                    <p className="text-[10px] tabular-nums mt-0.5" style={{ color: "rgba(200,212,228,0.35)" }}>
                       {marginPct}% margin
                     </p>
                   </td>
                   <td className="px-5 py-3.5 text-center">
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${cfg.badge}`}
+                      className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold"
+                      style={{ background: cfg.bg, color: cfg.color }}
                     >
                       {cfg.label}
                     </span>

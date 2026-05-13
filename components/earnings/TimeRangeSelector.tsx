@@ -10,87 +10,28 @@ interface TimeRangeSelectorProps {
 }
 
 const PRESETS = [
-  {
-    id: "today",
-    label: "Today",
-    getRange: () => {
-      const now = new Date()
-      return {
-        start: format(startOfDay(now), "yyyy-MM-dd"),
-        end: format(endOfDay(now), "yyyy-MM-dd"),
-      }
-    },
-  },
-  {
-    id: "last-7-days",
-    label: "Last 7 Days",
-    getRange: () => ({
-      start: format(startOfDay(subDays(new Date(), 6)), "yyyy-MM-dd"),
-      end: format(endOfDay(new Date()), "yyyy-MM-dd"),
-    }),
-  },
-  {
-    id: "this-month",
-    label: "This Month",
-    getRange: () => {
-      const now = new Date()
-      return {
-        start: format(startOfMonth(now), "yyyy-MM-dd"),
-        end: format(endOfDay(now), "yyyy-MM-dd"),
-      }
-    },
-  },
-  {
-    id: "last-month",
-    label: "Last Month",
-    getRange: () => {
-      const lastMonth = subMonths(new Date(), 1)
-      return {
-        start: format(startOfMonth(lastMonth), "yyyy-MM-dd"),
-        end: format(endOfMonth(lastMonth), "yyyy-MM-dd"),
-      }
-    },
-  },
-  {
-    id: "last-12-months",
-    label: "Last 12 Months",
-    getRange: () => ({
-      start: format(startOfDay(subMonths(new Date(), 11)), "yyyy-MM-dd"),
-      end: format(endOfDay(new Date()), "yyyy-MM-dd"),
-    }),
-  },
+  { id: "today",          label: "Today",         getRange: () => { const n = new Date(); return { start: format(startOfDay(n), "yyyy-MM-dd"), end: format(endOfDay(n), "yyyy-MM-dd") } } },
+  { id: "last-7-days",    label: "7d",            getRange: () => ({ start: format(startOfDay(subDays(new Date(), 6)), "yyyy-MM-dd"), end: format(endOfDay(new Date()), "yyyy-MM-dd") }) },
+  { id: "this-month",     label: "This Month",    getRange: () => { const n = new Date(); return { start: format(startOfMonth(n), "yyyy-MM-dd"), end: format(endOfDay(n), "yyyy-MM-dd") } } },
+  { id: "last-month",     label: "Last Month",    getRange: () => { const l = subMonths(new Date(), 1); return { start: format(startOfMonth(l), "yyyy-MM-dd"), end: format(endOfMonth(l), "yyyy-MM-dd") } } },
+  { id: "last-12-months", label: "12 Months",     getRange: () => ({ start: format(startOfDay(subMonths(new Date(), 11)), "yyyy-MM-dd"), end: format(endOfDay(new Date()), "yyyy-MM-dd") }) },
 ]
 
-export function TimeRangeSelector({
-  onRangeChange,
-  defaultPreset = "last-7-days",
-}: TimeRangeSelectorProps) {
+export function TimeRangeSelector({ onRangeChange, defaultPreset = "last-7-days" }: TimeRangeSelectorProps) {
   const [selectedPreset, setSelectedPreset] = useState<string>(defaultPreset)
 
-  const handlePresetClick = useCallback(
-    (presetId: string) => {
-      setSelectedPreset(presetId)
-      const preset = PRESETS.find((p) => p.id === presetId)
-      if (preset) {
-        const range = preset.getRange()
-        onRangeChange(range.start, range.end)
-      }
-    },
-    [onRangeChange]
-  )
+  const handlePresetClick = useCallback((presetId: string) => {
+    setSelectedPreset(presetId)
+    const preset = PRESETS.find((p) => p.id === presetId)
+    if (preset) { const r = preset.getRange(); onRangeChange(r.start, r.end) }
+  }, [onRangeChange])
 
-  const handleCustomRange = useCallback(
-    (start: string | null, end: string | null) => {
-      if (start && end) {
-        setSelectedPreset("")
-        onRangeChange(start, end)
-      }
-    },
-    [onRangeChange]
-  )
+  const handleCustomRange = useCallback((start: string | null, end: string | null) => {
+    if (start && end) { setSelectedPreset(""); onRangeChange(start, end) }
+  }, [onRangeChange])
 
   const currentPreset = PRESETS.find((p) => p.id === selectedPreset)
-  const currentRange = currentPreset ? currentPreset.getRange() : { start: "", end: "" }
+  const currentRange  = currentPreset ? currentPreset.getRange() : { start: "", end: "" }
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -102,19 +43,25 @@ export function TimeRangeSelector({
       />
 
       {/* Divider */}
-      <div className="h-4 w-px bg-slate-200" />
+      <div className="h-4 w-px" style={{ background: "rgba(255,255,255,0.10)" }} />
 
       {/* Preset chips */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 flex-wrap">
         {PRESETS.map((preset) => (
           <button
             key={preset.id}
             onClick={() => handlePresetClick(preset.id)}
-            className={`px-2.5 py-1 text-[12px] font-medium rounded-full transition-all duration-150 cursor-pointer ${
-              selectedPreset === preset.id
-                ? "bg-slate-900 text-white"
-                : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-            }`}
+            className="px-2.5 py-1 text-[12px] font-semibold rounded-full transition-all duration-150 cursor-pointer whitespace-nowrap"
+            style={selectedPreset === preset.id
+              ? { background: "rgba(201,168,124,0.15)", color: "#c9a87c", border: "1px solid rgba(201,168,124,0.28)" }
+              : { color: "rgba(200,212,228,0.50)", border: "1px solid transparent" }
+            }
+            onMouseEnter={e => {
+              if (selectedPreset !== preset.id) (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)"
+            }}
+            onMouseLeave={e => {
+              if (selectedPreset !== preset.id) (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.50)"
+            }}
           >
             {preset.label}
           </button>
