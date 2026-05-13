@@ -3003,7 +3003,7 @@ export default function NewTripPage() {
                           <SelectTrigger
                             id="vehicle-type"
                             className="w-full text-sm px-3 py-2.5 h-auto"
-                            style={{ border: "1px dashed rgba(255,255,255,0.12)", borderRadius: "0.75rem", background: "transparent", color: "rgba(200,212,228,0.50)" }}
+                            style={{ border: "1px dashed rgba(255,255,255,0.12)", borderRadius: "0.75rem", background: "transparent", color: "rgba(200,212,228,0.50)", height: "auto", paddingTop: "10px", paddingBottom: "10px" }}
                             onMouseEnter={(e) => {
                               const el = e.currentTarget as HTMLElement
                               el.style.borderColor = "rgba(201,168,124,0.35)"
