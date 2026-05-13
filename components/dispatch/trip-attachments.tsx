@@ -12,6 +12,7 @@ import {
   Loader2,
   Upload,
   Download,
+  CloudUpload,
 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useUploadAttachment, useDeleteAttachment } from "@/lib/hooks/use-attachments"
@@ -52,23 +53,12 @@ function getFileIcon(mimeType: string) {
   return File
 }
 
-function isImage(mimeType: string) {
-  return mimeType.startsWith("image/")
-}
+function isImage(mimeType: string) { return mimeType.startsWith("image/") }
+function isPdf(mimeType: string)   { return mimeType === "application/pdf" }
+function isText(mimeType: string)  { return mimeType === "text/plain" }
+function isOffice(mimeType: string){ return mimeType.includes("word") || mimeType === "application/msword" }
 
-function isPdf(mimeType: string) {
-  return mimeType === "application/pdf"
-}
-
-function isText(mimeType: string) {
-  return mimeType === "text/plain"
-}
-
-function isOffice(mimeType: string) {
-  return mimeType.includes("word") || mimeType === "application/msword"
-}
-
-// ── Preview Modal Component ──────────────────────────────────────────────────
+// ── Preview Modal ────────────────────────────────────────────────────────────
 
 interface PreviewModalProps {
   attachment: TripAttachment | PendingFile | null
@@ -87,19 +77,12 @@ function AttachmentPreviewModal({ attachment, onClose }: PreviewModalProps) {
   const mimeType = attachment?.mimeType ?? ""
   const name = attachment?.name ?? ""
 
-  // Fetch text content for TXT files
   useEffect(() => {
-    if (!attachment || !isText(mimeType)) {
-      setTextContent(null)
-      return
-    }
-
+    if (!attachment || !isText(mimeType)) { setTextContent(null); return }
     setTextLoading(true)
-    const fetchUrl =
-      "url" in attachment && "tripId" in attachment
-        ? (attachment as TripAttachment).url
-        : (attachment as PendingFile).localUrl
-
+    const fetchUrl = "url" in attachment && "tripId" in attachment
+      ? (attachment as TripAttachment).url
+      : (attachment as PendingFile).localUrl
     fetch(fetchUrl)
       .then((r) => r.text())
       .then((t) => setTextContent(t))
@@ -111,45 +94,34 @@ function AttachmentPreviewModal({ attachment, onClose }: PreviewModalProps) {
 
   return (
     <Dialog open={!!attachment} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl w-full p-0 overflow-hidden">
-        <DialogHeader className="px-5 py-4 border-b border-gray-100">
-          <DialogTitle className="text-sm font-semibold text-gray-900 truncate">{name}</DialogTitle>
+      <DialogContent className="max-w-3xl w-full p-0 overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.10)" }}>
+        <DialogHeader className="px-5 py-4 border-b" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
+          <DialogTitle className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.90)" }}>{name}</DialogTitle>
         </DialogHeader>
         <div className="p-4">
           {isImage(mimeType) && (
-            <img
-              src={url!}
-              alt={name}
-              className="max-w-full max-h-[70vh] object-contain mx-auto block rounded-lg"
-            />
+            <img src={url!} alt={name} className="max-w-full max-h-[70vh] object-contain mx-auto block rounded-xl" />
           )}
           {isPdf(mimeType) && (
-            <iframe
-              src={url!}
-              className="w-full h-[70vh] rounded-lg border border-gray-100"
-              title={name}
-            />
+            <iframe src={url!} className="w-full h-[70vh] rounded-xl border" style={{ borderColor: "rgba(255,255,255,0.08)" }} title={name} />
           )}
-          {isText(mimeType) &&
-            (textLoading ? (
+          {isText(mimeType) && (
+            textLoading ? (
               <div className="flex items-center justify-center h-40">
-                <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+                <Loader2 className="w-5 h-5 animate-spin" style={{ color: "rgba(200,212,228,0.40)" }} />
               </div>
             ) : (
-              <pre className="text-sm text-gray-700 whitespace-pre-wrap overflow-auto max-h-[70vh] bg-gray-50 rounded-xl p-4 font-mono">
+              <pre className="text-sm whitespace-pre-wrap overflow-auto max-h-[70vh] rounded-xl p-4 font-mono" style={{ background: "rgba(255,255,255,0.04)", color: "rgba(200,212,228,0.80)", border: "1px solid rgba(255,255,255,0.07)" }}>
                 {textContent}
               </pre>
-            ))}
+            )
+          )}
           {isOffice(mimeType) && (
-            <div className="flex flex-col items-center justify-center gap-4 py-12 text-gray-500">
-              <FileText className="w-12 h-12 text-gray-300" />
-              <p className="text-sm font-medium">{name}</p>
-              <p className="text-xs text-gray-400">Office documents cannot be previewed in the browser</p>
-              <a
-                href={url!}
-                download={name}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-              >
+            <div className="flex flex-col items-center justify-center gap-4 py-12" style={{ color: "rgba(200,212,228,0.55)" }}>
+              <FileText className="w-12 h-12" style={{ color: "rgba(200,212,228,0.25)" }} />
+              <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.75)" }}>{name}</p>
+              <p className="text-xs">Office documents cannot be previewed in the browser</p>
+              <a href={url!} download={name} className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-colors" style={{ background: "#c9a87c", color: "#0d1526" }}>
                 <Download className="w-4 h-4" />
                 Download file
               </a>
@@ -161,7 +133,7 @@ function AttachmentPreviewModal({ attachment, onClose }: PreviewModalProps) {
   )
 }
 
-// ── Attachment Card Component ────────────────────────────────────────────────
+// ── Attachment Card ───────────────────────────────────────────────────────────
 
 interface AttachmentCardProps {
   name: string
@@ -173,44 +145,38 @@ interface AttachmentCardProps {
   onRemove: () => void
 }
 
-function AttachmentCard({
-  name,
-  mimeType,
-  size,
-  isDeleting,
-  isUploading,
-  onPreview,
-  onRemove,
-}: AttachmentCardProps) {
+function AttachmentCard({ name, mimeType, size, isDeleting, isUploading, onPreview, onRemove }: AttachmentCardProps) {
   const Icon = getFileIcon(mimeType)
   const busy = isDeleting || isUploading
 
   return (
     <div
-      className={cn(
-        "flex items-center gap-3 px-3.5 py-2.5 rounded-xl border transition-all",
-        busy
-          ? "opacity-60 bg-gray-50 border-gray-100"
-          : "bg-white border-gray-100 hover:border-gray-200 hover:shadow-sm"
-      )}
+      className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all"
+      style={{
+        background: busy ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.04)",
+        border: "1px solid rgba(255,255,255,0.08)",
+        opacity: busy ? 0.6 : 1,
+      }}
     >
-      <div className="w-8 h-8 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0">
-        {isDeleting || isUploading ? (
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-gray-400" />
-        ) : (
-          <Icon className="w-3.5 h-3.5 text-gray-500" />
-        )}
+      <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.10)", border: "1px solid rgba(201,168,124,0.18)" }}>
+        {busy
+          ? <Loader2 className="w-3.5 h-3.5 animate-spin" style={{ color: "#c9a87c" }} />
+          : <Icon className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
+        }
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold text-gray-800 truncate">{name}</p>
-        <p className="text-[11px] text-gray-400">{formatFileSize(size)}</p>
+        <p className="text-xs font-semibold truncate" style={{ color: "rgba(255,255,255,0.88)" }}>{name}</p>
+        <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.45)" }}>{formatFileSize(size)}</p>
       </div>
       <div className="flex items-center gap-1 flex-shrink-0">
         <button
           type="button"
           onClick={onPreview}
           disabled={busy}
-          className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors disabled:opacity-40"
+          className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors disabled:opacity-40"
+          style={{ color: "rgba(200,212,228,0.45)" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.85)" }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.45)" }}
         >
           <Eye className="w-3.5 h-3.5" />
         </button>
@@ -218,7 +184,10 @@ function AttachmentCard({
           type="button"
           onClick={onRemove}
           disabled={busy}
-          className="w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-40"
+          className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors disabled:opacity-40"
+          style={{ color: "rgba(200,212,228,0.45)" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(248,113,113,0.10)"; (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.85)" }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.45)" }}
         >
           <X className="w-3.5 h-3.5" />
         </button>
@@ -227,7 +196,7 @@ function AttachmentCard({
   )
 }
 
-// ── Main Section Component ───────────────────────────────────────────────────
+// ── Main Section ─────────────────────────────────────────────────────────────
 
 interface TripAttachmentsSectionProps {
   mode: "create" | "edit"
@@ -243,24 +212,16 @@ interface UploadingFile {
   size: number
 }
 
-export function TripAttachmentsSection({
-  mode,
-  tripId,
-  existingAttachments = [],
-  onPendingFilesChange,
-}: TripAttachmentsSectionProps) {
+export function TripAttachmentsSection({ mode, tripId, existingAttachments = [], onPendingFilesChange }: TripAttachmentsSectionProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [error, setError] = useState<string | null>(null)
   const [previewTarget, setPreviewTarget] = useState<TripAttachment | PendingFile | null>(null)
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set())
+  const [isDragOver, setIsDragOver] = useState(false)
 
-  // Create mode state
   const [pendingFiles, setPendingFiles] = useState<PendingFile[]>([])
-
-  // Edit mode: track files currently being uploaded (with unique client-side IDs)
   const [uploadingFiles, setUploadingFiles] = useState<Map<string, UploadingFile>>(new Map())
 
-  // Edit mode mutations
   const uploadMutation = useUploadAttachment(tripId ?? "")
   const deleteMutation = useDeleteAttachment(tripId ?? "")
 
@@ -274,23 +235,14 @@ export function TripAttachmentsSection({
       setError(null)
 
       const remaining = MAX_FILES - totalCount
-      if (remaining <= 0) {
-        setError(`Maximum ${MAX_FILES} files allowed`)
-        return
-      }
+      if (remaining <= 0) { setError(`Maximum ${MAX_FILES} files allowed`); return }
 
       const toProcess = Array.from(files).slice(0, remaining)
       const errors: string[] = []
 
       for (const file of toProcess) {
-        if (file.size > MAX_SIZE) {
-          errors.push(`"${file.name}" exceeds 3 MB`)
-          continue
-        }
-        if (!ALLOWED_TYPES.has(file.type)) {
-          errors.push(`"${file.name}" is not a supported file type`)
-          continue
-        }
+        if (file.size > MAX_SIZE) { errors.push(`"${file.name}" exceeds 3 MB`); continue }
+        if (!ALLOWED_TYPES.has(file.type)) { errors.push(`"${file.name}" is not a supported file type`); continue }
 
         if (mode === "create") {
           const pending: PendingFile = {
@@ -307,35 +259,15 @@ export function TripAttachmentsSection({
             return next
           })
         } else if (mode === "edit" && tripId) {
-          // Create a client-side tracking ID immediately
           const uploadId = crypto.randomUUID()
-          const uploadingFile: UploadingFile = {
-            id: uploadId,
-            name: file.name,
-            mimeType: file.type,
-            size: file.size,
-          }
-
-          // Show file immediately in UI while uploading
+          const uploadingFile: UploadingFile = { id: uploadId, name: file.name, mimeType: file.type, size: file.size }
           setUploadingFiles((prev) => new Map(prev).set(uploadId, uploadingFile))
-
-          // Start the upload
           uploadMutation.mutate(file, {
             onSuccess: () => {
-              // Remove from local tracking once confirmed by API
-              setUploadingFiles((prev) => {
-                const next = new Map(prev)
-                next.delete(uploadId)
-                return next
-              })
+              setUploadingFiles((prev) => { const next = new Map(prev); next.delete(uploadId); return next })
             },
             onError: (err) => {
-              // Remove from tracking and show error
-              setUploadingFiles((prev) => {
-                const next = new Map(prev)
-                next.delete(uploadId)
-                return next
-              })
+              setUploadingFiles((prev) => { const next = new Map(prev); next.delete(uploadId); return next })
               setError(err instanceof Error ? err.message : "Upload failed")
             },
           })
@@ -361,11 +293,7 @@ export function TripAttachmentsSection({
     setDeletingIds((s) => new Set(s).add(attachmentId))
     deleteMutation.mutate(attachmentId, {
       onSettled: () => {
-        setDeletingIds((s) => {
-          const n = new Set(s)
-          n.delete(attachmentId)
-          return n
-        })
+        setDeletingIds((s) => { const n = new Set(s); n.delete(attachmentId); return n })
       },
       onError: (err) => setError(err instanceof Error ? err.message : "Delete failed"),
     })
@@ -374,29 +302,25 @@ export function TripAttachmentsSection({
   const atLimit = totalCount >= MAX_FILES
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
       {/* Header */}
-      <div className="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100">
-        <div
-          className="w-6 h-6 rounded-lg bg-violet-500 flex items-center justify-center flex-shrink-0"
-          style={{ boxShadow: "0 2px 8px rgba(139,92,246,0.30)" }}
-        >
-          <Paperclip className="w-3 h-3 text-white" />
+      <div className="flex items-center gap-3 px-4 py-3.5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}>
+        <div className="w-1 h-4 rounded-full flex-shrink-0" style={{ background: "#c9a87c" }} />
+        <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.12)", border: "1px solid rgba(201,168,124,0.20)" }}>
+          <Paperclip className="w-3 h-3" style={{ color: "#c9a87c" }} />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-gray-800">Attachments</h3>
-          <p className="text-[11px] text-gray-400">Up to {MAX_FILES} files · Max 3 MB each</p>
+          <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.90)" }}>Attachments</h3>
+          <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.45)" }}>Up to {MAX_FILES} files · Max 3 MB each</p>
         </div>
         <button
           type="button"
           disabled={atLimit}
           onClick={() => fileInputRef.current?.click()}
-          className={cn(
-            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all",
-            atLimit
-              ? "opacity-40 cursor-not-allowed bg-gray-100 text-gray-400"
-              : "bg-violet-50 text-violet-700 border border-violet-200 hover:bg-violet-100"
-          )}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ background: "rgba(201,168,124,0.12)", color: "#c9a87c", border: "1px solid rgba(201,168,124,0.25)" }}
+          onMouseEnter={e => { if (!atLimit) (e.currentTarget as HTMLElement).style.background = "rgba(201,168,124,0.20)" }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(201,168,124,0.12)" }}
         >
           <Upload className="w-3 h-3" />
           Upload file
@@ -407,72 +331,83 @@ export function TripAttachmentsSection({
           multiple
           accept={ALLOWED_EXTENSIONS.map((e) => `.${e}`).join(",")}
           className="sr-only"
-          onChange={(e) => {
-            handleFileSelect(e.target.files)
-            e.target.value = ""
-          }}
+          onChange={(e) => { handleFileSelect(e.target.files); e.target.value = "" }}
         />
       </div>
 
       {/* Body */}
-      <div className="px-5 py-4 space-y-2">
+      <div className="px-4 py-3.5 space-y-2">
         {/* Error */}
         {error && (
-          <p className="text-[11px] text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+          <p className="text-[11px] rounded-lg px-3 py-2" style={{ background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.25)", color: "rgba(248,113,113,0.85)" }}>
             {error}
           </p>
         )}
 
         {/* Existing attachments (edit mode) */}
-        {mode === "edit" &&
-          existingAttachments.map((att) => (
-            <AttachmentCard
-              key={att.id}
-              name={att.name}
-              mimeType={att.mimeType}
-              size={att.size}
-              isDeleting={deletingIds.has(att.id)}
-              onPreview={() => setPreviewTarget(att)}
-              onRemove={() => handleRemoveExisting(att.id)}
-            />
-          ))}
+        {mode === "edit" && existingAttachments.map((att) => (
+          <AttachmentCard
+            key={att.id}
+            name={att.name}
+            mimeType={att.mimeType}
+            size={att.size}
+            isDeleting={deletingIds.has(att.id)}
+            onPreview={() => setPreviewTarget(att)}
+            onRemove={() => handleRemoveExisting(att.id)}
+          />
+        ))}
 
-        {/* Currently uploading files (edit mode) - shown immediately with spinner */}
-        {mode === "edit" &&
-          Array.from(uploadingFiles.values()).map((uploadingFile) => (
-            <AttachmentCard
-              key={uploadingFile.id}
-              name={uploadingFile.name}
-              mimeType={uploadingFile.mimeType}
-              size={uploadingFile.size}
-              isUploading={true}
-              onPreview={() => {}} // Disabled during upload
-              onRemove={() => {}} // Disabled during upload
-            />
-          ))}
+        {/* Uploading files (edit mode) */}
+        {mode === "edit" && Array.from(uploadingFiles.values()).map((f) => (
+          <AttachmentCard
+            key={f.id}
+            name={f.name}
+            mimeType={f.mimeType}
+            size={f.size}
+            isUploading={true}
+            onPreview={() => {}}
+            onRemove={() => {}}
+          />
+        ))}
 
         {/* Pending files (create mode) */}
-        {mode === "create" &&
-          pendingFiles.map((pf) => (
-            <AttachmentCard
-              key={pf.id}
-              name={pf.name}
-              mimeType={pf.mimeType}
-              size={pf.size}
-              onPreview={() => setPreviewTarget(pf)}
-              onRemove={() => handleRemovePending(pf.id)}
-            />
-          ))}
+        {mode === "create" && pendingFiles.map((pf) => (
+          <AttachmentCard
+            key={pf.id}
+            name={pf.name}
+            mimeType={pf.mimeType}
+            size={pf.size}
+            onPreview={() => setPreviewTarget(pf)}
+            onRemove={() => handleRemovePending(pf.id)}
+          />
+        ))}
 
-        {/* Empty state */}
+        {/* Drop zone / empty state */}
         {totalCount === 0 && (
-          <p className="text-center text-[11px] text-gray-400 py-4">
-            No attachments yet
-          </p>
+          <button
+            type="button"
+            disabled={atLimit}
+            onClick={() => fileInputRef.current?.click()}
+            onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
+            onDragLeave={() => setIsDragOver(false)}
+            onDrop={(e) => { e.preventDefault(); setIsDragOver(false); handleFileSelect(e.dataTransfer.files) }}
+            className="w-full flex flex-col items-center justify-center gap-2 py-6 rounded-xl transition-all cursor-pointer"
+            style={{
+              background: isDragOver ? "rgba(201,168,124,0.08)" : "rgba(255,255,255,0.02)",
+              border: `1px dashed ${isDragOver ? "rgba(201,168,124,0.50)" : "rgba(255,255,255,0.10)"}`,
+            }}
+          >
+            <CloudUpload className="w-6 h-6" style={{ color: isDragOver ? "#c9a87c" : "rgba(200,212,228,0.25)" }} />
+            <p className="text-xs font-medium" style={{ color: isDragOver ? "#c9a87c" : "rgba(200,212,228,0.40)" }}>
+              Drop files here or <span style={{ color: isDragOver ? "#c9a87c" : "rgba(200,212,228,0.65)", textDecoration: "underline", textUnderlineOffset: "2px" }}>browse</span>
+            </p>
+            <p className="text-[10px]" style={{ color: "rgba(200,212,228,0.28)" }}>
+              JPG, PNG, PDF, DOC, TXT · Max 3 MB
+            </p>
+          </button>
         )}
       </div>
 
-      {/* Preview modal */}
       <AttachmentPreviewModal attachment={previewTarget} onClose={() => setPreviewTarget(null)} />
     </div>
   )
