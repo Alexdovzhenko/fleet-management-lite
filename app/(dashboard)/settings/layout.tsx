@@ -202,7 +202,11 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
           color: "rgba(255,255,255,0.88)",
         } as React.CSSProperties}
       >
-        {children}
+        {/* md:pr-[212px] mirrors the sidebar width on the right so mx-auto
+            centers content relative to the full screen, not just this column */}
+        <div className="md:pr-[212px]">
+          {children}
+        </div>
       </div>
     </div>
   )
