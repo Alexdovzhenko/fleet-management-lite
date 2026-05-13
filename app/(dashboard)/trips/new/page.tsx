@@ -2816,7 +2816,7 @@ export default function NewTripPage() {
                 <div className="px-4 sm:px-5 py-4">
                   <div className="grid grid-cols-2 sm:grid-cols-[180px_160px_1fr_72px_72px] gap-2 sm:gap-3">
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>Pickup Date</Label>
+                      <Label className="text-[11px] font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Pickup Date</Label>
                       <DatePickerInput
                         value={watch("pickupDate") || ""}
                         onChange={(v) => setValue("pickupDate", v, { shouldValidate: true })}
@@ -2825,7 +2825,7 @@ export default function NewTripPage() {
                       {errors.pickupDate && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>Pickup Time</Label>
+                      <Label className="text-[11px] font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Pickup Time</Label>
                       <Input
                         type="text"
                         value={watch("pickupTime") || ""}
@@ -2838,7 +2838,7 @@ export default function NewTripPage() {
                       {errors.pickupTime && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>Service Type</Label>
+                      <Label className="text-[11px] font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Service Type</Label>
                       <Select
                         value={tripTypeValue}
                         onValueChange={(v) => {
@@ -2864,7 +2864,7 @@ export default function NewTripPage() {
                       {errors.tripType && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>Pax</Label>
+                      <Label className="text-[11px] font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Pax</Label>
                       <Input
                         type="number" min={1}
                         {...register("passengerCount", { valueAsNumber: true })}
@@ -2872,7 +2872,7 @@ export default function NewTripPage() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>Bags</Label>
+                      <Label className="text-[11px] font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Bags</Label>
                       <Input
                         type="number" min={0}
                         {...register("luggageCount", { valueAsNumber: true })}
