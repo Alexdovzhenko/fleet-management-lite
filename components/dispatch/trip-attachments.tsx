@@ -305,7 +305,6 @@ export function TripAttachmentsSection({ mode, tripId, existingAttachments = [],
     <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-3.5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}>
-        <div className="w-1 h-4 rounded-full flex-shrink-0" style={{ background: "#c9a87c" }} />
         <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.12)", border: "1px solid rgba(201,168,124,0.20)" }}>
           <Paperclip className="w-3 h-3" style={{ color: "#c9a87c" }} />
         </div>
