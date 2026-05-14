@@ -507,25 +507,31 @@ function RouteBuilder({ stops, setStops, stopsError }: {
 
   return (
     <div className="space-y-3">
-      <div className="border border-gray-200 rounded-xl overflow-hidden">
+      <style>{`.rb-input::placeholder{color:rgba(200,212,228,0.38)}`}</style>
+      <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
         {/* Tabs */}
-        <div className="flex items-center border-b border-gray-100 bg-gray-50/80">
-          {STOP_LOC_TABS.map(({ type: t, label, Icon }) => (
-            <button key={t} type="button" onClick={() => { setLocType(t); resetForm() }}
-              className={`flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 transition-all ${
-                locType === t ? "border-blue-500 text-blue-600 bg-white" : "border-transparent text-gray-400 hover:text-gray-600"
-              }`}>
-              <Icon className="w-3 h-3" />{label}
-            </button>
-          ))}
+        <div className="px-3 pt-3 pb-2.5">
+          <div className="inline-flex gap-1 p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+            {STOP_LOC_TABS.map(({ type: t, label, Icon }) => (
+              <button key={t} type="button" onClick={() => { setLocType(t); resetForm() }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                style={locType === t
+                  ? { background: "#c9a87c", color: "#0d1526", boxShadow: "0 1px 6px rgba(201,168,124,0.35)" }
+                  : { background: "transparent", color: "rgba(255,255,255,0.75)" }
+                }>
+                <Icon className="w-3 h-3" />{label}
+              </button>
+            ))}
+          </div>
         </div>
+        <div className="mx-3" style={{ height: "1px", background: "rgba(255,255,255,0.06)" }} />
 
         {/* Fields */}
-        <div className="p-3 bg-white space-y-2">
+        <div className="p-3 pt-3.5 space-y-2.5">
           {locType === "address" && (
             <>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Location Name</Label>
+                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Location Name</Label>
                 <AddressAutocomplete
                   value={locationName}
                   onChange={(v) => setLocationName(v)}
@@ -535,7 +541,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Address 1 *</Label>
+                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Address 1 *</Label>
                 <AddressAutocomplete
                   value={address1}
                   onChange={(v) => { setAddress1(v); setAddError("") }}
@@ -546,42 +552,40 @@ function RouteBuilder({ stops, setStops, stopsError }: {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Address 2</Label>
-                <Input value={address2} onChange={(e) => setAddress2(e.target.value)}
-                  placeholder="Suite, floor, apt…" className="h-9 text-sm" autoComplete="off" />
+                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Address 2</Label>
+                <input value={address2} onChange={(e) => setAddress2(e.target.value)} placeholder="Suite, floor, apt…" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-[1fr_90px_90px_120px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">City</Label>
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>City</Label>
                   <CityAutocomplete value={city} onChange={setCity} onStateChange={setStateVal} placeholder="Miami" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">State</Label>
-                  <Input value={stateVal} onChange={(e) => setStateVal(e.target.value)} placeholder="FL" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>State</Label>
+                  <input value={stateVal} onChange={(e) => setStateVal(e.target.value)} placeholder="FL" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Zip</Label>
-                  <Input value={zip} onChange={(e) => setZip(e.target.value)} placeholder="33101" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Zip</Label>
+                  <input value={zip} onChange={(e) => setZip(e.target.value)} placeholder="33101" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Country</Label>
-                  <Input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="USA" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Country</Label>
+                  <input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="USA" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Phone</Label>
-                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(305) 555-0000" type="tel" className="h-9 text-sm" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Phone</Label>
+                  <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(305) 555-0000" type="tel" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Time In</Label>
-                  <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)} onBlur={(e) => setTimeIn(formatTime(e.target.value))}
-                    placeholder="e.g. 3:00 PM" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Time In</Label>
+                  <input value={timeIn} onChange={(e) => setTimeIn(e.target.value)} placeholder="e.g. 3:00 PM" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={(e)=>{ setTimeIn(formatTime(e.target.value)); e.currentTarget.style.borderColor="rgba(255,255,255,0.12)" }} />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Notes</Label>
-                <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Gate code, entrance, driver instructions…" className="h-8 text-xs" />
+                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Notes</Label>
+                <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Gate code, entrance, driver instructions…" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
               </div>
             </>
           )}
@@ -589,67 +593,70 @@ function RouteBuilder({ stops, setStops, stopsError }: {
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Airport Code *</Label>
-                  <Input value={airportCode} onChange={(e) => { setAirportCode(e.target.value); setAddError("") }}
-                    placeholder="MIA" className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Airport Code *</Label>
+                  <input value={airportCode} onChange={(e) => { setAirportCode(e.target.value); setAddError("") }} placeholder="MIA" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border: addError ? "1px solid rgba(248,113,113,0.60)" : "1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Airport Name</Label>
-                  <Input value={airportName} onChange={(e) => { setAirportName(e.target.value); setAddError("") }}
-                    placeholder="Miami International" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Airport Name</Label>
+                  <input value={airportName} onChange={(e) => { setAirportName(e.target.value); setAddError("") }} placeholder="Miami International" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
               </div>
               <div className="grid grid-cols-[100px_1fr_120px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Airline Code</Label>
-                  <Input value={airlineCode} onChange={(e) => setAirlineCode(e.target.value)} placeholder="AA" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Airline Code</Label>
+                  <input value={airlineCode} onChange={(e) => setAirlineCode(e.target.value)} placeholder="AA" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Airline Name</Label>
-                  <Input value={airlineName} onChange={(e) => setAirlineName(e.target.value)} placeholder="American Airlines" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Airline Name</Label>
+                  <input value={airlineName} onChange={(e) => setAirlineName(e.target.value)} placeholder="American Airlines" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Flight #</Label>
-                  <Input value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)} placeholder="AA 123" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Flight #</Label>
+                  <input value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)} placeholder="AA 123" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-[120px_120px_1fr_120px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Arr/Dep</Label>
-                  <select value={arrDep} onChange={(e) => setArrDep(e.target.value)}
-                    className="w-full h-9 text-sm border border-gray-200 rounded-md px-2 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                    <option value="">Select…</option>
-                    <option value="Arrival">Arrival</option>
-                    <option value="Departure">Departure</option>
-                  </select>
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Arr/Dep</Label>
+                  <div className="relative">
+                    <select value={arrDep} onChange={(e) => setArrDep(e.target.value)} style={{ width:"100%", height:"36px", padding:"0 32px 0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)", appearance:"none", cursor:"pointer" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"}>
+                      <option value="" style={{ background:"#0d1526" }}>Select…</option>
+                      <option value="Arrival" style={{ background:"#0d1526" }}>Arrival</option>
+                      <option value="Departure" style={{ background:"#0d1526" }}>Departure</option>
+                    </select>
+                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color:"rgba(200,212,228,0.50)" }} />
+                  </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Terminal/Gate</Label>
-                  <Input value={terminalGate} onChange={(e) => setTerminalGate(e.target.value)} placeholder="D22" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Terminal/Gate</Label>
+                  <input value={terminalGate} onChange={(e) => setTerminalGate(e.target.value)} placeholder="D22" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Airport Instructions</Label>
-                  <Input value={airportInstructions} onChange={(e) => setAirportInstructions(e.target.value)} placeholder="Meet at baggage claim…" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Airport Instructions</Label>
+                  <input value={airportInstructions} onChange={(e) => setAirportInstructions(e.target.value)} placeholder="Meet at baggage claim…" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">ETA/ETD</Label>
-                  <Input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)} onBlur={(e) => setEtaEtd(formatTime(e.target.value))}
-                    placeholder="3:00 PM" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>ETA/ETD</Label>
+                  <input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)} placeholder="3:00 PM" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={(e)=>{ setEtaEtd(formatTime(e.target.value)); e.currentTarget.style.borderColor="rgba(255,255,255,0.12)" }} />
                 </div>
               </div>
               <div className="grid grid-cols-[140px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Meet Option</Label>
-                  <select value={meetOption} onChange={(e) => setMeetOption(e.target.value)}
-                    className="w-full h-9 text-sm border border-gray-200 rounded-md px-2 bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                    <option value="">Select…</option>
-                    <option>Curbside</option><option>Inside</option>
-                    <option>Baggage Claim</option><option>Gate</option>
-                  </select>
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Meet Option</Label>
+                  <div className="relative">
+                    <select value={meetOption} onChange={(e) => setMeetOption(e.target.value)} style={{ width:"100%", height:"36px", padding:"0 32px 0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)", appearance:"none", cursor:"pointer" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"}>
+                      <option value="" style={{ background:"#0d1526" }}>Select…</option>
+                      <option style={{ background:"#0d1526" }}>Curbside</option>
+                      <option style={{ background:"#0d1526" }}>Inside</option>
+                      <option style={{ background:"#0d1526" }}>Baggage Claim</option>
+                      <option style={{ background:"#0d1526" }}>Gate</option>
+                    </select>
+                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color:"rgba(200,212,228,0.50)" }} />
+                  </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Notes</Label>
-                  <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Driver instructions…" className="h-9 text-sm" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Notes</Label>
+                  <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Driver instructions…" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
               </div>
             </>
@@ -658,53 +665,54 @@ function RouteBuilder({ stops, setStops, stopsError }: {
             <>
               <div className="grid grid-cols-[120px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Seaport Code *</Label>
-                  <Input value={seaportCode} onChange={(e) => { setSeaportCode(e.target.value.toUpperCase()); setAddError("") }}
-                    placeholder="MIA" className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" maxLength={6} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Seaport Code *</Label>
+                  <input value={seaportCode} onChange={(e) => { setSeaportCode(e.target.value.toUpperCase()); setAddError("") }} placeholder="MIA" autoComplete="off" maxLength={6} className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border: addError ? "1px solid rgba(248,113,113,0.60)" : "1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Port Name</Label>
-                  <Input value={portName} onChange={(e) => { setPortName(e.target.value); setAddError("") }}
-                    placeholder="Port of Miami" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Port Name</Label>
+                  <input value={portName} onChange={(e) => { setPortName(e.target.value); setAddError("") }} placeholder="Port of Miami" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Cruise Ship</Label>
-                  <Input value={cruiseShipName} onChange={(e) => setCruiseShipName(e.target.value)} placeholder="Symphony of the Seas" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Cruise Ship</Label>
+                  <input value={cruiseShipName} onChange={(e) => setCruiseShipName(e.target.value)} placeholder="Symphony of the Seas" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Cruise Line</Label>
-                  <Input value={cruiseLineName} onChange={(e) => setCruiseLineName(e.target.value)} placeholder="Royal Caribbean" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Cruise Line</Label>
+                  <input value={cruiseLineName} onChange={(e) => setCruiseLineName(e.target.value)} placeholder="Royal Caribbean" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Arriving From / Departing To</Label>
-                  <Input value={arrivingDepartingTo} onChange={(e) => setArrivingDepartingTo(e.target.value)} placeholder="Nassau, Bahamas" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Arriving From / Departing To</Label>
+                  <input value={arrivingDepartingTo} onChange={(e) => setArrivingDepartingTo(e.target.value)} placeholder="Nassau, Bahamas" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">ETA / ETD</Label>
-                  <Input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)} onBlur={(e) => setEtaEtd(formatTime(e.target.value))}
-                    placeholder="9:00 AM" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>ETA / ETD</Label>
+                  <input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)} placeholder="9:00 AM" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={(e)=>{ setEtaEtd(formatTime(e.target.value)); e.currentTarget.style.borderColor="rgba(255,255,255,0.12)" }} />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Seaport Instructions</Label>
-                <Select value={seaportInstructions} onValueChange={(v) => typeof v === "string" && setSeaportInstructions(v)}>
-                  <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select instructions…" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Meet at terminal entrance">Meet at terminal entrance</SelectItem>
-                    <SelectItem value="Meet at baggage claim">Meet at baggage claim</SelectItem>
-                    <SelectItem value="Meet at gangway">Meet at gangway</SelectItem>
-                    <SelectItem value="Curbside pickup">Curbside pickup</SelectItem>
-                    <SelectItem value="Meet inside terminal">Meet inside terminal</SelectItem>
-                  </SelectContent>
-                </Select>
+                <label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Seaport Instructions</label>
+                <div className="relative">
+                  <select value={seaportInstructions} onChange={(e) => setSeaportInstructions(e.target.value)}
+                    style={{ width:"100%", height:"36px", padding:"0 32px 0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color: seaportInstructions ? "rgba(255,255,255,0.88)" : "rgba(200,212,228,0.38)", appearance:"none", cursor:"pointer" }}
+                    onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"}
+                    onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"}>
+                    <option value="" style={{ background:"#0d1526", color:"rgba(200,212,228,0.38)" }}>Select instructions…</option>
+                    <option value="Meet at terminal entrance" style={{ background:"#0d1526", color:"rgba(255,255,255,0.88)" }}>Meet at terminal entrance</option>
+                    <option value="Meet at baggage claim" style={{ background:"#0d1526", color:"rgba(255,255,255,0.88)" }}>Meet at baggage claim</option>
+                    <option value="Meet at gangway" style={{ background:"#0d1526", color:"rgba(255,255,255,0.88)" }}>Meet at gangway</option>
+                    <option value="Curbside pickup" style={{ background:"#0d1526", color:"rgba(255,255,255,0.88)" }}>Curbside pickup</option>
+                    <option value="Meet inside terminal" style={{ background:"#0d1526", color:"rgba(255,255,255,0.88)" }}>Meet inside terminal</option>
+                  </select>
+                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color:"rgba(200,212,228,0.50)" }} />
+                </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Notes</Label>
-                <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Pier, terminal, additional instructions…" className="h-8 text-xs" />
+                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Notes</Label>
+                <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Pier, terminal, additional instructions…" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
               </div>
             </>
           )}
@@ -712,7 +720,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
             <>
               <div className="grid grid-cols-[1fr_140px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">FBO Name *</Label>
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>FBO Name *</Label>
                   <FBOAutocomplete
                     value={locationName}
                     onChange={(v) => { setLocationName(v); setAddError("") }}
@@ -730,60 +738,69 @@ function RouteBuilder({ stops, setStops, stopsError }: {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Tail #</Label>
-                  <Input value={tailNumber} onChange={(e) => setTailNumber(e.target.value)} placeholder="N12345" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Tail #</Label>
+                  <input value={tailNumber} onChange={(e) => setTailNumber(e.target.value)} placeholder="N12345" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Address 1</Label>
-                  <Input value={address1} onChange={(e) => setAddress1(e.target.value)} placeholder="123 Aviation Blvd" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Address 1</Label>
+                  <input value={address1} onChange={(e) => setAddress1(e.target.value)} placeholder="123 Aviation Blvd" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">City / State</Label>
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>City / State</Label>
                   <div className="flex gap-2">
                     <CityAutocomplete value={city} onChange={setCity} onStateChange={setStateVal} placeholder="Miami" />
-                    <Input value={stateVal} onChange={(e) => setStateVal(e.target.value)} placeholder="FL" className="h-9 text-sm w-16" autoComplete="off" />
+                    <input value={stateVal} onChange={(e) => setStateVal(e.target.value)} placeholder="FL" autoComplete="off" className="rb-input" style={{ width:"64px", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                   </div>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Phone</Label>
-                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(305) 555-0000" type="tel" className="h-9 text-sm" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Phone</Label>
+                  <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(305) 555-0000" type="tel" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Time In</Label>
-                  <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)} onBlur={(e) => setTimeIn(formatTime(e.target.value))}
-                    placeholder="3:00 PM" className="h-9 text-sm" autoComplete="off" />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Time In</Label>
+                  <input value={timeIn} onChange={(e) => setTimeIn(e.target.value)} placeholder="3:00 PM" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={(e)=>{ setTimeIn(formatTime(e.target.value)); e.currentTarget.style.borderColor="rgba(255,255,255,0.12)" }} />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-medium text-gray-400 uppercase tracking-wide">Notes</Label>
-                <Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Driver instructions, access codes…" className="h-8 text-xs" />
+                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Notes</Label>
+                <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Driver instructions, access codes…" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
               </div>
             </>
           )}
-          {addError && <p className="text-xs text-red-500">{addError}</p>}
+          {addError && <p className="text-xs" style={{ color:"rgba(248,113,113,0.80)" }}>{addError}</p>}
         </div>
 
         {/* Role + Add */}
-        <div className="flex items-center gap-1.5 px-3 py-2.5 bg-gray-50/50 border-t border-gray-100">
-          {STOP_ROLES.map(({ value, label }) => (
-            <label key={value}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium cursor-pointer transition-all border ${
-                role === value ? STOP_ROLE_STYLE[value].pill : "bg-transparent border-transparent text-gray-400 hover:text-gray-600"
-              }`}>
-              <input type="radio" name="edit-modal-role" value={value} checked={role === value} onChange={() => setRole(value)} className="sr-only" />
-              <span className={`w-1.5 h-1.5 rounded-full ${
-                role === value ? (value === "pickup" ? "bg-emerald-500" : value === "drop" ? "bg-red-500" : value === "wait" ? "bg-amber-500" : "bg-blue-500") : "bg-gray-300"
-              }`} />
-              {label}
-            </label>
-          ))}
+        <div className="px-3 py-3 flex items-center justify-between gap-2" style={{ background: "rgba(255,255,255,0.015)", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="flex items-center gap-1 flex-wrap">
+            {STOP_ROLES.map(({ value, label }) => (
+              <label key={value}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all select-none ${
+                  role === value ? STOP_ROLE_STYLE[value].pill : "border-transparent"
+                }`}
+                style={role !== value ? { color: "rgba(255,255,255,0.88)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" } : {}}>
+                <input type="radio" name="edit-modal-role" value={value} checked={role === value} onChange={() => setRole(value)} className="sr-only" />
+                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                  role === value
+                    ? value === "pickup" ? "bg-emerald-400" : value === "drop" ? "bg-red-400"
+                    : value === "wait" ? "bg-amber-400" : "bg-blue-400"
+                    : "bg-white/15"
+                }`} />
+                {label}
+              </label>
+            ))}
+          </div>
           <button type="button" onClick={handleAdd}
-            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold rounded-lg transition-colors">
-            <Plus className="w-3 h-3" />Add to Route
+            className="flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all flex-shrink-0"
+            style={{ background: "#c9a87c", color: "#0d1526", boxShadow: "0 2px 10px rgba(201,168,124,0.30)" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#d4b688" }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "#c9a87c" }}>
+            <Plus className="w-3.5 h-3.5" />
+            Add to Route
           </button>
         </div>
       </div>
@@ -791,9 +808,9 @@ function RouteBuilder({ stops, setStops, stopsError }: {
       {/* Route list */}
       {stops.length > 0 ? (
         <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <div className="rounded-xl border border-gray-200 overflow-hidden">
-            <div className="px-3 py-2 bg-gray-50 border-b border-gray-100">
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest">Routing Information</p>
+          <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
+            <div className="px-3 py-2 border-b" style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.06)" }}>
+              <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)" }}>Routing Information</p>
             </div>
             <SortableContext items={stops.map((s) => s.id)} strategy={verticalListSortingStrategy}>
               {stops.map((stop) => (
@@ -820,7 +837,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
           </DragOverlay>
         </DndContext>
       ) : (
-        <div className="text-xs text-gray-400 text-center py-5 border border-dashed border-gray-200 rounded-xl">
+        <div className="text-xs text-center py-6 rounded-xl" style={{ color: "rgba(200,212,228,0.40)", border: "1px dashed rgba(255,255,255,0.10)" }}>
           Add locations above to build the trip itinerary
         </div>
       )}
