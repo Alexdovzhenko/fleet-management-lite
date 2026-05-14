@@ -41,7 +41,7 @@ export function BillingTriggerButton({ billingData, payments = [], invoiceTotal,
             </div>
           </div>
           <div className="text-left min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: "rgba(200,212,228,0.55)" }}>Billing</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: "rgba(255,255,255,0.88)" }}>Billing</p>
             {hasData ? (
               <p className="text-sm font-bold tabular-nums" style={{ color: "rgba(255,255,255,0.90)" }}>
                 {formatCurrency(displayTotal)}
