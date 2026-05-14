@@ -35,7 +35,6 @@ export function AddressAutocomplete({
   const { data: results = [] } = useAddressSearch(value)
   const showDropdown = open && results.length > 0
 
-  // Close on outside click
   useEffect(() => {
     function onDown(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -47,7 +46,6 @@ export function AddressAutocomplete({
     return () => document.removeEventListener("mousedown", onDown)
   }, [])
 
-  // Reset active index when results change
   useEffect(() => {
     setActiveIdx(-1)
   }, [results])
@@ -81,7 +79,6 @@ export function AddressAutocomplete({
     }
   }
 
-  // Scroll active item into view
   const scrollActive = useCallback((idx: number) => {
     const el = listRef.current?.children[idx] as HTMLElement | undefined
     el?.scrollIntoView({ block: "nearest" })
@@ -103,73 +100,122 @@ export function AddressAutocomplete({
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        onFocus={() => value.trim() && setOpen(true)}
+        onFocus={(e) => {
+          e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"
+          if (value.trim()) setOpen(true)
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.borderColor = error ? "rgba(248,113,113,0.60)" : "rgba(255,255,255,0.12)"
+        }}
         placeholder={placeholder}
         autoFocus={autoFocus}
         autoComplete="off"
         spellCheck={false}
-        className={cn(
-          "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors",
-          "placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-          "disabled:cursor-not-allowed disabled:opacity-50",
-          error && "border-red-400",
-          inputClassName
-        )}
+        className={cn("flex w-full rounded-xl px-3 py-1 text-sm outline-none transition-colors aa-input", inputClassName)}
+        style={{
+          height: inputClassName?.includes("h-10") ? "40px" : "36px",
+          background: "rgba(255,255,255,0.05)",
+          border: error ? "1px solid rgba(248,113,113,0.60)" : "1px solid rgba(255,255,255,0.12)",
+          color: "rgba(255,255,255,0.88)",
+        }}
       />
+      <style>{`.aa-input::placeholder { color: rgba(200,212,228,0.38); }`}</style>
 
       {showDropdown && (
         <div
-          className="absolute left-0 right-0 top-full mt-1 z-[200] rounded-xl border border-gray-100 bg-white shadow-lg overflow-hidden"
-          style={{ boxShadow: "0 8px 30px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.04)" }}
+          className="absolute left-0 right-0 top-full mt-1.5 z-[200] rounded-2xl overflow-hidden"
+          style={{
+            background: "#0d1526",
+            border: "1px solid rgba(255,255,255,0.10)",
+            boxShadow: "0 8px 40px rgba(0,0,0,0.65), 0 0 0 1px rgba(201,168,124,0.08)",
+          }}
         >
-          {/* Header hint */}
-          <div className="flex items-center gap-1.5 px-3 pt-2 pb-1">
-            <Clock className="w-3 h-3 text-gray-300" />
-            <span className="text-[10px] font-semibold text-gray-300 uppercase tracking-wider">Saved addresses</span>
+          {/* Header */}
+          <div
+            className="flex items-center gap-1.5 px-3.5 pt-2.5 pb-1.5"
+            style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+          >
+            <Clock className="w-3 h-3 flex-shrink-0" style={{ color: "#c9a87c" }} />
+            <span
+              className="text-[10px] font-bold uppercase tracking-[0.14em]"
+              style={{ color: "#c9a87c" }}
+            >
+              Saved Addresses
+            </span>
           </div>
 
-          <ul ref={listRef} className="py-1 max-h-56 overflow-y-auto">
-            {results.map((addr, idx) => (
-              <li key={addr.id}>
-                <button
-                  type="button"
-                  onMouseDown={(e) => { e.preventDefault(); handleSelect(addr) }}
-                  onMouseEnter={() => setActiveIdx(idx)}
-                  className={cn(
-                    "w-full flex items-start gap-2.5 px-3 py-2 text-left transition-colors",
-                    idx === activeIdx ? "bg-blue-50" : "hover:bg-gray-50"
-                  )}
-                >
-                  <div className={cn(
-                    "w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors",
-                    addr.name ? "bg-violet-50" : "bg-blue-50"
-                  )}>
-                    {addr.name
-                      ? <Building2 className="w-3.5 h-3.5 text-violet-500" />
-                      : <MapPin className="w-3.5 h-3.5 text-blue-500" />
-                    }
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    {addr.name && (
-                      <div className="text-[11px] font-semibold text-gray-700 truncate">{addr.name}</div>
-                    )}
-                    <div className={cn(
-                      "truncate",
-                      addr.name ? "text-[11px] text-gray-500" : "text-[12.5px] font-medium text-gray-800"
-                    )}>
-                      {addr.address1}
-                      {addr.address2 && <span className="text-gray-400">, {addr.address2}</span>}
+          <ul ref={listRef} className="py-1.5 max-h-56 overflow-y-auto">
+            {results.map((addr, idx) => {
+              const isActive = idx === activeIdx
+              return (
+                <li key={addr.id}>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => { e.preventDefault(); handleSelect(addr) }}
+                    onMouseEnter={() => setActiveIdx(idx)}
+                    className="w-full flex items-start gap-2.5 px-3.5 py-2.5 text-left transition-colors"
+                    style={{ background: isActive ? "rgba(201,168,124,0.08)" : "transparent" }}
+                  >
+                    {/* Icon chip */}
+                    <div
+                      className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                      style={addr.name
+                        ? { background: "rgba(139,92,246,0.14)", border: "1px solid rgba(139,92,246,0.22)" }
+                        : { background: "rgba(201,168,124,0.10)", border: "1px solid rgba(201,168,124,0.18)" }
+                      }
+                    >
+                      {addr.name
+                        ? <Building2 className="w-3.5 h-3.5" style={{ color: "rgba(167,139,250,0.85)" }} />
+                        : <MapPin className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
+                      }
                     </div>
-                    {formatSecondLine(addr) && (
-                      <div className="text-[11px] text-gray-400 truncate">{formatSecondLine(addr)}</div>
+
+                    {/* Text block */}
+                    <div className="flex-1 min-w-0">
+                      {addr.name && (
+                        <div
+                          className="text-[11px] font-semibold truncate mb-0.5"
+                          style={{ color: "rgba(255,255,255,0.90)" }}
+                        >
+                          {addr.name}
+                        </div>
+                      )}
+                      <div
+                        className="truncate"
+                        style={addr.name
+                          ? { fontSize: "11px", color: "rgba(200,212,228,0.60)" }
+                          : { fontSize: "12.5px", fontWeight: 500, color: "rgba(255,255,255,0.82)" }
+                        }
+                      >
+                        {addr.address1}
+                        {addr.address2 && (
+                          <span style={{ color: "rgba(200,212,228,0.45)" }}>, {addr.address2}</span>
+                        )}
+                      </div>
+                      {formatSecondLine(addr) && (
+                        <div className="text-[11px] truncate" style={{ color: "rgba(200,212,228,0.45)" }}>
+                          {formatSecondLine(addr)}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Use count badge */}
+                    {addr.useCount > 1 && (
+                      <span
+                        className="text-[10px] font-semibold px-1.5 py-0.5 rounded flex-shrink-0 mt-0.5 tabular-nums"
+                        style={{
+                          background: "rgba(255,255,255,0.06)",
+                          border: "1px solid rgba(255,255,255,0.08)",
+                          color: "rgba(200,212,228,0.50)",
+                        }}
+                      >
+                        {addr.useCount}×
+                      </span>
                     )}
-                  </div>
-                  {addr.useCount > 1 && (
-                    <span className="text-[10px] text-gray-300 flex-shrink-0 mt-0.5">{addr.useCount}×</span>
-                  )}
-                </button>
-              </li>
-            ))}
+                  </button>
+                </li>
+              )
+            })}
           </ul>
         </div>
       )}
