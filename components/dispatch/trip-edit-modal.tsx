@@ -1755,6 +1755,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                     <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color:"#c9a87c" }}>Passengers</span>
                   </div>
                   <div className="space-y-2.5">
+                    <style>{`.pax-input::placeholder{color:rgba(200,212,228,0.38)}`}</style>
                     {/* Primary passenger */}
                     <div className="rounded-xl px-3.5 py-3" style={{ background:"rgba(99,102,241,0.06)", border:"1px solid rgba(99,102,241,0.18)" }}>
                       <div className="flex items-center gap-2 mb-2.5">
@@ -1763,16 +1764,26 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                       </div>
                       <div className="grid grid-cols-2 gap-2.5 mb-2.5">
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium" style={{ color:"rgba(255,255,255,0.80)" }}>Name</Label>
-                          <Input {...register("passengerName")} className="h-9 text-sm bg-white" placeholder="Full name" />
+                          <label className="text-[11px] font-medium block" style={{ color:"rgba(255,255,255,0.80)" }}>Name</label>
+                          <input
+                            {...register("passengerName")}
+                            placeholder="Full name"
+                            className="pax-input"
+                            style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                            onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
+                            onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
+                          />
                         </div>
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium" style={{ color:"rgba(255,255,255,0.80)" }}>Phone</Label>
-                          <Input
+                          <label className="text-[11px] font-medium block" style={{ color:"rgba(255,255,255,0.80)" }}>Phone</label>
+                          <input
                             {...register("passengerPhone")}
                             type="tel"
-                            className="h-9 text-sm bg-white"
                             placeholder="(305) 555-1234"
+                            className="pax-input"
+                            style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                            onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
+                            onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
                             onChange={(e) => {
                               const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
                               let formatted = digits
@@ -1785,8 +1796,16 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                         </div>
                       </div>
                       <div className="space-y-1.5">
-                        <Label className="text-[11px] font-medium" style={{ color:"rgba(255,255,255,0.80)" }}>Email</Label>
-                        <Input {...register("passengerEmail")} type="email" className="h-9 text-sm bg-white" placeholder="passenger@example.com" />
+                        <label className="text-[11px] font-medium block" style={{ color:"rgba(255,255,255,0.80)" }}>Email</label>
+                        <input
+                          {...register("passengerEmail")}
+                          type="email"
+                          placeholder="passenger@example.com"
+                          className="pax-input"
+                          style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                          onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
+                          onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
+                        />
                       </div>
                     </div>
 
@@ -1808,20 +1827,41 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                         </div>
                         <div className="grid grid-cols-2 gap-2.5 mb-2.5">
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium" style={{ color:"rgba(255,255,255,0.80)" }}>First Name</Label>
-                            <Input value={pax.firstName} onChange={(e) => updateAdditionalPassenger(pax.id, "firstName", e.target.value)} className="h-9 text-sm" />
+                            <label className="text-[11px] font-medium block" style={{ color:"rgba(255,255,255,0.80)" }}>First Name</label>
+                            <input
+                              value={pax.firstName}
+                              onChange={(e) => updateAdditionalPassenger(pax.id, "firstName", e.target.value)}
+                              placeholder="John"
+                              className="pax-input"
+                              style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                              onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
+                              onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
+                            />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium" style={{ color:"rgba(255,255,255,0.80)" }}>Last Name</Label>
-                            <Input value={pax.lastName} onChange={(e) => updateAdditionalPassenger(pax.id, "lastName", e.target.value)} className="h-9 text-sm" />
+                            <label className="text-[11px] font-medium block" style={{ color:"rgba(255,255,255,0.80)" }}>Last Name</label>
+                            <input
+                              value={pax.lastName}
+                              onChange={(e) => updateAdditionalPassenger(pax.id, "lastName", e.target.value)}
+                              placeholder="Smith"
+                              className="pax-input"
+                              style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                              onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
+                              onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
+                            />
                           </div>
                         </div>
                         <div className="grid grid-cols-2 gap-2.5">
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium" style={{ color:"rgba(255,255,255,0.80)" }}>Phone</Label>
-                            <Input
+                            <label className="text-[11px] font-medium block" style={{ color:"rgba(255,255,255,0.80)" }}>Phone</label>
+                            <input
                               type="tel"
                               value={pax.phone}
+                              placeholder="(305) 555-1234"
+                              className="pax-input"
+                              style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                              onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
+                              onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
                               onChange={(e) => {
                                 const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
                                 let formatted = digits
@@ -1830,12 +1870,20 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                                 else if (digits.length > 0) formatted = `(${digits}`
                                 updateAdditionalPassenger(pax.id, "phone", formatted)
                               }}
-                              className="h-9 text-sm"
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium" style={{ color:"rgba(255,255,255,0.80)" }}>Email</Label>
-                            <Input value={pax.email} type="email" onChange={(e) => updateAdditionalPassenger(pax.id, "email", e.target.value)} className="h-9 text-sm" />
+                            <label className="text-[11px] font-medium block" style={{ color:"rgba(255,255,255,0.80)" }}>Email</label>
+                            <input
+                              value={pax.email}
+                              type="email"
+                              placeholder="passenger@example.com"
+                              onChange={(e) => updateAdditionalPassenger(pax.id, "email", e.target.value)}
+                              className="pax-input"
+                              style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                              onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
+                              onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
+                            />
                           </div>
                         </div>
                       </div>
