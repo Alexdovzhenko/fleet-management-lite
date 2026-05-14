@@ -398,11 +398,11 @@ const ROLE_PREFIX: Record<StopRole, string> = {
   pickup: "PU", drop: "DO", stop: "ST", wait: "WT",
 }
 
-const ROLE_ROW_BG: Record<StopRole, string> = {
-  pickup: "bg-sky-50 text-sky-900 border-sky-100",
-  drop:   "bg-red-50 text-red-900 border-red-100",
-  stop:   "bg-gray-50 text-gray-800 border-gray-100",
-  wait:   "bg-amber-50 text-amber-900 border-amber-100",
+const ROLE_ROW_BG: Record<StopRole, { bg: string; border: string; prefix: string }> = {
+  pickup: { bg: "rgba(16,185,129,0.05)",  border: "rgba(16,185,129,0.18)",  prefix: "rgba(52,211,153,0.90)"  },
+  drop:   { bg: "rgba(239,68,68,0.05)",   border: "rgba(239,68,68,0.18)",   prefix: "rgba(248,113,113,0.90)" },
+  stop:   { bg: "rgba(99,102,241,0.05)",  border: "rgba(99,102,241,0.18)",  prefix: "rgba(129,140,248,0.90)" },
+  wait:   { bg: "rgba(245,158,11,0.05)",  border: "rgba(245,158,11,0.18)",  prefix: "rgba(251,191,36,0.90)"  },
 }
 
 const STATE_OPTIONS = [
@@ -1517,23 +1517,36 @@ function SortableStopRow({
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      className={`group flex items-start gap-3 px-3 py-2.5 border-b last:border-b-0 border-gray-100 transition-colors ${ROLE_ROW_BG[stop.role]} ${
+      style={{
+        ...style,
+        background: isDragOverlay ? "#0d1526" : ROLE_ROW_BG[stop.role].bg,
+        borderBottom: isDragOverlay ? "none" : `1px solid rgba(255,255,255,0.05)`,
+        borderLeft: isDragOverlay ? "none" : `2px solid ${ROLE_ROW_BG[stop.role].border}`,
+        ...(isDragOverlay ? {
+          boxShadow: "0 8px 32px rgba(0,0,0,0.60)",
+          borderRadius: "12px",
+          border: `1px solid ${ROLE_ROW_BG[stop.role].border}`,
+        } : {}),
+      }}
+      className={`group flex items-start gap-3 px-3 py-2.5 last:border-b-0 transition-colors ${
         isDragOverlay
-          ? "shadow-lg ring-1 ring-blue-200 rounded-xl scale-[1.02] bg-white cursor-grabbing"
+          ? "scale-[1.02] cursor-grabbing rounded-xl"
           : isEditing
           ? "opacity-40 cursor-not-allowed"
-          : "cursor-pointer hover:brightness-95"
+          : "cursor-pointer"
       }`}
       onClick={() => { if (!isEditing && !isDragOverlay) onEdit(stop) }}
     >
-      {/* Drag handle — hidden when editing */}
+      {/* Drag handle */}
       {!isEditing && (
         <button
           type="button"
-          className={`flex-shrink-0 mt-0.5 touch-none ${
+          className={`flex-shrink-0 mt-0.5 touch-none transition-colors ${
             isDragOverlay ? "cursor-grabbing" : "cursor-grab"
-          } text-gray-300 hover:text-gray-500 transition-colors`}
+          }`}
+          style={{ color: "rgba(200,212,228,0.30)" }}
+          onMouseEnter={e => (e.currentTarget.style.color = "rgba(200,212,228,0.65)")}
+          onMouseLeave={e => (e.currentTarget.style.color = "rgba(200,212,228,0.30)")}
           aria-label="Drag to reorder"
           {...attributes}
           {...listeners}
@@ -1542,14 +1555,17 @@ function SortableStopRow({
           <GripVertical className="w-3.5 h-3.5" />
         </button>
       )}
-      {/* Role prefix — left-aligned, mono */}
-      <span className="text-[11px] font-bold font-mono flex-shrink-0 mt-0.5 w-6">
+      {/* Role prefix */}
+      <span
+        className="text-[11px] font-bold font-mono flex-shrink-0 mt-0.5 w-6"
+        style={{ color: ROLE_ROW_BG[stop.role].prefix }}
+      >
         {ROLE_PREFIX[stop.role]}:
       </span>
       {/* Content */}
       <div className="flex-1 min-w-0">
         {stop.locationName && (
-          <div className="text-xs font-semibold">{stop.locationName}</div>
+          <div className="text-xs font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>{stop.locationName}</div>
         )}
         <div className="text-sm font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>{stop.address}</div>
         {stop.tailNumber && (
@@ -1600,7 +1616,7 @@ function SortableStopRow({
       <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
         {!isEditing && !isDragOverlay && (
           <span className="opacity-0 group-hover:opacity-100 transition-opacity">
-            <Pencil className="w-3 h-3 text-gray-400" />
+            <Pencil className="w-3 h-3" style={{ color: "rgba(200,212,228,0.40)" }} />
           </span>
         )}
         {!isDragOverlay && (
@@ -1611,7 +1627,10 @@ function SortableStopRow({
               if (!isEditing) onDelete(stop.id)
             }}
             disabled={isEditing}
-            className="text-gray-300 hover:text-red-400 transition-colors disabled:pointer-events-none"
+            className="transition-colors disabled:pointer-events-none"
+            style={{ color: "rgba(200,212,228,0.30)" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "rgba(248,113,113,0.80)")}
+            onMouseLeave={e => (e.currentTarget.style.color = "rgba(200,212,228,0.30)")}
           >
             <X className="w-3.5 h-3.5" />
           </button>
