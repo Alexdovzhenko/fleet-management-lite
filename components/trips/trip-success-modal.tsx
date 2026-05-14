@@ -9,6 +9,23 @@ import {
 import { FarmOutModal } from "@/components/dispatch/farm-out-modal"
 import type { Trip } from "@/types"
 
+function formatPickupDate(raw: string): string {
+  if (!raw) return ""
+  // ISO string (e.g. 2026-05-14T00:00:00.000Z) → May 14, 2026
+  const iso = new Date(raw)
+  if (!isNaN(iso.getTime())) {
+    return iso.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })
+  }
+  // Already formatted (MM/DD/YYYY) — convert to readable
+  const parts = raw.split("/")
+  if (parts.length === 3) {
+    const d = new Date(`${parts[2]}-${parts[0].padStart(2,"0")}-${parts[1].padStart(2,"0")}`)
+    if (!isNaN(d.getTime()))
+      return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })
+  }
+  return raw
+}
+
 // ── Section label with gold accent bar ──────────────────────────────────────
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -175,7 +192,7 @@ export function TripSuccessModal({
                 <div className="flex items-center gap-3 text-sm">
                   <div className="flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#c9a87c" }} />
-                    <span style={{ color: "rgba(255,255,255,0.82)" }}>{trip.pickupDate}</span>
+                    <span style={{ color: "rgba(255,255,255,0.82)" }}>{formatPickupDate(trip.pickupDate)}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#c9a87c" }} />
