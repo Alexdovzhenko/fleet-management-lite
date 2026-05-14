@@ -61,6 +61,7 @@ import { ReservationMetadata } from "@/components/trips/reservation-metadata"
 import { SendEmailModal } from "@/components/email/send-email-modal"
 import { TripAttachmentsSection } from "@/components/dispatch/trip-attachments"
 import { BillingModal } from "@/components/billing/BillingModal"
+import { VehicleTypePickerCard } from "@/components/trips/vehicle-type-picker-card"
 import { BillingTriggerButton } from "@/components/dispatch/billing-trigger-button"
 import type { Customer, Driver, Vehicle, AffiliateSearchResult, Trip, PendingFile, BillingData as BillingDataType } from "@/types"
 import type { BillingData } from "@/lib/billing-calculations"
@@ -3000,51 +3001,13 @@ export default function NewTripPage() {
                         onChange={(id) => { setDriverIdValue(id); setValue("driverId", id) }}
                         isLoading={driversLoading}
                       />
-                      {/* Type Dropdown */}
-                      <div>
-                        <Label htmlFor="vehicle-type" className="text-xs font-semibold uppercase tracking-wide block mb-2" style={{ color: "rgba(255,255,255,0.85)" }}>Type</Label>
-                        <Select
-                          value={vehicleTypeValue}
-                          onValueChange={(value) => {
-                            if (typeof value === "string") {
-                              setVehicleTypeValue(value)
-                              setValue("vehicleType", value as any)
-                            }
-                          }}
-                        >
-                          <SelectTrigger
-                            id="vehicle-type"
-                            className="w-full text-sm px-3 py-2.5 h-auto"
-                            style={{ border: "1px dashed rgba(255,255,255,0.12)", borderRadius: "0.75rem", background: "transparent", color: "rgba(200,212,228,0.50)", height: "auto", paddingTop: "10px", paddingBottom: "10px" }}
-                            onMouseEnter={(e) => {
-                              const el = e.currentTarget as HTMLElement
-                              el.style.borderColor = "rgba(201,168,124,0.35)"
-                              el.style.color = "rgba(201,168,124,0.80)"
-                              el.style.background = "rgba(201,168,124,0.04)"
-                            }}
-                            onMouseLeave={(e) => {
-                              const el = e.currentTarget as HTMLElement
-                              el.style.borderColor = "rgba(255,255,255,0.12)"
-                              el.style.color = "rgba(200,212,228,0.50)"
-                              el.style.background = "transparent"
-                            }}
-                          >
-                            <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                              <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.10)", border: "1px solid rgba(201,168,124,0.18)" }}>
-                                <Layers className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
-                              </div>
-                              <SelectValue placeholder="Select vehicle type..." />
-                            </div>
-                          </SelectTrigger>
-                          <SelectContent>
-                            {vehicleTypes.map((type) => (
-                              <SelectItem key={type.value} value={type.value}>
-                                {type.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      {/* Type Picker */}
+                      <VehicleTypePickerCard
+                        vehicleTypes={vehicleTypes}
+                        value={vehicleTypeValue}
+                        onChange={(value) => { setVehicleTypeValue(value); setValue("vehicleType", value as any) }}
+                        isLoading={vehicleTypesLoading}
+                      />
                       <VehiclePickerCard
                         vehicles={vehicles?.filter((v) => v.status === "ACTIVE") ?? []}
                         value={vehicleIdValue}
