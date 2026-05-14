@@ -5,21 +5,48 @@ import { createPortal } from "react-dom"
 import { useForm, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { X, UserPlus, AlertCircle, Loader2 } from "lucide-react"
 import { useCreateCustomer } from "@/lib/hooks/use-customers"
 import type { Customer } from "@/types"
 
 const newAccountSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().optional(),
-  company: z.string().optional(),
-  phone: z.string().optional(),
-  email: z.string().email("Invalid email").optional().or(z.literal("")),
+  lastName:  z.string().optional(),
+  company:   z.string().optional(),
+  phone:     z.string().optional(),
+  email:     z.string().email("Invalid email").optional().or(z.literal("")),
 })
 type NewAccountData = z.infer<typeof newAccountSchema>
+
+const inputBase: React.CSSProperties = {
+  width: "100%",
+  height: "40px",
+  padding: "0 12px",
+  borderRadius: "10px",
+  fontSize: "14px",
+  outline: "none",
+  background: "rgba(255,255,255,0.05)",
+  border: "1px solid rgba(255,255,255,0.12)",
+  color: "rgba(255,255,255,0.88)",
+  transition: "border-color 150ms",
+}
+const inputError: React.CSSProperties = { ...inputBase, border: "1px solid rgba(248,113,113,0.60)" }
+
+function DarkInput({ style, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { hasError?: boolean }) {
+  const { hasError, ...rest } = props as React.InputHTMLAttributes<HTMLInputElement> & { hasError?: boolean }
+  return (
+    <>
+      <style>{`.dk-input::placeholder{color:rgba(200,212,228,0.38)}`}</style>
+      <input
+        {...rest}
+        className="dk-input"
+        style={hasError ? inputError : inputBase}
+        onFocus={e => { e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)" }}
+        onBlur={e => { e.currentTarget.style.borderColor = hasError ? "rgba(248,113,113,0.60)" : "rgba(255,255,255,0.12)" }}
+      />
+    </>
+  )
+}
 
 export function CreateAccountDialog({ onClose, onCreated }: { onClose: () => void; onCreated: (c: Customer) => void }) {
   const createCustomer = useCreateCustomer()
@@ -41,76 +68,156 @@ export function CreateAccountDialog({ onClose, onCreated }: { onClose: () => voi
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-4 border-b">
-          <h2 className="text-base font-semibold text-gray-900">New Account</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)" }}>
+      <div
+        className="w-full max-w-sm mx-4 rounded-2xl overflow-hidden"
+        style={{
+          background: "#080c16",
+          border: "1px solid rgba(255,255,255,0.09)",
+          boxShadow: "0 24px 80px rgba(0,0,0,0.75), 0 0 0 1px rgba(201,168,124,0.06)",
+        }}
+      >
+        {/* Header */}
+        <div
+          className="flex items-center justify-between px-5 py-4"
+          style={{ background: "#0d1526", borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+              style={{ background: "rgba(201,168,124,0.14)", border: "1px solid rgba(201,168,124,0.22)" }}
+            >
+              <UserPlus className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.92)" }}>New Account</h2>
+              <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.45)" }}>Add a client to your account book</p>
+            </div>
+          </div>
           <button
+            type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors flex-shrink-0"
+            style={{ color: "rgba(200,212,228,0.40)" }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"
+              ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.80)"
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLElement).style.background = "transparent"
+              ;(e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.40)"
+            }}
             aria-label="Close dialog"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
-          {/* Required field legend */}
-          <p className="text-[11px] text-gray-400"><span className="text-red-400 font-semibold">*</span> Required field</p>
 
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
+
+          {/* Name row */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-gray-600">First Name <span className="text-red-400">*</span></Label>
-              <Input
+              <label className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)" }}>
+                First Name <span style={{ color: "rgba(248,113,113,0.80)" }}>*</span>
+              </label>
+              <DarkInput
                 {...register("firstName")}
-                className={`h-10 text-sm ${errors.firstName ? "border-red-400 focus:ring-red-300" : ""}`}
                 placeholder="John"
                 autoFocus
+                hasError={!!errors.firstName}
               />
               {errors.firstName && (
-                <p className="text-xs text-red-500">{errors.firstName.message || "First name is required"}</p>
+                <p className="text-[11px]" style={{ color: "rgba(248,113,113,0.80)" }}>
+                  {errors.firstName.message}
+                </p>
               )}
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-gray-900">Last Name</Label>
-              <Input {...register("lastName")} className="h-10 text-sm" placeholder="Smith" />
+              <label className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)" }}>
+                Last Name
+              </label>
+              <DarkInput {...register("lastName")} placeholder="Smith" />
             </div>
           </div>
 
+          {/* Contact row */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-gray-900">Phone</Label>
-              <Input {...register("phone")} type="tel" className="h-10 text-sm" placeholder="(305) 555-1234" />
+              <label className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)" }}>
+                Phone
+              </label>
+              <DarkInput {...register("phone")} type="tel" placeholder="(305) 555-1234" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-gray-900">Email</Label>
-              <Input
+              <label className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)" }}>
+                Email
+              </label>
+              <DarkInput
                 {...register("email")}
                 type="email"
-                className={`h-10 text-sm ${errors.email ? "border-red-400" : ""}`}
                 placeholder="john@example.com"
+                hasError={!!errors.email}
               />
               {errors.email && (
-                <p className="text-xs text-red-500">Please enter a valid email address</p>
+                <p className="text-[11px]" style={{ color: "rgba(248,113,113,0.80)" }}>
+                  {errors.email.message}
+                </p>
               )}
             </div>
           </div>
 
+          {/* Company */}
           <div className="space-y-1.5">
-            <Label className="text-xs font-medium text-gray-900">Company Name</Label>
-            <Input {...register("company")} className="h-10 text-sm" placeholder="Acme Corp" />
+            <label className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)" }}>
+              Company Name
+            </label>
+            <DarkInput {...register("company")} placeholder="Acme Corp" />
           </div>
 
+          {/* API error */}
           {apiError && (
-            <div className="rounded-lg bg-red-50 border border-red-200 px-3 py-2.5 text-sm text-red-600">
-              {apiError}
+            <div
+              className="flex items-start gap-2.5 rounded-xl px-3.5 py-2.5"
+              style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.22)" }}
+            >
+              <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: "rgba(248,113,113,0.80)" }} />
+              <p className="text-[12px]" style={{ color: "rgba(248,113,113,0.85)" }}>{apiError}</p>
             </div>
           )}
 
-          <div className="flex gap-2 pt-1">
-            <Button type="button" variant="ghost" onClick={onClose} className="flex-1 h-9 text-sm">Cancel</Button>
-            <Button type="submit" disabled={createCustomer.isPending} className="flex-1 h-9 text-sm bg-[#2563EB] hover:bg-blue-700 text-white">
-              {createCustomer.isPending ? "Creating…" : "Create Account"}
-            </Button>
+          {/* Actions */}
+          <div className="flex gap-2.5 pt-1">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 h-10 text-sm font-semibold rounded-xl transition-all"
+              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.70)" }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"
+                ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.90)"
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"
+                ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.70)"
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={createCustomer.isPending}
+              className="flex-1 h-10 text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+              style={{ background: "#c9a87c", color: "#0d1526" }}
+              onMouseEnter={e => { if (!createCustomer.isPending) (e.currentTarget as HTMLElement).style.background = "#d4b88e" }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "#c9a87c" }}
+            >
+              {createCustomer.isPending
+                ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Creating…</>
+                : "Create Account"
+              }
+            </button>
           </div>
         </form>
       </div>
