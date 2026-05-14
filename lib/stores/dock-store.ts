@@ -10,6 +10,7 @@ export interface DockItem {
 
 export const ALL_DOCK_ITEMS: DockItem[] = [
   { id: "dispatch",       label: "Dispatch",       href: "/dispatch",       iconName: "LayoutGrid" },
+  { id: "calendar",       label: "Calendar",       href: "/calendar",       iconName: "CalendarDays" },
   { id: "customers",      label: "Customers",      href: "/customers",      iconName: "Users" },
   { id: "drivers",        label: "Drivers",        href: "/drivers",        iconName: "UserCheck" },
   { id: "vehicles",       label: "Vehicles",       href: "/vehicles",       iconName: "Car" },
