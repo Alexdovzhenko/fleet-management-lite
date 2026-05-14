@@ -1701,30 +1701,50 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                       {errors.pickupDate && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color:"rgba(255,255,255,0.85)" }}>Pickup Time</Label>
-                      <Input
+                      <label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color:"rgba(255,255,255,0.85)" }}>Pickup Time</label>
+                      <input
                         type="text"
                         value={watch("pickupTime") || ""}
                         onChange={(e) => setValue("pickupTime", e.target.value)}
-                        onBlur={(e) => setValue("pickupTime", formatTime(e.target.value), { shouldValidate: true })}
-                        placeholder="e.g. 3:00 PM" autoComplete="off"
-                        className={`h-9 text-sm ${errors.pickupTime ? "border-red-400" : ""}`}
+                        placeholder="e.g. 3:00 PM"
+                        autoComplete="off"
+                        className="pax-input"
+                        style={{
+                          width: "100%", height: "36px", padding: "0 12px", borderRadius: "10px", fontSize: "14px", outline: "none",
+                          background: "rgba(255,255,255,0.05)",
+                          border: errors.pickupTime ? "1px solid rgba(248,113,113,0.60)" : "1px solid rgba(255,255,255,0.12)",
+                          color: "rgba(255,255,255,0.88)",
+                        }}
+                        onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
+                        onBlur={(e) => {
+                          setValue("pickupTime", formatTime(e.target.value), { shouldValidate: true })
+                          e.currentTarget.style.borderColor = errors.pickupTime ? "rgba(248,113,113,0.60)" : "rgba(255,255,255,0.12)"
+                        }}
                       />
-                      {errors.pickupTime && <p className="text-xs text-red-500">Required</p>}
+                      {errors.pickupTime && <p className="text-xs" style={{ color:"rgba(248,113,113,0.80)" }}>Required</p>}
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color:"rgba(255,255,255,0.85)" }}>Service Type</Label>
-                      <Select value={tripTypeValue}
-                        onValueChange={(v) => { if (typeof v === "string") { setTripTypeValue(v); setValue("tripType", v) } }}>
-                        <SelectTrigger className="h-9 text-sm w-full">
-                          <SelectValue>{enabledTypes.find(t => t.value === tripTypeValue)?.label ?? tripTypeValue}</SelectValue>
-                        </SelectTrigger>
-                        <SelectContent>
+                      <label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color:"rgba(255,255,255,0.85)" }}>Service Type</label>
+                      <div className="relative">
+                        <select
+                          value={tripTypeValue}
+                          onChange={(e) => { setTripTypeValue(e.target.value); setValue("tripType", e.target.value) }}
+                          style={{
+                            width: "100%", height: "36px", padding: "0 36px 0 12px", borderRadius: "10px", fontSize: "14px", outline: "none",
+                            background: "rgba(255,255,255,0.05)",
+                            border: "1px solid rgba(255,255,255,0.12)",
+                            color: "rgba(255,255,255,0.88)",
+                            appearance: "none", cursor: "pointer",
+                          }}
+                          onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
+                          onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
+                        >
                           {enabledTypes.map((t) => (
-                            <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                            <option key={t.value} value={t.value} style={{ background: "#0d1526", color: "rgba(255,255,255,0.88)" }}>{t.label}</option>
                           ))}
-                        </SelectContent>
-                      </Select>
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "rgba(200,212,228,0.50)" }} />
+                      </div>
                     </div>
                   </div>
                   {/* Row 2: Pax & Bags with steppers */}
