@@ -112,7 +112,7 @@ function StatusDropdown({
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full mt-1.5 z-50 bg-white border border-gray-200 rounded-xl shadow-lg py-1 min-w-[160px]">
+        <div className="absolute left-0 top-full mt-1.5 z-50 rounded-xl py-1 min-w-[160px]" style={{ background:"#0d1526", border:"1px solid rgba(255,255,255,0.12)", boxShadow:"0 8px 32px rgba(0,0,0,0.65)" }}>
           {getEnabledStatuses().map((s) => {
             const isActive = s === status
             return (
@@ -120,14 +120,11 @@ function StatusDropdown({
                 key={s}
                 type="button"
                 onClick={() => { onUpdate(s); setOpen(false) }}
-                className={cn(
-                  "w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left transition-colors",
-                  isActive ? "bg-gray-50 font-semibold text-gray-900" : "text-gray-700 hover:bg-gray-50"
-                )}
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left transition-colors font-semibold" style={{ color: isActive ? "rgba(255,255,255,0.90)" : "rgba(200,212,228,0.70)" }}
               >
                 <span className={cn("w-2 h-2 rounded-full flex-shrink-0", getStatusDotClass(s))} />
                 {getStatusLabel(s)}
-                {isActive && <Check className="w-3 h-3 ml-auto text-gray-400" />}
+                {isActive && <Check className="w-3 h-3 ml-auto" style={{ color:"rgba(201,168,124,0.70)" }} />}
               </button>
             )
           })}
@@ -205,11 +202,11 @@ const STOP_ROLE_STYLE: Record<StopRole, { dot: string; pill: string }> = {
   wait:   { dot: "bg-amber-500",   pill: "bg-amber-50 text-amber-700 border-amber-200" },
 }
 const ROLE_PREFIX: Record<StopRole, string> = { pickup: "PU", drop: "DO", stop: "ST", wait: "WT" }
-const ROLE_ROW_BG: Record<StopRole, string> = {
-  pickup: "bg-sky-50 text-sky-900 border-sky-100",
-  drop:   "bg-red-50 text-red-900 border-red-100",
-  stop:   "bg-gray-50 text-gray-800 border-gray-100",
-  wait:   "bg-amber-50 text-amber-900 border-amber-100",
+const ROLE_ROW_BG: Record<StopRole, { bg: string; border: string; prefix: string }> = {
+  pickup: { bg: "rgba(16,185,129,0.05)",  border: "rgba(16,185,129,0.18)",  prefix: "rgba(52,211,153,0.90)"  },
+  drop:   { bg: "rgba(239,68,68,0.05)",   border: "rgba(239,68,68,0.18)",   prefix: "rgba(248,113,113,0.90)" },
+  stop:   { bg: "rgba(99,102,241,0.05)",  border: "rgba(99,102,241,0.18)",  prefix: "rgba(129,140,248,0.90)" },
+  wait:   { bg: "rgba(245,158,11,0.05)",  border: "rgba(245,158,11,0.18)",  prefix: "rgba(251,191,36,0.90)"  },
 }
 
 // ── SortableStopRow ──────────────────────────────────────────────────────────
@@ -247,23 +244,24 @@ function SortableStopRow({
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      className={`group flex items-start gap-3 px-3 py-2.5 border-b last:border-b-0 border-gray-100 transition-colors ${ROLE_ROW_BG[stop.role]} ${
-        isDragOverlay
-          ? "shadow-lg ring-1 ring-blue-200 rounded-xl scale-[1.02] bg-white cursor-grabbing"
-          : isEditing
-          ? "opacity-40 cursor-not-allowed"
-          : "cursor-pointer hover:brightness-95"
+      className={`group flex items-start gap-3 px-3 py-2.5 last:border-b-0 transition-colors ${
+        isDragOverlay ? "scale-[1.02] cursor-grabbing rounded-xl" : isEditing ? "opacity-40 cursor-not-allowed" : "cursor-pointer"
       }`}
+      style={{
+        ...style,
+        background: isDragOverlay ? "#0d1526" : ROLE_ROW_BG[stop.role].bg,
+        borderBottom: isDragOverlay ? "none" : "1px solid rgba(255,255,255,0.05)",
+        borderLeft: isDragOverlay ? "none" : `2px solid ${ROLE_ROW_BG[stop.role].border}`,
+        ...(isDragOverlay ? { boxShadow:"0 8px 32px rgba(0,0,0,0.60)", borderRadius:"12px", border:`1px solid ${ROLE_ROW_BG[stop.role].border}` } : {}),
+      }}
       onClick={() => { if (!isEditing && !isDragOverlay) onEdit(stop) }}
     >
       {/* Drag handle — hidden when editing */}
       {!isEditing && (
         <button
           type="button"
-          className={`flex-shrink-0 mt-0.5 touch-none ${
-            isDragOverlay ? "cursor-grabbing" : "cursor-grab"
-          } text-gray-300 hover:text-gray-500 transition-colors`}
+          className={`flex-shrink-0 mt-0.5 touch-none transition-colors ${isDragOverlay ? "cursor-grabbing" : "cursor-grab"}`}
+          style={{ color: "rgba(200,212,228,0.30)" }}
           aria-label="Drag to reorder"
           {...attributes}
           {...listeners}
@@ -272,8 +270,8 @@ function SortableStopRow({
           <GripVertical className="w-3.5 h-3.5" />
         </button>
       )}
-      {/* Role prefix — left-aligned, mono */}
-      <span className="text-[11px] font-bold font-mono flex-shrink-0 mt-0.5 w-6">
+      {/* Role prefix */}
+      <span className="text-[11px] font-bold font-mono flex-shrink-0 mt-0.5 w-6" style={{ color: ROLE_ROW_BG[stop.role].prefix }}>
         {ROLE_PREFIX[stop.role]}:
       </span>
       {/* Content */}
@@ -316,7 +314,7 @@ function SortableStopRow({
       <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
         {!isEditing && !isDragOverlay && (
           <span className="opacity-0 group-hover:opacity-100 transition-opacity">
-            <Pencil className="w-3 h-3 text-gray-400" />
+            <Pencil className="w-3 h-3" style={{ color: "rgba(200,212,228,0.40)" }} />
           </span>
         )}
         {!isDragOverlay && (
@@ -327,7 +325,7 @@ function SortableStopRow({
               if (!isEditing) onDelete(stop.id)
             }}
             disabled={isEditing}
-            className="text-gray-300 hover:text-red-400 transition-colors disabled:pointer-events-none"
+            className="transition-colors disabled:pointer-events-none" style={{ color: "rgba(200,212,228,0.30)" }}
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -1530,13 +1528,13 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
         <style>{SAVE_BUTTON_STYLES}</style>
 
         {/* ── Header ── */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 bg-white flex-shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0" style={{ background:"#0d1526", borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
           {/* Left: Confirmation # + Status */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {/* Confirmation # */}
             <button type="button" onClick={copyConfirmation} className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors group flex-shrink-0">
-              <span className="text-xs sm:text-sm font-mono font-semibold text-blue-700">{currentTrip.tripNumber}</span>
-              {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />}
+              <span className="text-xs sm:text-sm font-mono font-semibold" style={{ color:"#c9a87c" }}>{currentTrip.tripNumber}</span>
+              {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" style={{ color:"rgba(200,212,228,0.45)" }} />}
             </button>
 
             {/* Status */}
@@ -1554,7 +1552,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
               <button
                 type="button"
                 onClick={() => setCopyOpen(true)}
-                className="inline-flex items-center justify-center h-9 gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-3.5 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 transition-colors duration-150 flex-shrink-0"
+                className="inline-flex items-center justify-center h-9 gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-3.5 rounded-xl transition-colors duration-150 flex-shrink-0" style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.10)", color:"rgba(200,212,228,0.80)" }}
               >
                 <Copy className="w-4 h-4" />
                 <span className="hidden sm:inline">Copy</span>
@@ -1564,7 +1562,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
               <button
                 type="button"
                 onClick={() => setRoundTripOpen(true)}
-                className="inline-flex items-center justify-center h-9 gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-3.5 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 transition-colors duration-150 flex-shrink-0"
+                className="inline-flex items-center justify-center h-9 gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-3.5 rounded-xl transition-colors duration-150 flex-shrink-0" style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.10)", color:"rgba(200,212,228,0.80)" }}
               >
                 <ArrowLeftRight className="w-4 h-4" />
                 <span className="hidden sm:inline">Round Trip</span>
@@ -1574,7 +1572,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
               <button
                 type="button"
                 onClick={() => setSendEmailOpen(true)}
-                className="inline-flex items-center justify-center h-9 gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-3.5 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 transition-colors duration-150 flex-shrink-0"
+                className="inline-flex items-center justify-center h-9 gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-3.5 rounded-xl transition-colors duration-150 flex-shrink-0" style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.10)", color:"rgba(200,212,228,0.80)" }}
               >
                 <Send className="w-4 h-4" />
                 <span className="hidden sm:inline">Send</span>
@@ -1596,11 +1594,12 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   "overflow-hidden flex-shrink-0",
                   saveSuccess && "save-button-success",
                   saveSuccess
-                    ? "bg-emerald-500 text-white shadow-sm"
+                    ? "bg-emerald-600 text-white shadow-sm"
                     : updateTrip.isPending
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md active:shadow-sm active:scale-95"
+                    ? "text-[#0d1526] shadow-sm"
+                    : "text-[#0d1526] shadow-sm hover:brightness-110 active:scale-95"
                 )}
+                style={saveSuccess || updateTrip.isPending ? {} : { background: "#c9a87c" }}
               >
                 {saveSuccess ? (
                   <div className="flex items-center justify-center gap-2 animate-none">
@@ -1620,7 +1619,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="inline-flex items-center justify-center h-9 w-9 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-150 flex-shrink-0"
+                className="inline-flex items-center justify-center h-9 w-9 rounded-lg transition-colors duration-150 flex-shrink-0" style={{ color:"rgba(255,255,255,0.70)" }}
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />
@@ -1630,26 +1629,26 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
         </div>
 
         {/* ── Reservation Details (Compact) ── */}
-        <div className="px-6 py-3 border-b border-gray-100 bg-white flex-shrink-0">
+        <div className="px-6 py-3 flex-shrink-0" style={{ background:"#0d1526", borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
           <div className="flex items-center gap-4 text-sm">
             {/* Created Date & Time */}
             <div className="flex items-center gap-2 min-w-0">
-              <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
-              <span className="text-gray-600 font-medium">
+              <Calendar className="w-4 h-4 flex-shrink-0" style={{ color:"#c9a87c" }} />
+              <span className="font-medium" style={{ color:"rgba(255,255,255,0.82)" }}>
                 {currentTrip.createdAt ? format(new Date(currentTrip.createdAt), 'MMM d, yyyy') : '—'}
               </span>
-              <span className="text-gray-400">·</span>
-              <span className="text-gray-500">
+              <span className="" style={{ color:"rgba(200,212,228,0.35)" }}>·</span>
+              <span className="" style={{ color:"rgba(200,212,228,0.55)" }}>
                 {currentTrip.createdAt ? format(new Date(currentTrip.createdAt), 'h:mm a') : '—'}
               </span>
             </div>
 
             {/* Divider */}
-            <span className="text-gray-300">|</span>
+            <span className="" style={{ color:"rgba(255,255,255,0.15)" }}>|</span>
 
             {/* Created By User & Role */}
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
-              <div className="w-7 h-7 rounded-md bg-slate-100 flex items-center justify-center flex-shrink-0 text-[10px] font-semibold text-slate-700">
+              <div className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 text-[10px] font-semibold" style={{ background:"rgba(201,168,124,0.14)", border:"1px solid rgba(201,168,124,0.22)", color:"#c9a87c" }}>
                 {currentTrip.createdBy?.name
                   ? currentTrip.createdBy.name
                       .split(' ')
@@ -1659,13 +1658,13 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                       .slice(0, 2)
                   : '—'}
               </div>
-              <span className="text-gray-900 font-medium truncate">{currentTrip.createdBy?.name || 'Unknown'}</span>
+              <span className="font-medium truncate" style={{ color:"rgba(255,255,255,0.85)" }}>{currentTrip.createdBy?.name || 'Unknown'}</span>
               {(currentTrip.createdBy?.role === 'ADMIN' || currentTrip.createdBy?.role === 'DISPATCHER') && (
                 <span className={cn(
                   "text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md flex-shrink-0 whitespace-nowrap",
                   currentTrip.createdBy.role === 'ADMIN'
-                    ? "bg-purple-100 text-purple-700"
-                    : "bg-blue-100 text-blue-700"
+                    ? ""
+                    : ""
                 )}>
                   {currentTrip.createdBy.role === 'ADMIN' ? 'Admin' : 'Dispatcher'}
                 </span>
@@ -1675,7 +1674,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
         </div>
 
         {/* ── Body ── */}
-        <div className="overflow-y-auto flex-1 min-h-0 bg-[#f5f6f8] relative">
+        <div className="overflow-y-auto flex-1 min-h-0 relative" style={{ background:"#080c16" }}>
           <form id="trip-edit-form" onSubmit={handleSubmit(onSubmit, () => {
             setSaveError("Please check required fields")
           })}>
@@ -1685,15 +1684,15 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
               <div className="flex-1 p-4 sm:p-6 space-y-5 min-w-0">
 
                 {/* Schedule */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
+                <div className="rounded-2xl px-6 py-5" style={{ background:"#0d1526", border:"1px solid rgba(255,255,255,0.07)" }}>
                   <div className="flex items-center gap-2 mb-4">
-                    <span className="w-0.5 h-4 rounded-full bg-gray-200 inline-block flex-shrink-0" />
-                    <span className="text-[11px] font-semibold uppercase tracking-widest text-gray-400">Schedule</span>
+                    <span className="w-0.5 h-4 rounded-full inline-block flex-shrink-0" style={{ background:"#c9a87c" }} />
+                    <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color:"#c9a87c" }}>Schedule</span>
                   </div>
                   {/* Row 1: Date · Time · Service Type */}
                   <div className="grid grid-cols-1 sm:grid-cols-[200px_180px_1fr] gap-4 mb-4">
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Pickup Date</Label>
+                      <Label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color:"rgba(255,255,255,0.85)" }}>Pickup Date</Label>
                       <DatePickerInput
                         value={watch("pickupDate") || ""}
                         onChange={(v) => setValue("pickupDate", v, { shouldValidate: true })}
@@ -1702,7 +1701,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                       {errors.pickupDate && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Pickup Time</Label>
+                      <Label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color:"rgba(255,255,255,0.85)" }}>Pickup Time</Label>
                       <Input
                         type="text"
                         value={watch("pickupTime") || ""}
@@ -1714,7 +1713,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                       {errors.pickupTime && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Service Type</Label>
+                      <Label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color:"rgba(255,255,255,0.85)" }}>Service Type</Label>
                       <Select value={tripTypeValue}
                         onValueChange={(v) => { if (typeof v === "string") { setTripTypeValue(v); setValue("tripType", v) } }}>
                         <SelectTrigger className="h-9 text-sm w-full">
@@ -1731,44 +1730,44 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   {/* Row 2: Pax & Bags with steppers */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Passengers</Label>
-                      <div className="flex items-center gap-3 h-9 px-3 border border-gray-200 rounded-lg bg-gray-50">
-                        <button type="button" onClick={() => { const curr = watch("passengerCount") || 1; if (curr > 1) setValue("passengerCount", curr - 1) }} className="text-gray-500 hover:text-gray-700 font-semibold">−</button>
-                        <span className="flex-1 text-center font-semibold text-gray-900">{watch("passengerCount") || 1}</span>
-                        <button type="button" onClick={() => { const curr = watch("passengerCount") || 1; setValue("passengerCount", curr + 1) }} className="text-gray-500 hover:text-gray-700 font-semibold">+</button>
+                      <Label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color:"rgba(255,255,255,0.85)" }}>Passengers</Label>
+                      <div className="flex items-center gap-3 h-9 px-3 rounded-xl" style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)" }}>
+                        <button type="button" onClick={() => { const curr = watch("passengerCount") || 1; if (curr > 1) setValue("passengerCount", curr - 1) }} className="font-semibold transition-colors" style={{ color:"rgba(200,212,228,0.55)" }}>−</button>
+                        <span className="flex-1 text-center font-semibold" style={{ color:"rgba(255,255,255,0.90)" }}>{watch("passengerCount") || 1}</span>
+                        <button type="button" onClick={() => { const curr = watch("passengerCount") || 1; setValue("passengerCount", curr + 1) }} className="font-semibold transition-colors" style={{ color:"rgba(200,212,228,0.55)" }}>+</button>
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Bags</Label>
-                      <div className="flex items-center gap-3 h-9 px-3 border border-gray-200 rounded-lg bg-gray-50">
-                        <button type="button" onClick={() => { const curr = watch("luggageCount") || 0; if (curr > 0) setValue("luggageCount", curr - 1) }} className="text-gray-500 hover:text-gray-700 font-semibold">−</button>
-                        <span className="flex-1 text-center font-semibold text-gray-900">{watch("luggageCount") || 0}</span>
-                        <button type="button" onClick={() => { const curr = watch("luggageCount") || 0; setValue("luggageCount", curr + 1) }} className="text-gray-500 hover:text-gray-700 font-semibold">+</button>
+                      <Label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color:"rgba(255,255,255,0.85)" }}>Bags</Label>
+                      <div className="flex items-center gap-3 h-9 px-3 rounded-xl" style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)" }}>
+                        <button type="button" onClick={() => { const curr = watch("luggageCount") || 0; if (curr > 0) setValue("luggageCount", curr - 1) }} className="font-semibold transition-colors" style={{ color:"rgba(200,212,228,0.55)" }}>−</button>
+                        <span className="flex-1 text-center font-semibold" style={{ color:"rgba(255,255,255,0.90)" }}>{watch("luggageCount") || 0}</span>
+                        <button type="button" onClick={() => { const curr = watch("luggageCount") || 0; setValue("luggageCount", curr + 1) }} className="font-semibold transition-colors" style={{ color:"rgba(200,212,228,0.55)" }}>+</button>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Passengers */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
+                <div className="rounded-2xl px-6 py-5" style={{ background:"#0d1526", border:"1px solid rgba(255,255,255,0.07)" }}>
                   <div className="flex items-center gap-2 mb-4">
-                    <span className="w-0.5 h-4 rounded-full bg-gray-200 inline-block flex-shrink-0" />
-                    <span className="text-[11px] font-semibold uppercase tracking-widest text-gray-400">Passengers</span>
+                    <span className="w-0.5 h-4 rounded-full inline-block flex-shrink-0" style={{ background:"#c9a87c" }} />
+                    <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color:"#c9a87c" }}>Passengers</span>
                   </div>
                   <div className="space-y-2.5">
                     {/* Primary passenger */}
-                    <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl px-3.5 py-3">
+                    <div className="rounded-xl px-3.5 py-3" style={{ background:"rgba(99,102,241,0.06)", border:"1px solid rgba(99,102,241,0.18)" }}>
                       <div className="flex items-center gap-2 mb-2.5">
-                        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-500 text-white text-[9px] font-bold shadow-sm shadow-indigo-200">1</span>
-                        <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Primary</span>
+                        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-bold" style={{ background:"rgba(99,102,241,0.80)", color:"#ffffff" }}>1</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color:"rgba(129,140,248,0.85)" }}>Primary</span>
                       </div>
                       <div className="grid grid-cols-2 gap-2.5 mb-2.5">
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium text-gray-500">Name</Label>
+                          <Label className="text-[11px] font-medium" style={{ color:"rgba(255,255,255,0.80)" }}>Name</Label>
                           <Input {...register("passengerName")} className="h-9 text-sm bg-white" placeholder="Full name" />
                         </div>
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium text-gray-500">Phone</Label>
+                          <Label className="text-[11px] font-medium" style={{ color:"rgba(255,255,255,0.80)" }}>Phone</Label>
                           <Input
                             {...register("passengerPhone")}
                             type="tel"
@@ -1786,40 +1785,40 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                         </div>
                       </div>
                       <div className="space-y-1.5">
-                        <Label className="text-[11px] font-medium text-gray-500">Email</Label>
+                        <Label className="text-[11px] font-medium" style={{ color:"rgba(255,255,255,0.80)" }}>Email</Label>
                         <Input {...register("passengerEmail")} type="email" className="h-9 text-sm bg-white" placeholder="passenger@example.com" />
                       </div>
                     </div>
 
                     {/* Additional passengers */}
                     {additionalPassengers.map((pax, idx) => (
-                      <div key={pax.id} className="relative bg-white border border-gray-200 rounded-xl px-3.5 py-3">
+                      <div key={pax.id} className="relative rounded-xl px-3.5 py-3" style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.09)" }}>
                         <div className="flex items-center justify-between mb-2.5">
                           <div className="flex items-center gap-2">
-                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-[9px] font-bold">{idx + 2}</span>
-                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Additional</span>
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-bold" style={{ background:"rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.70)" }}>{idx + 2}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color:"rgba(200,212,228,0.50)" }}>Additional</span>
                           </div>
                           <button
                             type="button"
                             onClick={() => removeAdditionalPassenger(pax.id)}
-                            className="w-5 h-5 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all"
+                            className="w-5 h-5 rounded-full flex items-center justify-center transition-all" style={{ color:"rgba(200,212,228,0.35)" }}
                           >
                             <X className="w-3 h-3" />
                           </button>
                         </div>
                         <div className="grid grid-cols-2 gap-2.5 mb-2.5">
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium text-gray-500">First Name</Label>
+                            <Label className="text-[11px] font-medium" style={{ color:"rgba(255,255,255,0.80)" }}>First Name</Label>
                             <Input value={pax.firstName} onChange={(e) => updateAdditionalPassenger(pax.id, "firstName", e.target.value)} className="h-9 text-sm" />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium text-gray-500">Last Name</Label>
+                            <Label className="text-[11px] font-medium" style={{ color:"rgba(255,255,255,0.80)" }}>Last Name</Label>
                             <Input value={pax.lastName} onChange={(e) => updateAdditionalPassenger(pax.id, "lastName", e.target.value)} className="h-9 text-sm" />
                           </div>
                         </div>
                         <div className="grid grid-cols-2 gap-2.5">
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium text-gray-500">Phone</Label>
+                            <Label className="text-[11px] font-medium" style={{ color:"rgba(255,255,255,0.80)" }}>Phone</Label>
                             <Input
                               type="tel"
                               value={pax.phone}
@@ -1835,7 +1834,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium text-gray-500">Email</Label>
+                            <Label className="text-[11px] font-medium" style={{ color:"rgba(255,255,255,0.80)" }}>Email</Label>
                             <Input value={pax.email} type="email" onChange={(e) => updateAdditionalPassenger(pax.id, "email", e.target.value)} className="h-9 text-sm" />
                           </div>
                         </div>
@@ -1846,7 +1845,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                     <button
                       type="button"
                       onClick={addAdditionalPassenger}
-                      className="w-full h-8 flex items-center justify-center gap-1.5 border border-dashed border-gray-200 hover:border-indigo-300 rounded-xl text-[11.5px] font-medium text-gray-400 hover:text-indigo-500 hover:bg-indigo-50/40 transition-all"
+                      className="w-full h-8 flex items-center justify-center gap-1.5 rounded-xl text-[11.5px] font-medium transition-all" style={{ border:"1px dashed rgba(255,255,255,0.12)", color:"rgba(200,212,228,0.50)" }}
                     >
                       <Plus className="w-3 h-3" />
                       Add passenger
@@ -1855,10 +1854,10 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                 </div>
 
                 {/* Route */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
+                <div className="rounded-2xl px-6 py-5" style={{ background:"#0d1526", border:"1px solid rgba(255,255,255,0.07)" }}>
                   <div className="flex items-center gap-2 mb-4">
-                    <span className="w-0.5 h-4 rounded-full bg-gray-200 inline-block flex-shrink-0" />
-                    <span className="text-[11px] font-semibold uppercase tracking-widest text-gray-400">Route</span>
+                    <span className="w-0.5 h-4 rounded-full inline-block flex-shrink-0" style={{ background:"#c9a87c" }} />
+                    <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color:"#c9a87c" }}>Route</span>
                   </div>
                   <RouteBuilder stops={stops} setStops={setStops} stopsError={stopsError} />
                 </div>
@@ -1866,22 +1865,22 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                 {/* Client Ref + Notes */}
                 <div className="space-y-4">
                   {/* Trip Notes */}
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
-                    <Label className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider block mb-3">Trip Notes</Label>
-                    <p className="text-xs text-gray-500 mb-3">Visible to driver and client</p>
+                  <div className="rounded-2xl px-6 py-5" style={{ background:"#0d1526", border:"1px solid rgba(255,255,255,0.07)" }}>
+                    <Label className="text-[11px] font-semibold uppercase tracking-wider block mb-3" style={{ color:"rgba(255,255,255,0.85)" }}>Trip Notes</Label>
+                    <p className="text-xs mb-3" style={{ color:"rgba(200,212,228,0.50)" }}>Visible to driver and client</p>
                     <textarea {...register("notes")} rows={3}
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-800 resize-none focus:outline-none focus:ring-1 focus:ring-blue-400 placeholder:text-gray-400"
+                      className="w-full rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none" style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
                       placeholder="Add any trip-specific notes here…" />
                   </div>
 
                   {/* Internal Notes */}
-                  <div className="bg-amber-50 rounded-2xl border border-amber-100 shadow-sm px-6 py-5">
+                  <div className="rounded-2xl px-6 py-5" style={{ background:"rgba(245,158,11,0.06)", border:"1px solid rgba(245,158,11,0.20)" }}>
                     <div className="flex items-center gap-2 mb-3">
-                      <Label className="text-[11px] font-semibold text-amber-900 uppercase tracking-wider">Internal Notes</Label>
-                      <span className="text-xs text-amber-700 flex items-center gap-1">🔒 Dispatcher only</span>
+                      <Label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color:"rgba(251,191,36,0.85)" }}>Internal Notes</Label>
+                      <span className="text-xs flex items-center gap-1" style={{ color:"rgba(251,191,36,0.60)" }}>🔒 Dispatcher only</span>
                     </div>
                     <textarea {...register("internalNotes")} rows={3}
-                      className="w-full border border-amber-200 bg-white rounded-xl px-3 py-2.5 text-sm text-gray-800 resize-none focus:outline-none focus:ring-1 focus:ring-amber-400 placeholder:text-gray-400"
+                      className="w-full rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none" style={{ background:"rgba(245,158,11,0.05)", border:"1px solid rgba(245,158,11,0.18)", color:"rgba(255,255,255,0.88)" }}
                       placeholder="Private notes, reminders, internal instructions…" />
                   </div>
                 </div>
@@ -1894,7 +1893,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                 />
 
                 {saveError && (
-                  <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600 flex items-start gap-2">
+                  <div className="rounded-xl px-4 py-3 text-sm flex items-start gap-2" style={{ background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.25)", color:"rgba(248,113,113,0.85)" }}>
                     <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                     <span>{saveError}</span>
                   </div>
@@ -1902,34 +1901,34 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
               </div>
 
               {/* ── RIGHT SIDEBAR ── */}
-              <div className="w-full lg:w-[320px] lg:flex-shrink-0 border-t lg:border-t-0 lg:border-l border-gray-100 bg-white flex flex-col">
+              <div className="w-full lg:w-[320px] lg:flex-shrink-0 flex flex-col" style={{ borderLeft:"1px solid rgba(255,255,255,0.06)", background:"#0d1526" }}>
               <div className="flex-1 overflow-y-auto p-5 space-y-4">
 
                 {/* Account / Billing Contact */}
-                <div className="bg-gray-50 rounded-xl border border-gray-200 px-4 py-3.5">
-                  <Label className="text-[10px] font-semibold text-gray-600 uppercase tracking-wider mb-2.5 block">Billing Contact</Label>
+                <div className="rounded-xl px-4 py-3.5" style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.09)" }}>
+                  <Label className="text-[10px] font-semibold uppercase tracking-wider mb-2.5 block" style={{ color:"#c9a87c" }}>Billing Contact</Label>
                   <div ref={customerPickerRef} className="relative">
                     {selectedCustomer ? (
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-blue-200 flex items-center justify-center text-[10px] font-bold text-blue-700 flex-shrink-0">
+                          <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0" style={{ background:"linear-gradient(135deg,rgba(99,102,241,0.30),rgba(139,92,246,0.30))", color:"rgba(167,139,250,0.85)" }}>
                             {getInitials(selectedCustomer.name)}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-xs font-semibold text-gray-900 truncate">{selectedCustomer.name}</div>
-                            {selectedCustomer.phone && <div className="text-[10px] text-gray-500">{formatPhone(selectedCustomer.phone)}</div>}
+                            <div className="text-xs font-semibold truncate" style={{ color:"rgba(255,255,255,0.88)" }}>{selectedCustomer.name}</div>
+                            {selectedCustomer.phone && <div className="text-[10px]" style={{ color:"rgba(200,212,228,0.55)" }}>{formatPhone(selectedCustomer.phone)}</div>}
                           </div>
                         </div>
                         <button type="button"
                           onClick={() => { setCustomerPickerOpen(true); setCustomerSearch("") }}
-                          className="text-[11px] text-blue-600 hover:text-blue-700 font-semibold">
+                          className="text-[11px] font-semibold" style={{ color:"#c9a87c" }}>
                           Change
                         </button>
                       </div>
                     ) : (
                       <button type="button"
                         onClick={() => { setCustomerPickerOpen(true); setCustomerSearch("") }}
-                        className="w-full flex items-center justify-center gap-1.5 border border-dashed border-gray-300 rounded-lg px-3 py-2 text-[11px] text-gray-400 hover:border-blue-400 hover:text-blue-600 transition-colors">
+                        className="w-full flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[11px] transition-colors" style={{ border:"1px dashed rgba(255,255,255,0.12)", color:"rgba(200,212,228,0.50)" }}>
                         <User className="w-3.5 h-3.5" />
                         Select account
                       </button>
@@ -1937,27 +1936,27 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
 
                     {/* Search dropdown */}
                     {customerPickerOpen && (
-                      <div className="absolute left-0 right-0 top-full mt-1.5 z-50 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-                        <div className="p-2 border-b border-gray-100">
+                      <div className="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl overflow-hidden" style={{ background:"#0d1526", border:"1px solid rgba(255,255,255,0.12)", boxShadow:"0 8px 32px rgba(0,0,0,0.65)" }}>
+                        <div className="p-2" style={{ borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
                           <input autoFocus type="text" value={customerSearch}
                             onChange={(e) => setCustomerSearch(e.target.value)} placeholder="Search…"
-                            className="w-full text-sm px-2 py-1.5 rounded border border-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                            className="w-full text-sm px-2 py-1.5 rounded-lg outline-none" style={{ background:"rgba(255,255,255,0.07)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
                           />
                         </div>
                         <div className="max-h-40 overflow-y-auto">
                           {allCustomers.length === 0 ? (
-                            <p className="text-[11px] text-gray-400 text-center py-3">No accounts</p>
+                            <p className="text-[11px] text-center py-3" style={{ color:"rgba(200,212,228,0.45)" }}>No accounts</p>
                           ) : (
                             allCustomers.map((c) => (
                               <button key={c.id} type="button"
                                 onClick={() => { setSelectedCustomer(c); setCustomerPickerOpen(false); setCustomerSearch("") }}
-                                className="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-left transition-colors border-b border-gray-50 last:border-0">
-                                <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[9px] font-bold text-blue-700 flex-shrink-0">
+                                className="w-full flex items-center gap-2 px-3 py-2 text-left transition-colors" style={{ borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
+                                <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0" style={{ background:"rgba(99,102,241,0.20)", color:"rgba(167,139,250,0.90)" }}>
                                   {getInitials(c.name)}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <div className="text-xs font-medium text-gray-900 truncate">{c.name}</div>
-                                  {c.phone && <div className="text-[10px] text-gray-400">{formatPhone(c.phone)}</div>}
+                                  <div className="text-xs font-medium truncate" style={{ color:"rgba(255,255,255,0.85)" }}>{c.name}</div>
+                                  {c.phone && <div className="text-[10px]" style={{ color:"rgba(200,212,228,0.45)" }}>{formatPhone(c.phone)}</div>}
                                 </div>
                               </button>
                             ))
@@ -1970,14 +1969,14 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
 
                 {/* ── POB (Passenger On Board) Time ── */}
                 <div className="rounded-xl border overflow-hidden transition-all duration-200"
-                  style={{ borderColor: pobTime ? "#d1fae5" : "#e5e7eb" }}>
+                  style={{ borderRadius:"12px", overflow:"hidden", border: pobTime ? "1px solid rgba(16,185,129,0.25)" : "1px solid rgba(255,255,255,0.09)" }}>
                   {/* Header */}
                   <div className="flex items-center justify-between px-4 py-2.5"
-                    style={{ backgroundColor: pobTime ? "#f0fdf4" : "#f9fafb" }}>
+                    style={{ background: pobTime ? "rgba(16,185,129,0.08)" : "rgba(255,255,255,0.04)", padding:"10px 16px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
                     <div className="flex items-center gap-2"
                       title="Passenger On Board (POB): The exact moment the passenger enters the vehicle. Auto-recorded when status changes to POB, or set manually.">
-                      <div className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors duration-300 ${pobTime ? "bg-emerald-500" : "bg-gray-300"}`} />
-                      <span className={`text-[10px] font-semibold uppercase tracking-widest transition-colors duration-200 ${pobTime ? "text-emerald-700" : "text-gray-500"}`}>
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors duration-300 ${pobTime ? "bg-emerald-400" : "bg-white/20"}`} />
+                      <span className="text-[10px] font-semibold uppercase tracking-widest transition-colors duration-200" style={{ color: pobTime ? "rgba(52,211,153,0.90)" : "rgba(200,212,228,0.55)" }}>
                         Passenger On Board
                       </span>
                     </div>
@@ -1985,7 +1984,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                       <button
                         type="button"
                         onClick={() => setPobEditing(true)}
-                        className="flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:text-blue-700 active:scale-95 transition-all duration-150"
+                        className="flex items-center gap-1 text-[11px] font-semibold active:scale-95 transition-all duration-150" style={{ color:"#c9a87c" }}
                       >
                         <Pencil className="w-3 h-3" />
                         Edit
@@ -1994,17 +1993,17 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   </div>
 
                   {/* Body */}
-                  <div className="px-4 py-3 bg-white">
+                  <div className="px-4 py-3" style={{ background:"rgba(255,255,255,0.02)" }}>
                     {!pobEditing ? (
                       pobTime ? (
                         <div className="flex items-start gap-2.5">
                           <Clock className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
                           <div>
-                            <p className="text-[13px] font-semibold text-gray-900 leading-snug">
+                            <p className="text-[13px] font-semibold leading-snug" style={{ color:"rgba(255,255,255,0.88)" }}>
                               {formatPobDisplay(pobTime)}
                             </p>
                             {pobWasEdited && (
-                              <span className="inline-flex items-center mt-1.5 text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full">
+                              <span className="inline-flex items-center mt-1.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-full" style={{ color:"rgba(251,191,36,0.85)", background:"rgba(245,158,11,0.10)", border:"1px solid rgba(245,158,11,0.25)" }}>
                                 Edited
                               </span>
                             )}
@@ -2012,7 +2011,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          <p className="text-[12px] text-gray-400">Not yet recorded</p>
+                          <p className="text-[12px]" style={{ color:"rgba(200,212,228,0.45)" }}>Not yet recorded</p>
                           <div className="flex gap-2">
                             <button
                               type="button"
@@ -2021,14 +2020,14 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                                 setPobTime(now)
                                 setPobWasEdited(true)
                               }}
-                              className="flex-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg px-3 py-1.5 active:scale-95 transition-all duration-150"
+                              className="flex-1 text-[11px] font-semibold rounded-lg px-3 py-1.5 active:scale-95 transition-all duration-150" style={{ background:"rgba(16,185,129,0.10)", border:"1px solid rgba(16,185,129,0.22)", color:"rgba(52,211,153,0.90)" }}
                             >
                               Set Now
                             </button>
                             <button
                               type="button"
                               onClick={() => setPobEditing(true)}
-                              className="flex-1 text-[11px] font-semibold text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg px-3 py-1.5 active:scale-95 transition-all duration-150"
+                              className="flex-1 text-[11px] font-semibold rounded-lg px-3 py-1.5 active:scale-95 transition-all duration-150" style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(200,212,228,0.70)" }}
                             >
                               Pick Time
                             </button>
@@ -2045,13 +2044,13 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                             setPobTime(newDatetime)
                             setPobWasEdited(true)
                           }}
-                          className="w-full h-9 px-3 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400 transition-all duration-150 bg-gray-50"
+                          className="w-full h-9 px-3 text-sm rounded-lg outline-none transition-all duration-150" style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
                         />
                         <div className="flex items-center gap-2">
                           <button
                             type="button"
                             onClick={() => setPobEditing(false)}
-                            className="flex-1 text-[11px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg px-3 py-1.5 active:scale-95 transition-all duration-150"
+                            className="flex-1 text-[11px] font-semibold rounded-lg px-3 py-1.5 active:scale-95 transition-all duration-150" style={{ background:"rgba(201,168,124,0.12)", border:"1px solid rgba(201,168,124,0.25)", color:"#c9a87c" }}
                           >
                             Done
                           </button>
@@ -2062,7 +2061,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                               setPobWasEdited(true)
                               setPobEditing(false)
                             }}
-                            className="text-[11px] font-semibold text-red-500 hover:text-red-600 px-2 py-1.5 active:scale-95 transition-all duration-150"
+                            className="text-[11px] font-semibold px-2 py-1.5 active:scale-95 transition-all duration-150" style={{ color:"rgba(248,113,113,0.75)" }}
                           >
                             Clear
                           </button>
@@ -2074,16 +2073,16 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
 
                 {/* Farm-In banner */}
                 {isFarmedIn && currentTrip.farmedIn && (
-                  <div className="flex items-center gap-2.5 px-3 py-2.5 bg-indigo-50 border border-indigo-100 rounded-xl">
-                    <ArrowRightLeft className="w-4 h-4 text-indigo-500 flex-shrink-0" />
+                  <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl" style={{ background:"rgba(99,102,241,0.08)", border:"1px solid rgba(99,102,241,0.22)" }}>
+                    <ArrowRightLeft className="w-4 h-4 flex-shrink-0" style={{ color:"rgba(129,140,248,0.80)" }} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-indigo-800">Farm-In</p>
-                      <p className="text-xs text-indigo-600 truncate">{currentTrip.farmedIn.name}</p>
+                      <p className="text-xs font-semibold" style={{ color:"rgba(167,139,250,0.90)" }}>Farm-In</p>
+                      <p className="text-xs truncate" style={{ color:"rgba(129,140,248,0.65)" }}>{currentTrip.farmedIn.name}</p>
                     </div>
                     {currentTrip.agreedPrice && (
                       <div className="text-right flex-shrink-0">
-                        <p className="text-[10px] text-indigo-500 font-medium">Agreed Rate</p>
-                        <p className="text-sm font-bold text-indigo-800">{formatCurrency(currentTrip.agreedPrice)}</p>
+                        <p className="text-[10px] font-medium" style={{ color:"rgba(129,140,248,0.60)" }}>Agreed Rate</p>
+                        <p className="text-sm font-bold" style={{ color:"rgba(167,139,250,0.90)" }}>{formatCurrency(currentTrip.agreedPrice)}</p>
                       </div>
                     )}
                   </div>
@@ -2092,22 +2091,22 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                 {/* Dispatch */}
                 <section className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <span className="w-0.5 h-3 rounded-full bg-gray-200 inline-block flex-shrink-0" />
-                    <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">Dispatch</span>
+                    <span className="w-0.5 h-3 rounded-full inline-block flex-shrink-0" style={{ background:"#c9a87c" }} />
+                    <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color:"#c9a87c" }}>Dispatch</span>
                   </div>
 
                   {/* Driver label row with inline Primary/Secondary toggle */}
                   <div className="flex items-center justify-between">
-                    <p className="text-xs font-semibold text-gray-700">Driver</p>
-                    <div className="flex items-center gap-0.5 bg-gray-100 rounded-lg p-0.5">
+                    <p className="text-xs font-semibold" style={{ color:"rgba(255,255,255,0.85)" }}>Driver</p>
+                    <div className="flex items-center gap-0.5 rounded-lg p-0.5" style={{ background:"rgba(255,255,255,0.07)" }}>
                       <button
                         type="button"
                         onClick={() => setDispatchTab("primary")}
                         className={cn(
                           "px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150",
                           dispatchTab === "primary"
-                            ? "bg-white text-gray-800 shadow-sm"
-                            : "text-gray-400 hover:text-gray-600"
+                            ? "bg-white/10 text-white shadow-sm"
+                            : "" 
                         )}
                       >
                         Primary
@@ -2118,8 +2117,8 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                         className={cn(
                           "relative px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150",
                           dispatchTab === "secondary"
-                            ? "bg-white text-gray-800 shadow-sm"
-                            : "text-gray-400 hover:text-gray-600"
+                            ? "bg-white/10 text-white shadow-sm"
+                            : "" 
                         )}
                       >
                         Secondary
@@ -2153,10 +2152,10 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   )}
 
                   {/* Client Reference — Metadata field under Dispatch */}
-                  <div className="bg-gray-50/60 rounded-lg border border-gray-200/70 px-3.5 py-3 -mx-3 px-3">
-                    <Label className="text-[10px] font-semibold text-gray-600 uppercase tracking-wider mb-2.5 block">Client Reference</Label>
-                    <Input {...register("clientRef")} className="h-8 text-xs font-mono bg-white border-gray-200 placeholder:text-gray-300" placeholder="e.g. 14547002*1" />
-                    <p className="text-xs text-gray-900 mt-1.5">Affiliate or external system reference</p>
+                  <div className="rounded-xl px-3.5 py-3" style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)" }}>
+                    <Label className="text-[10px] font-semibold uppercase tracking-wider mb-2.5 block" style={{ color:"#c9a87c" }}>Client Reference</Label>
+                    <Input {...register("clientRef")} className="h-8 text-xs font-mono" placeholder="e.g. 14547002*1" />
+                    <p className="text-xs mt-1.5" style={{ color:"rgba(200,212,228,0.45)" }}>Affiliate or external system reference</p>
                   </div>
                 </section>
 
@@ -2165,15 +2164,15 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   <div className="space-y-1.5">
                     {acceptedFarmOut ? (
                       <>
-                        <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-100 rounded-lg">
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background:"rgba(16,185,129,0.08)", border:"1px solid rgba(16,185,129,0.22)" }}>
                           <div className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0" />
                           <div className="min-w-0 flex-1">
-                            <p className="text-xs font-semibold text-emerald-800">Farmed Out</p>
-                            <p className="text-xs text-emerald-600 truncate">{acceptedFarmOut.toCompany?.name}</p>
+                            <p className="text-xs font-semibold" style={{ color:"rgba(52,211,153,0.90)" }}>Farmed Out</p>
+                            <p className="text-xs truncate" style={{ color:"rgba(52,211,153,0.65)" }}>{acceptedFarmOut.toCompany?.name}</p>
                           </div>
                         </div>
                         <Button type="button" variant="ghost" size="sm"
-                          className="w-full text-xs text-orange-600 hover:bg-orange-50 hover:text-orange-700 h-7 border border-orange-200"
+                          className="w-full text-xs h-7 rounded-lg transition-colors" style={{ background:"rgba(251,146,60,0.08)", border:"1px solid rgba(251,146,60,0.22)", color:"rgba(251,146,60,0.85)" }}
                           disabled={cancelFarmOut.isPending}
                           onClick={() => {
                             if (window.confirm(`Cancel the farm-out to ${acceptedFarmOut.toCompany?.name}?`)) {
@@ -2185,15 +2184,15 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                       </>
                     ) : pendingFarmOut ? (
                       <>
-                        <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-100 rounded-lg">
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background:"rgba(245,158,11,0.08)", border:"1px solid rgba(245,158,11,0.22)" }}>
                           <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
                           <div className="min-w-0 flex-1">
-                            <p className="text-xs font-semibold text-amber-800">Awaiting Response</p>
-                            <p className="text-xs text-amber-600 truncate">{pendingFarmOut.toCompany?.name}</p>
+                            <p className="text-xs font-semibold" style={{ color:"rgba(251,191,36,0.90)" }}>Awaiting Response</p>
+                            <p className="text-xs truncate" style={{ color:"rgba(251,191,36,0.65)" }}>{pendingFarmOut.toCompany?.name}</p>
                           </div>
                         </div>
                         <Button type="button" variant="ghost" size="sm"
-                          className="w-full text-xs text-orange-600 hover:bg-orange-50 hover:text-orange-700 h-7 border border-orange-200"
+                          className="w-full text-xs h-7 rounded-lg transition-colors" style={{ background:"rgba(251,146,60,0.08)", border:"1px solid rgba(251,146,60,0.22)", color:"rgba(251,146,60,0.85)" }}
                           disabled={cancelFarmOut.isPending}
                           onClick={() => {
                             if (window.confirm(`Cancel the pending farm-out to ${pendingFarmOut.toCompany?.name}?`)) {
@@ -2207,7 +2206,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                       <Button
                         type="button"
                         variant="outline"
-                        className="w-full text-blue-600 border-blue-200 hover:bg-blue-50 hover:border-blue-300 text-sm h-9 gap-2"
+                        className="w-full text-sm h-9 gap-2 rounded-xl transition-all" style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(200,212,228,0.80)" }}
                         onClick={() => setFarmOutOpen(true)}
                       >
                         <ArrowRightLeft className="w-4 h-4" />
@@ -2217,7 +2216,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   </div>
                 )}
 
-                {!isFarmedIn && <div className="border-t border-gray-100" />}
+                {!isFarmedIn && <div className="border-t" style={{ borderColor:"rgba(255,255,255,0.07)" }} />}
 
                 {/* Billing Modal Trigger */}
                 {!isFarmedIn && (
@@ -2250,15 +2249,15 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   </>
                 )}
 
-                <div className="border-t border-gray-100" />
+                <div className="border-t" style={{ borderColor:"rgba(255,255,255,0.07)" }} />
 
                 {/* ADD-ONS — Refined Modern Design */}
                 <section className="space-y-4">
                   {/* Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-1 h-4 rounded-full bg-gradient-to-b from-blue-500 to-blue-400" />
-                      <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-gray-700">ADD-ONS</h3>
+                      <div className="w-1 h-4 rounded-full" style={{ background:"#c9a87c" }} />
+                      <h3 className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color:"#c9a87c" }}>ADD-ONS</h3>
                     </div>
                   </div>
 
@@ -2275,17 +2274,14 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                           key={name}
                           type="button"
                           onClick={() => setValue(name, !val)}
-                          className={`
-                            flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-xl
-                            border-2 transition-all duration-150 group
-                            ${val
-                              ? "bg-blue-50 border-blue-300 shadow-sm"
-                              : "bg-white border-gray-200 hover:border-blue-200 hover:bg-blue-50/30"
-                            }
-                          `}
+                          className="flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-xl transition-all duration-150 group"
+                          style={val
+                            ? { background:"rgba(201,168,124,0.12)", border:"1px solid rgba(201,168,124,0.30)" }
+                            : { background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.09)" }
+                          }
                         >
-                          <Icon className={`w-5 h-5 transition-colors ${val ? "text-blue-600" : "text-gray-400 group-hover:text-blue-500"}`} />
-                          <span className={`text-[11px] font-semibold text-center leading-tight transition-colors ${val ? "text-blue-700" : "text-gray-600"}`}>
+                          <Icon className="w-5 h-5 transition-colors" style={{ color: val ? "#c9a87c" : "rgba(200,212,228,0.45)" }} />
+                          <span className="text-[11px] font-semibold text-center leading-tight transition-colors" style={{ color: val ? "#c9a87c" : "rgba(200,212,228,0.60)" }}>
                             {label}
                           </span>
                         </button>
@@ -2294,52 +2290,52 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   </div>
 
                   {/* Child Seats — Integrated Cohesively */}
-                  <div className="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
+                  <div className="rounded-xl overflow-hidden" style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.09)" }}>
                     <button
                       type="button"
                       onClick={() => setChildSeatsOpen((o) => !o)}
-                      className={`
-                        w-full flex items-center justify-between px-4 py-3 transition-all
-                        ${totalChildSeats > 0 ? "bg-blue-50/50 border-b border-blue-100" : "hover:bg-gray-100"}
-                      `}
+                      className="w-full flex items-center justify-between px-4 py-3 transition-all"
+                      style={totalChildSeats > 0
+                        ? { background:"rgba(201,168,124,0.08)", borderBottom:"1px solid rgba(201,168,124,0.20)" }
+                        : {}}
                     >
                       <div className="flex items-center gap-3">
-                        <Baby className={`w-5 h-5 flex-shrink-0 transition-colors ${totalChildSeats > 0 ? "text-blue-600" : "text-gray-400"}`} />
-                        <span className={`text-sm font-semibold transition-colors ${totalChildSeats > 0 ? "text-blue-700" : "text-gray-700"}`}>
+                        <Baby className="w-5 h-5 flex-shrink-0 transition-colors" style={{ color: totalChildSeats > 0 ? "#c9a87c" : "rgba(200,212,228,0.45)" }} />
+                        <span className="text-sm font-semibold transition-colors" style={{ color: totalChildSeats > 0 ? "#c9a87c" : "rgba(255,255,255,0.80)" }}>
                           Child Seats
                         </span>
                       </div>
                       <div className="flex items-center gap-2.5">
                         {totalChildSeats > 0 && (
-                          <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                          <span className="text-xs font-bold px-2 py-1 rounded-full" style={{ background:"rgba(201,168,124,0.15)", color:"#c9a87c" }}>
                             {totalChildSeats}
                           </span>
                         )}
-                        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${childSeatsOpen ? "rotate-180" : ""}`} />
+                        <ChevronDown className={`w-4 h-4 transition-transform flex-shrink-0 ${childSeatsOpen ? "rotate-180" : ""}`} style={{ color:"rgba(200,212,228,0.40)" }} />
                       </div>
                     </button>
 
                     {childSeatsOpen && (
-                      <div className="divide-y divide-gray-200">
+                      <div className="divide-y" style={{ borderColor:"rgba(255,255,255,0.06)" }}>
                         {CHILD_SEAT_TYPES.map(({ key, label }) => (
-                          <div key={key} className="flex items-center justify-between px-4 py-3 bg-white hover:bg-gray-50 transition-colors">
-                            <span className="text-sm font-medium text-gray-700">{label}</span>
+                          <div key={key} className="flex items-center justify-between px-4 py-3 transition-colors" style={{ background:"rgba(255,255,255,0.02)" }}>
+                            <span className="text-sm font-medium" style={{ color:"rgba(255,255,255,0.82)" }}>{label}</span>
                             <div className="flex items-center gap-2.5">
                               <button
                                 type="button"
                                 onClick={() => setChildSeats((s) => ({ ...s, [key]: Math.max(0, s[key] - 1) }))}
                                 disabled={childSeats[key] === 0}
-                                className="w-7 h-7 rounded-lg border border-gray-300 bg-white flex items-center justify-center text-gray-600 hover:text-blue-600 hover:border-blue-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-base leading-none font-light"
+                                className="w-7 h-7 rounded-lg flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed transition-all text-base leading-none font-light" style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(200,212,228,0.70)" }}
                               >
                                 −
                               </button>
-                              <span className={`w-6 text-center text-sm font-bold tabular-nums ${childSeats[key] > 0 ? "text-blue-700" : "text-gray-400"}`}>
+                              <span className="w-6 text-center text-sm font-bold tabular-nums" style={{ color: childSeats[key] > 0 ? "#c9a87c" : "rgba(200,212,228,0.40)" }}>
                                 {childSeats[key]}
                               </span>
                               <button
                                 type="button"
                                 onClick={() => setChildSeats((s) => ({ ...s, [key]: s[key] + 1 }))}
-                                className="w-7 h-7 rounded-lg border border-gray-300 bg-white flex items-center justify-center text-gray-600 hover:text-blue-600 hover:border-blue-300 transition-all text-base leading-none"
+                                className="w-7 h-7 rounded-lg flex items-center justify-center transition-all text-base leading-none" style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(200,212,228,0.70)" }}
                               >
                                 +
                               </button>
@@ -2355,7 +2351,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                 {/* Destructive Action — Cancel Trip */}
                 {!["COMPLETED", "CANCELLED", "NO_SHOW"].includes(currentTrip.status) && (
                   <section className="pt-2">
-                    <div className="border-t border-gray-100 mb-4" />
+                    <div className="border-t mb-4" style={{ borderColor:"rgba(255,255,255,0.07)" }} />
                     <Button
                       type="button"
                       onClick={() => {
@@ -2363,7 +2359,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                           updateTrip.mutate({ id: currentTrip.id, status: "CANCELLED" }, { onSuccess: onClose })
                         }
                       }}
-                      className="w-full bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border border-red-200 hover:border-red-300 text-sm font-semibold h-10 rounded-lg transition-all shadow-sm hover:shadow-md"
+                      className="w-full text-sm font-semibold h-10 rounded-xl transition-all" style={{ background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.22)", color:"rgba(248,113,113,0.85)" }}
                     >
                       Cancel Trip
                     </Button>
