@@ -79,37 +79,37 @@ export function CreateAccountDialog({ onClose, onCreated }: { onClose: () => voi
       >
         {/* Header */}
         <div
-          className="flex items-center justify-between px-5 py-4"
+          className="relative flex items-center gap-3 px-5 py-4 pr-12"
           style={{ background: "#0d1526", borderBottom: "1px solid rgba(255,255,255,0.07)" }}
         >
-          <div className="flex items-center gap-3">
-            <div
-              className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-              style={{ background: "rgba(201,168,124,0.14)", border: "1px solid rgba(201,168,124,0.22)" }}
-            >
-              <UserPlus className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
-            </div>
-            <div>
-              <h2 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.92)" }}>New Account</h2>
-              <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.45)" }}>Add a client to your account book</p>
-            </div>
+          <div
+            className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: "rgba(201,168,124,0.14)", border: "1px solid rgba(201,168,124,0.22)" }}
+          >
+            <UserPlus className="w-4 h-4" style={{ color: "#c9a87c" }} />
           </div>
+          <div>
+            <h2 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.92)" }}>New Account</h2>
+            <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.45)" }}>Add a client to your account book</p>
+          </div>
+
+          {/* Close — absolute top-right, always anchored to corner */}
           <button
             type="button"
             onClick={onClose}
-            className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors flex-shrink-0"
-            style={{ color: "rgba(200,212,228,0.40)" }}
+            className="absolute top-3.5 right-4 w-7 h-7 flex items-center justify-center rounded-lg transition-colors"
+            style={{ color: "rgba(255,255,255,0.75)" }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"
-              ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.80)"
+              (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.09)"
+              ;(e.currentTarget as HTMLElement).style.color = "#ffffff"
             }}
             onMouseLeave={e => {
               (e.currentTarget as HTMLElement).style.background = "transparent"
-              ;(e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.40)"
+              ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)"
             }}
             aria-label="Close dialog"
           >
-            <X className="w-3.5 h-3.5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
