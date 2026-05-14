@@ -282,29 +282,32 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
       </div>
 
       {selected && (
-        <div className={`mt-2.5 flex items-center gap-3 rounded-xl px-4 py-3 border ${
-          selectedIsAffiliate
-            ? "bg-blue-50 border-blue-100"
-            : "bg-blue-50 border-blue-100"
-        }`}>
-          <div className={`w-9 h-9 flex items-center justify-center flex-shrink-0 ${
-            selectedIsAffiliate ? "rounded-xl bg-blue-200 text-xs font-bold text-blue-700" : "rounded-full bg-blue-200"
-          }`}>
+        <div className="mt-2.5 flex items-center gap-3 rounded-xl px-3.5 py-3" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}>
+          <div
+            className="w-9 h-9 flex items-center justify-center flex-shrink-0 text-[11px] font-bold"
+            style={selectedIsAffiliate
+              ? { borderRadius: "10px", background: "rgba(201,168,124,0.14)", border: "1px solid rgba(201,168,124,0.22)", color: "#c9a87c" }
+              : { borderRadius: "50%", background: "linear-gradient(135deg,rgba(99,102,241,0.30) 0%,rgba(139,92,246,0.30) 100%)", border: "1px solid rgba(139,92,246,0.22)" }}
+          >
             {selectedIsAffiliate
               ? selected.name.slice(0, 2).toUpperCase()
-              : <User className="w-4 h-4 text-blue-600" />}
+              : <User className="w-4 h-4" style={{ color: "rgba(167,139,250,0.85)" }} />}
           </div>
           <div className="flex-1 min-w-0">
             {!selectedIsAffiliate && selected.company && (
-              <div className="text-xs font-semibold text-blue-500 truncate">{selected.company}</div>
+              <div className="text-[11px] font-semibold truncate" style={{ color: "rgba(200,212,228,0.55)" }}>{selected.company}</div>
             )}
-            <div className="text-sm font-semibold text-gray-900">{selected.name}</div>
-            <div className="text-xs text-gray-500 truncate">
+            <div className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.90)" }}>{selected.name}</div>
+            <div className="text-xs truncate" style={{ color: "rgba(200,212,228,0.50)" }}>
               {selectedIsAffiliate ? "Affiliate account" : (selected.phone ? formatPhone(selected.phone) : selected.email || "")}
             </div>
           </div>
           <div className="text-right flex-shrink-0">
-            {selected.customerNumber && <div className="text-xs font-mono text-blue-400">#{selected.customerNumber}</div>}
+            {selected.customerNumber && (
+              <span className="text-[11px] font-mono px-1.5 py-0.5 rounded" style={{ background: "rgba(201,168,124,0.10)", border: "1px solid rgba(201,168,124,0.20)", color: "#c9a87c" }}>
+                #{selected.customerNumber}
+              </span>
+            )}
           </div>
         </div>
       )}
