@@ -124,15 +124,20 @@ function DispatchPageInner() {
     return () => document.removeEventListener("keydown", handleKey)
   }, [])
 
+  // When URL has ?open=tripId, scroll the board to that trip's date.
+  // Do NOT call router.replace here — the URL is already correct, and calling
+  // router.replace inside an effect causes a soft-nav that resets React state
+  // before the setSelectedTrip update can commit.
   useEffect(() => {
     if (!openTrip) return
-    const tripDate = new Date(openTrip.pickupDate)
-    setSelectedDate(tripDate)
-    setSelectedTrip(openTrip)
-    // Keep ?open=tripId (+ billing if present) so reload restores state
-    const params = billingFromUrl ? `?open=${openTrip.id}&billing=1` : `?open=${openTrip.id}`
-    router.replace(`/dispatch${params}`)
-  }, [openTrip]) // eslint-disable-line react-hooks/exhaustive-deps
+    setSelectedDate(new Date(openTrip.pickupDate))
+  }, [openTrip])
+
+  // The trip to show in the modal: URL-loaded trip takes priority over manual selection
+  const modalTrip = openTrip ?? selectedTrip ?? null
+  // The modal is open when the user manually selected a trip, OR the URL has ?open=
+  // and the trip data has loaded (prevents a flash of open-with-null-data)
+  const modalOpen = !!selectedTrip || (!!openTripId && !!openTrip)
 
   const { data: trips, isLoading } = useTrips(
     isSearching ? { search: committed } : { date: selectedDate }
@@ -609,9 +614,10 @@ function DispatchPageInner() {
         ) : (
           <TripGrid
             trips={filteredTrips}
-            selectedTripId={selectedTrip?.id}
+            selectedTripId={selectedTrip?.id ?? openTripId ?? undefined}
             onSelect={trip => {
-              if (selectedTrip?.id === trip.id) {
+              const isAlreadyOpen = selectedTrip?.id === trip.id || openTripId === trip.id
+              if (isAlreadyOpen) {
                 setSelectedTrip(null)
                 router.replace("/dispatch")
               } else {
@@ -633,8 +639,8 @@ function DispatchPageInner() {
         )}
 
         <TripEditModal
-          trip={selectedTrip}
-          open={!!selectedTrip}
+          trip={modalTrip}
+          open={modalOpen}
           defaultBillingOpen={billingFromUrl}
           onBillingChange={(isOpen) => {
             if (!selectedTrip) return
