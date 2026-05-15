@@ -1,14 +1,16 @@
 "use client"
 
-import { useState, useMemo, Suspense } from "react"
+import { useState, useMemo } from "react"
 import {
   format, addMonths, subMonths, addWeeks, subWeeks,
   addDays, subDays, startOfWeek, endOfWeek, isSameMonth,
+  startOfMonth, endOfMonth,
 } from "date-fns"
-import { ChevronLeft, ChevronRight, SlidersHorizontal, X, CalendarDays } from "lucide-react"
+import { ChevronLeft, ChevronRight, SlidersHorizontal, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-import { MOCK_CALENDAR_EVENTS, STATUS_COLORS, getStatusColor } from "@/lib/calendar-mock-data"
+import { STATUS_COLORS, getStatusColor, tripToCalendarEvent } from "@/lib/calendar-mock-data"
 import type { CalendarEvent } from "@/lib/calendar-mock-data"
+import { useCalendarTrips } from "@/lib/hooks/use-trips"
 import { CalendarMonthView } from "@/components/calendar/CalendarMonthView"
 import { CalendarWeekView } from "@/components/calendar/CalendarWeekView"
 import { CalendarDayView } from "@/components/calendar/CalendarDayView"
@@ -58,8 +60,12 @@ export default function CalendarPage() {
   const [showFilters, setShowFilters] = useState(false)
   const [statusFilter, setStatusFilter] = useState("ALL")
 
-  // Use mock data (swap with useTrips({}) to wire real data)
-  const allEvents = MOCK_CALENDAR_EVENTS
+  // Fetch real trips for the visible month (+ 7 day padding for grid cells)
+  const rangeStart = useMemo(() => addDays(startOfMonth(currentDate), -7), [currentDate])
+  const rangeEnd   = useMemo(() => addDays(endOfMonth(currentDate),    7), [currentDate])
+  const { data: rawTrips = [] } = useCalendarTrips({ dateFrom: rangeStart, dateTo: rangeEnd })
+
+  const allEvents = useMemo(() => rawTrips.map(tripToCalendarEvent), [rawTrips])
 
   const events = useMemo(() => {
     if (statusFilter === "ALL") return allEvents

@@ -81,7 +81,13 @@ export async function GET(request: NextRequest) {
     const driverId = searchParams.get("driverId")
     const search = searchParams.get("search") || ""
 
-    const dateFilter = date ? { pickupDate: { gte: new Date(date + "T00:00:00"), lte: new Date(date + "T23:59:59") } } : {}
+    const dateFrom = searchParams.get("dateFrom")
+    const dateTo = searchParams.get("dateTo")
+    const dateFilter = date
+      ? { pickupDate: { gte: new Date(date + "T00:00:00"), lte: new Date(date + "T23:59:59") } }
+      : dateFrom && dateTo
+        ? { pickupDate: { gte: new Date(dateFrom + "T00:00:00"), lte: new Date(dateTo + "T23:59:59") } }
+        : {}
     const statusFilter = status ? { status: status as never } : {}
     const driverFilter = driverId ? { driverId } : {}
     const searchFilter = search ? {

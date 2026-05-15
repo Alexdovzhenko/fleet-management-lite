@@ -1,4 +1,4 @@
-import type { TripStatus } from "@/types"
+import type { TripStatus, Trip } from "@/types"
 
 export interface CalendarEvent {
   id: string
@@ -109,6 +109,34 @@ export function buildEventDate(pickupDate: string, pickupTime: string): Date {
   const d = new Date(datePart + "T00:00:00")
   d.setHours(hours, minutes, 0, 0)
   return d
+}
+
+/** Map a real Trip from the API to a CalendarEvent */
+export function tripToCalendarEvent(trip: Trip): CalendarEvent {
+  const clientName = trip.customer?.name ?? trip.passengerName ?? "Unknown"
+  const clientLastName = clientName.split(" ").pop() ?? clientName
+  const driverName = trip.driver?.name ?? undefined
+  const driverInitials = driverName
+    ? driverName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
+    : undefined
+  return {
+    id: trip.id,
+    tripNumber: trip.tripNumber,
+    clientName,
+    clientLastName,
+    status: trip.status,
+    vehicleType: trip.vehicleType ?? trip.vehicle?.type ?? "OTHER",
+    vehicleId: trip.vehicleId ?? trip.vehicle?.id ?? undefined,
+    driverName,
+    driverInitials,
+    pickupAddress: trip.pickupAddress,
+    dropoffAddress: trip.dropoffAddress,
+    pickupDate: trip.pickupDate.split("T")[0],
+    pickupTime: trip.pickupTime,
+    durationMinutes: 60,
+    passengerCount: trip.passengerCount,
+    notes: trip.notes ?? undefined,
+  }
 }
 
 export function eventStartDate(e: CalendarEvent): Date {

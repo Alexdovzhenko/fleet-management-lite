@@ -102,6 +102,25 @@ export function useTodayTrips() {
   return useTrips({ date: new Date() })
 }
 
+interface CalendarRange { dateFrom: Date; dateTo: Date }
+
+async function fetchCalendarTrips(range: CalendarRange): Promise<Trip[]> {
+  const params = new URLSearchParams()
+  params.set("dateFrom", format(range.dateFrom, "yyyy-MM-dd"))
+  params.set("dateTo", format(range.dateTo, "yyyy-MM-dd"))
+  const res = await fetch(`/api/trips?${params}`)
+  if (!res.ok) throw new Error("Failed to fetch trips")
+  return res.json()
+}
+
+export function useCalendarTrips(range: CalendarRange) {
+  return useQuery({
+    queryKey: ["trips", "calendar", format(range.dateFrom, "yyyy-MM-dd"), format(range.dateTo, "yyyy-MM-dd")],
+    queryFn: () => fetchCalendarTrips(range),
+    staleTime: 30_000,
+  })
+}
+
 export function useTrip(id: string) {
   return useQuery({
     queryKey: ["trips", id],
