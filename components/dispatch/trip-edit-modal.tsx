@@ -261,7 +261,7 @@ function SortableStopRow({
         <button
           type="button"
           className={`flex-shrink-0 mt-0.5 touch-none transition-colors ${isDragOverlay ? "cursor-grabbing" : "cursor-grab"}`}
-          style={{ color: "rgba(200,212,228,0.30)" }}
+          style={{ color: "rgba(200,212,228,0.45)" }}
           aria-label="Drag to reorder"
           {...attributes}
           {...listeners}
@@ -277,33 +277,33 @@ function SortableStopRow({
       {/* Content */}
       <div className="flex-1 min-w-0">
         {stop.locationName && (
-          <div className="text-xs font-semibold truncate">{stop.locationName}</div>
+          <div className="text-xs font-semibold truncate" style={{ color: "rgba(200,212,228,0.70)" }}>{stop.locationName}</div>
         )}
-        <div className="text-sm font-medium truncate">{stop.address}</div>
+        <div className="text-sm font-medium truncate" style={{ color: "rgba(255,255,255,0.92)" }}>{stop.address}</div>
         {stop.tailNumber && (
-          <div className="text-[11px] opacity-70">Tail: {stop.tailNumber}</div>
+          <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.60)" }}>Tail: {stop.tailNumber}</div>
         )}
         {stop.flightNumber && (
-          <div className="text-[11px] opacity-70">
+          <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.60)" }}>
             Flight: {stop.flightNumber}
             {stop.arrDep ? ` · ${stop.arrDep}` : ""}
             {stop.terminalGate ? ` · Gate ${stop.terminalGate}` : ""}
           </div>
         )}
         {stop.etaEtd && (
-          <div className="text-[11px] opacity-60">ETA/ETD: {stop.etaEtd}</div>
+          <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.55)" }}>ETA/ETD: {stop.etaEtd}</div>
         )}
         {stop.cruiseShipName && (
-          <div className="text-[11px] opacity-70">
+          <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.60)" }}>
             Ship: {stop.cruiseShipName}
             {stop.cruiseLineName ? ` · ${stop.cruiseLineName}` : ""}
           </div>
         )}
         {stop.notes && (
-          <div className="text-[11px] opacity-60 truncate">{stop.notes}</div>
+          <div className="text-[11px] truncate" style={{ color: "rgba(200,212,228,0.55)" }}>{stop.notes}</div>
         )}
         {(stop.phone || stop.timeIn) && (
-          <div className="text-[11px] opacity-60">
+          <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.55)" }}>
             {stop.phone && <span>{stop.phone}</span>}
             {stop.phone && stop.timeIn && <span className="mx-1">·</span>}
             {stop.timeIn && <span>Time In: {stop.timeIn}</span>}
@@ -314,7 +314,7 @@ function SortableStopRow({
       <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
         {!isEditing && !isDragOverlay && (
           <span className="opacity-0 group-hover:opacity-100 transition-opacity">
-            <Pencil className="w-3 h-3" style={{ color: "rgba(200,212,228,0.40)" }} />
+            <Pencil className="w-3 h-3" style={{ color: "rgba(200,212,228,0.55)" }} />
           </span>
         )}
         {!isDragOverlay && (
@@ -325,7 +325,9 @@ function SortableStopRow({
               if (!isEditing) onDelete(stop.id)
             }}
             disabled={isEditing}
-            className="transition-colors disabled:pointer-events-none" style={{ color: "rgba(200,212,228,0.30)" }}
+            className="transition-colors disabled:pointer-events-none" style={{ color: "rgba(200,212,228,0.50)" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.85)" }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.50)" }}
           >
             <X className="w-3.5 h-3.5" />
           </button>
