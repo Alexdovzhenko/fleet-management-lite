@@ -989,13 +989,13 @@ function VehicleTypePickerCard({ vehicleTypes, value, onChange }: { vehicleTypes
     <div ref={ref} className="space-y-1.5">
       <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "rgba(200,212,228,0.45)" }}>Type</p>
       {selected ? (
-        <div className="group flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-colors" style={{ background: "rgba(59,130,246,0.10)", border: "1px solid rgba(59,130,246,0.22)" }}>
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(59,130,246,0.15)" }}>
-            <Car className="w-4 h-4" style={{ color: "rgba(147,197,253,0.85)" }} />
+        <div className="group flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-colors" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)" }}>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.12)" }}>
+            <Car className="w-4 h-4" style={{ color: "#c9a87c" }} />
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.92)" }}>{selected.label}</div>
-            <div className="text-[11px]" style={{ color: "rgba(147,197,253,0.60)" }}>Booked category</div>
+            <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.55)" }}>Booked category</div>
           </div>
           <button type="button" onClick={() => onChange("")} className="transition-colors flex-shrink-0" aria-label="Remove vehicle type"
             style={{ color: "rgba(200,212,228,0.35)" }}
@@ -1029,8 +1029,8 @@ function VehicleTypePickerCard({ vehicleTypes, value, onChange }: { vehicleTypes
                   style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}>
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(59,130,246,0.12)" }}>
-                    <Car className="w-3.5 h-3.5" style={{ color: "rgba(147,197,253,0.80)" }} />
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.10)" }}>
+                    <Car className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
                   </div>
                   <div className="flex-1 text-left">
                     <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{t.label}</div>
