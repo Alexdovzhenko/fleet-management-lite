@@ -179,18 +179,20 @@ export function CalendarDayView({ currentDate, events, today, onSelectEvent }: D
                     </span>
                   </div>
 
-                  {/* Client name + vehicle */}
-                  <div className="text-sm font-bold truncate leading-tight" style={{ color: "rgba(255,255,255,0.95)" }}>
-                    {ev.clientName}
-                  </div>
-                  {ev.vehicleName && (
-                    <div className="flex items-center gap-1 mt-0.5">
-                      <Car className="w-3 h-3 flex-shrink-0" style={{ color: c.dot, opacity: 0.80 }} />
-                      <span className="text-[11px] font-semibold truncate" style={{ color: c.dot, opacity: 0.85 }}>
-                        {ev.vehicleName}
+                  {/* Client name + vehicle inline */}
+                  <div className="flex items-center gap-2 leading-tight">
+                    <span className="text-sm font-bold truncate" style={{ color: "rgba(255,255,255,0.95)" }}>
+                      {ev.clientName}
+                    </span>
+                    {ev.vehicleName && (
+                      <span className="flex items-center gap-1 flex-shrink-0">
+                        <Car className="w-3 h-3" style={{ color: c.dot, opacity: 0.75 }} />
+                        <span className="text-[11px] font-semibold" style={{ color: c.dot, opacity: 0.85 }}>
+                          {ev.vehicleName}
+                        </span>
                       </span>
-                    </div>
-                  )}
+                    )}
+                  </div>
 
                   {/* Route (if tall enough) */}
                   {h >= 80 && (
