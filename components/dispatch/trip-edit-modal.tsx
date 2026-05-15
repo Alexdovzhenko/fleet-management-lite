@@ -6,7 +6,7 @@ import { useForm, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import {
-  X, Plane, Phone, Copy, Check, User, Car, UserCheck,
+  X, Plane, Phone, Copy, Check, User, Car, UserCheck, UserPlus,
   ChevronDown, MapPin, Building2, Ship, Plus, Star,
   AlertTriangle, Baby, ArrowRightLeft, Pencil, Send, Calendar, Loader2, ArrowLeftRight, GripVertical, Clock,
 } from "lucide-react"
@@ -910,8 +910,8 @@ function DriverPickerCard({ drivers, value, onChange }: { drivers: Driver[]; val
           style={{ background: "rgba(255,255,255,0.04)", border: "1px dashed rgba(255,255,255,0.14)", color: "rgba(200,212,228,0.50)" }}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,124,0.40)" }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.14)" }}>
-          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)" }}>
-            <UserCheck className="w-4 h-4" style={{ color: "rgba(200,212,228,0.40)" }} />
+          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.10)", border: "1px solid rgba(201,168,124,0.18)" }}>
+            <UserPlus className="w-4 h-4" style={{ color: "rgba(201,168,124,0.70)" }} />
           </div>
           <span className="flex-1 text-left text-sm">Assign driver…</span>
           <ChevronDown className={cn("w-4 h-4 transition-transform", open && "rotate-180")} style={{ color: "rgba(200,212,228,0.35)" }} />
@@ -2208,32 +2208,33 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   {/* Driver label row with inline Primary/Secondary toggle */}
                   <div className="flex items-center justify-between">
                     <p className="text-xs font-semibold" style={{ color:"rgba(255,255,255,0.85)" }}>Driver</p>
-                    <div className="flex items-center gap-0.5 rounded-lg p-0.5" style={{ background:"rgba(255,255,255,0.07)" }}>
+                    <div
+                      className="flex items-center gap-0.5 p-0.5 rounded-xl"
+                      style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.09)" }}
+                    >
                       <button
                         type="button"
                         onClick={() => setDispatchTab("primary")}
-                        className={cn(
-                          "px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150",
-                          dispatchTab === "primary"
-                            ? "bg-white/10 text-white shadow-sm"
-                            : "" 
-                        )}
+                        className="px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all duration-150"
+                        style={dispatchTab === "primary"
+                          ? { background: "#c9a87c", color: "#0d1526", boxShadow: "0 1px 6px rgba(201,168,124,0.30)" }
+                          : { background: "transparent", color: "rgba(255,255,255,0.65)" }
+                        }
                       >
                         Primary
                       </button>
                       <button
                         type="button"
                         onClick={() => setDispatchTab("secondary")}
-                        className={cn(
-                          "relative px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150",
-                          dispatchTab === "secondary"
-                            ? "bg-white/10 text-white shadow-sm"
-                            : "" 
-                        )}
+                        className="relative px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all duration-150"
+                        style={dispatchTab === "secondary"
+                          ? { background: "#c9a87c", color: "#0d1526", boxShadow: "0 1px 6px rgba(201,168,124,0.30)" }
+                          : { background: "transparent", color: "rgba(255,255,255,0.65)" }
+                        }
                       >
                         Secondary
                         {(secondaryDriverIdValue || secondaryVehicleIdValue) && (
-                          <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-violet-500" />
+                          <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full" style={{ background: "#c9a87c" }} />
                         )}
                       </button>
                     </div>
