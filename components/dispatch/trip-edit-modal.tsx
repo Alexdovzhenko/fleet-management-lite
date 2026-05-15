@@ -84,7 +84,7 @@ function StatusDropdown({
 }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const { getEnabledStatuses, getStatusBadgeClasses, getStatusDotClass, getStatusLabel } = useStatusConfig()
+  const { getEnabledStatuses, getStatusDotClass, getStatusLabel, getStatusDarkBadge } = useStatusConfig()
 
   useEffect(() => {
     if (!open) return
@@ -95,36 +95,49 @@ function StatusDropdown({
     return () => document.removeEventListener("mousedown", handler)
   }, [open])
 
+  const dark = getStatusDarkBadge(status)
+
   return (
     <div ref={ref} className="relative flex-shrink-0">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full transition-all w-[140px] justify-center",
-          "hover:brightness-95 active:scale-95",
-          getStatusBadgeClasses(status)
+          "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl transition-all border min-w-[130px] justify-center",
+          "hover:brightness-110 active:scale-[0.97]",
+          dark.bg, dark.border, dark.text
         )}
       >
-        <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", getStatusDotClass(status))} />
+        <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0 flex-shrink-0", dark.dot)} />
         {getStatusLabel(status)}
-        <ChevronDown className={cn("w-3 h-3 transition-transform", open && "rotate-180")} />
+        <ChevronDown className={cn("w-3 h-3 transition-transform ml-0.5 opacity-70", open && "rotate-180")} />
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full mt-1.5 z-50 rounded-xl py-1 min-w-[160px]" style={{ background:"#0d1526", border:"1px solid rgba(255,255,255,0.12)", boxShadow:"0 8px 32px rgba(0,0,0,0.65)" }}>
+        <div className="absolute left-0 top-full mt-1.5 z-50 rounded-xl overflow-hidden min-w-[170px]" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.10)", boxShadow: "0 16px 48px rgba(0,0,0,0.70)" }}>
+          <div className="px-3 py-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}>
+            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.40)" }}>Set Status</span>
+          </div>
           {getEnabledStatuses().map((s) => {
             const isActive = s === status
+            const sd = getStatusDarkBadge(s)
             return (
               <button
                 key={s}
                 type="button"
                 onClick={() => { onUpdate(s); setOpen(false) }}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left transition-colors font-semibold" style={{ color: isActive ? "rgba(255,255,255,0.90)" : "rgba(200,212,228,0.70)" }}
+                className={cn("w-full flex items-center gap-2.5 px-3 py-2.5 text-xs text-left transition-colors font-semibold")}
+                style={{
+                  background: isActive ? "rgba(255,255,255,0.06)" : "transparent",
+                  color: isActive ? "rgba(255,255,255,0.92)" : "rgba(200,212,228,0.65)",
+                  borderBottom: "1px solid rgba(255,255,255,0.04)",
+                }}
+                onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)" }}
+                onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = "transparent" }}
               >
-                <span className={cn("w-2 h-2 rounded-full flex-shrink-0", getStatusDotClass(s))} />
+                <span className={cn("w-2 h-2 rounded-full flex-shrink-0", sd.dot)} />
                 {getStatusLabel(s)}
-                {isActive && <Check className="w-3 h-3 ml-auto" style={{ color:"rgba(201,168,124,0.70)" }} />}
+                {isActive && <Check className={cn("w-3.5 h-3.5 ml-auto", sd.text)} />}
               </button>
             )
           })}

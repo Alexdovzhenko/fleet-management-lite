@@ -46,17 +46,17 @@ export const COLOR_ROW_MAP: Record<string, string> = {
   indigo:  "bg-indigo-50/60",
 }
 
-export const COLOR_BADGE_DARK_MAP: Record<string, { bg: string; text: string; dot: string }> = {
-  blue:    { bg: "bg-blue-500/15",    text: "text-blue-300",    dot: "bg-blue-400" },
-  amber:   { bg: "bg-amber-500/15",   text: "text-amber-300",   dot: "bg-amber-400" },
-  yellow:  { bg: "bg-yellow-500/15",  text: "text-yellow-300",  dot: "bg-yellow-400" },
-  emerald: { bg: "bg-emerald-500/15", text: "text-emerald-300", dot: "bg-emerald-400" },
-  gray:    { bg: "bg-gray-500/15",    text: "text-gray-300",    dot: "bg-gray-400" },
-  violet:  { bg: "bg-violet-500/15",  text: "text-violet-300",  dot: "bg-violet-400" },
-  red:     { bg: "bg-red-500/15",     text: "text-red-300",     dot: "bg-red-400" },
-  teal:    { bg: "bg-teal-500/15",    text: "text-teal-300",    dot: "bg-teal-400" },
-  pink:    { bg: "bg-pink-500/15",    text: "text-pink-300",    dot: "bg-pink-400" },
-  indigo:  { bg: "bg-indigo-500/15",  text: "text-indigo-300",  dot: "bg-indigo-400" },
+export const COLOR_BADGE_DARK_MAP: Record<string, { bg: string; border: string; text: string; dot: string }> = {
+  blue:    { bg: "bg-blue-500/15",    border: "border-blue-500/30",    text: "text-blue-300",    dot: "bg-blue-400" },
+  amber:   { bg: "bg-amber-500/15",   border: "border-amber-500/30",   text: "text-amber-300",   dot: "bg-amber-400" },
+  yellow:  { bg: "bg-yellow-500/15",  border: "border-yellow-500/30",  text: "text-yellow-300",  dot: "bg-yellow-400" },
+  emerald: { bg: "bg-emerald-500/15", border: "border-emerald-500/30", text: "text-emerald-300", dot: "bg-emerald-400" },
+  gray:    { bg: "bg-gray-500/15",    border: "border-gray-500/25",    text: "text-gray-300",    dot: "bg-gray-400" },
+  violet:  { bg: "bg-violet-500/15",  border: "border-violet-500/30",  text: "text-violet-300",  dot: "bg-violet-400" },
+  red:     { bg: "bg-red-500/15",     border: "border-red-500/30",     text: "text-red-300",     dot: "bg-red-400" },
+  teal:    { bg: "bg-teal-500/15",    border: "border-teal-500/30",    text: "text-teal-300",    dot: "bg-teal-400" },
+  pink:    { bg: "bg-pink-500/15",    border: "border-pink-500/30",    text: "text-pink-300",    dot: "bg-pink-400" },
+  indigo:  { bg: "bg-indigo-500/15",  border: "border-indigo-500/30",  text: "text-indigo-300",  dot: "bg-indigo-400" },
 }
 
 export const COLOR_ACTIVE_MAP: Record<string, { bg: string; text: string; check: string; leftBar: string }> = {
@@ -119,9 +119,9 @@ export function useStatusConfig() {
     return COLOR_ROW_MAP[color] ?? "bg-gray-50/40"
   }
 
-  function getStatusDarkBadge(status: TripStatus): { bg: string; text: string; dot: string } {
+  function getStatusDarkBadge(status: TripStatus): { bg: string; border: string; text: string; dot: string } {
     const color = getStatusColor(status)
-    return COLOR_BADGE_DARK_MAP[color] ?? { bg: "bg-gray-500/15", text: "text-gray-300", dot: "bg-gray-400" }
+    return COLOR_BADGE_DARK_MAP[color] ?? { bg: "bg-gray-500/15", border: "border-gray-500/25", text: "text-gray-300", dot: "bg-gray-400" }
   }
 
   function getStatusActiveStyle(status: TripStatus): { bg: string; text: string; check: string; leftBar: string } {
