@@ -54,12 +54,23 @@ function navigate(view: ViewMode, date: Date, dir: 1 | -1): Date {
 }
 
 export default function CalendarPage() {
-  const [view, setView]             = useState<ViewMode>("month")
+  const [view, setViewState]        = useState<ViewMode>("month")
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   // Computed client-side to avoid SSR UTC → local timezone mismatch
   const [today, setToday] = useState<Date | null>(null)
   useEffect(() => { setToday(new Date()) }, [])
+
+  // Restore persisted view on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("cal-view") as ViewMode | null
+    if (saved === "month" || saved === "week" || saved === "day") setViewState(saved)
+  }, [])
+
+  function setView(v: ViewMode) {
+    setViewState(v)
+    localStorage.setItem("cal-view", v)
+  }
   const [showFilters, setShowFilters] = useState(false)
   const [statusFilter, setStatusFilter] = useState("ALL")
 
