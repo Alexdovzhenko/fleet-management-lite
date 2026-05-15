@@ -1,20 +1,15 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { createPortal } from "react-dom"
-import { X, Check, Loader2, ChevronDown, AlertCircle, ArrowLeftRight, ImageIcon, FileText, FileCode, File } from "lucide-react"
+import { X, Check, Loader2, ChevronDown, AlertCircle, ArrowLeftRight, MapPin, ImageIcon, FileText, FileCode, File } from "lucide-react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import { DatePickerInput } from "@/components/ui/date-picker"
-import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useCreateTrip } from "@/lib/hooks/use-trips"
 import { useVehicles } from "@/lib/hooks/use-vehicles"
-import { formatPhone, formatTime, cn } from "@/lib/utils"
+import { formatPhone, formatTime } from "@/lib/utils"
 import { format, parse, isValid } from "date-fns"
 import type { Trip, TripType } from "@/types"
-
-// ── File icon helper ──────────────────────────────────────────────────────
 
 function getFileIcon(mimeType: string) {
   if (mimeType.startsWith("image/")) return ImageIcon
@@ -38,6 +33,33 @@ interface RoundTripModalProps {
 
 const SERVICE_TYPES: TripType[] = ["ONE_WAY", "ROUND_TRIP", "HOURLY", "AIRPORT_PICKUP", "AIRPORT_DROPOFF", "MULTI_STOP", "SHUTTLE"]
 
+const inputStyle: React.CSSProperties = {
+  background: "rgba(255,255,255,0.05)",
+  border: "1px solid rgba(255,255,255,0.12)",
+  color: "rgba(255,255,255,0.88)",
+  borderRadius: "10px",
+  height: "40px",
+  padding: "0 12px",
+  width: "100%",
+  fontSize: "14px",
+  outline: "none",
+}
+
+const selectStyle: React.CSSProperties = {
+  background: "rgba(255,255,255,0.05)",
+  border: "1px solid rgba(255,255,255,0.12)",
+  color: "rgba(255,255,255,0.88)",
+  borderRadius: "10px",
+  height: "40px",
+  padding: "0 36px 0 12px",
+  width: "100%",
+  fontSize: "14px",
+  outline: "none",
+  appearance: "none",
+  WebkitAppearance: "none",
+  cursor: "pointer",
+}
+
 export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
   const [pickupDate, setPickupDate] = useState("")
   const [pickupTime, setPickupTime] = useState("")
@@ -56,12 +78,10 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
   const createTrip = useCreateTrip()
   const { data: vehicles = [] } = useVehicles()
 
-  // Reset state when modal opens
   useEffect(() => {
     if (open && trip) {
       setPickupDate("")
       setPickupTime("")
-      // Reverse the routing
       setPickupAddress(trip.dropoffAddress)
       setPickupNotes(trip.dropoffNotes ?? "")
       setDropoffAddress(trip.pickupAddress)
@@ -70,7 +90,6 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
       setVehicleId(trip.vehicleId || "")
       setNotes(trip.notes ?? "")
       setCopyNotes(true)
-      // Initialize all attachments as selected by default
       setSelectedAttachmentIds(new Set(trip.attachments?.map(a => a.id) ?? []))
       setTimeError("")
       setSuccess(null)
@@ -80,24 +99,20 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
   function validateTime(time: string): boolean {
     const trimmed = time.trim()
     if (!trimmed) return false
-    const timeRegex = /^\d{1,2}:\d{2}\s*(AM|PM|am|pm)$/
-    return timeRegex.test(trimmed)
+    return /^\d{1,2}:\d{2}\s*(AM|PM|am|pm)$/.test(trimmed)
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    // Validate vehicle selection
     if (!vehicleId) {
       setTimeError("Please select a vehicle")
       return
     }
-
     if (!validateTime(pickupTime)) {
       setTimeError("Please enter time in format: HH:MM AM/PM")
       return
     }
-
     if (!pickupDate.trim()) {
       setTimeError("Please select a return date")
       return
@@ -105,7 +120,6 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
 
     setTimeError("")
 
-    // Parse MM/DD/YYYY format to YYYY-MM-DD format
     const parsed = parse(pickupDate, "MM/dd/yyyy", new Date())
     if (!isValid(parsed)) {
       setTimeError("Invalid date format")
@@ -113,17 +127,10 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
     }
     const pickupDateStr = format(parsed, "yyyy-MM-dd")
 
-    // Build attachments array from selected attachments
     const attachmentsToCopy = trip.attachments
       ? trip.attachments
-          .filter((a) => selectedAttachmentIds.has(a.id))
-          .map((a) => ({
-            url: a.url,
-            storagePath: a.storagePath,
-            name: a.name,
-            mimeType: a.mimeType,
-            size: a.size,
-          }))
+          .filter(a => selectedAttachmentIds.has(a.id))
+          .map(a => ({ url: a.url, storagePath: a.storagePath, name: a.name, mimeType: a.mimeType, size: a.size }))
       : undefined
 
     createTrip.mutate(
@@ -132,9 +139,9 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
         tripType: serviceType,
         pickupDate: pickupDateStr,
         pickupTime: pickupTime.trim(),
-        pickupAddress: pickupAddress,
+        pickupAddress,
         pickupNotes: pickupNotes || undefined,
-        dropoffAddress: dropoffAddress,
+        dropoffAddress,
         dropoffNotes: dropoffNotes || undefined,
         passengerCount: trip.passengerCount,
         vehicleId: vehicleId || undefined,
@@ -171,12 +178,7 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
           setSuccess({ tripNumber: newTrip.tripNumber })
         },
         onError: (error: any) => {
-          let errorMsg = "Failed to create return trip. Please try again."
-          if (error?.message) {
-            errorMsg = error.message
-          } else if (typeof error === 'string') {
-            errorMsg = error
-          }
+          const errorMsg = error?.message ?? (typeof error === "string" ? error : "Failed to create return trip. Please try again.")
           setTimeError(errorMsg)
         },
       }
@@ -191,17 +193,38 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-full max-w-2xl rounded-2xl shadow-2xl p-0 overflow-hidden" showCloseButton={false}>
-        {/* PREMIUM HEADER */}
-        <div className="flex items-start justify-between px-8 py-6 border-b border-gray-100 bg-white">
+      <DialogContent
+        className="w-full max-w-2xl p-0 overflow-hidden"
+        showCloseButton={false}
+        style={{
+          background: "#0d1526",
+          border: "1px solid rgba(255,255,255,0.09)",
+          borderRadius: "20px",
+          boxShadow: "0 32px 80px rgba(0,0,0,0.70)",
+        }}
+      >
+        {/* HEADER */}
+        <div className="flex items-start justify-between px-8 py-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
           <div>
-            <h2 className="text-2xl font-semibold text-gray-950">Round Trip</h2>
-            <p className="text-sm text-gray-500 mt-1">Confirmation <span className="font-medium text-gray-700">{trip.tripNumber}</span></p>
+            <h2 className="text-2xl font-semibold" style={{ color: "rgba(255,255,255,0.92)" }}>Round Trip</h2>
+            <p className="text-sm mt-1" style={{ color: "rgba(200,212,228,0.55)" }}>
+              Confirmation{" "}
+              <span className="font-mono font-semibold" style={{ color: "#c9a87c" }}>{trip.tripNumber}</span>
+            </p>
           </div>
           <button
             onClick={onClose}
             type="button"
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+            className="p-2 rounded-lg transition-colors flex-shrink-0"
+            style={{ color: "rgba(200,212,228,0.45)" }}
+            onMouseEnter={e => {
+              ;(e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"
+              ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.70)"
+            }}
+            onMouseLeave={e => {
+              ;(e.currentTarget as HTMLElement).style.background = "transparent"
+              ;(e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.45)"
+            }}
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />
@@ -210,80 +233,112 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
 
         {success ? (
           /* SUCCESS STATE */
-          <div className="flex flex-col items-center justify-center gap-6 py-16 px-8 bg-gradient-to-br from-emerald-50 to-white">
-            <div className="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center shadow-sm">
-              <Check className="w-10 h-10 text-emerald-600" strokeWidth={2} />
+          <div className="flex flex-col items-center justify-center gap-6 py-16 px-8">
+            <div
+              className="w-20 h-20 rounded-2xl flex items-center justify-center"
+              style={{ background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)" }}
+            >
+              <Check className="w-10 h-10" style={{ color: "#34d399" }} strokeWidth={2} />
             </div>
             <div className="text-center max-w-sm">
-              <h3 className="text-2xl font-semibold text-gray-950">Return Trip Created</h3>
-              <p className="text-sm text-gray-600 mt-2">Your return reservation has been successfully created with the reversed routing.</p>
+              <h3 className="text-2xl font-semibold" style={{ color: "rgba(255,255,255,0.92)" }}>Return Trip Created</h3>
+              <p className="text-sm mt-2 leading-relaxed" style={{ color: "rgba(200,212,228,0.55)" }}>
+                Your return reservation has been successfully created with the reversed routing.
+              </p>
             </div>
-            <div className="bg-white rounded-xl px-6 py-4 border border-emerald-100 shadow-sm w-full max-w-xs">
-              <p className="text-xs font-medium text-gray-500 text-center mb-2">New Confirmation Number</p>
-              <p className="text-xl font-mono font-bold text-emerald-600 text-center tracking-wide">{success.tripNumber}</p>
+            <div
+              className="rounded-xl px-6 py-4 w-full max-w-xs text-center"
+              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)" }}
+            >
+              <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>
+                New Confirmation Number
+              </p>
+              <p className="text-xl font-mono font-bold tracking-wide" style={{ color: "#c9a87c" }}>{success.tripNumber}</p>
             </div>
-            <Button
+            <button
               type="button"
               onClick={onClose}
-              className="mt-4 w-full max-w-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="mt-2 w-full max-w-xs py-2.5 rounded-xl text-sm font-semibold transition-opacity"
+              style={{ background: "#c9a87c", color: "#0d1526" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = "0.85" }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = "1" }}
             >
               Done
-            </Button>
+            </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[calc(100vh-240px)]">
-            {/* MAIN CONTENT */}
-            <div className="px-8 py-8 space-y-8 bg-white">
+            <div className="px-8 py-8 space-y-8">
 
-              {/* ROUTE REVERSAL SECTION */}
+              {/* REVERSED ROUTE */}
               <div>
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Reversed Route</h3>
-                <div className="border border-blue-100 rounded-xl p-6 bg-gradient-to-br from-blue-50/50 to-white space-y-5">
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "rgba(200,212,228,0.45)" }}>
+                  Reversed Route
+                </p>
+                <div
+                  className="rounded-xl p-5 space-y-4"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}
+                >
                   {/* New Pickup (was dropoff) */}
                   <div>
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                        <ArrowLeftRight className="w-3.5 h-3.5 text-blue-600" strokeWidth={3} />
+                      <div
+                        className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0"
+                        style={{ background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.20)" }}
+                      >
+                        <MapPin className="w-3.5 h-3.5" style={{ color: "#34d399" }} strokeWidth={2.5} />
                       </div>
-                      <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider">New Pickup (was dropoff)</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(52,211,153,0.80)" }}>
+                        New Pickup (was dropoff)
+                      </p>
                     </div>
-                    <Input
+                    <input
                       type="text"
                       value={pickupAddress}
-                      onChange={(e) => setPickupAddress(e.target.value)}
-                      className="w-full text-sm font-medium text-gray-900 mb-2"
+                      onChange={e => setPickupAddress(e.target.value)}
                       placeholder="Pickup address"
+                      style={inputStyle}
                     />
                     {pickupNotes && (
-                      <p className="text-xs text-gray-500 italic">Notes: {pickupNotes}</p>
+                      <p className="text-xs italic mt-1.5" style={{ color: "rgba(200,212,228,0.45)" }}>Notes: {pickupNotes}</p>
                     )}
                   </div>
 
-                  {/* Center divider with swap indicator */}
-                  <div className="flex justify-center py-2">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 rounded-full">
-                      <ArrowLeftRight className="w-3.5 h-3.5 text-blue-600" strokeWidth={2} />
-                      <span className="text-xs font-semibold text-blue-700">Reversed</span>
+                  {/* Reversed pill */}
+                  <div className="flex justify-center py-1">
+                    <div
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full"
+                      style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)" }}
+                    >
+                      <ArrowLeftRight className="w-3 h-3" style={{ color: "#c9a87c" }} strokeWidth={2} />
+                      <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(200,212,228,0.55)" }}>
+                        Reversed
+                      </span>
                     </div>
                   </div>
 
                   {/* New Dropoff (was pickup) */}
                   <div>
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                        <ArrowLeftRight className="w-3.5 h-3.5 text-indigo-600" strokeWidth={3} />
+                      <div
+                        className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0"
+                        style={{ background: "rgba(248,113,113,0.12)", border: "1px solid rgba(248,113,113,0.20)" }}
+                      >
+                        <MapPin className="w-3.5 h-3.5" style={{ color: "rgba(248,113,113,0.85)" }} strokeWidth={2.5} />
                       </div>
-                      <p className="text-xs font-semibold text-indigo-700 uppercase tracking-wider">New Dropoff (was pickup)</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(248,113,113,0.75)" }}>
+                        New Dropoff (was pickup)
+                      </p>
                     </div>
-                    <Input
+                    <input
                       type="text"
                       value={dropoffAddress}
-                      onChange={(e) => setDropoffAddress(e.target.value)}
-                      className="w-full text-sm font-medium text-gray-900 mb-2"
+                      onChange={e => setDropoffAddress(e.target.value)}
                       placeholder="Dropoff address"
+                      style={inputStyle}
                     />
                     {dropoffNotes && (
-                      <p className="text-xs text-gray-500 italic">Notes: {dropoffNotes}</p>
+                      <p className="text-xs italic mt-1.5" style={{ color: "rgba(200,212,228,0.45)" }}>Notes: {dropoffNotes}</p>
                     )}
                   </div>
                 </div>
@@ -293,115 +348,131 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
               <div className="grid grid-cols-2 gap-6">
                 {/* Service Type */}
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 block">Service Type</label>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.45)" }}>
+                    Service Type
+                  </p>
                   <div className="relative">
                     <select
                       value={serviceType}
-                      onChange={(e) => setServiceType(e.target.value as TripType)}
-                      className="w-full h-10 px-3.5 py-2 border border-gray-200 rounded-lg bg-white text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 appearance-none cursor-pointer"
+                      onChange={e => setServiceType(e.target.value as TripType)}
+                      style={selectStyle}
                     >
                       {SERVICE_TYPES.map(type => (
-                        <option key={type} value={type}>{type.replace(/_/g, " ")}</option>
+                        <option key={type} value={type} style={{ background: "#0d1526", color: "rgba(255,255,255,0.88)" }}>
+                          {type.replace(/_/g, " ")}
+                        </option>
                       ))}
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "rgba(200,212,228,0.35)" }} />
                   </div>
                 </div>
 
                 {/* Vehicle */}
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 block">Vehicle <span className="text-red-500">*</span></label>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.45)" }}>
+                    Vehicle <span style={{ color: "rgba(248,113,113,0.85)" }}>*</span>
+                  </p>
                   <div className="relative">
                     <select
                       value={vehicleId}
-                      onChange={(e) => {
+                      onChange={e => {
                         setVehicleId(e.target.value)
                         if (timeError === "Please select a vehicle") setTimeError("")
                       }}
-                      className={cn(
-                        "w-full h-10 px-3.5 py-2 border border-gray-200 rounded-lg bg-white text-sm font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 appearance-none cursor-pointer",
-                        timeError === "Please select a vehicle" && "border-red-400 focus:ring-red-300/30 focus:border-red-400"
-                      )}
+                      style={{
+                        ...selectStyle,
+                        borderColor: timeError === "Please select a vehicle" ? "rgba(248,113,113,0.50)" : "rgba(255,255,255,0.12)",
+                      }}
                     >
-                      <option value="">Select a vehicle</option>
+                      <option value="" style={{ background: "#0d1526", color: "rgba(200,212,228,0.50)" }}>Select a vehicle</option>
                       {vehicles.map(vehicle => (
-                        <option key={vehicle.id} value={vehicle.id}>
+                        <option key={vehicle.id} value={vehicle.id} style={{ background: "#0d1526", color: "rgba(255,255,255,0.88)" }}>
                           {vehicle.name} ({vehicle.type})
                         </option>
                       ))}
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "rgba(200,212,228,0.35)" }} />
                   </div>
                 </div>
 
                 {/* Billing Contact */}
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 block">Billing Contact</label>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.45)" }}>
+                    Billing Contact
+                  </p>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{customerName}</p>
+                    <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{customerName}</p>
                     {customerPhone !== "-" && (
-                      <p className="text-xs text-gray-500 mt-1">{formatPhone(customerPhone)}</p>
+                      <p className="text-xs mt-1" style={{ color: "rgba(200,212,228,0.55)" }}>{formatPhone(customerPhone)}</p>
                     )}
                   </div>
                 </div>
 
                 {/* Passenger */}
                 <div>
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 block">Passenger</label>
-                  <p className="text-sm font-medium text-gray-900">{passengerLabel}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.45)" }}>
+                    Passenger
+                  </p>
+                  <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{passengerLabel}</p>
                 </div>
               </div>
 
-              {/* ADJUSTMENTS SECTION */}
+              {/* RETURN TRIP DETAILS */}
               <div className="space-y-5">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Return Trip Details</h3>
+                <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)" }}>
+                  Return Trip Details
+                </p>
 
-                {/* Date and Time */}
+                {/* Date + Time */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-2.5">Return Date <span className="text-red-500">*</span></label>
-                    <DatePickerInput
-                      value={pickupDate}
-                      onChange={setPickupDate}
-                      className="w-full"
-                    />
+                    <label className="block text-xs font-medium mb-2.5" style={{ color: "rgba(200,212,228,0.60)" }}>
+                      Return Date <span style={{ color: "rgba(248,113,113,0.85)" }}>*</span>
+                    </label>
+                    <DatePickerInput value={pickupDate} onChange={setPickupDate} className="w-full" />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-2.5">Return Time</label>
-                    <Input
+                    <label className="block text-xs font-medium mb-2.5" style={{ color: "rgba(200,212,228,0.60)" }}>
+                      Return Time
+                    </label>
+                    <input
                       type="text"
                       value={pickupTime}
-                      onChange={(e) => {
+                      onChange={e => {
                         setPickupTime(e.target.value)
                         if (timeError) setTimeError("")
                       }}
-                      onBlur={(e) => setPickupTime(formatTime(e.target.value))}
+                      onBlur={e => setPickupTime(formatTime(e.target.value))}
                       placeholder="HH:MM AM/PM"
-                      className={cn(
-                        "h-10 text-sm",
-                        timeError && "border-red-400 focus:ring-red-300/30 focus:border-red-400"
-                      )}
+                      style={{
+                        ...inputStyle,
+                        borderColor: timeError ? "rgba(248,113,113,0.50)" : "rgba(255,255,255,0.12)",
+                      }}
                     />
                     {timeError && (
                       <div className="flex items-center gap-1.5 mt-2">
-                        <AlertCircle className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
-                        <p className="text-xs text-red-600">{timeError}</p>
+                        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "rgba(248,113,113,0.85)" }} />
+                        <p className="text-xs" style={{ color: "rgba(248,113,113,0.85)" }}>{timeError}</p>
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* Notes Section */}
-                <div className="border border-gray-200 rounded-xl p-4 bg-white hover:bg-gray-50/50 transition-colors">
+                {/* Notes */}
+                <div
+                  className="rounded-xl p-4 cursor-pointer transition-colors"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}
+                  onClick={() => setCopyNotes(!copyNotes)}
+                >
                   <div className="flex items-start gap-3">
                     <Checkbox
                       checked={copyNotes}
-                      onCheckedChange={(checked) => setCopyNotes(checked === true)}
+                      onCheckedChange={checked => setCopyNotes(checked === true)}
                       className="mt-1.5"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">Include notes</p>
-                      <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">
+                      <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Include notes</p>
+                      <p className="text-xs mt-1.5 leading-relaxed" style={{ color: "rgba(200,212,228,0.50)" }}>
                         {notes
                           ? `"${notes.substring(0, 100)}${notes.length > 100 ? "…" : ""}"`
                           : "No notes on original reservation"}
@@ -410,74 +481,93 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                   </div>
                 </div>
 
-                {/* Attached Files Section */}
-                <div className="border border-gray-200 rounded-xl p-4 bg-white hover:bg-gray-50/50 transition-colors">
-                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Attached Files</h3>
+                {/* Attached Files */}
+                <div
+                  className="rounded-xl p-4"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.45)" }}>
+                    Attached Files
+                  </p>
                   {trip?.attachments && trip.attachments.length > 0 ? (
                     <div className="space-y-2">
-                      {trip.attachments.map((attachment) => {
+                      {trip.attachments.map(attachment => {
                         const Icon = getFileIcon(attachment.mimeType)
                         const isSelected = selectedAttachmentIds.has(attachment.id)
                         return (
                           <label
                             key={attachment.id}
-                            className={cn(
-                              "flex items-center gap-3 px-3.5 py-2.5 rounded-lg border transition-colors cursor-pointer",
-                              isSelected
-                                ? "bg-blue-50/50 border-blue-100 hover:bg-blue-50"
-                                : "bg-gray-50 border-gray-100 hover:bg-gray-75"
-                            )}
+                            className="flex items-center gap-3 px-3.5 py-2.5 rounded-lg cursor-pointer transition-colors"
+                            style={{
+                              background: isSelected ? "rgba(201,168,124,0.08)" : "rgba(255,255,255,0.03)",
+                              border: `1px solid ${isSelected ? "rgba(201,168,124,0.20)" : "rgba(255,255,255,0.07)"}`,
+                            }}
                           >
                             <Checkbox
                               checked={isSelected}
-                              onCheckedChange={(checked) => {
-                                setSelectedAttachmentIds((prev) => {
+                              onCheckedChange={checked => {
+                                setSelectedAttachmentIds(prev => {
                                   const next = new Set(prev)
-                                  if (checked) {
-                                    next.add(attachment.id)
-                                  } else {
-                                    next.delete(attachment.id)
-                                  }
+                                  if (checked) next.add(attachment.id)
+                                  else next.delete(attachment.id)
                                   return next
                                 })
                               }}
                             />
-                            <div className="w-6 h-6 rounded-md bg-gray-100 flex items-center justify-center flex-shrink-0">
-                              <Icon className="w-3.5 h-3.5 text-gray-500" />
+                            <div
+                              className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0"
+                              style={{ background: "rgba(255,255,255,0.07)" }}
+                            >
+                              <Icon className="w-3.5 h-3.5" style={{ color: isSelected ? "#c9a87c" : "rgba(200,212,228,0.50)" }} />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs font-medium text-gray-800 truncate">{attachment.name}</p>
-                              <p className="text-[11px] text-gray-400">{formatFileSize(attachment.size)}</p>
+                              <p className="text-xs font-medium truncate" style={{ color: isSelected ? "rgba(255,255,255,0.88)" : "rgba(255,255,255,0.65)" }}>
+                                {attachment.name}
+                              </p>
+                              <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.40)" }}>{formatFileSize(attachment.size)}</p>
                             </div>
                           </label>
                         )
                       })}
                     </div>
                   ) : (
-                    <p className="text-xs text-gray-500 italic">No attachments on original reservation</p>
+                    <p className="text-xs italic" style={{ color: "rgba(200,212,228,0.40)" }}>No attachments on original reservation</p>
                   )}
                 </div>
               </div>
             </div>
 
             {/* FOOTER */}
-            <div className="flex items-center gap-3 px-8 py-5 border-t border-gray-100 bg-gray-50/50 sticky bottom-0">
-              <Button
+            <div
+              className="flex items-center gap-3 px-8 py-5 sticky bottom-0"
+              style={{
+                borderTop: "1px solid rgba(255,255,255,0.08)",
+                background: "rgba(13,21,38,0.97)",
+                backdropFilter: "blur(8px)",
+              }}
+            >
+              <button
                 type="button"
                 onClick={onClose}
-                variant="outline"
-                className="flex-1"
                 disabled={createTrip.isPending}
+                className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(200,212,228,0.70)" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.09)" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)" }}
               >
                 Cancel
-              </Button>
-              <Button
+              </button>
+              <button
                 type="submit"
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                 disabled={createTrip.isPending}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-opacity disabled:opacity-60 flex items-center justify-center gap-2"
+                style={{ background: "#c9a87c", color: "#0d1526" }}
+                onMouseEnter={e => { if (!createTrip.isPending) (e.currentTarget as HTMLElement).style.opacity = "0.85" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = "1" }}
               >
+                {createTrip.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                 {createTrip.isPending ? "Creating..." : "Create Return Trip"}
-              </Button>
+              </button>
             </div>
           </form>
         )}
