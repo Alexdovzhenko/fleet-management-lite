@@ -197,12 +197,12 @@ export function CalendarWeekView({ currentDate, events, today, onSelectEvent }: 
                         </div>
                         {h >= 40 && (
                           <div className="text-[10px] font-semibold truncate leading-tight" style={{ color: sc.text }}>
-                            {ev.clientLastName}
+                            {ev.clientName}
                           </div>
                         )}
                         {h >= 56 && (
                           <div className="text-[9px] truncate leading-tight" style={{ color: sc.text, opacity: 0.7 }}>
-                            {ev.vehicleType}
+                            {ev.vehicleName ?? ev.vehicleType}
                           </div>
                         )}
                       </button>

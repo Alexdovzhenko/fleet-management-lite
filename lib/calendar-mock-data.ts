@@ -7,6 +7,7 @@ export interface CalendarEvent {
   clientLastName: string
   status: TripStatus
   vehicleType: string
+  vehicleName?: string  // e.g. "MCL 55" — the named vehicle from the fleet
   vehicleId?: string
   driverName?: string
   driverInitials?: string
@@ -126,6 +127,7 @@ export function tripToCalendarEvent(trip: Trip): CalendarEvent {
     clientLastName,
     status: trip.status,
     vehicleType: trip.vehicleType ?? trip.vehicle?.type ?? "OTHER",
+    vehicleName: trip.vehicle?.name ?? undefined,
     vehicleId: trip.vehicleId ?? trip.vehicle?.id ?? undefined,
     driverName,
     driverInitials,

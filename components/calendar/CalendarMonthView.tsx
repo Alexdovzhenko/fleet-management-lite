@@ -42,7 +42,7 @@ function TripPill({ event, onClick }: { event: CalendarEvent; onClick: (e: Calen
         {event.pickupTime.replace(":00", "").replace(" ", "")}
       </span>
       <span className="text-[9px] font-medium truncate" style={{ color: sc.text }}>
-        {event.clientLastName}
+        {event.clientName}
       </span>
     </button>
   )

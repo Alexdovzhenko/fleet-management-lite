@@ -201,7 +201,7 @@ export function CalendarDayView({ currentDate, events, today, onSelectEvent }: D
                         </span>
                       )}
                       <span className="flex items-center gap-1 text-[10px]" style={{ color: sc.text, opacity: 0.65 }}>
-                        <Car className="w-3 h-3" /> {VEHICLE_LABEL[ev.vehicleType] ?? ev.vehicleType}
+                        <Car className="w-3 h-3" /> {ev.vehicleName ?? VEHICLE_LABEL[ev.vehicleType] ?? ev.vehicleType}
                       </span>
                       <span className="flex items-center gap-1 text-[10px]" style={{ color: sc.text, opacity: 0.65 }}>
                         <Users className="w-3 h-3" /> {ev.passengerCount}
