@@ -882,9 +882,9 @@ function DriverPickerCard({ drivers, value, onChange }: { drivers: Driver[]; val
   return (
     <div ref={ref}>
       {selected ? (
-        <div className="group flex items-center gap-3 bg-violet-50 border border-violet-100 rounded-xl px-3 py-2.5 hover:border-violet-200 transition-colors">
+        <div className="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors" style={{ background: "rgba(99,102,241,0.10)", border: "1px solid rgba(99,102,241,0.22)" }}>
           <div className="relative flex-shrink-0">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center text-[11px] font-bold text-white shadow-sm overflow-hidden">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center text-[11px] font-bold text-white overflow-hidden">
               {selected.avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={selected.avatarUrl} alt={selected.name} className="w-full h-full object-cover" />
@@ -892,38 +892,45 @@ function DriverPickerCard({ drivers, value, onChange }: { drivers: Driver[]; val
                 getInitials(selected.name)
               )}
             </div>
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-white" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400" style={{ border: "2px solid #0d1526" }} />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-gray-900 truncate">{selected.name}</div>
-            {selected.phone && <div className="text-[11px] text-violet-500 truncate">{formatPhone(selected.phone)}</div>}
+            <div className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.92)" }}>{selected.name}</div>
+            {selected.phone && <div className="text-[11px] truncate" style={{ color: "rgba(165,180,252,0.70)" }}>{formatPhone(selected.phone)}</div>}
           </div>
           <button type="button" onClick={() => onChange("")}
-            className="w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-300 hover:text-red-400 hover:border-red-200 opacity-0 group-hover:opacity-100 transition-all shadow-sm flex-shrink-0">
+            className="w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
+            style={{ background: "rgba(239,68,68,0.14)", border: "1px solid rgba(239,68,68,0.25)", color: "rgba(248,113,113,0.90)" }}>
             <X className="w-3 h-3" />
           </button>
         </div>
       ) : (
         <button type="button" onClick={() => open ? setOpen(false) : openDropdown()}
-          className="w-full flex items-center gap-3 px-3 py-2.5 bg-gray-50 border border-dashed border-gray-200 rounded-xl text-gray-400 hover:border-violet-300 hover:bg-violet-50/40 hover:text-violet-500 transition-all">
-          <div className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center flex-shrink-0 shadow-sm">
-            <UserCheck className="w-4 h-4 text-gray-300" />
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+          style={{ background: "rgba(255,255,255,0.04)", border: "1px dashed rgba(255,255,255,0.14)", color: "rgba(200,212,228,0.50)" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,124,0.40)" }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.14)" }}>
+          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)" }}>
+            <UserCheck className="w-4 h-4" style={{ color: "rgba(200,212,228,0.40)" }} />
           </div>
           <span className="flex-1 text-left text-sm">Assign driver…</span>
-          <ChevronDown className={cn("w-4 h-4 text-gray-300 transition-transform", open && "rotate-180")} />
+          <ChevronDown className={cn("w-4 h-4 transition-transform", open && "rotate-180")} style={{ color: "rgba(200,212,228,0.35)" }} />
         </button>
       )}
       {open && !selected && createPortal(
-        <div ref={dropRef} style={dropStyle} className="bg-white border border-gray-200 rounded-2xl shadow-2xl shadow-gray-200/60 overflow-hidden">
-          <div className="px-4 py-2.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-50 border-b border-gray-100">Active Drivers</div>
+        <div ref={dropRef} style={{ ...dropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.10)", borderRadius: "16px", boxShadow: "0 24px 60px rgba(0,0,0,0.65)", overflow: "hidden" }}>
+          <div className="px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>Active Drivers</div>
           <div className="max-h-48 overflow-y-auto">
             {drivers.length === 0
-              ? <div className="px-4 py-4 text-xs text-gray-400 text-center">No active drivers</div>
+              ? <div className="px-4 py-4 text-xs text-center" style={{ color: "rgba(200,212,228,0.40)" }}>No active drivers</div>
               : drivers.map((d) => (
                 <button key={d.id} type="button" onClick={() => { onChange(d.id); setOpen(false) }}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-violet-50/60 transition-colors">
+                  className="w-full flex items-center gap-3 px-3 py-2.5 transition-colors"
+                  style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}>
                   <div className="relative flex-shrink-0">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-400 to-violet-600 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden">
                       {d.avatarUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={d.avatarUrl} alt={d.name} className="w-full h-full object-cover" />
@@ -931,11 +938,11 @@ function DriverPickerCard({ drivers, value, onChange }: { drivers: Driver[]; val
                         getInitials(d.name)
                       )}
                     </div>
-                    <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white" />
+                    <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400" style={{ border: "2px solid #0d1526" }} />
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <div className="text-sm font-semibold text-gray-800">{d.name}</div>
-                    {d.phone && <div className="text-[11px] text-gray-400">{formatPhone(d.phone)}</div>}
+                    <div className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>{d.name}</div>
+                    {d.phone && <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.50)" }}>{formatPhone(d.phone)}</div>}
                   </div>
                 </button>
               ))}
@@ -978,44 +985,53 @@ function VehicleTypePickerCard({ vehicleTypes, value, onChange }: { vehicleTypes
 
   return (
     <div ref={ref} className="space-y-1.5">
-      <Label className="text-xs font-medium text-gray-500">Type</Label>
+      <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "rgba(200,212,228,0.45)" }}>Type</p>
       {selected ? (
-        <div className="flex items-center gap-2.5 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2.5">
-          <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-            <Car className="w-4 h-4 text-blue-600" />
+        <div className="group flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-colors" style={{ background: "rgba(59,130,246,0.10)", border: "1px solid rgba(59,130,246,0.22)" }}>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(59,130,246,0.15)" }}>
+            <Car className="w-4 h-4" style={{ color: "rgba(147,197,253,0.85)" }} />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-gray-900">{selected.label}</div>
-            <div className="text-[11px] text-gray-500">Booked category</div>
+            <div className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.92)" }}>{selected.label}</div>
+            <div className="text-[11px]" style={{ color: "rgba(147,197,253,0.60)" }}>Booked category</div>
           </div>
-          <button type="button" onClick={() => onChange("")} className="text-gray-300 hover:text-gray-500 transition-colors flex-shrink-0" aria-label="Remove vehicle type">
+          <button type="button" onClick={() => onChange("")} className="transition-colors flex-shrink-0" aria-label="Remove vehicle type"
+            style={{ color: "rgba(200,212,228,0.35)" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.80)" }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.35)" }}>
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
       ) : (
         <button type="button" onClick={() => open ? setOpen(false) : openDropdown()}
-          className="w-full flex items-center gap-2.5 px-3 py-2.5 border border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-slate-400 hover:text-slate-600 hover:bg-slate-50/50 transition-all">
-          <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-            <Car className="w-3.5 h-3.5 text-gray-400" />
+          className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all"
+          style={{ background: "rgba(255,255,255,0.04)", border: "1px dashed rgba(255,255,255,0.14)", color: "rgba(200,212,228,0.50)" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,124,0.40)" }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.14)" }}>
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.06)" }}>
+            <Car className="w-3.5 h-3.5" style={{ color: "rgba(200,212,228,0.40)" }} />
           </div>
           <span className="flex-1 text-left">Select type…</span>
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} style={{ color: "rgba(200,212,228,0.35)" }} />
         </button>
       )}
       {open && !selected && createPortal(
-        <div ref={dropRef} style={dropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
-          <div className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">Vehicle Categories</div>
+        <div ref={dropRef} style={{ ...dropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.10)", borderRadius: "14px", boxShadow: "0 24px 60px rgba(0,0,0,0.65)", overflow: "hidden" }}>
+          <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>Vehicle Categories</div>
           <div className="max-h-48 overflow-y-auto">
             {vehicleTypes.length === 0
-              ? <div className="px-3 py-3 text-xs text-gray-400 text-center">No vehicle types</div>
+              ? <div className="px-3 py-3 text-xs text-center" style={{ color: "rgba(200,212,228,0.40)" }}>No vehicle types</div>
               : vehicleTypes.map((t) => (
                 <button key={t.value} type="button" onClick={() => { onChange(t.value); setOpen(false) }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-slate-50 transition-colors">
-                  <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                    <Car className="w-3.5 h-3.5 text-blue-600" />
+                  className="w-full flex items-center gap-2.5 px-3 py-2.5 transition-colors"
+                  style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}>
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(59,130,246,0.12)" }}>
+                    <Car className="w-3.5 h-3.5" style={{ color: "rgba(147,197,253,0.80)" }} />
                   </div>
                   <div className="flex-1 text-left">
-                    <div className="text-sm font-medium text-gray-800">{t.label}</div>
+                    <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{t.label}</div>
                   </div>
                 </button>
               ))
@@ -1064,50 +1080,59 @@ function VehiclePickerCard({ vehicles, value, onChange }: { vehicles: Vehicle[];
 
   return (
     <div ref={ref} className="space-y-1.5">
-      <Label className="text-xs font-medium text-gray-500">Vehicle</Label>
+      <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "rgba(200,212,228,0.45)" }}>Vehicle</p>
       {selected ? (
-        <div className="flex items-center gap-2.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
-          <div className="w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0">
-            <Car className="w-4 h-4 text-slate-600" />
+        <div className="group flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-colors" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)" }}>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.12)" }}>
+            <Car className="w-4 h-4" style={{ color: "#c9a87c" }} />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-gray-900 truncate">{selected.name}</div>
-            <div className="flex items-center gap-1 text-[11px] text-gray-500">
+            <div className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.92)" }}>{selected.name}</div>
+            <div className="flex items-center gap-1 text-[11px]" style={{ color: "rgba(200,212,228,0.55)" }}>
               <span>{VEHICLE_TYPE_LABEL[selected.type] ?? "Vehicle"}</span>
-              <span className="text-gray-300">·</span>
+              <span style={{ color: "rgba(200,212,228,0.25)" }}>·</span>
               <span>{selected.capacity} pax</span>
-              {selected.color && <><span className="text-gray-300">·</span><span>{selected.color}</span></>}
+              {selected.color && <><span style={{ color: "rgba(200,212,228,0.25)" }}>·</span><span>{selected.color}</span></>}
             </div>
           </div>
-          <button type="button" onClick={() => onChange("")} className="text-gray-300 hover:text-gray-500 transition-colors flex-shrink-0">
+          <button type="button" onClick={() => onChange("")} className="transition-colors flex-shrink-0"
+            style={{ color: "rgba(200,212,228,0.35)" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.80)" }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.35)" }}>
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
       ) : (
         <button type="button" onClick={() => open ? setOpen(false) : openDropdown()}
-          className="w-full flex items-center gap-2.5 px-3 py-2.5 border border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-slate-400 hover:text-slate-600 hover:bg-slate-50/50 transition-all">
-          <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-            <Car className="w-3.5 h-3.5 text-gray-400" />
+          className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all"
+          style={{ background: "rgba(255,255,255,0.04)", border: "1px dashed rgba(255,255,255,0.14)", color: "rgba(200,212,228,0.50)" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,124,0.40)" }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.14)" }}>
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.06)" }}>
+            <Car className="w-3.5 h-3.5" style={{ color: "rgba(200,212,228,0.40)" }} />
           </div>
           <span className="flex-1 text-left">Select vehicle…</span>
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} style={{ color: "rgba(200,212,228,0.35)" }} />
         </button>
       )}
       {open && !selected && createPortal(
-        <div ref={dropRef} style={dropStyle} className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden">
-          <div className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">Available Vehicles</div>
+        <div ref={dropRef} style={{ ...dropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.10)", borderRadius: "14px", boxShadow: "0 24px 60px rgba(0,0,0,0.65)", overflow: "hidden" }}>
+          <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>Available Vehicles</div>
           <div className="max-h-52 overflow-y-auto">
             {vehicles.length === 0
-              ? <div className="px-3 py-3 text-xs text-gray-400 text-center">No active vehicles</div>
+              ? <div className="px-3 py-3 text-xs text-center" style={{ color: "rgba(200,212,228,0.40)" }}>No active vehicles</div>
               : vehicles.map((v) => (
                 <button key={v.id} type="button" onClick={() => { onChange(v.id); setOpen(false) }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-slate-50 transition-colors">
-                  <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
-                    <Car className="w-3.5 h-3.5 text-slate-500" />
+                  className="w-full flex items-center gap-2.5 px-3 py-2.5 transition-colors"
+                  style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}>
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.10)" }}>
+                    <Car className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <div className="text-sm font-medium text-gray-800">{v.name}</div>
-                    <div className="text-[11px] text-gray-400">{VEHICLE_TYPE_LABEL[v.type] ?? v.type} · {v.capacity} pax{v.color ? ` · ${v.color}` : ""}</div>
+                    <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{v.name}</div>
+                    <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.50)" }}>{VEHICLE_TYPE_LABEL[v.type] ?? v.type} · {v.capacity} pax{v.color ? ` · ${v.color}` : ""}</div>
                   </div>
                 </button>
               ))}
