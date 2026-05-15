@@ -197,10 +197,10 @@ export default function CalendarPage() {
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap flex-shrink-0 transition-all"
                       style={active
                         ? { background: sc?.bg ?? "rgba(201,168,124,0.15)", color: sc?.text ?? "#c9a87c", border: `1px solid ${sc?.border ?? "rgba(201,168,124,0.30)"}` }
-                        : { background: "rgba(255,255,255,0.04)", color: "rgba(200,212,228,0.55)", border: "1px solid rgba(255,255,255,0.08)" }
+                        : { background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.88)", border: "1px solid rgba(255,255,255,0.12)" }
                       }
                     >
-                      {sc && <span className="w-1.5 h-1.5 rounded-full" style={{ background: active ? sc.dot : "rgba(200,212,228,0.25)" }} />}
+                      {sc && <span className="w-1.5 h-1.5 rounded-full" style={{ background: active ? sc.dot : "rgba(255,255,255,0.35)" }} />}
                       {sf.label}
                     </button>
                   )
