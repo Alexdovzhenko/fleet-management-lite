@@ -44,6 +44,11 @@ function TripPill({ event, onClick }: { event: CalendarEvent; onClick: (e: Calen
       <span className="text-[9px] font-medium truncate" style={{ color: sc.text }}>
         {event.clientName}
       </span>
+      {event.vehicleName && (
+        <span className="text-[9px] font-medium flex-shrink-0" style={{ color: sc.text, opacity: 0.55 }}>
+          · {event.vehicleName}
+        </span>
+      )}
     </button>
   )
 }
