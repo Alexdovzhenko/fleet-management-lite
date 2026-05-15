@@ -1589,9 +1589,16 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
           {/* Left: Confirmation # + Status */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {/* Confirmation # */}
-            <button type="button" onClick={copyConfirmation} className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors group flex-shrink-0">
+            <button
+              type="button"
+              onClick={copyConfirmation}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-colors group flex-shrink-0"
+              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.09)" }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+            >
               <span className="text-xs sm:text-sm font-mono font-semibold" style={{ color:"#c9a87c" }}>{currentTrip.tripNumber}</span>
-              {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" style={{ color:"rgba(200,212,228,0.45)" }} />}
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" style={{ color:"rgba(200,212,228,0.40)" }} />}
             </button>
 
             {/* Status */}
