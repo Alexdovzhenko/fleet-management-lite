@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 import {
   startOfMonth, endOfMonth, eachDayOfInterval, getDay,
-  isSameDay, isToday, isSameMonth, format, addDays,
+  isSameDay, isSameMonth, format, addDays,
 } from "date-fns"
 import type { CalendarEvent } from "@/lib/calendar-mock-data"
 import { getStatusColor } from "@/lib/calendar-mock-data"
@@ -14,6 +14,7 @@ const MAX_PILLS = 3
 interface CalendarMonthViewProps {
   currentDate: Date
   events: CalendarEvent[]
+  today: Date | null
   onSelectEvent: (e: CalendarEvent) => void
   onSelectDay: (d: Date) => void
 }
@@ -47,7 +48,7 @@ function TripPill({ event, onClick }: { event: CalendarEvent; onClick: (e: Calen
   )
 }
 
-export function CalendarMonthView({ currentDate, events, onSelectEvent, onSelectDay }: CalendarMonthViewProps) {
+export function CalendarMonthView({ currentDate, events, today, onSelectEvent, onSelectDay }: CalendarMonthViewProps) {
   const eventMap = useMemo(() => tripsByDate(events), [events])
 
   const days = useMemo(() => {
@@ -83,7 +84,7 @@ export function CalendarMonthView({ currentDate, events, onSelectEvent, onSelect
           const key = format(day, "yyyy-MM-dd")
           const dayEvents = eventMap.get(key) ?? []
           const isCurrentMonth = isSameMonth(day, currentDate)
-          const isThisToday = isToday(day)
+          const isThisToday = today ? isSameDay(day, today) : false
           const isExpanded = expandedDay === key
           const overflow = dayEvents.length > MAX_PILLS
           const displayEvents = isExpanded ? dayEvents : dayEvents.slice(0, MAX_PILLS)

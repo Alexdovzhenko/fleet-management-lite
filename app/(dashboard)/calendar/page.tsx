@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import {
   format, addMonths, subMonths, addWeeks, subWeeks,
   addDays, subDays, startOfWeek, endOfWeek, isSameMonth,
@@ -57,6 +57,9 @@ export default function CalendarPage() {
   const [view, setView]             = useState<ViewMode>("month")
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
+  // Computed client-side to avoid SSR UTC → local timezone mismatch
+  const [today, setToday] = useState<Date | null>(null)
+  useEffect(() => { setToday(new Date()) }, [])
   const [showFilters, setShowFilters] = useState(false)
   const [statusFilter, setStatusFilter] = useState("ALL")
 
@@ -236,6 +239,7 @@ export default function CalendarPage() {
               <CalendarMonthView
                 currentDate={currentDate}
                 events={events}
+                today={today}
                 onSelectEvent={setSelectedEvent}
                 onSelectDay={handleSelectDay}
               />
@@ -244,6 +248,7 @@ export default function CalendarPage() {
               <CalendarWeekView
                 currentDate={currentDate}
                 events={events}
+                today={today}
                 onSelectEvent={setSelectedEvent}
               />
             )}
@@ -251,6 +256,7 @@ export default function CalendarPage() {
               <CalendarDayView
                 currentDate={currentDate}
                 events={events}
+                today={today}
                 onSelectEvent={setSelectedEvent}
               />
             )}

@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useEffect, useState, useMemo } from "react"
-import { format, isSameDay, isToday, startOfWeek, addDays } from "date-fns"
+import { format, isSameDay, startOfWeek, addDays } from "date-fns"
 import type { CalendarEvent } from "@/lib/calendar-mock-data"
 import { getStatusColor, eventStartDate, eventEndDate, parsePickupTime } from "@/lib/calendar-mock-data"
 
@@ -47,10 +47,11 @@ function useNow(): Date { const [now, setNow] = useState(new Date()); useEffect(
 interface WeekViewProps {
   currentDate: Date
   events: CalendarEvent[]
+  today: Date | null
   onSelectEvent: (e: CalendarEvent) => void
 }
 
-export function CalendarWeekView({ currentDate, events, onSelectEvent }: WeekViewProps) {
+export function CalendarWeekView({ currentDate, events, today, onSelectEvent }: WeekViewProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const now = useNow()
 
@@ -91,7 +92,7 @@ export function CalendarWeekView({ currentDate, events, onSelectEvent }: WeekVie
         }}
       >
         {days.map((day) => {
-          const tod = isToday(day)
+          const tod = today ? isSameDay(day, today) : false
           return (
             <div key={day.toISOString()} className="flex-1 text-center py-2.5">
               <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "rgba(200,212,228,0.40)" }}>
@@ -153,7 +154,7 @@ export function CalendarWeekView({ currentDate, events, onSelectEvent }: WeekVie
             {days.map((day) => {
               const key = format(day, "yyyy-MM-dd")
               const dayEvs = layoutDay(eventsByDay.get(key) ?? [])
-              const isT = isToday(day)
+              const isT = today ? isSameDay(day, today) : false
 
               return (
                 <div

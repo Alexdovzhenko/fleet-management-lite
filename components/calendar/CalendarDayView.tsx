@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useEffect, useState, useMemo } from "react"
-import { format, isToday } from "date-fns"
+import { format, isSameDay } from "date-fns"
 import { Users, Car, UserCheck } from "lucide-react"
 import type { CalendarEvent } from "@/lib/calendar-mock-data"
 import { getStatusColor, parsePickupTime } from "@/lib/calendar-mock-data"
@@ -31,13 +31,14 @@ const VEHICLE_LABEL: Record<string, string> = {
 interface DayViewProps {
   currentDate: Date
   events: CalendarEvent[]
+  today: Date | null
   onSelectEvent: (e: CalendarEvent) => void
 }
 
-export function CalendarDayView({ currentDate, events, onSelectEvent }: DayViewProps) {
+export function CalendarDayView({ currentDate, events, today, onSelectEvent }: DayViewProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const now = useNow()
-  const isT = isToday(currentDate)
+  const isT = today ? isSameDay(currentDate, today) : false
 
   const dayEvents = useMemo(() => {
     const key = format(currentDate, "yyyy-MM-dd")
