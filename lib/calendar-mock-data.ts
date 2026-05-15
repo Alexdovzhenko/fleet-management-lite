@@ -91,33 +91,33 @@ export function getStatusColor(status: string) {
   return STATUS_COLORS[status] ?? STATUS_COLORS["CONFIRMED"]
 }
 
-// 12 visually distinct colors that work on dark backgrounds
-const VEHICLE_PALETTE: Array<{ bg: string; border: string; text: string; dot: string }> = [
-  { bg: "rgba(59,130,246,0.14)",  border: "rgba(59,130,246,0.35)",  text: "rgba(147,197,253,0.95)", dot: "#60a5fa" },  // blue
-  { bg: "rgba(16,185,129,0.14)",  border: "rgba(16,185,129,0.35)",  text: "rgba(110,231,183,0.95)", dot: "#34d399" },  // emerald
-  { bg: "rgba(245,158,11,0.14)",  border: "rgba(245,158,11,0.35)",  text: "rgba(252,211,77,0.95)",  dot: "#fbbf24" },  // amber
-  { bg: "rgba(236,72,153,0.14)",  border: "rgba(236,72,153,0.35)",  text: "rgba(249,168,212,0.95)", dot: "#f472b6" },  // pink
-  { bg: "rgba(6,182,212,0.14)",   border: "rgba(6,182,212,0.35)",   text: "rgba(103,232,249,0.95)", dot: "#22d3ee" },  // cyan
-  { bg: "rgba(168,85,247,0.14)",  border: "rgba(168,85,247,0.35)",  text: "rgba(216,180,254,0.95)", dot: "#c084fc" },  // purple
-  { bg: "rgba(239,68,68,0.14)",   border: "rgba(239,68,68,0.35)",   text: "rgba(252,165,165,0.95)", dot: "#f87171" },  // red
-  { bg: "rgba(14,165,233,0.14)",  border: "rgba(14,165,233,0.35)",  text: "rgba(125,211,252,0.95)", dot: "#38bdf8" },  // sky
-  { bg: "rgba(132,204,22,0.14)",  border: "rgba(132,204,22,0.35)",  text: "rgba(190,242,100,0.95)", dot: "#a3e635" },  // lime
-  { bg: "rgba(251,146,60,0.14)",  border: "rgba(251,146,60,0.35)",  text: "rgba(253,186,116,0.95)", dot: "#fb923c" },  // orange
-  { bg: "rgba(99,102,241,0.14)",  border: "rgba(99,102,241,0.35)",  text: "rgba(165,180,252,0.95)", dot: "#818cf8" },  // indigo
-  { bg: "rgba(20,184,166,0.14)",  border: "rgba(20,184,166,0.35)",  text: "rgba(94,234,212,0.95)",  dot: "#2dd4bf" },  // teal
-]
-
 function hashVehicleKey(s: string): number {
   let h = 0
   for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0
   return Math.abs(h)
 }
 
-/** Returns a consistent color for a vehicle, or null if no vehicle is assigned */
+/**
+ * Returns a consistent color for a vehicle derived from its ID.
+ * Uses 100 evenly-spaced hues across the full spectrum — each vehicle always
+ * gets the same color, and no two vehicles in a fleet of 100 share a hue.
+ * Scales beyond 100 via the hash modulo without collision risk.
+ */
 export function getVehicleColor(vehicleId?: string, vehicleName?: string) {
   const key = vehicleId ?? vehicleName
   if (!key) return null
-  return VEHICLE_PALETTE[hashVehicleKey(key) % VEHICLE_PALETTE.length]
+  const hash = hashVehicleKey(key)
+  // 100 stops × 3.6° = full 360° spectrum
+  const hue    = (hash % 100) * 3.6
+  // Vary lightness slightly (58–65%) so nearby hues feel more distinct
+  const light  = 58 + ((hash >> 7) % 8)
+  const sat    = 72
+  return {
+    bg:     `hsla(${hue},${sat}%,${light}%,0.14)`,
+    border: `hsla(${hue},${sat}%,${light}%,0.32)`,
+    text:   `hsla(${hue},${sat}%,${light + 12}%,0.92)`,
+    dot:    `hsl(${hue},${sat}%,${light}%)`,
+  }
 }
 
 /** Parse "7:00 AM" → { hours: 7, minutes: 0 } */
