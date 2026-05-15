@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState, useMemo } from "react"
 import { format, isSameDay, startOfWeek, addDays } from "date-fns"
 import type { CalendarEvent } from "@/lib/calendar-mock-data"
-import { getStatusColor, eventStartDate, eventEndDate, parsePickupTime } from "@/lib/calendar-mock-data"
+import { getStatusColor, getVehicleColor, eventStartDate, eventEndDate, parsePickupTime } from "@/lib/calendar-mock-data"
 
 const HOUR_START = 5      // 5 AM
 const HOUR_END   = 23     // 11 PM
@@ -167,6 +167,8 @@ export function CalendarWeekView({ currentDate, events, today, onSelectEvent }: 
                 >
                   {dayEvs.map((ev) => {
                     const sc = getStatusColor(ev.status)
+                    const vc = getVehicleColor(ev.vehicleId, ev.vehicleName)
+                    const c = vc ?? sc
                     const y = Math.max(0, minutesToY(ev.startMin))
                     const h = Math.max(28, (ev.durationMinutes / 60) * HOUR_H)
                     const colW = 1 / ev.totalCols
@@ -184,24 +186,24 @@ export function CalendarWeekView({ currentDate, events, today, onSelectEvent }: 
                           height: `${h}px`,
                           left,
                           width,
-                          background: sc.bg,
-                          borderLeft: `3px solid ${sc.dot}`,
-                          border: `1px solid ${sc.border}`,
+                          background: c.bg,
+                          borderLeft: `3px solid ${c.dot}`,
+                          border: `1px solid ${c.border}`,
                           borderLeftWidth: "3px",
                           zIndex: 5,
                           padding: "3px 5px",
                         }}
                       >
-                        <div className="text-[9px] font-bold truncate" style={{ color: sc.dot }}>
+                        <div className="text-[9px] font-bold truncate" style={{ color: c.dot }}>
                           {ev.pickupTime.replace(":00", "").replace(" ", "")}
                         </div>
                         {h >= 40 && (
-                          <div className="text-[10px] font-semibold truncate leading-tight" style={{ color: sc.text }}>
+                          <div className="text-[10px] font-semibold truncate leading-tight" style={{ color: c.text }}>
                             {ev.clientName}
                           </div>
                         )}
                         {h >= 56 && (
-                          <div className="text-[9px] truncate leading-tight" style={{ color: sc.text, opacity: 0.7 }}>
+                          <div className="text-[9px] truncate leading-tight" style={{ color: c.dot, opacity: 0.75 }}>
                             {ev.vehicleName ?? ev.vehicleType}
                           </div>
                         )}

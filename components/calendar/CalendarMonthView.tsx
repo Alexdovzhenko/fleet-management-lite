@@ -6,7 +6,7 @@ import {
   isSameDay, isSameMonth, format, addDays,
 } from "date-fns"
 import type { CalendarEvent } from "@/lib/calendar-mock-data"
-import { getStatusColor } from "@/lib/calendar-mock-data"
+import { getStatusColor, getVehicleColor } from "@/lib/calendar-mock-data"
 
 const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 const MAX_PILLS = 3
@@ -31,21 +31,23 @@ function tripsByDate(events: CalendarEvent[]): Map<string, CalendarEvent[]> {
 
 function TripPill({ event, onClick }: { event: CalendarEvent; onClick: (e: CalendarEvent) => void }) {
   const sc = getStatusColor(event.status)
+  const vc = getVehicleColor(event.vehicleId, event.vehicleName)
+  const c = vc ?? sc  // vehicle color when available, else status color
   return (
     <button
       type="button"
       onClick={(ev) => { ev.stopPropagation(); onClick(event) }}
       className="w-full flex items-center gap-1 px-1.5 py-0.5 rounded-md text-left overflow-hidden transition-opacity hover:opacity-80"
-      style={{ background: sc.bg, borderLeft: `2px solid ${sc.dot}` }}
+      style={{ background: c.bg, borderLeft: `2px solid ${c.dot}` }}
     >
-      <span className="text-[9px] font-semibold tabular-nums flex-shrink-0" style={{ color: sc.text }}>
+      <span className="text-[9px] font-semibold tabular-nums flex-shrink-0" style={{ color: c.dot }}>
         {event.pickupTime.replace(":00", "").replace(" ", "")}
       </span>
-      <span className="text-[9px] font-medium truncate" style={{ color: sc.text }}>
+      <span className="text-[9px] font-medium truncate" style={{ color: c.text }}>
         {event.clientName}
       </span>
       {event.vehicleName && (
-        <span className="text-[9px] font-medium flex-shrink-0" style={{ color: sc.text, opacity: 0.55 }}>
+        <span className="text-[9px] font-medium flex-shrink-0" style={{ color: c.dot, opacity: 0.75 }}>
           · {event.vehicleName}
         </span>
       )}

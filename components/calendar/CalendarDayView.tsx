@@ -4,7 +4,7 @@ import { useRef, useEffect, useState, useMemo } from "react"
 import { format, isSameDay } from "date-fns"
 import { Users, Car, UserCheck } from "lucide-react"
 import type { CalendarEvent } from "@/lib/calendar-mock-data"
-import { getStatusColor, parsePickupTime } from "@/lib/calendar-mock-data"
+import { getStatusColor, getVehicleColor, parsePickupTime } from "@/lib/calendar-mock-data"
 
 const HOUR_START = 5
 const HOUR_END   = 23
@@ -143,6 +143,8 @@ export function CalendarDayView({ currentDate, events, today, onSelectEvent }: D
             {/* Trip cards */}
             {dayEvents.map((ev) => {
               const sc = getStatusColor(ev.status)
+              const vc = getVehicleColor(ev.vehicleId, ev.vehicleName)
+              const c = vc ?? sc
               const y = Math.max(0, minutesToY(ev.startMin))
               const h = Math.max(52, (ev.durationMinutes / 60) * HOUR_H)
 
@@ -157,16 +159,16 @@ export function CalendarDayView({ currentDate, events, today, onSelectEvent }: D
                     height: `${h - 4}px`,
                     left: "6px",
                     right: "6px",
-                    background: sc.bg,
-                    border: `1px solid ${sc.border}`,
-                    borderLeft: `4px solid ${sc.dot}`,
+                    background: c.bg,
+                    border: `1px solid ${c.border}`,
+                    borderLeft: `4px solid ${c.dot}`,
                     zIndex: 5,
                     padding: "8px 10px",
                   }}
                 >
-                  {/* Top row: time + status */}
+                  {/* Top row: time + status badge (status always uses sc for semantic meaning) */}
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-[11px] font-bold tabular-nums" style={{ color: sc.dot }}>
+                    <span className="text-[11px] font-bold tabular-nums" style={{ color: c.dot }}>
                       {ev.pickupTime}
                     </span>
                     <span
@@ -184,7 +186,7 @@ export function CalendarDayView({ currentDate, events, today, onSelectEvent }: D
 
                   {/* Route (if tall enough) */}
                   {h >= 80 && (
-                    <div className="mt-1.5 text-[11px] leading-snug" style={{ color: sc.text, opacity: 0.80 }}>
+                    <div className="mt-1.5 text-[11px] leading-snug" style={{ color: c.text, opacity: 0.80 }}>
                       <span className="truncate block">{ev.pickupAddress}</span>
                       {h >= 100 && (
                         <span className="truncate block mt-0.5">{ev.dropoffAddress}</span>
@@ -196,14 +198,14 @@ export function CalendarDayView({ currentDate, events, today, onSelectEvent }: D
                   {h >= 120 && (
                     <div className="flex items-center gap-3 mt-2">
                       {ev.driverName && (
-                        <span className="flex items-center gap-1 text-[10px]" style={{ color: sc.text, opacity: 0.65 }}>
+                        <span className="flex items-center gap-1 text-[10px]" style={{ color: c.text, opacity: 0.65 }}>
                           <UserCheck className="w-3 h-3" /> {ev.driverName.split(" ")[0]}
                         </span>
                       )}
-                      <span className="flex items-center gap-1 text-[10px]" style={{ color: sc.text, opacity: 0.65 }}>
+                      <span className="flex items-center gap-1 text-[10px]" style={{ color: c.dot, opacity: 0.85 }}>
                         <Car className="w-3 h-3" /> {ev.vehicleName ?? VEHICLE_LABEL[ev.vehicleType] ?? ev.vehicleType}
                       </span>
-                      <span className="flex items-center gap-1 text-[10px]" style={{ color: sc.text, opacity: 0.65 }}>
+                      <span className="flex items-center gap-1 text-[10px]" style={{ color: c.text, opacity: 0.65 }}>
                         <Users className="w-3 h-3" /> {ev.passengerCount}
                       </span>
                     </div>
