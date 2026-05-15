@@ -610,7 +610,15 @@ function DispatchPageInner() {
           <TripGrid
             trips={filteredTrips}
             selectedTripId={selectedTrip?.id}
-            onSelect={trip => setSelectedTrip(selectedTrip?.id === trip.id ? null : trip)}
+            onSelect={trip => {
+              if (selectedTrip?.id === trip.id) {
+                setSelectedTrip(null)
+                router.replace("/dispatch")
+              } else {
+                setSelectedTrip(trip)
+                router.replace(`/dispatch?open=${trip.id}`)
+              }
+            }}
             onDoubleClick={(trip, pos) => { setQuickTrip(trip); setQuickPos(pos) }}
             showDate={isSearching}
           />
