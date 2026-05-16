@@ -8,7 +8,7 @@ import { z } from "zod"
 import {
   X, Plane, Phone, Copy, Check, User, Car, UserCheck, UserPlus,
   ChevronDown, MapPin, Building2, Ship, Plus, Star,
-  AlertTriangle, Baby, ArrowRightLeft, Pencil, Send, Calendar, Loader2, ArrowLeftRight, GripVertical, Clock,
+  AlertTriangle, Baby, ArrowRightLeft, Pencil, Send, Calendar, Loader2, ArrowLeftRight, GripVertical, Clock, Lock,
 } from "lucide-react"
 import {
   DndContext,
@@ -1210,6 +1210,7 @@ interface TripEditModalProps {
 }
 
 export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false, onBillingChange }: TripEditModalProps) {
+  const { isDark } = useTheme()
   const updateTrip = useUpdateTrip()
   const { data: freshTrip } = useTrip(trip?.id ?? "")
   // Use the fresh trip data if available (so attachments update), otherwise fall back to prop
@@ -2022,14 +2023,44 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   </div>
 
                   {/* Internal Notes */}
-                  <div className="rounded-2xl px-6 py-5" style={{ background:"rgba(245,158,11,0.06)", border:"1px solid rgba(245,158,11,0.20)" }}>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color:"rgba(251,191,36,0.85)" }}>Internal Notes</Label>
-                      <span className="text-xs flex items-center gap-1" style={{ color:"rgba(251,191,36,0.60)" }}>🔒 Dispatcher only</span>
+                  <div
+                    className="rounded-2xl px-5 py-4 space-y-3"
+                    style={{
+                      background: isDark ? "rgba(245,158,11,0.08)" : "rgba(254,243,199,0.70)",
+                      border: isDark ? "1px solid rgba(245,158,11,0.22)" : "1px solid rgba(217,119,6,0.28)",
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <Label
+                        className="text-[11px] font-bold uppercase tracking-wider"
+                        style={{ color: isDark ? "rgba(251,191,36,0.90)" : "#92400e" }}
+                      >
+                        Internal Notes
+                      </Label>
+                      <span
+                        className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                        style={isDark
+                          ? { background: "rgba(245,158,11,0.18)", color: "rgba(251,191,36,0.85)", border: "1px solid rgba(245,158,11,0.30)" }
+                          : { background: "rgba(255,255,255,0.80)", color: "#92400e", border: "1px solid rgba(217,119,6,0.30)" }
+                        }
+                      >
+                        <Lock className="w-2.5 h-2.5" />
+                        Dispatcher only
+                      </span>
                     </div>
-                    <textarea {...register("internalNotes")} rows={3}
-                      className="w-full rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none" style={{ background:"rgba(245,158,11,0.05)", border:"1px solid rgba(245,158,11,0.18)", color:"var(--lc-text-primary)" }}
-                      placeholder="Private notes, reminders, internal instructions…" />
+                    <textarea
+                      {...register("internalNotes")}
+                      rows={3}
+                      className="w-full rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none transition-colors duration-150"
+                      style={{
+                        background: isDark ? "rgba(0,0,0,0.22)" : "rgba(255,255,255,0.90)",
+                        border: isDark ? "1px solid rgba(245,158,11,0.20)" : "1px solid rgba(217,119,6,0.22)",
+                        color: "var(--lc-text-primary)",
+                      }}
+                      onFocus={e => { e.currentTarget.style.borderColor = isDark ? "rgba(245,158,11,0.55)" : "rgba(217,119,6,0.55)" }}
+                      onBlur={e => { e.currentTarget.style.borderColor = isDark ? "rgba(245,158,11,0.20)" : "rgba(217,119,6,0.22)" }}
+                      placeholder="Private notes, reminders, internal instructions…"
+                    />
                   </div>
                 </div>
 
