@@ -211,10 +211,17 @@ const STOP_ROLES: { value: StopRole; label: string }[] = [
   { value: "wait",   label: "Wait" },
 ]
 const STOP_ROLE_STYLE: Record<StopRole, { dot: string; pill: string }> = {
-  pickup: { dot: "bg-emerald-500 ring-emerald-900", pill: "bg-emerald-900/30 text-emerald-400 border-emerald-700/50" },
-  drop:   { dot: "bg-red-500 ring-red-900",         pill: "bg-red-900/30 text-red-400 border-red-700/50" },
-  stop:   { dot: "bg-blue-500 ring-blue-900",       pill: "bg-blue-900/30 text-blue-400 border-blue-700/50" },
-  wait:   { dot: "bg-amber-500 ring-amber-900",     pill: "bg-amber-900/30 text-amber-400 border-amber-700/50" },
+  pickup: { dot: "bg-emerald-400", pill: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" },
+  drop:   { dot: "bg-red-400",     pill: "bg-red-500/20 text-red-300 border-red-500/40" },
+  stop:   { dot: "bg-blue-400",    pill: "bg-blue-500/20 text-blue-300 border-blue-500/40" },
+  wait:   { dot: "bg-amber-400",   pill: "bg-amber-500/20 text-amber-300 border-amber-500/40" },
+}
+
+const STOP_ROLE_STYLE_LIGHT: Record<StopRole, { dot: string; pill: string }> = {
+  pickup: { dot: "bg-emerald-500", pill: "bg-emerald-100 text-emerald-800 border-emerald-300" },
+  drop:   { dot: "bg-red-500",     pill: "bg-red-100 text-red-800 border-red-300" },
+  stop:   { dot: "bg-blue-500",    pill: "bg-blue-100 text-blue-800 border-blue-300" },
+  wait:   { dot: "bg-amber-500",   pill: "bg-amber-100 text-amber-800 border-amber-300" },
 }
 const ROLE_PREFIX: Record<StopRole, string> = { pickup: "PU", drop: "DO", stop: "ST", wait: "WT" }
 const ROLE_ROW_BG: Record<StopRole, { bg: string; border: string; prefix: string }> = {
@@ -359,6 +366,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
   setStops: React.Dispatch<React.SetStateAction<StopEntry[]>>
   stopsError: string
 }) {
+  const { isDark } = useTheme()
   const [locType, setLocType] = useState<StopLocationType>("address")
   const [role, setRole] = useState<StopRole>("pickup")
   const [locationName, setLocationName] = useState("")
@@ -792,24 +800,29 @@ function RouteBuilder({ stops, setStops, stopsError }: {
         </div>
 
         {/* Role + Add */}
-        <div className="px-3 py-3 flex items-center justify-between gap-2" style={{ background: "rgba(255,255,255,0.015)", borderTop: "1px solid var(--lc-bg-glass)" }}>
-          <div className="flex items-center gap-1 flex-wrap">
-            {STOP_ROLES.map(({ value, label }) => (
-              <label key={value}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all select-none ${
-                  role === value ? STOP_ROLE_STYLE[value].pill : "border-transparent"
-                }`}
-                style={role !== value ? { color: "var(--lc-text-primary)", background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass)" } : {}}>
-                <input type="radio" name="edit-modal-role" value={value} checked={role === value} onChange={() => setRole(value)} className="sr-only" />
-                <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                  role === value
-                    ? value === "pickup" ? "bg-emerald-400" : value === "drop" ? "bg-red-400"
-                    : value === "wait" ? "bg-amber-400" : "bg-blue-400"
-                    : "bg-white/15"
-                }`} />
-                {label}
-              </label>
-            ))}
+        <div className="px-3 py-3 flex items-center justify-between gap-2" style={{ background: "var(--lc-bg-card)", borderTop: "1px solid var(--lc-bg-glass)" }}>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {STOP_ROLES.map(({ value, label }) => {
+              const isActive = role === value
+              const styles = isDark ? STOP_ROLE_STYLE[value] : STOP_ROLE_STYLE_LIGHT[value]
+              return (
+                <label key={value}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all duration-150 select-none active:scale-95 border ${
+                    isActive ? styles.pill : ""
+                  }`}
+                  style={!isActive ? {
+                    color: "var(--lc-text-secondary)",
+                    background: "var(--lc-bg-glass)",
+                    borderColor: "var(--lc-border)",
+                  } : {}}>
+                  <input type="radio" name="edit-modal-role" value={value} checked={isActive} onChange={() => setRole(value)} className="sr-only" />
+                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                    isActive ? styles.dot : isDark ? "bg-white/20" : "bg-gray-300"
+                  }`} />
+                  {label}
+                </label>
+              )
+            })}
           </div>
           <button type="button" onClick={handleAdd}
             className="flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all flex-shrink-0"
