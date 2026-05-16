@@ -913,7 +913,7 @@ function DriverPickerCard({ drivers, value, onChange }: { drivers: Driver[]; val
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>{selected.name}</div>
-            {selected.phone && <div className="text-[11px] truncate" style={{ color: isDark ? "rgba(165,180,252,0.70)" : "rgba(30,30,40,0.70)" }}>{formatPhone(selected.phone)}</div>}
+            {selected.phone && <div className="text-[11px] truncate" style={{ color: isDark ? "rgba(165,180,252,0.70)" : "#111111" }}>{formatPhone(selected.phone)}</div>}
           </div>
           <button type="button" onClick={() => onChange("")}
             className="w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
