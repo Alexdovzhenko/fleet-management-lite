@@ -151,12 +151,16 @@ function DispatchPageInner() {
   }, [])
 
   // When URL has ?open=tripId, sync the board to that trip's date.
-  // Parse as local date (not UTC) — new Date("YYYY-MM-DD") is UTC midnight,
-  // which shifts one day back in western timezones.
+  // Prisma serializes DateTime as full ISO ("2026-05-14T00:00:00.000Z"), so strip
+  // the time part before splitting. Parse as local date (not UTC) to avoid the
+  // UTC-midnight timezone shift that moves the date one day back in western zones.
   useEffect(() => {
     if (!openTrip?.pickupDate) return
-    const [y, m, d] = openTrip.pickupDate.split("-").map(Number)
+    const dateOnly = openTrip.pickupDate.split("T")[0]
+    const [y, m, d] = dateOnly.split("-").map(Number)
+    if (!y || !m || !d) return
     const date = new Date(y, m - 1, d)
+    if (isNaN(date.getTime())) return
     setSelectedDate(date)
     persistDate(date)
   }, [openTrip])
