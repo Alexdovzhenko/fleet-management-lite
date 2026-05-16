@@ -2,15 +2,10 @@
 
 import { useState, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
-import {
-  Dialog, DialogContent,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input }  from "@/components/ui/input"
-import { Label }  from "@/components/ui/label"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
 import {
   User, Car, ArrowRightLeft, Mail, FileText, ChevronDown,
-  CheckCircle2, AlertTriangle, Loader2, Send, Star, X, UserCheck,
+  CheckCircle2, AlertTriangle, Loader2, Send, X, UserCheck,
 } from "lucide-react"
 import { useSenderEmails, useSendTripEmail } from "@/lib/hooks/use-sender-emails"
 import { useDrivers } from "@/lib/hooks/use-drivers"
@@ -29,46 +24,50 @@ interface TabDef {
   getEmail: (trip: Trip) => string | null | undefined
   docType: string
   docDesc: string
-  docColor: string
+  iconBg: string
+  iconColor: string
 }
 
 const TABS: TabDef[] = [
   {
-    key:      "driver",
-    label:    "Driver",
-    Icon:     Car,
-    getEmail: (t) => t.driver?.email ?? null,
-    docType:  "Job Order",
-    docDesc:  "Operational format — fast to read, driver-optimized",
-    docColor: "bg-slate-900 text-slate-100",
+    key:       "driver",
+    label:     "Driver",
+    Icon:      Car,
+    getEmail:  (t) => t.driver?.email ?? null,
+    docType:   "Job Order",
+    docDesc:   "Operational format — fast to read, driver-optimized",
+    iconBg:    "rgba(255,255,255,0.08)",
+    iconColor: "rgba(200,212,228,0.70)",
   },
   {
-    key:      "client",
-    label:    "Client",
-    Icon:     User,
-    getEmail: (t) => t.passengerEmail ?? t.customer?.email ?? null,
-    docType:  "Reservation PDF",
-    docDesc:  "Full confirmation — branded, professional",
-    docColor: "bg-blue-600 text-white",
+    key:       "client",
+    label:     "Client",
+    Icon:      User,
+    getEmail:  (t) => t.passengerEmail ?? t.customer?.email ?? null,
+    docType:   "Reservation PDF",
+    docDesc:   "Full confirmation — branded, professional",
+    iconBg:    "rgba(96,165,250,0.15)",
+    iconColor: "rgba(147,197,253,0.90)",
   },
   {
-    key:      "affiliate",
-    label:    "Affiliate",
-    Icon:     ArrowRightLeft,
-    getEmail: (t) => {
+    key:       "affiliate",
+    label:     "Affiliate",
+    Icon:      ArrowRightLeft,
+    getEmail:  (t) => {
       const accepted = t.farmOuts?.find(f => f.status === "ACCEPTED" || (f as { toCompany?: { id: string } }).toCompany)
       return (accepted as { toCompany?: { id: string; name: string } & { email?: string } })?.toCompany?.email ?? null
     },
-    docType:  "Reservation PDF",
-    docDesc:  "Full trip details — affiliate-professional format",
-    docColor: "bg-indigo-600 text-white",
+    docType:   "Reservation PDF",
+    docDesc:   "Full trip details — affiliate-professional format",
+    iconBg:    "rgba(139,92,246,0.15)",
+    iconColor: "rgba(196,181,253,0.90)",
   },
 ]
 
-// ─── Helper functions ────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getInitials(name: string) {
-  return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+  return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
 }
 
 const VEHICLE_TYPE_LABEL: Record<string, string> = {
@@ -76,7 +75,7 @@ const VEHICLE_TYPE_LABEL: Record<string, string> = {
   SPRINTER: "Sprinter", PARTY_BUS: "Party Bus", COACH: "Coach", OTHER: "Vehicle",
 }
 
-// ─── Assignment Modal Component ───────────────────────────────────────────────
+// ─── Driver Assignment Modal ──────────────────────────────────────────────────
 
 interface DriverAssignmentModalProps {
   trip: Trip
@@ -88,15 +87,7 @@ interface DriverAssignmentModalProps {
   isLoading?: boolean
 }
 
-function DriverAssignmentModal({
-  trip,
-  drivers,
-  vehicles,
-  open,
-  onOpenChange,
-  onAssign,
-  isLoading = false,
-}: DriverAssignmentModalProps) {
+function DriverAssignmentModal({ trip, drivers, vehicles, open, onOpenChange, onAssign, isLoading = false }: DriverAssignmentModalProps) {
   const [selectedDriverId, setSelectedDriverId] = useState("")
   const [selectedVehicleId, setSelectedVehicleId] = useState("")
   const [driverDropOpen, setDriverDropOpen] = useState(false)
@@ -106,8 +97,8 @@ function DriverAssignmentModal({
   const vehicleRef = useRef<HTMLDivElement>(null)
   const vehicleDropRef = useRef<HTMLDivElement>(null)
 
-  const selectedDriver = drivers.find((d) => d.id === selectedDriverId) ?? null
-  const selectedVehicle = vehicles.find((v) => v.id === selectedVehicleId) ?? null
+  const selectedDriver = drivers.find(d => d.id === selectedDriverId) ?? null
+  const selectedVehicle = vehicles.find(v => v.id === selectedVehicleId) ?? null
 
   useEffect(() => {
     if (!open) {
@@ -133,45 +124,57 @@ function DriverAssignmentModal({
     return () => document.removeEventListener("mousedown", handleClick)
   }, [])
 
-  async function handleAssign() {
-    if (!selectedDriverId) return
-    await onAssign(selectedDriverId, selectedVehicleId)
-  }
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 gap-0 max-w-md overflow-hidden rounded-2xl border border-gray-200 shadow-2xl">
-        {/* ── Header ── */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white">
+      <DialogContent
+        className="p-0 max-w-md overflow-hidden"
+        showCloseButton={false}
+        style={{
+          background: "#0d1526",
+          border: "1px solid rgba(255,255,255,0.09)",
+          borderRadius: "18px",
+          boxShadow: "0 32px 80px rgba(0,0,0,0.70)",
+        }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center">
-              <UserCheck className="w-4 h-4 text-indigo-600" />
+            <div
+              className="w-8 h-8 rounded-xl flex items-center justify-center"
+              style={{ background: "rgba(201,168,124,0.12)", border: "1px solid rgba(201,168,124,0.20)" }}
+            >
+              <UserCheck className="w-4 h-4" style={{ color: "#c9a87c" }} />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-gray-900">Assign Driver & Vehicle</h2>
-              <p className="text-[11px] text-gray-400">{trip.tripNumber}</p>
+              <h2 className="text-sm font-bold" style={{ color: "rgba(255,255,255,0.90)" }}>Assign Driver & Vehicle</h2>
+              <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.50)" }}>{trip.tripNumber}</p>
             </div>
           </div>
         </div>
 
-        {/* ── Content ── */}
         <div className="px-5 py-5 space-y-4">
           {/* Driver Picker */}
           <div ref={driverRef} className="space-y-1.5">
-            <Label className="text-xs font-medium text-gray-900">Driver</Label>
+            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)" }}>Driver</p>
             {selectedDriver ? (
-              <div className="flex items-center gap-2.5 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2.5">
-                <div className="w-8 h-8 rounded-full bg-indigo-200 flex items-center justify-center text-xs font-bold text-indigo-700 flex-shrink-0 overflow-hidden">
+              <div
+                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl"
+                style={{ background: "rgba(201,168,124,0.08)", border: "1px solid rgba(201,168,124,0.20)" }}
+              >
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden"
+                  style={{ background: "rgba(201,168,124,0.15)", color: "#c9a87c" }}>
                   {selectedDriver.avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={selectedDriver.avatarUrl} alt={selectedDriver.name} className="w-full h-full object-cover" />
                   ) : getInitials(selectedDriver.name)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-gray-900 truncate">{selectedDriver.name}</div>
-                  {selectedDriver.phone && <div className="text-[11px] text-gray-500 truncate">{selectedDriver.phone}</div>}
+                  <div className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.88)" }}>{selectedDriver.name}</div>
+                  {selectedDriver.phone && <div className="text-[11px] truncate" style={{ color: "rgba(200,212,228,0.55)" }}>{selectedDriver.phone}</div>}
                 </div>
-                <button type="button" onClick={() => setSelectedDriverId("")} className="text-gray-300 hover:text-gray-500 transition-colors">
+                <button type="button" onClick={() => setSelectedDriverId("")} style={{ color: "rgba(200,212,228,0.40)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.80)" }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.40)" }}>
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -179,12 +182,19 @@ function DriverAssignmentModal({
               <button
                 type="button"
                 onClick={() => setDriverDropOpen(!driverDropOpen)}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 border border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-indigo-300 hover:text-indigo-500 hover:bg-indigo-50/50 transition-all"
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-colors"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px dashed rgba(255,255,255,0.12)",
+                  color: "rgba(200,212,228,0.50)",
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,124,0.35)"; (e.currentTarget as HTMLElement).style.color = "rgba(201,168,124,0.85)" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.50)" }}
               >
-                <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                  <UserCheck className="w-3.5 h-3.5 text-gray-400" />
+                <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.06)" }}>
+                  <UserCheck className="w-3.5 h-3.5" />
                 </div>
-                <span className="flex-1 text-left">Select driver…</span>
+                <span className="flex-1 text-left text-sm">Select driver…</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${driverDropOpen ? "rotate-180" : ""}`} />
               </button>
             )}
@@ -197,37 +207,43 @@ function DriverAssignmentModal({
                   left: driverRef.current?.getBoundingClientRect().left ?? 0,
                   width: driverRef.current?.getBoundingClientRect().width ?? 0,
                   zIndex: 9999,
+                  background: "#0d1526",
+                  border: "1px solid rgba(255,255,255,0.10)",
+                  borderRadius: "14px",
+                  boxShadow: "0 16px 48px rgba(0,0,0,0.70)",
+                  overflow: "hidden",
                 }}
-                className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden"
               >
-                <div className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
+                <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
                   Active Drivers
                 </div>
                 <div className="max-h-44 overflow-y-auto">
                   {drivers.length === 0 ? (
-                    <div className="px-3 py-3 text-xs text-gray-400 text-center">No active drivers</div>
-                  ) : (
-                    drivers.map((d) => (
-                      <button
-                        key={d.id}
-                        type="button"
-                        onClick={() => { setSelectedDriverId(d.id); setDriverDropOpen(false) }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-indigo-50/60 transition-colors"
-                      >
-                        <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-[11px] font-bold text-indigo-600 flex-shrink-0 overflow-hidden">
-                          {d.avatarUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={d.avatarUrl} alt={d.name} className="w-full h-full object-cover" />
-                          ) : getInitials(d.name)}
-                        </div>
-                        <div className="flex-1 min-w-0 text-left">
-                          <div className="text-sm font-medium text-gray-800">{d.name}</div>
-                          {d.phone && <div className="text-[11px] text-gray-400">{d.phone}</div>}
-                        </div>
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
-                      </button>
-                    ))
-                  )}
+                    <div className="px-3 py-3 text-xs text-center" style={{ color: "rgba(200,212,228,0.45)" }}>No active drivers</div>
+                  ) : drivers.map(d => (
+                    <button
+                      key={d.id}
+                      type="button"
+                      onClick={() => { setSelectedDriverId(d.id); setDriverDropOpen(false) }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2.5 transition-colors"
+                      style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}
+                    >
+                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 overflow-hidden"
+                        style={{ background: "rgba(201,168,124,0.12)", color: "#c9a87c" }}>
+                        {d.avatarUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={d.avatarUrl} alt={d.name} className="w-full h-full object-cover" />
+                        ) : getInitials(d.name)}
+                      </div>
+                      <div className="flex-1 min-w-0 text-left">
+                        <div className="text-sm font-medium truncate" style={{ color: "rgba(255,255,255,0.82)" }}>{d.name}</div>
+                        {d.phone && <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.50)" }}>{d.phone}</div>}
+                      </div>
+                      <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#34d399" }} />
+                    </button>
+                  ))}
                 </div>
               </div>,
               document.body
@@ -236,21 +252,26 @@ function DriverAssignmentModal({
 
           {/* Vehicle Picker */}
           <div ref={vehicleRef} className="space-y-1.5">
-            <Label className="text-xs font-medium text-gray-900">Vehicle <span className="text-gray-400 font-normal">(Optional)</span></Label>
+            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)" }}>
+              Vehicle <span style={{ color: "rgba(200,212,228,0.35)", fontWeight: 400, textTransform: "none", letterSpacing: 0, fontSize: "11px" }}>(optional)</span>
+            </p>
             {selectedVehicle ? (
-              <div className="flex items-center gap-2.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
-                <div className="w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center flex-shrink-0">
-                  <Car className="w-4 h-4 text-slate-600" />
+              <div
+                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl"
+                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)" }}
+              >
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.07)" }}>
+                  <Car className="w-4 h-4" style={{ color: "rgba(200,212,228,0.70)" }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-gray-900 truncate">{selectedVehicle.name}</div>
-                  <div className="flex items-center gap-1 text-[11px] text-gray-500">
-                    <span>{VEHICLE_TYPE_LABEL[selectedVehicle.type] ?? "Vehicle"}</span>
-                    <span className="text-gray-300">·</span>
-                    <span>{selectedVehicle.capacity} pax</span>
+                  <div className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.88)" }}>{selectedVehicle.name}</div>
+                  <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.55)" }}>
+                    {VEHICLE_TYPE_LABEL[selectedVehicle.type] ?? "Vehicle"} · {selectedVehicle.capacity} pax
                   </div>
                 </div>
-                <button type="button" onClick={() => setSelectedVehicleId("")} className="text-gray-300 hover:text-gray-500 transition-colors flex-shrink-0">
+                <button type="button" onClick={() => setSelectedVehicleId("")} style={{ color: "rgba(200,212,228,0.40)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.80)" }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.40)" }}>
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -258,12 +279,19 @@ function DriverAssignmentModal({
               <button
                 type="button"
                 onClick={() => setVehicleDropOpen(!vehicleDropOpen)}
-                className="w-full flex items-center gap-2.5 px-3 py-2.5 border border-dashed border-gray-200 rounded-xl text-sm text-gray-400 hover:border-slate-400 hover:text-slate-600 hover:bg-slate-50/50 transition-all"
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-colors"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px dashed rgba(255,255,255,0.12)",
+                  color: "rgba(200,212,228,0.50)",
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.20)"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.75)" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.50)" }}
               >
-                <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                  <Car className="w-3.5 h-3.5 text-gray-400" />
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.06)" }}>
+                  <Car className="w-3.5 h-3.5" />
                 </div>
-                <span className="flex-1 text-left">Select vehicle…</span>
+                <span className="flex-1 text-left text-sm">Select vehicle…</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform ${vehicleDropOpen ? "rotate-180" : ""}`} />
               </button>
             )}
@@ -276,72 +304,65 @@ function DriverAssignmentModal({
                   left: vehicleRef.current?.getBoundingClientRect().left ?? 0,
                   width: vehicleRef.current?.getBoundingClientRect().width ?? 0,
                   zIndex: 9999,
+                  background: "#0d1526",
+                  border: "1px solid rgba(255,255,255,0.10)",
+                  borderRadius: "14px",
+                  boxShadow: "0 16px 48px rgba(0,0,0,0.70)",
+                  overflow: "hidden",
                 }}
-                className="bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden"
               >
-                <div className="px-3 py-2 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
+                <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
                   Available Vehicles
                 </div>
                 <div className="max-h-44 overflow-y-auto">
                   {vehicles.length === 0 ? (
-                    <div className="px-3 py-3 text-xs text-gray-400 text-center">No active vehicles</div>
-                  ) : (
-                    vehicles.map((v) => (
-                      <button
-                        key={v.id}
-                        type="button"
-                        onClick={() => { setSelectedVehicleId(v.id); setVehicleDropOpen(false) }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-slate-50 transition-colors"
-                      >
-                        <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
-                          <Car className="w-3.5 h-3.5 text-slate-500" />
-                        </div>
-                        <div className="flex-1 min-w-0 text-left">
-                          <div className="text-sm font-medium text-gray-800">{v.name}</div>
-                          <div className="text-[11px] text-gray-400">{VEHICLE_TYPE_LABEL[v.type] ?? "Vehicle"} · {v.capacity} pax</div>
-                        </div>
-                      </button>
-                    ))
-                  )}
+                    <div className="px-3 py-3 text-xs text-center" style={{ color: "rgba(200,212,228,0.45)" }}>No active vehicles</div>
+                  ) : vehicles.map(v => (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => { setSelectedVehicleId(v.id); setVehicleDropOpen(false) }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2.5 transition-colors"
+                      style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}
+                    >
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.07)" }}>
+                        <Car className="w-3.5 h-3.5" style={{ color: "rgba(200,212,228,0.60)" }} />
+                      </div>
+                      <div className="flex-1 min-w-0 text-left">
+                        <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.82)" }}>{v.name}</div>
+                        <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.50)" }}>{VEHICLE_TYPE_LABEL[v.type] ?? "Vehicle"} · {v.capacity} pax</div>
+                      </div>
+                    </button>
+                  ))}
                 </div>
               </div>,
               document.body
             )}
           </div>
 
-          {/* Assign Button */}
-          <Button
+          {/* Assign button */}
+          <button
             type="button"
-            className="w-full h-11 font-semibold text-sm bg-indigo-600 hover:bg-indigo-700 text-white transition-all"
             disabled={!selectedDriverId || isLoading}
-            onClick={handleAssign}
+            onClick={() => selectedDriverId && onAssign(selectedDriverId, selectedVehicleId)}
+            className="w-full h-11 rounded-xl text-sm font-semibold transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+            style={{ background: "#c9a87c", color: "#0d1526" }}
+            onMouseEnter={e => { if (selectedDriverId && !isLoading) (e.currentTarget as HTMLElement).style.opacity = "0.85" }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = "1" }}
           >
-            {isLoading ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Assigning…
-              </span>
-            ) : (
-              "Assign Driver"
-            )}
-          </Button>
+            {isLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Assigning…</> : "Assign Driver"}
+          </button>
         </div>
       </DialogContent>
     </Dialog>
   )
 }
 
-// ─── Sender selector ──────────────────────────────────────────────────────────
+// ─── Sender Selector ──────────────────────────────────────────────────────────
 
-function SenderSelector({
-  senders,
-  selected,
-  onChange,
-}: {
-  senders: SenderEmail[]
-  selected: string
-  onChange: (id: string) => void
-}) {
+function SenderSelector({ senders, selected, onChange }: { senders: SenderEmail[]; selected: string; onChange: (id: string) => void }) {
   const [open, setOpen] = useState(false)
   const current = senders.find(s => s.id === selected) ?? senders[0]
 
@@ -350,49 +371,60 @@ function SenderSelector({
       <button
         type="button"
         onClick={() => setOpen(v => !v)}
-        className={cn(
-          "w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border text-left transition-all",
-          open
-            ? "border-blue-300 bg-blue-50 ring-1 ring-blue-200"
-            : "border-gray-200 bg-white hover:border-gray-300"
-        )}
+        className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left transition-colors"
+        style={{
+          background: open ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.05)",
+          border: `1px solid ${open ? "rgba(201,168,124,0.35)" : "rgba(255,255,255,0.12)"}`,
+        }}
       >
-        <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
-          <Mail className="w-3.5 h-3.5 text-indigo-500" />
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.10)" }}>
+          <Mail className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-gray-800 truncate">{current?.email ?? "Select sender"}</p>
-          {current?.label && <p className="text-[11px] text-gray-400 leading-tight">{current.label}</p>}
+          <p className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.88)" }}>{current?.email ?? "Select sender"}</p>
+          {current?.label && <p className="text-[11px] leading-tight" style={{ color: "rgba(200,212,228,0.50)" }}>{current.label}</p>}
         </div>
         {current?.isDefault && (
-          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex-shrink-0">
+          <span
+            className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0"
+            style={{ background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.25)", color: "#34d399" }}
+          >
             Default
           </span>
         )}
-        <ChevronDown className={cn("w-4 h-4 text-gray-400 flex-shrink-0 transition-transform", open && "rotate-180")} />
+        <ChevronDown className={cn("w-3.5 h-3.5 flex-shrink-0 transition-transform", open && "rotate-180")} style={{ color: "rgba(200,212,228,0.35)" }} />
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 right-0 mt-1.5 z-50 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
+        <div
+          className="absolute top-full left-0 right-0 mt-1.5 z-50 overflow-hidden"
+          style={{
+            background: "#0d1526",
+            border: "1px solid rgba(255,255,255,0.10)",
+            borderRadius: "14px",
+            boxShadow: "0 16px 48px rgba(0,0,0,0.65)",
+          }}
+        >
           {senders.map(s => (
             <button
               key={s.id}
               type="button"
               onClick={() => { onChange(s.id); setOpen(false) }}
-              className={cn(
-                "w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left transition-colors",
-                s.id === selected
-                  ? "bg-blue-50 text-blue-700"
-                  : "hover:bg-gray-50"
-              )}
+              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left transition-colors"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}
             >
-              <div className={cn("w-2 h-2 rounded-full flex-shrink-0", s.id === selected ? "bg-blue-500" : "bg-gray-200")} />
+              <div
+                className="w-2 h-2 rounded-full flex-shrink-0"
+                style={{ background: s.id === selected ? "#c9a87c" : "rgba(255,255,255,0.15)" }}
+              />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800 truncate">{s.email}</p>
-                {s.label && <p className="text-[11px] text-gray-400">{s.label}</p>}
+                <p className="text-sm font-medium truncate" style={{ color: s.id === selected ? "#c9a87c" : "rgba(255,255,255,0.82)" }}>{s.email}</p>
+                {s.label && <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.50)" }}>{s.label}</p>}
               </div>
               {s.isDefault && (
-                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">Default</span>
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "rgba(52,211,153,0.12)", color: "#34d399" }}>Default</span>
               )}
             </button>
           ))}
@@ -402,17 +434,20 @@ function SenderSelector({
   )
 }
 
-// ─── Document type card ───────────────────────────────────────────────────────
+// ─── Doc type card ────────────────────────────────────────────────────────────
 
-function DocTypeCard({ type, desc, color }: { type: string; desc: string; color: string }) {
+function DocTypeCard({ type, desc, iconBg, iconColor }: { type: string; desc: string; iconBg: string; iconColor: string }) {
   return (
-    <div className="flex items-center gap-3 px-3.5 py-3 rounded-xl border border-gray-100 bg-gray-50">
-      <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm", color)}>
-        <FileText className="w-4 h-4" />
+    <div
+      className="flex items-center gap-3 px-3.5 py-3 rounded-xl"
+      style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+    >
+      <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: iconBg }}>
+        <FileText className="w-4 h-4" style={{ color: iconColor }} />
       </div>
       <div className="min-w-0">
-        <p className="text-sm font-semibold text-gray-800">{type}</p>
-        <p className="text-[11px] text-gray-400 leading-snug mt-0.5">{desc}</p>
+        <p className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>{type}</p>
+        <p className="text-[11px] leading-snug mt-0.5" style={{ color: "rgba(200,212,228,0.50)" }}>{desc}</p>
       </div>
     </div>
   )
@@ -428,26 +463,24 @@ interface SendEmailModalProps {
 }
 
 export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "driver" }: SendEmailModalProps) {
-  const [activeTab, setActiveTab]       = useState<RecipientType>(defaultRecipient)
+  const [activeTab, setActiveTab] = useState<RecipientType>(defaultRecipient)
   const [senderEmailId, setSenderEmailId] = useState<string>("")
   const [recipientEmailOverride, setRecipientEmailOverride] = useState("")
-  const [status, setStatus]             = useState<"idle" | "sending" | "success" | "error">("idle")
-  const [errorMsg, setErrorMsg]         = useState("")
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle")
+  const [errorMsg, setErrorMsg] = useState("")
   const [showAssignmentModal, setShowAssignmentModal] = useState(false)
   const [isAssigning, setIsAssigning] = useState(false)
 
-  const { data: senders = [] }          = useSenderEmails()
-  const { data: drivers = [] }          = useDrivers()
-  const { data: vehicles = [] }         = useVehicles()
-  const sendEmail                       = useSendTripEmail()
+  const { data: senders = [] } = useSenderEmails()
+  const { data: drivers = [] } = useDrivers()
+  const { data: vehicles = [] } = useVehicles()
+  const sendEmail = useSendTripEmail()
 
-  // Set default sender email when senders load
   useEffect(() => {
     const def = senders.find(s => s.isDefault) ?? senders[0]
     if (def && !senderEmailId) setSenderEmailId(def.id)
   }, [senders, senderEmailId])
 
-  // Reset state when opening
   useEffect(() => {
     if (open) {
       setStatus("idle")
@@ -457,20 +490,16 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
     }
   }, [open, defaultRecipient])
 
-  const tab        = TABS.find(t => t.key === activeTab)!
-  const resolved   = tab.getEmail(trip)
-  const toEmail    = recipientEmailOverride.trim() || resolved
-
-  // Check if affiliate tab should be disabled (no farm-out)
+  const tab = TABS.find(t => t.key === activeTab)!
+  const resolved = tab.getEmail(trip)
+  const toEmail = recipientEmailOverride.trim() || resolved
   const hasAffiliate = trip.farmOuts && trip.farmOuts.length > 0
 
   async function handleSend() {
-    // Check if driver is assigned when sending to driver
     if (activeTab === "driver" && !trip.driverId) {
       setShowAssignmentModal(true)
       return
     }
-
     if (status === "sending") return
     setStatus("sending")
     setErrorMsg("")
@@ -497,16 +526,9 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ driverId, vehicleId: vehicleId || null }),
       })
+      if (!response.ok) throw new Error("Failed to assign driver")
 
-      if (!response.ok) {
-        throw new Error("Failed to assign driver")
-      }
-
-      // Update trip and close assignment modal
       setShowAssignmentModal(false)
-      // Trigger a refetch if needed, or just close the modal and proceed
-      // The trip object passed as prop will be stale, but the email will send with the updated trip
-      // For now, just proceed to send the email
       setStatus("sending")
       setErrorMsg("")
 
@@ -530,207 +552,248 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
 
   return (
     <>
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 gap-0 max-w-md overflow-hidden rounded-2xl border border-gray-200 shadow-2xl">
-
-        {/* ── Header ── */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center">
-              <Send className="w-4 h-4 text-blue-600" />
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-gray-900">Send Reservation Email</h2>
-              <p className="text-[11px] text-gray-400">{trip.tripNumber}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Success state ── */}
-        {status === "success" ? (
-          <div className="px-6 py-10 text-center">
-            <div className="w-14 h-14 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle2 className="w-8 h-8 text-emerald-500" />
-            </div>
-            <h3 className="text-base font-bold text-gray-900 mb-1">Email Sent</h3>
-            <p className="text-sm text-gray-400 mb-6">
-              The {tab.docType.toLowerCase()} was sent to <span className="font-medium text-gray-700">{toEmail}</span>
-            </p>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => { setStatus("idle"); setActiveTab(activeTab) }}
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent
+          className="p-0 max-w-md overflow-hidden"
+          showCloseButton={false}
+          style={{
+            background: "#0d1526",
+            border: "1px solid rgba(255,255,255,0.09)",
+            borderRadius: "20px",
+            boxShadow: "0 32px 80px rgba(0,0,0,0.70)",
+          }}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+            <div className="flex items-center gap-2.5">
+              <div
+                className="w-8 h-8 rounded-xl flex items-center justify-center"
+                style={{ background: "rgba(201,168,124,0.12)", border: "1px solid rgba(201,168,124,0.20)" }}
               >
-                Send Another
-              </Button>
-              <Button
-                className="flex-1 bg-gray-900 hover:bg-gray-800 text-white"
-                onClick={() => onOpenChange(false)}
-              >
-                Done
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="px-5 py-5 space-y-4">
-
-            {/* ── Recipient tabs ── */}
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">Recipient</p>
-              <div className="flex gap-1.5 p-1 bg-gray-100 rounded-xl">
-                {TABS.map(({ key, label, Icon }) => {
-                  const isDisabled = key === "affiliate" && !hasAffiliate
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      disabled={isDisabled}
-                      onClick={() => !isDisabled && setActiveTab(key)}
-                      className={cn(
-                        "flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs font-semibold transition-all",
-                        activeTab === key
-                          ? "bg-white text-gray-900 shadow-sm"
-                          : isDisabled
-                          ? "text-gray-300 cursor-not-allowed"
-                          : "text-gray-500 hover:text-gray-700"
-                      )}
-                    >
-                      <Icon className="w-3.5 h-3.5 flex-shrink-0" />
-                      {label}
-                    </button>
-                  )
-                })}
+                <Send className="w-4 h-4" style={{ color: "#c9a87c" }} />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold" style={{ color: "rgba(255,255,255,0.90)" }}>Send Reservation Email</h2>
+                <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.50)" }}>{trip.tripNumber}</p>
               </div>
             </div>
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="p-1.5 rounded-lg transition-colors"
+              style={{ color: "rgba(200,212,228,0.40)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.70)" }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.40)" }}
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
 
-            {/* ── Recipient email ── */}
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">To</p>
-              {resolved ? (
-                <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50">
-                  <div className="w-7 h-7 rounded-lg bg-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden text-[10px] font-bold flex-shrink-0">
-                    {activeTab === "driver" && trip.driver?.avatarUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={trip.driver.avatarUrl} alt={trip.driver.name} className="w-full h-full object-cover" />
-                    ) : activeTab === "driver" ? (
-                      trip.driver ? getInitials(trip.driver.name) : <Car className="w-3.5 h-3.5 text-gray-500" />
-                    ) : activeTab === "affiliate" ? (
-                      <ArrowRightLeft className="w-3.5 h-3.5 text-gray-500" />
-                    ) : (
-                      <User className="w-3.5 h-3.5 text-gray-500" />
+          {/* Success state */}
+          {status === "success" ? (
+            <div className="px-6 py-10 text-center">
+              <div
+                className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5"
+                style={{ background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)" }}
+              >
+                <CheckCircle2 className="w-8 h-8" style={{ color: "#34d399" }} />
+              </div>
+              <h3 className="text-base font-bold mb-1" style={{ color: "rgba(255,255,255,0.90)" }}>Email Sent</h3>
+              <p className="text-sm mb-6" style={{ color: "rgba(200,212,228,0.55)" }}>
+                The {tab.docType.toLowerCase()} was sent to{" "}
+                <span className="font-medium" style={{ color: "rgba(255,255,255,0.82)" }}>{toEmail}</span>
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setStatus("idle"); setActiveTab(activeTab) }}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                  style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(200,212,228,0.70)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.09)" }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)" }}
+                >
+                  Send Another
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onOpenChange(false)}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-opacity"
+                  style={{ background: "#c9a87c", color: "#0d1526" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = "0.85" }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = "1" }}
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="px-5 py-5 space-y-4">
+
+              {/* Recipient tabs */}
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>Recipient</p>
+                <div className="flex gap-1.5 p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                  {TABS.map(({ key, label, Icon }) => {
+                    const isDisabled = key === "affiliate" && !hasAffiliate
+                    const isActive = activeTab === key
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        disabled={isDisabled}
+                        onClick={() => !isDisabled && setActiveTab(key)}
+                        className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs font-semibold transition-all"
+                        style={
+                          isActive
+                            ? { background: "rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.92)", boxShadow: "0 1px 4px rgba(0,0,0,0.30)" }
+                            : isDisabled
+                            ? { color: "rgba(200,212,228,0.25)", cursor: "not-allowed" }
+                            : { color: "rgba(200,212,228,0.55)" }
+                        }
+                        onMouseEnter={e => { if (!isActive && !isDisabled) (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.80)" }}
+                        onMouseLeave={e => { if (!isActive && !isDisabled) (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.55)" }}
+                      >
+                        <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+                        {label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Recipient email "To" */}
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>To</p>
+                {resolved ? (
+                  <div
+                    className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl"
+                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)" }}
+                  >
+                    <div
+                      className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden text-[10px] font-bold"
+                      style={{ background: "rgba(255,255,255,0.08)", color: "rgba(200,212,228,0.70)" }}
+                    >
+                      {activeTab === "driver" && trip.driver?.avatarUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={trip.driver.avatarUrl} alt={trip.driver.name} className="w-full h-full object-cover" />
+                      ) : activeTab === "driver" ? (
+                        trip.driver ? getInitials(trip.driver.name) : <Car className="w-3.5 h-3.5" />
+                      ) : activeTab === "affiliate" ? (
+                        <ArrowRightLeft className="w-3.5 h-3.5" />
+                      ) : (
+                        <User className="w-3.5 h-3.5" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.88)" }}>
+                        {activeTab === "driver" ? trip.driver?.name : activeTab === "client" ? (trip.passengerName ?? trip.customer?.name) : "Affiliate"}
+                      </p>
+                      <p className="text-xs truncate" style={{ color: "rgba(200,212,228,0.55)" }}>{resolved}</p>
+                    </div>
+                    <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: "#34d399" }} />
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl"
+                      style={{ background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.20)" }}
+                    >
+                      <AlertTriangle className="w-4 h-4 flex-shrink-0" style={{ color: "rgba(251,191,36,0.85)" }} />
+                      <p className="text-xs font-medium" style={{ color: "rgba(251,191,36,0.85)" }}>
+                        {activeTab === "driver" ? "No email on driver record" :
+                         activeTab === "client"  ? "No email on passenger or customer record" :
+                                                   "No accepted affiliate farm-out found"}
+                      </p>
+                    </div>
+                    {activeTab !== "affiliate" && (
+                      <div>
+                        <p className="text-xs mb-1.5" style={{ color: "rgba(200,212,228,0.60)" }}>Enter email address manually</p>
+                        <input
+                          type="email"
+                          placeholder={activeTab === "driver" ? "driver@example.com" : "client@example.com"}
+                          value={recipientEmailOverride}
+                          onChange={e => setRecipientEmailOverride(e.target.value)}
+                          className="w-full h-9 text-sm outline-none rounded-xl px-3 transition-colors"
+                          style={{
+                            background: "rgba(255,255,255,0.05)",
+                            border: "1px solid rgba(255,255,255,0.12)",
+                            color: "rgba(255,255,255,0.88)",
+                          }}
+                          onFocus={e => { e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)" }}
+                          onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)" }}
+                        />
+                      </div>
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-800 truncate">
-                      {activeTab === "driver" ? trip.driver?.name : activeTab === "client" ? (trip.passengerName ?? trip.customer?.name) : "Affiliate"}
-                    </p>
-                    <p className="text-xs text-gray-500 truncate">{resolved}</p>
-                  </div>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50 border border-amber-200">
-                    <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                    <p className="text-xs text-amber-700 font-medium">
-                      {activeTab === "driver" ? "No email on driver record" :
-                       activeTab === "client" ? "No email on passenger or customer record" :
-                       "No accepted affiliate farm-out found"}
-                    </p>
-                  </div>
-                  {activeTab !== "affiliate" && (
-                    <div>
-                      <Label className="text-xs text-gray-600 mb-1.5 block">Enter email address manually</Label>
-                      <Input
-                        type="email"
-                        placeholder={activeTab === "driver" ? "driver@example.com" : "client@example.com"}
-                        value={recipientEmailOverride}
-                        onChange={e => setRecipientEmailOverride(e.target.value)}
-                        className="h-9 text-sm"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* ── Document type ── */}
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">Attached Document</p>
-              <DocTypeCard type={tab.docType} desc={tab.docDesc} color={tab.docColor} />
-            </div>
-
-            {/* ── Sender ── */}
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.12em] mb-2">Sent From (Reply-To)</p>
-              {senders.length > 0 ? (
-                <SenderSelector
-                  senders={senders}
-                  selected={senderEmailId}
-                  onChange={setSenderEmailId}
-                />
-              ) : (
-                <div className="px-3.5 py-2.5 rounded-xl border border-gray-200 bg-gray-50">
-                  <p className="text-xs text-gray-400">Loading sender emails…</p>
-                </div>
-              )}
-              <p className="text-[11px] text-gray-400 mt-1.5 leading-snug">
-                Replies from recipients will go to this address.
-              </p>
-            </div>
-
-            {/* ── Error state ── */}
-            {status === "error" && errorMsg && (
-              <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl bg-red-50 border border-red-200">
-                <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-red-700">{errorMsg}</p>
+                )}
               </div>
-            )}
 
-            {/* ── Send button ── */}
-            <Button
-              type="button"
-              className={cn(
-                "w-full h-11 font-semibold text-sm transition-all",
-                activeTab === "driver"
-                  ? "bg-slate-900 hover:bg-slate-800 text-white"
-                  : activeTab === "affiliate"
-                  ? "bg-indigo-600 hover:bg-indigo-700 text-white"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
+              {/* Attached document */}
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>Attached Document</p>
+                <DocTypeCard type={tab.docType} desc={tab.docDesc} iconBg={tab.iconBg} iconColor={tab.iconColor} />
+              </div>
+
+              {/* Sender */}
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>Sent From (Reply-To)</p>
+                {senders.length > 0 ? (
+                  <SenderSelector senders={senders} selected={senderEmailId} onChange={setSenderEmailId} />
+                ) : (
+                  <div
+                    className="px-3.5 py-2.5 rounded-xl"
+                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+                  >
+                    <p className="text-xs" style={{ color: "rgba(200,212,228,0.40)" }}>Loading sender emails…</p>
+                  </div>
+                )}
+                <p className="text-[11px] mt-1.5 leading-snug" style={{ color: "rgba(200,212,228,0.40)" }}>
+                  Replies from recipients will go to this address.
+                </p>
+              </div>
+
+              {/* Error */}
+              {status === "error" && errorMsg && (
+                <div
+                  className="flex items-start gap-2.5 px-3.5 py-3 rounded-xl"
+                  style={{ background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.25)" }}
+                >
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "rgba(248,113,113,0.85)" }} />
+                  <p className="text-sm" style={{ color: "rgba(248,113,113,0.85)" }}>{errorMsg}</p>
+                </div>
               )}
-              disabled={!toEmail || status === "sending"}
-              onClick={handleSend}
-            >
-              {status === "sending" ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Sending…
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <Send className="w-4 h-4" />
-                  Send {tab.docType} to {tab.label}
-                </span>
-              )}
-            </Button>
 
-          </div>
-        )}
+              {/* Send button */}
+              <button
+                type="button"
+                disabled={!toEmail || status === "sending"}
+                onClick={handleSend}
+                className="w-full h-11 rounded-xl text-sm font-semibold transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                style={{ background: "#c9a87c", color: "#0d1526" }}
+                onMouseEnter={e => { if (toEmail && status !== "sending") (e.currentTarget as HTMLElement).style.opacity = "0.85" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = "1" }}
+              >
+                {status === "sending" ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Sending…</>
+                ) : (
+                  <><Send className="w-4 h-4" /> Send {tab.docType} to {tab.label}</>
+                )}
+              </button>
 
-      </DialogContent>
-    </Dialog>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
-    {/* ── Driver Assignment Modal ── */}
-    <DriverAssignmentModal
-      trip={trip}
-      drivers={drivers.filter((d) => d.status === "ACTIVE")}
-      vehicles={vehicles.filter((v) => v.status === "ACTIVE")}
-      open={showAssignmentModal}
-      onOpenChange={setShowAssignmentModal}
-      onAssign={handleAssignDriver}
-      isLoading={isAssigning}
-    />
+      <DriverAssignmentModal
+        trip={trip}
+        drivers={drivers.filter(d => d.status === "ACTIVE")}
+        vehicles={vehicles.filter(v => v.status === "ACTIVE")}
+        open={showAssignmentModal}
+        onOpenChange={setShowAssignmentModal}
+        onAssign={handleAssignDriver}
+        isLoading={isAssigning}
+      />
     </>
   )
 }
