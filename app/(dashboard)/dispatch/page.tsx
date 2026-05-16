@@ -40,14 +40,19 @@ const ALL_STATUS_OPTIONS: { label: string; value: string }[] = [
 const VALID_STATUS_VALUES = new Set(ALL_STATUS_OPTIONS.map(o => o.value))
 const DEFAULT_VISIBLE_STATUSES = ["CONFIRMED", "IN_PROGRESS", "COMPLETED", "FARMED_OUT"]
 
-function DispatchPageInner() {
+function DispatchPageInner({
+  selectedDate,
+  setSelectedDate,
+}: {
+  selectedDate: Date
+  setSelectedDate: React.Dispatch<React.SetStateAction<Date>>
+}) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { isDark } = useTheme()
   const openTripId = searchParams.get("open")
   const billingFromUrl = searchParams.get("billing") === "1"
   const { data: openTrip } = useTrip(openTripId ?? "")
-  const [selectedDate, setSelectedDate] = useState(new Date())
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null)
   const [quickTrip, setQuickTrip] = useState<Trip | null>(null)
   const [quickPos, setQuickPos] = useState({ x: 0, y: 0 })
@@ -679,10 +684,13 @@ function DispatchPageInner() {
   )
 }
 
+// selectedDate lives here — outside the Suspense boundary — so it survives
+// the remount that useSearchParams triggers during router.replace navigations.
 export default function DispatchPage() {
+  const [selectedDate, setSelectedDate] = useState(new Date())
   return (
     <Suspense>
-      <DispatchPageInner />
+      <DispatchPageInner selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
     </Suspense>
   )
 }
