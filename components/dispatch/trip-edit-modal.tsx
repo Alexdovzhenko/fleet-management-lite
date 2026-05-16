@@ -1662,8 +1662,8 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   saveSuccess
                     ? "bg-emerald-600 text-white shadow-sm"
                     : updateTrip.isPending
-                    ? "text-[#0d1526] shadow-sm"
-                    : "text-[#0d1526] shadow-sm hover:brightness-110 active:scale-95"
+                    ? "text-white shadow-sm"
+                    : "text-white shadow-sm hover:brightness-110 active:scale-95"
                 )}
                 style={saveSuccess || updateTrip.isPending ? {} : { background: "#c9a87c" }}
               >
