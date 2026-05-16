@@ -67,6 +67,7 @@ import { AddressAutocomplete } from "@/components/ui/address-autocomplete"
 import { useUpsertAddress, type CompanyAddress } from "@/lib/hooks/use-addresses"
 import { useBillingSettings } from "@/lib/hooks/use-billing"
 import { formatCurrency, formatPhone, getTripStatusLabel, cn } from "@/lib/utils"
+import { useTheme } from "@/lib/theme-context"
 import type { Trip, TripStatus, Driver, Vehicle, Customer } from "@/types"
 import { format, parse, isValid } from "date-fns"
 import { useStatusActionsStore } from "@/lib/stores/status-actions-store"
@@ -868,6 +869,7 @@ function getInitials(name: string) {
 }
 
 function DriverPickerCard({ drivers, value, onChange }: { drivers: Driver[]; value: string; onChange: (id: string) => void }) {
+  const { isDark } = useTheme()
   const [open, setOpen] = useState(false)
   const [dropStyle, setDropStyle] = useState<React.CSSProperties>({})
   const ref = useRef<HTMLDivElement>(null)
@@ -911,7 +913,7 @@ function DriverPickerCard({ drivers, value, onChange }: { drivers: Driver[]; val
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>{selected.name}</div>
-            {selected.phone && <div className="text-[11px] truncate" style={{ color: "rgba(165,180,252,0.70)" }}>{formatPhone(selected.phone)}</div>}
+            {selected.phone && <div className="text-[11px] truncate" style={{ color: isDark ? "rgba(165,180,252,0.70)" : "rgba(30,30,40,0.70)" }}>{formatPhone(selected.phone)}</div>}
           </div>
           <button type="button" onClick={() => onChange("")}
             className="w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all flex-shrink-0"
