@@ -103,9 +103,9 @@ function StatusDropdown({
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl transition-all border min-w-[130px] justify-center",
+          "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl transition-all min-w-[130px] justify-center",
           "hover:brightness-110 active:scale-[0.97]",
-          dark.bg, dark.border, dark.text
+          dark.bg, dark.text
         )}
       >
         <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0 flex-shrink-0", dark.dot)} />
@@ -1593,7 +1593,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
               type="button"
               onClick={copyConfirmation}
               className="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-colors group flex-shrink-0"
-              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)" }}
+              style={{ background: "rgba(255,255,255,0.05)" }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.09)" }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
             >
