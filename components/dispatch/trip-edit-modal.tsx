@@ -85,7 +85,8 @@ function StatusDropdown({
 }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
-  const { getEnabledStatuses, getStatusDotClass, getStatusLabel, getStatusDarkBadge } = useStatusConfig()
+  const { isDark } = useTheme()
+  const { getEnabledStatuses, getStatusDotClass, getStatusLabel, getStatusDarkBadge, getStatusLightBadge } = useStatusConfig()
 
   useEffect(() => {
     if (!open) return
@@ -96,7 +97,7 @@ function StatusDropdown({
     return () => document.removeEventListener("mousedown", handler)
   }, [open])
 
-  const dark = getStatusDarkBadge(status)
+  const badge = isDark ? getStatusDarkBadge(status) : getStatusLightBadge(status)
 
   return (
     <div ref={ref} className="relative flex-shrink-0">
@@ -104,14 +105,14 @@ function StatusDropdown({
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl transition-all min-w-[130px] justify-center",
-          "hover:brightness-110 active:scale-[0.97]",
-          dark.bg, dark.text
+          "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl transition-all min-w-[130px] justify-center border",
+          "hover:brightness-105 active:scale-[0.97]",
+          badge.bg, badge.text, badge.border
         )}
       >
-        <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0 flex-shrink-0", dark.dot)} />
+        <span className={cn("w-2 h-2 rounded-full flex-shrink-0", badge.dot)} />
         {getStatusLabel(status)}
-        <ChevronDown className={cn("w-3 h-3 transition-transform ml-0.5 opacity-70", open && "rotate-180")} />
+        <ChevronDown className={cn("w-3 h-3 transition-transform ml-0.5 opacity-60", open && "rotate-180")} />
       </button>
 
       {open && (

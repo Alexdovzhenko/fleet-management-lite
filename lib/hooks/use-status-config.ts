@@ -59,6 +59,19 @@ export const COLOR_BADGE_DARK_MAP: Record<string, { bg: string; border: string; 
   indigo:  { bg: "bg-indigo-500/15",  border: "border-indigo-500/30",  text: "text-indigo-300",  dot: "bg-indigo-400" },
 }
 
+export const COLOR_BADGE_LIGHT_MAP: Record<string, { bg: string; border: string; text: string; dot: string }> = {
+  blue:    { bg: "bg-blue-100",    border: "border-blue-300",    text: "text-blue-800",    dot: "bg-blue-500" },
+  amber:   { bg: "bg-amber-100",   border: "border-amber-300",   text: "text-amber-800",   dot: "bg-amber-500" },
+  yellow:  { bg: "bg-yellow-100",  border: "border-yellow-300",  text: "text-yellow-800",  dot: "bg-yellow-500" },
+  emerald: { bg: "bg-emerald-100", border: "border-emerald-300", text: "text-emerald-800", dot: "bg-emerald-500" },
+  gray:    { bg: "bg-gray-100",    border: "border-gray-300",    text: "text-gray-700",    dot: "bg-gray-500" },
+  violet:  { bg: "bg-violet-100",  border: "border-violet-300",  text: "text-violet-800",  dot: "bg-violet-500" },
+  red:     { bg: "bg-red-100",     border: "border-red-300",     text: "text-red-800",     dot: "bg-red-500" },
+  teal:    { bg: "bg-teal-100",    border: "border-teal-300",    text: "text-teal-800",    dot: "bg-teal-500" },
+  pink:    { bg: "bg-pink-100",    border: "border-pink-300",    text: "text-pink-800",    dot: "bg-pink-500" },
+  indigo:  { bg: "bg-indigo-100",  border: "border-indigo-300",  text: "text-indigo-800",  dot: "bg-indigo-500" },
+}
+
 export const COLOR_ACTIVE_MAP: Record<string, { bg: string; text: string; check: string; leftBar: string }> = {
   blue:    { bg: "bg-blue-50",    text: "text-blue-700",    check: "text-blue-500",    leftBar: "bg-blue-400" },
   amber:   { bg: "bg-amber-50",   text: "text-amber-700",   check: "text-amber-500",   leftBar: "bg-amber-400" },
@@ -124,6 +137,11 @@ export function useStatusConfig() {
     return COLOR_BADGE_DARK_MAP[color] ?? { bg: "bg-gray-500/15", border: "border-gray-500/25", text: "text-gray-300", dot: "bg-gray-400" }
   }
 
+  function getStatusLightBadge(status: TripStatus): { bg: string; border: string; text: string; dot: string } {
+    const color = getStatusColor(status)
+    return COLOR_BADGE_LIGHT_MAP[color] ?? { bg: "bg-gray-100", border: "border-gray-300", text: "text-gray-700", dot: "bg-gray-500" }
+  }
+
   function getStatusActiveStyle(status: TripStatus): { bg: string; text: string; check: string; leftBar: string } {
     const color = getStatusColor(status)
     return COLOR_ACTIVE_MAP[color] ?? { bg: "bg-gray-100", text: "text-gray-600", check: "text-gray-400", leftBar: "bg-gray-400" }
@@ -141,6 +159,7 @@ export function useStatusConfig() {
     getStatusBadgeClasses,
     getStatusRowClass,
     getStatusDarkBadge,
+    getStatusLightBadge,
     getStatusActiveStyle,
   }
 }
