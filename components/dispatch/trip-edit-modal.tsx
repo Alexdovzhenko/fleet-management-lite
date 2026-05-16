@@ -2152,14 +2152,20 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                                 setPobTime(now)
                                 setPobWasEdited(true)
                               }}
-                              className="flex-1 text-[11px] font-semibold rounded-lg px-3 py-1.5 active:scale-95 transition-all duration-150" style={{ background:"rgba(16,185,129,0.10)", border:"1px solid rgba(16,185,129,0.22)", color:"rgba(52,211,153,0.90)" }}
+                              className="flex-1 flex items-center justify-center gap-1.5 text-[11px] font-bold rounded-lg px-3 py-1.5 active:scale-95 transition-all duration-150 cursor-pointer"
+                              style={{ background: "#10b981", border: "1px solid #059669", color: "#ffffff", boxShadow: "0 2px 8px rgba(16,185,129,0.35)" }}
+                              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#059669" }}
+                              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "#10b981" }}
                             >
+                              <Clock className="w-3 h-3 flex-shrink-0" />
                               Set Now
                             </button>
                             <button
                               type="button"
                               onClick={() => setPobEditing(true)}
-                              className="flex-1 text-[11px] font-semibold rounded-lg px-3 py-1.5 active:scale-95 transition-all duration-150" style={{ background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-secondary)" }}
+                              className="flex-1 text-[11px] font-semibold rounded-lg px-3 py-1.5 active:scale-95 transition-all duration-150 cursor-pointer" style={{ background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-secondary)" }}
+                              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)" }}
+                              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
                             >
                               Pick Time
                             </button>
