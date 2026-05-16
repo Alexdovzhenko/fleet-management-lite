@@ -54,11 +54,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     })
   }, [])
 
-  // Always render children — anti-flicker script already set data-theme on <html>
-  // before React hydrates, so CSS variables are correct from the first paint.
-  // We still gate toggleTheme behind mount to avoid calling it before localStorage is ready.
+  // Return null before mount — keeps the whole tree client-only so server-rendered
+  // components that access browser APIs don't throw during SSR.
+  // The anti-flicker script in <head> already set data-theme on <html> before
+  // React hydrates, so the CSS variables are correct from the very first paint.
+  if (!mounted) return null
+
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme: mounted ? toggleTheme : () => {}, isDark: theme === "dark" }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, isDark: theme === "dark" }}>
       {children}
     </ThemeContext.Provider>
   )
