@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Plus, Search, X, ChevronLeft, ChevronRight, Grid3X3, Settings2, CalendarDays } from "lucide-react"
+import { useTheme } from "@/lib/theme-context"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useTrips, useTrip, useCreateTrip } from "@/lib/hooks/use-trips"
 import { useDrivers } from "@/lib/hooks/use-drivers"
@@ -42,6 +43,7 @@ const DEFAULT_VISIBLE_STATUSES = ["CONFIRMED", "IN_PROGRESS", "COMPLETED", "FARM
 function DispatchPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { isDark } = useTheme()
   const openTripId = searchParams.get("open")
   const billingFromUrl = searchParams.get("billing") === "1"
   const { data: openTrip } = useTrip(openTripId ?? "")
@@ -244,19 +246,23 @@ function DispatchPageInner() {
             <div className="flex items-center gap-2.5 shrink-0">
               {/* Stat pills */}
               <div className="hidden sm:flex items-center gap-1.5">
-                {[
-                  { label: "Total",      value: counts.all,        bg: "rgba(201,168,124,0.10)", color: "rgba(201,168,124,0.90)", dot: "#c9a87c" },
-                  { label: "Active",     value: counts.inProgress, bg: "rgba(52,211,153,0.10)",  color: "rgba(52,211,153,0.90)",  dot: "#34d399" },
-                  { label: "Unassigned", value: counts.unassigned, bg: "rgba(251,191,36,0.10)",  color: "rgba(251,191,36,0.90)",  dot: "#fbbf24" },
-                ].map((s) => (
+                {(isDark ? [
+                  { label: "Total",      value: counts.all,        bg: "rgba(201,168,124,0.10)", border: "rgba(201,168,124,0.22)", color: "rgba(201,168,124,0.90)", dot: "#c9a87c" },
+                  { label: "Active",     value: counts.inProgress, bg: "rgba(52,211,153,0.10)",  border: "rgba(52,211,153,0.22)",  color: "rgba(52,211,153,0.90)",  dot: "#34d399" },
+                  { label: "Unassigned", value: counts.unassigned, bg: "rgba(251,191,36,0.10)",  border: "rgba(251,191,36,0.22)",  color: "rgba(251,191,36,0.90)",  dot: "#fbbf24" },
+                ] : [
+                  { label: "Total",      value: counts.all,        bg: "rgba(201,168,124,0.14)", border: "rgba(180,140,90,0.40)",  color: "#96672a", dot: "#b87c3a" },
+                  { label: "Active",     value: counts.inProgress, bg: "rgba(16,185,129,0.12)",  border: "rgba(16,185,129,0.35)",  color: "#047857", dot: "#10b981" },
+                  { label: "Unassigned", value: counts.unassigned, bg: "rgba(217,119,6,0.12)",   border: "rgba(217,119,6,0.35)",   color: "#b45309", dot: "#d97706" },
+                ]).map((s) => (
                   <div
                     key={s.label}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold"
-                    style={{ background: s.bg, color: s.color }}
+                    style={{ background: s.bg, border: `1px solid ${s.border}`, color: s.color }}
                   >
                     <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: s.dot }} />
                     <span className="tabular-nums">{s.value}</span>
-                    <span className="font-medium" style={{ opacity: 0.7 }}>{s.label}</span>
+                    <span className="font-medium" style={{ opacity: isDark ? 0.7 : 0.8 }}>{s.label}</span>
                   </div>
                 ))}
               </div>
