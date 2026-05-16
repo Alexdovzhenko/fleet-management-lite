@@ -15,8 +15,8 @@ export function ExpensesTab({ data, isLoading, startDate, endDate }: ExpensesTab
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="h-64 rounded-2xl animate-pulse" style={{ background: "#0d1526" }} />
-        <div className="h-64 rounded-2xl animate-pulse" style={{ background: "#0d1526" }} />
+        <div className="h-64 rounded-2xl animate-pulse" style={{ background: "var(--lc-bg-surface)" }} />
+        <div className="h-64 rounded-2xl animate-pulse" style={{ background: "var(--lc-bg-surface)" }} />
       </div>
     )
   }

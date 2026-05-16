@@ -354,14 +354,14 @@ export function BillingSettingsForm() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[600px]">
-        <div className="text-sm" style={{ color: "rgba(200,212,228,0.65)" }}>Loading billing settings...</div>
+        <div className="text-sm" style={{ color: "var(--lc-text-dim)" }}>Loading billing settings...</div>
       </div>
     )
   }
 
   return (
     <>
-    <div className="w-full min-h-full" style={{ background: "#080c16" }}>
+    <div className="w-full min-h-full" style={{ background: "var(--lc-bg-page)" }}>
       {/* Form */}
       <div className="w-full max-w-3xl mx-auto px-4 py-8 lg:px-6">
         {/* Status Indicators */}
@@ -394,17 +394,17 @@ export function BillingSettingsForm() {
           {/* Company Branding Section */}
           <div className="space-y-4">
             <div className="flex items-baseline gap-2">
-              <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Company Information</h3>
-              <span className="text-xs" style={{ color: "rgba(200,212,228,0.40)" }}>Your public details</span>
+              <h3 className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>Company Information</h3>
+              <span className="text-xs" style={{ color: "var(--lc-text-muted)" }}>Your public details</span>
             </div>
 
-            <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
+            <div className="rounded-2xl overflow-hidden" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}>
               {/* Logo Upload */}
-              <div className="p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+              <div className="p-6" style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}>
                 <label className="block text-sm font-medium text-slate-900 mb-3">Logo</label>
                 {logoUrl ? (
                   <div className="relative inline-block">
-                    <div className="w-24 h-24 rounded-xl flex items-center justify-center overflow-hidden" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)" }}>
+                    <div className="w-24 h-24 rounded-xl flex items-center justify-center overflow-hidden" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)" }}>
                       <img
                         src={logoUrl}
                         alt="Company logo"
@@ -415,9 +415,9 @@ export function BillingSettingsForm() {
                       type="button"
                       onClick={handleRemoveLogo}
                       disabled={isUploading}
-                      className="absolute -top-2 -right-2 p-1.5 rounded-full shadow-sm disabled:opacity-50 transition-colors" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)" }}
+                      className="absolute -top-2 -right-2 p-1.5 rounded-full shadow-sm disabled:opacity-50 transition-colors" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)" }}
                     >
-                      <X className="w-4 h-4" style={{ color: "rgba(200,212,228,0.60)" }} />
+                      <X className="w-4 h-4" style={{ color: "var(--lc-text-dim)" }} />
                     </button>
                   </div>
                 ) : (
@@ -428,7 +428,7 @@ export function BillingSettingsForm() {
                     className="relative w-full py-8 rounded-xl border-2 border-dashed transition-all flex flex-col items-center justify-center cursor-pointer"
                     style={dragActive
                       ? { borderColor: "#c9a87c", background: "rgba(201,168,124,0.08)" }
-                      : { borderColor: "rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.03)" }
+                      : { borderColor: "var(--lc-border)", background: "var(--lc-bg-card)" }
                     }
                   >
                     <input
@@ -439,21 +439,21 @@ export function BillingSettingsForm() {
                       className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-not-allowed"
                     />
                     <div className="text-center pointer-events-none">
-                      <div className="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-2" style={{ background: "rgba(255,255,255,0.08)" }}>
-                        <Upload className="w-5 h-5" style={{ color: "rgba(200,212,228,0.60)" }} />
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-2" style={{ background: "var(--lc-bg-glass-hover)" }}>
+                        <Upload className="w-5 h-5" style={{ color: "var(--lc-text-dim)" }} />
                       </div>
-                      <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.85)" }}>
+                      <p className="text-sm font-medium" style={{ color: "var(--lc-text-primary)" }}>
                         {isUploading ? "Uploading..." : "Drop your logo here"}
                       </p>
-                      <p className="text-xs mt-1" style={{ color: "rgba(200,212,228,0.40)" }}>PNG, JPG, WebP, SVG • Max 2MB</p>
+                      <p className="text-xs mt-1" style={{ color: "var(--lc-text-muted)" }}>PNG, JPG, WebP, SVG • Max 2MB</p>
                     </div>
                   </div>
                 )}
               </div>
 
               {/* Company Name */}
-              <div className="p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <label htmlFor="companyName" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
+              <div className="p-6" style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}>
+                <label htmlFor="companyName" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "var(--lc-text-dim)" }}>
                   Company Name
                 </label>
                 <Input
@@ -463,13 +463,13 @@ export function BillingSettingsForm() {
                   onFocus={() => setFocusedField("companyName")}
                   onBlur={() => setFocusedField(null)}
                   placeholder="Acme Inc."
-                  className="h-11 px-4 rounded-lg text-sm transition-all" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.88)", outline: "none" }}
+                  className="h-11 px-4 rounded-lg text-sm transition-all" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-primary)", outline: "none" }}
                 />
               </div>
 
               {/* Street Address */}
-              <div className="p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <label htmlFor="streetAddress" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
+              <div className="p-6" style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}>
+                <label htmlFor="streetAddress" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "var(--lc-text-dim)" }}>
                   Street Address
                 </label>
                 <Input
@@ -479,13 +479,13 @@ export function BillingSettingsForm() {
                   onFocus={() => setFocusedField("streetAddress")}
                   onBlur={() => setFocusedField(null)}
                   placeholder="123 Main Street"
-                  className="h-11 px-4 rounded-lg text-sm transition-all" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.88)", outline: "none" }}
+                  className="h-11 px-4 rounded-lg text-sm transition-all" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-primary)", outline: "none" }}
                 />
               </div>
 
               {/* City with Autocomplete */}
-              <div className="p-6 relative" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <label htmlFor="city" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
+              <div className="p-6 relative" style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}>
+                <label htmlFor="city" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "var(--lc-text-dim)" }}>
                   City
                 </label>
                 <Input
@@ -495,24 +495,24 @@ export function BillingSettingsForm() {
                   onFocus={() => setShowCitySuggestions(formData.city.length > 0)}
                   onBlur={() => setTimeout(() => setShowCitySuggestions(false), 150)}
                   placeholder="Aventura"
-                  className="h-11 px-4 rounded-lg text-sm transition-all" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.88)", outline: "none" }}
+                  className="h-11 px-4 rounded-lg text-sm transition-all" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-primary)", outline: "none" }}
                 />
 
                 {/* City Suggestions Dropdown */}
                 {showCitySuggestions && citySuggestions.length > 0 && (
                   <div
                     ref={citySuggestionsRef}
-                    className="absolute top-full left-6 right-6 mt-1 rounded-lg shadow-md z-10 max-h-48 overflow-y-auto" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)" }}
+                    className="absolute top-full left-6 right-6 mt-1 rounded-lg shadow-md z-10 max-h-48 overflow-y-auto" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)" }}
                   >
                     {citySuggestions.map((item, idx) => (
                       <button
                         key={idx}
                         type="button"
                         onClick={() => handleSelectCity(item.city, item.state)}
-                        className="w-full text-left px-4 py-2.5 border-b last:border-b-0 text-sm transition-colors" style={{ borderColor: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.80)" }}
+                        className="w-full text-left px-4 py-2.5 border-b last:border-b-0 text-sm transition-colors" style={{ borderColor: "var(--lc-bg-glass)", color: "var(--lc-text-secondary)" }}
                       >
-                        <div className="font-medium" style={{ color: "rgba(255,255,255,0.90)" }}>{item.city}</div>
-                        <div className="text-xs" style={{ color: "rgba(200,212,228,0.40)" }}>{item.state}</div>
+                        <div className="font-medium" style={{ color: "var(--lc-text-primary)" }}>{item.city}</div>
+                        <div className="text-xs" style={{ color: "var(--lc-text-muted)" }}>{item.state}</div>
                       </button>
                     ))}
                   </div>
@@ -522,7 +522,7 @@ export function BillingSettingsForm() {
               {/* State & Zip Code */}
               <div className="p-6 grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="state" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
+                  <label htmlFor="state" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "var(--lc-text-dim)" }}>
                     State
                   </label>
                   <Input
@@ -533,11 +533,11 @@ export function BillingSettingsForm() {
                     onBlur={() => setFocusedField(null)}
                     placeholder="FL"
                     maxLength={2}
-                    className="h-11 px-4 rounded-lg text-sm transition-all uppercase" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.88)", outline: "none" }}
+                    className="h-11 px-4 rounded-lg text-sm transition-all uppercase" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-primary)", outline: "none" }}
                   />
                 </div>
                 <div>
-                  <label htmlFor="zipCode" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
+                  <label htmlFor="zipCode" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "var(--lc-text-dim)" }}>
                     Zip Code
                   </label>
                   <Input
@@ -548,7 +548,7 @@ export function BillingSettingsForm() {
                     onBlur={() => setFocusedField(null)}
                     placeholder="33180"
                     maxLength={5}
-                    className="h-11 px-4 rounded-lg text-sm transition-all" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.88)", outline: "none" }}
+                    className="h-11 px-4 rounded-lg text-sm transition-all" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-primary)", outline: "none" }}
                   />
                 </div>
               </div>
@@ -558,14 +558,14 @@ export function BillingSettingsForm() {
           {/* Contact Information Section */}
           <div className="space-y-4">
             <div className="flex items-baseline gap-2">
-              <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Contact Details</h3>
-              <span className="text-xs" style={{ color: "rgba(200,212,228,0.40)" }}>For invoices</span>
+              <h3 className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>Contact Details</h3>
+              <span className="text-xs" style={{ color: "var(--lc-text-muted)" }}>For invoices</span>
             </div>
 
-            <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
+            <div className="rounded-2xl overflow-hidden" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}>
               {/* Phone */}
-              <div className="p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <label htmlFor="phone" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
+              <div className="p-6" style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}>
+                <label htmlFor="phone" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "var(--lc-text-dim)" }}>
                   Phone
                 </label>
                 <PhoneInput
@@ -575,13 +575,13 @@ export function BillingSettingsForm() {
                   onFocus={() => setFocusedField("phone")}
                   onBlur={() => setFocusedField(null)}
                   placeholder="(555) 123-4567"
-                  className="h-11 px-4 w-full rounded-lg text-sm transition-all" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.88)", outline: "none" }}
+                  className="h-11 px-4 w-full rounded-lg text-sm transition-all" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-primary)", outline: "none" }}
                 />
               </div>
 
               {/* Billing Email */}
               <div className="p-6">
-                <label htmlFor="billingEmail" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
+                <label htmlFor="billingEmail" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "var(--lc-text-dim)" }}>
                   Billing Email
                 </label>
                 <Input
@@ -592,7 +592,7 @@ export function BillingSettingsForm() {
                   onFocus={() => setFocusedField("billingEmail")}
                   onBlur={() => setFocusedField(null)}
                   placeholder="billing@company.com"
-                  className="h-11 px-4 rounded-lg text-sm transition-all" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.88)", outline: "none" }}
+                  className="h-11 px-4 rounded-lg text-sm transition-all" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-primary)", outline: "none" }}
                 />
               </div>
             </div>
@@ -601,14 +601,14 @@ export function BillingSettingsForm() {
           {/* Invoice Configuration Section */}
           <div className="space-y-4">
             <div className="flex items-baseline gap-2">
-              <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Invoice Formatting</h3>
-              <span className="text-xs" style={{ color: "rgba(200,212,228,0.40)" }}>Appearance and numbering</span>
+              <h3 className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>Invoice Formatting</h3>
+              <span className="text-xs" style={{ color: "var(--lc-text-muted)" }}>Appearance and numbering</span>
             </div>
 
-            <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
+            <div className="rounded-2xl overflow-hidden" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}>
               {/* Invoice Prefix */}
-              <div className="p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <label htmlFor="invoicePrefix" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
+              <div className="p-6" style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}>
+                <label htmlFor="invoicePrefix" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "var(--lc-text-dim)" }}>
                   Invoice Prefix
                 </label>
                 <Input
@@ -618,16 +618,16 @@ export function BillingSettingsForm() {
                   onFocus={() => setFocusedField("invoicePrefix")}
                   onBlur={() => setFocusedField(null)}
                   placeholder="INV-"
-                  className="h-11 px-4 rounded-lg text-sm transition-all" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.88)", outline: "none" }}
+                  className="h-11 px-4 rounded-lg text-sm transition-all" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-primary)", outline: "none" }}
                 />
-                <p className="text-xs mt-3" style={{ color: "rgba(200,212,228,0.38)" }}>
+                <p className="text-xs mt-3" style={{ color: "var(--lc-text-muted)" }}>
                   Numbers will look like: <span className="font-mono font-medium" style={{ color: "rgba(201,168,124,0.90)" }}>{formData.invoicePrefix}001</span>, <span className="font-mono font-medium" style={{ color: "rgba(201,168,124,0.90)" }}>{formData.invoicePrefix}002</span>
                 </p>
               </div>
 
               {/* Date Format */}
-              <div className="p-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <label htmlFor="dateFormat" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
+              <div className="p-6" style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}>
+                <label htmlFor="dateFormat" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "var(--lc-text-dim)" }}>
                   Date Format
                 </label>
                 <select
@@ -636,8 +636,8 @@ export function BillingSettingsForm() {
                   onChange={(e) => handleInputChange("dateFormat", e.target.value)}
                   className="w-full h-11 px-4 rounded-lg text-sm transition-all appearance-none cursor-pointer"
                   style={{
-                    background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)",
-                    color: "rgba(255,255,255,0.88)", outline: "none",
+                    background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)",
+                    color: "var(--lc-text-primary)", outline: "none",
                     backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23c9a87c' d='M1 1l5 5 5-5'/%3E%3C/svg%3E")`,
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'right 12px center',
@@ -653,7 +653,7 @@ export function BillingSettingsForm() {
 
               {/* Payment Terms */}
               <div className="p-6">
-                <label htmlFor="paymentTerms" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "rgba(200,212,228,0.65)" }}>
+                <label htmlFor="paymentTerms" className="block text-xs font-medium uppercase tracking-wide mb-2" style={{ color: "var(--lc-text-dim)" }}>
                   Payment Terms
                 </label>
                 <select
@@ -662,8 +662,8 @@ export function BillingSettingsForm() {
                   onChange={(e) => handleInputChange("paymentTerms", e.target.value)}
                   className="w-full h-11 px-4 rounded-lg text-sm transition-all appearance-none cursor-pointer"
                   style={{
-                    background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)",
-                    color: "rgba(255,255,255,0.88)", outline: "none",
+                    background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)",
+                    color: "var(--lc-text-primary)", outline: "none",
                     backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23c9a87c' d='M1 1l5 5 5-5'/%3E%3C/svg%3E")`,
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'right 12px center',
@@ -684,12 +684,12 @@ export function BillingSettingsForm() {
           {/* Footer Note Section */}
           <div className="space-y-4">
             <div className="flex items-baseline gap-2">
-              <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Invoice Notes</h3>
-              <span className="text-xs" style={{ color: "rgba(200,212,228,0.40)" }}>Optional</span>
+              <h3 className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>Invoice Notes</h3>
+              <span className="text-xs" style={{ color: "var(--lc-text-muted)" }}>Optional</span>
             </div>
 
-            <div className="rounded-2xl p-6" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
-              <label htmlFor="footerNote" className="block text-xs font-medium uppercase tracking-wide mb-3" style={{ color: "rgba(200,212,228,0.65)" }}>
+            <div className="rounded-2xl p-6" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}>
+              <label htmlFor="footerNote" className="block text-xs font-medium uppercase tracking-wide mb-3" style={{ color: "var(--lc-text-dim)" }}>
                 Footer Message
               </label>
               <textarea
@@ -700,9 +700,9 @@ export function BillingSettingsForm() {
                 onBlur={() => setFocusedField(null)}
                 placeholder="Thank you for your business!"
                 rows={3}
-                className="w-full px-4 py-3 rounded-lg text-sm transition-all resize-none" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.88)", outline: "none" }}
+                className="w-full px-4 py-3 rounded-lg text-sm transition-all resize-none" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-primary)", outline: "none" }}
               />
-              <p className="text-xs mt-3" style={{ color: "rgba(200,212,228,0.38)" }}>
+              <p className="text-xs mt-3" style={{ color: "var(--lc-text-muted)" }}>
                 This message appears at the bottom of all invoices
               </p>
             </div>
@@ -726,12 +726,12 @@ export function BillingSettingsForm() {
     {/* Preview Modal */}
     <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
       <DialogContent className="w-[98vw] h-[96vh] max-w-[98vw] max-h-[96vh] p-0 flex flex-col overflow-hidden" showCloseButton={false}>
-        <DialogHeader className="relative px-8 py-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-          <DialogTitle className="text-xl" style={{ color: "rgba(255,255,255,0.90)" }}>Invoice Preview</DialogTitle>
+        <DialogHeader className="relative px-8 py-6" style={{ borderBottom: "1px solid var(--lc-bg-glass-hover)" }}>
+          <DialogTitle className="text-xl" style={{ color: "var(--lc-text-primary)" }}>Invoice Preview</DialogTitle>
           <button
             onClick={() => setIsPreviewOpen(false)}
             aria-label="Close invoice preview"
-            className="absolute right-6 top-6 flex items-center justify-center w-10 h-10 rounded-lg active:scale-95 transition-all duration-150" style={{ color: "rgba(200,212,228,0.50)" }}
+            className="absolute right-6 top-6 flex items-center justify-center w-10 h-10 rounded-lg active:scale-95 transition-all duration-150" style={{ color: "var(--lc-text-label)" }}
           >
             <X className="w-5 h-5" strokeWidth={2} />
           </button>

@@ -114,9 +114,9 @@ function StatusDropdown({
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full mt-1.5 z-50 rounded-xl overflow-hidden min-w-[170px]" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.10)", boxShadow: "0 16px 48px rgba(0,0,0,0.70)" }}>
-          <div className="px-3 py-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}>
-            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.40)" }}>Set Status</span>
+        <div className="absolute left-0 top-full mt-1.5 z-50 rounded-xl overflow-hidden min-w-[170px]" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", boxShadow: "0 16px 48px rgba(0,0,0,0.70)" }}>
+          <div className="px-3 py-2" style={{ borderBottom: "1px solid var(--lc-bg-glass)", background: "var(--lc-bg-card)" }}>
+            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-muted)" }}>Set Status</span>
           </div>
           {getEnabledStatuses().map((s) => {
             const isActive = s === status
@@ -128,11 +128,11 @@ function StatusDropdown({
                 onClick={() => { onUpdate(s); setOpen(false) }}
                 className={cn("w-full flex items-center gap-2.5 px-3 py-2.5 text-xs text-left transition-colors font-semibold")}
                 style={{
-                  background: isActive ? "rgba(255,255,255,0.06)" : "transparent",
-                  color: isActive ? "rgba(255,255,255,0.92)" : "rgba(200,212,228,0.65)",
-                  borderBottom: "1px solid rgba(255,255,255,0.04)",
+                  background: isActive ? "var(--lc-bg-glass)" : "transparent",
+                  color: isActive ? "var(--lc-text-primary)" : "var(--lc-text-dim)",
+                  borderBottom: "1px solid var(--lc-bg-card)",
                 }}
-                onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)" }}
+                onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-card)" }}
                 onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = "transparent" }}
               >
                 <span className={cn("w-2 h-2 rounded-full flex-shrink-0", sd.dot)} />
@@ -262,8 +262,8 @@ function SortableStopRow({
       }`}
       style={{
         ...style,
-        background: isDragOverlay ? "#0d1526" : ROLE_ROW_BG[stop.role].bg,
-        borderBottom: isDragOverlay ? "none" : "1px solid rgba(255,255,255,0.05)",
+        background: isDragOverlay ? "var(--lc-bg-surface)" : ROLE_ROW_BG[stop.role].bg,
+        borderBottom: isDragOverlay ? "none" : "1px solid var(--lc-bg-glass)",
         borderLeft: isDragOverlay ? "none" : `2px solid ${ROLE_ROW_BG[stop.role].border}`,
         ...(isDragOverlay ? { boxShadow:"0 8px 32px rgba(0,0,0,0.60)", borderRadius:"12px", border:`1px solid ${ROLE_ROW_BG[stop.role].border}` } : {}),
       }}
@@ -274,7 +274,7 @@ function SortableStopRow({
         <button
           type="button"
           className={`flex-shrink-0 mt-0.5 touch-none transition-colors ${isDragOverlay ? "cursor-grabbing" : "cursor-grab"}`}
-          style={{ color: "rgba(200,212,228,0.45)" }}
+          style={{ color: "var(--lc-text-label)" }}
           aria-label="Drag to reorder"
           {...attributes}
           {...listeners}
@@ -290,33 +290,33 @@ function SortableStopRow({
       {/* Content */}
       <div className="flex-1 min-w-0">
         {stop.locationName && (
-          <div className="text-xs font-semibold truncate" style={{ color: "rgba(200,212,228,0.70)" }}>{stop.locationName}</div>
+          <div className="text-xs font-semibold truncate" style={{ color: "var(--lc-text-secondary)" }}>{stop.locationName}</div>
         )}
-        <div className="text-sm font-medium truncate" style={{ color: "rgba(255,255,255,0.92)" }}>{stop.address}</div>
+        <div className="text-sm font-medium truncate" style={{ color: "var(--lc-text-primary)" }}>{stop.address}</div>
         {stop.tailNumber && (
-          <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.60)" }}>Tail: {stop.tailNumber}</div>
+          <div className="text-[11px]" style={{ color: "var(--lc-text-dim)" }}>Tail: {stop.tailNumber}</div>
         )}
         {stop.flightNumber && (
-          <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.60)" }}>
+          <div className="text-[11px]" style={{ color: "var(--lc-text-dim)" }}>
             Flight: {stop.flightNumber}
             {stop.arrDep ? ` · ${stop.arrDep}` : ""}
             {stop.terminalGate ? ` · Gate ${stop.terminalGate}` : ""}
           </div>
         )}
         {stop.etaEtd && (
-          <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.55)" }}>ETA/ETD: {stop.etaEtd}</div>
+          <div className="text-[11px]" style={{ color: "var(--lc-text-dim)" }}>ETA/ETD: {stop.etaEtd}</div>
         )}
         {stop.cruiseShipName && (
-          <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.60)" }}>
+          <div className="text-[11px]" style={{ color: "var(--lc-text-dim)" }}>
             Ship: {stop.cruiseShipName}
             {stop.cruiseLineName ? ` · ${stop.cruiseLineName}` : ""}
           </div>
         )}
         {stop.notes && (
-          <div className="text-[11px] truncate" style={{ color: "rgba(200,212,228,0.55)" }}>{stop.notes}</div>
+          <div className="text-[11px] truncate" style={{ color: "var(--lc-text-dim)" }}>{stop.notes}</div>
         )}
         {(stop.phone || stop.timeIn) && (
-          <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.55)" }}>
+          <div className="text-[11px]" style={{ color: "var(--lc-text-dim)" }}>
             {stop.phone && <span>{stop.phone}</span>}
             {stop.phone && stop.timeIn && <span className="mx-1">·</span>}
             {stop.timeIn && <span>Time In: {stop.timeIn}</span>}
@@ -327,7 +327,7 @@ function SortableStopRow({
       <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
         {!isEditing && !isDragOverlay && (
           <span className="opacity-0 group-hover:opacity-100 transition-opacity">
-            <Pencil className="w-3 h-3" style={{ color: "rgba(200,212,228,0.55)" }} />
+            <Pencil className="w-3 h-3" style={{ color: "var(--lc-text-dim)" }} />
           </span>
         )}
         {!isDragOverlay && (
@@ -338,9 +338,9 @@ function SortableStopRow({
               if (!isEditing) onDelete(stop.id)
             }}
             disabled={isEditing}
-            className="transition-colors disabled:pointer-events-none" style={{ color: "rgba(200,212,228,0.50)" }}
+            className="transition-colors disabled:pointer-events-none" style={{ color: "var(--lc-text-label)" }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.85)" }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.50)" }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)" }}
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -522,31 +522,31 @@ function RouteBuilder({ stops, setStops, stopsError }: {
 
   return (
     <div className="space-y-3">
-      <style>{`.rb-input::placeholder{color:rgba(200,212,228,0.38)}`}</style>
-      <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
+      <style>{`.rb-input::placeholder{color:var(--lc-text-muted)}`}</style>
+      <div className="rounded-2xl overflow-hidden" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}>
         {/* Tabs */}
         <div className="px-3 pt-3 pb-2.5">
-          <div className="inline-flex gap-1 p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+          <div className="inline-flex gap-1 p-1 rounded-xl" style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-mid)" }}>
             {STOP_LOC_TABS.map(({ type: t, label, Icon }) => (
               <button key={t} type="button" onClick={() => { setLocType(t); resetForm() }}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
                 style={locType === t
-                  ? { background: "#c9a87c", color: "#0d1526", boxShadow: "0 1px 6px rgba(201,168,124,0.35)" }
-                  : { background: "transparent", color: "rgba(255,255,255,0.75)" }
+                  ? { background: "#c9a87c", color: "var(--lc-bg-surface)", boxShadow: "0 1px 6px rgba(201,168,124,0.35)" }
+                  : { background: "transparent", color: "var(--lc-text-secondary)" }
                 }>
                 <Icon className="w-3 h-3" />{label}
               </button>
             ))}
           </div>
         </div>
-        <div className="mx-3" style={{ height: "1px", background: "rgba(255,255,255,0.06)" }} />
+        <div className="mx-3" style={{ height: "1px", background: "var(--lc-bg-glass)" }} />
 
         {/* Fields */}
         <div className="p-3 pt-3.5 space-y-2.5">
           {locType === "address" && (
             <>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Location Name</Label>
+                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Location Name</Label>
                 <AddressAutocomplete
                   value={locationName}
                   onChange={(v) => setLocationName(v)}
@@ -556,7 +556,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Address 1 *</Label>
+                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Address 1 *</Label>
                 <AddressAutocomplete
                   value={address1}
                   onChange={(v) => { setAddress1(v); setAddError("") }}
@@ -567,40 +567,40 @@ function RouteBuilder({ stops, setStops, stopsError }: {
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Address 2</Label>
-                <input value={address2} onChange={(e) => setAddress2(e.target.value)} placeholder="Suite, floor, apt…" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Address 2</Label>
+                <input value={address2} onChange={(e) => setAddress2(e.target.value)} placeholder="Suite, floor, apt…" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-[1fr_90px_90px_120px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>City</Label>
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>City</Label>
                   <CityAutocomplete value={city} onChange={setCity} onStateChange={setStateVal} placeholder="Miami" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>State</Label>
-                  <input value={stateVal} onChange={(e) => setStateVal(e.target.value)} placeholder="FL" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>State</Label>
+                  <input value={stateVal} onChange={(e) => setStateVal(e.target.value)} placeholder="FL" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Zip</Label>
-                  <input value={zip} onChange={(e) => setZip(e.target.value)} placeholder="33101" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Zip</Label>
+                  <input value={zip} onChange={(e) => setZip(e.target.value)} placeholder="33101" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Country</Label>
-                  <input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="USA" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Country</Label>
+                  <input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="USA" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Phone</Label>
-                  <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(305) 555-0000" type="tel" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Phone</Label>
+                  <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(305) 555-0000" type="tel" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Time In</Label>
-                  <input value={timeIn} onChange={(e) => setTimeIn(e.target.value)} placeholder="e.g. 3:00 PM" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={(e)=>{ setTimeIn(formatTime(e.target.value)); e.currentTarget.style.borderColor="rgba(255,255,255,0.12)" }} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Time In</Label>
+                  <input value={timeIn} onChange={(e) => setTimeIn(e.target.value)} placeholder="e.g. 3:00 PM" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={(e)=>{ setTimeIn(formatTime(e.target.value)); e.currentTarget.style.borderColor="var(--lc-border)" }} />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Notes</Label>
-                <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Gate code, entrance, driver instructions…" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Notes</Label>
+                <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Gate code, entrance, driver instructions…" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
               </div>
             </>
           )}
@@ -608,70 +608,70 @@ function RouteBuilder({ stops, setStops, stopsError }: {
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Airport Code *</Label>
-                  <input value={airportCode} onChange={(e) => { setAirportCode(e.target.value); setAddError("") }} placeholder="MIA" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border: addError ? "1px solid rgba(248,113,113,0.60)" : "1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Airport Code *</Label>
+                  <input value={airportCode} onChange={(e) => { setAirportCode(e.target.value); setAddError("") }} placeholder="MIA" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border: addError ? "1px solid rgba(248,113,113,0.60)" : "1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Airport Name</Label>
-                  <input value={airportName} onChange={(e) => { setAirportName(e.target.value); setAddError("") }} placeholder="Miami International" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Airport Name</Label>
+                  <input value={airportName} onChange={(e) => { setAirportName(e.target.value); setAddError("") }} placeholder="Miami International" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
               </div>
               <div className="grid grid-cols-[100px_1fr_120px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Airline Code</Label>
-                  <input value={airlineCode} onChange={(e) => setAirlineCode(e.target.value)} placeholder="AA" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Airline Code</Label>
+                  <input value={airlineCode} onChange={(e) => setAirlineCode(e.target.value)} placeholder="AA" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Airline Name</Label>
-                  <input value={airlineName} onChange={(e) => setAirlineName(e.target.value)} placeholder="American Airlines" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Airline Name</Label>
+                  <input value={airlineName} onChange={(e) => setAirlineName(e.target.value)} placeholder="American Airlines" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Flight #</Label>
-                  <input value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)} placeholder="AA 123" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Flight #</Label>
+                  <input value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)} placeholder="AA 123" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-[120px_120px_1fr_120px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Arr/Dep</Label>
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Arr/Dep</Label>
                   <div className="relative">
-                    <select value={arrDep} onChange={(e) => setArrDep(e.target.value)} style={{ width:"100%", height:"36px", padding:"0 32px 0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)", appearance:"none", cursor:"pointer" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"}>
-                      <option value="" style={{ background:"#0d1526" }}>Select…</option>
-                      <option value="Arrival" style={{ background:"#0d1526" }}>Arrival</option>
-                      <option value="Departure" style={{ background:"#0d1526" }}>Departure</option>
+                    <select value={arrDep} onChange={(e) => setArrDep(e.target.value)} style={{ width:"100%", height:"36px", padding:"0 32px 0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)", appearance:"none", cursor:"pointer" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"}>
+                      <option value="" style={{ background:"var(--lc-bg-surface)" }}>Select…</option>
+                      <option value="Arrival" style={{ background:"var(--lc-bg-surface)" }}>Arrival</option>
+                      <option value="Departure" style={{ background:"var(--lc-bg-surface)" }}>Departure</option>
                     </select>
-                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color:"rgba(200,212,228,0.50)" }} />
+                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color:"var(--lc-text-label)" }} />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Terminal/Gate</Label>
-                  <input value={terminalGate} onChange={(e) => setTerminalGate(e.target.value)} placeholder="D22" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Terminal/Gate</Label>
+                  <input value={terminalGate} onChange={(e) => setTerminalGate(e.target.value)} placeholder="D22" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Airport Instructions</Label>
-                  <input value={airportInstructions} onChange={(e) => setAirportInstructions(e.target.value)} placeholder="Meet at baggage claim…" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Airport Instructions</Label>
+                  <input value={airportInstructions} onChange={(e) => setAirportInstructions(e.target.value)} placeholder="Meet at baggage claim…" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>ETA/ETD</Label>
-                  <input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)} placeholder="3:00 PM" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={(e)=>{ setEtaEtd(formatTime(e.target.value)); e.currentTarget.style.borderColor="rgba(255,255,255,0.12)" }} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>ETA/ETD</Label>
+                  <input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)} placeholder="3:00 PM" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={(e)=>{ setEtaEtd(formatTime(e.target.value)); e.currentTarget.style.borderColor="var(--lc-border)" }} />
                 </div>
               </div>
               <div className="grid grid-cols-[140px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Meet Option</Label>
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Meet Option</Label>
                   <div className="relative">
-                    <select value={meetOption} onChange={(e) => setMeetOption(e.target.value)} style={{ width:"100%", height:"36px", padding:"0 32px 0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)", appearance:"none", cursor:"pointer" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"}>
-                      <option value="" style={{ background:"#0d1526" }}>Select…</option>
-                      <option style={{ background:"#0d1526" }}>Curbside</option>
-                      <option style={{ background:"#0d1526" }}>Inside</option>
-                      <option style={{ background:"#0d1526" }}>Baggage Claim</option>
-                      <option style={{ background:"#0d1526" }}>Gate</option>
+                    <select value={meetOption} onChange={(e) => setMeetOption(e.target.value)} style={{ width:"100%", height:"36px", padding:"0 32px 0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)", appearance:"none", cursor:"pointer" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"}>
+                      <option value="" style={{ background:"var(--lc-bg-surface)" }}>Select…</option>
+                      <option style={{ background:"var(--lc-bg-surface)" }}>Curbside</option>
+                      <option style={{ background:"var(--lc-bg-surface)" }}>Inside</option>
+                      <option style={{ background:"var(--lc-bg-surface)" }}>Baggage Claim</option>
+                      <option style={{ background:"var(--lc-bg-surface)" }}>Gate</option>
                     </select>
-                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color:"rgba(200,212,228,0.50)" }} />
+                    <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color:"var(--lc-text-label)" }} />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Notes</Label>
-                  <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Driver instructions…" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Notes</Label>
+                  <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Driver instructions…" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
               </div>
             </>
@@ -680,54 +680,54 @@ function RouteBuilder({ stops, setStops, stopsError }: {
             <>
               <div className="grid grid-cols-[120px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Seaport Code *</Label>
-                  <input value={seaportCode} onChange={(e) => { setSeaportCode(e.target.value.toUpperCase()); setAddError("") }} placeholder="MIA" autoComplete="off" maxLength={6} className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border: addError ? "1px solid rgba(248,113,113,0.60)" : "1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Seaport Code *</Label>
+                  <input value={seaportCode} onChange={(e) => { setSeaportCode(e.target.value.toUpperCase()); setAddError("") }} placeholder="MIA" autoComplete="off" maxLength={6} className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border: addError ? "1px solid rgba(248,113,113,0.60)" : "1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Port Name</Label>
-                  <input value={portName} onChange={(e) => { setPortName(e.target.value); setAddError("") }} placeholder="Port of Miami" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Cruise Ship</Label>
-                  <input value={cruiseShipName} onChange={(e) => setCruiseShipName(e.target.value)} placeholder="Symphony of the Seas" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Cruise Line</Label>
-                  <input value={cruiseLineName} onChange={(e) => setCruiseLineName(e.target.value)} placeholder="Royal Caribbean" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Port Name</Label>
+                  <input value={portName} onChange={(e) => { setPortName(e.target.value); setAddError("") }} placeholder="Port of Miami" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Arriving From / Departing To</Label>
-                  <input value={arrivingDepartingTo} onChange={(e) => setArrivingDepartingTo(e.target.value)} placeholder="Nassau, Bahamas" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Cruise Ship</Label>
+                  <input value={cruiseShipName} onChange={(e) => setCruiseShipName(e.target.value)} placeholder="Symphony of the Seas" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>ETA / ETD</Label>
-                  <input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)} placeholder="9:00 AM" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={(e)=>{ setEtaEtd(formatTime(e.target.value)); e.currentTarget.style.borderColor="rgba(255,255,255,0.12)" }} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Cruise Line</Label>
+                  <input value={cruiseLineName} onChange={(e) => setCruiseLineName(e.target.value)} placeholder="Royal Caribbean" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1.5">
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Arriving From / Departing To</Label>
+                  <input value={arrivingDepartingTo} onChange={(e) => setArrivingDepartingTo(e.target.value)} placeholder="Nassau, Bahamas" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>ETA / ETD</Label>
+                  <input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)} placeholder="9:00 AM" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={(e)=>{ setEtaEtd(formatTime(e.target.value)); e.currentTarget.style.borderColor="var(--lc-border)" }} />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Seaport Instructions</label>
+                <label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Seaport Instructions</label>
                 <div className="relative">
                   <select value={seaportInstructions} onChange={(e) => setSeaportInstructions(e.target.value)}
-                    style={{ width:"100%", height:"36px", padding:"0 32px 0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color: seaportInstructions ? "rgba(255,255,255,0.88)" : "rgba(200,212,228,0.38)", appearance:"none", cursor:"pointer" }}
+                    style={{ width:"100%", height:"36px", padding:"0 32px 0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color: seaportInstructions ? "var(--lc-text-primary)" : "var(--lc-text-muted)", appearance:"none", cursor:"pointer" }}
                     onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"}
-                    onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"}>
-                    <option value="" style={{ background:"#0d1526", color:"rgba(200,212,228,0.38)" }}>Select instructions…</option>
-                    <option value="Meet at terminal entrance" style={{ background:"#0d1526", color:"rgba(255,255,255,0.88)" }}>Meet at terminal entrance</option>
-                    <option value="Meet at baggage claim" style={{ background:"#0d1526", color:"rgba(255,255,255,0.88)" }}>Meet at baggage claim</option>
-                    <option value="Meet at gangway" style={{ background:"#0d1526", color:"rgba(255,255,255,0.88)" }}>Meet at gangway</option>
-                    <option value="Curbside pickup" style={{ background:"#0d1526", color:"rgba(255,255,255,0.88)" }}>Curbside pickup</option>
-                    <option value="Meet inside terminal" style={{ background:"#0d1526", color:"rgba(255,255,255,0.88)" }}>Meet inside terminal</option>
+                    onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"}>
+                    <option value="" style={{ background:"var(--lc-bg-surface)", color:"var(--lc-text-muted)" }}>Select instructions…</option>
+                    <option value="Meet at terminal entrance" style={{ background:"var(--lc-bg-surface)", color:"var(--lc-text-primary)" }}>Meet at terminal entrance</option>
+                    <option value="Meet at baggage claim" style={{ background:"var(--lc-bg-surface)", color:"var(--lc-text-primary)" }}>Meet at baggage claim</option>
+                    <option value="Meet at gangway" style={{ background:"var(--lc-bg-surface)", color:"var(--lc-text-primary)" }}>Meet at gangway</option>
+                    <option value="Curbside pickup" style={{ background:"var(--lc-bg-surface)", color:"var(--lc-text-primary)" }}>Curbside pickup</option>
+                    <option value="Meet inside terminal" style={{ background:"var(--lc-bg-surface)", color:"var(--lc-text-primary)" }}>Meet inside terminal</option>
                   </select>
-                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color:"rgba(200,212,228,0.50)" }} />
+                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color:"var(--lc-text-label)" }} />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Notes</Label>
-                <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Pier, terminal, additional instructions…" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Notes</Label>
+                <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Pier, terminal, additional instructions…" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
               </div>
             </>
           )}
@@ -735,7 +735,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
             <>
               <div className="grid grid-cols-[1fr_140px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>FBO Name *</Label>
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>FBO Name *</Label>
                   <FBOAutocomplete
                     value={locationName}
                     onChange={(v) => { setLocationName(v); setAddError("") }}
@@ -753,36 +753,36 @@ function RouteBuilder({ stops, setStops, stopsError }: {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Tail #</Label>
-                  <input value={tailNumber} onChange={(e) => setTailNumber(e.target.value)} placeholder="N12345" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Tail #</Label>
+                  <input value={tailNumber} onChange={(e) => setTailNumber(e.target.value)} placeholder="N12345" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Address 1</Label>
-                  <input value={address1} onChange={(e) => setAddress1(e.target.value)} placeholder="123 Aviation Blvd" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Address 1</Label>
+                  <input value={address1} onChange={(e) => setAddress1(e.target.value)} placeholder="123 Aviation Blvd" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>City / State</Label>
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>City / State</Label>
                   <div className="flex gap-2">
                     <CityAutocomplete value={city} onChange={setCity} onStateChange={setStateVal} placeholder="Miami" />
-                    <input value={stateVal} onChange={(e) => setStateVal(e.target.value)} placeholder="FL" autoComplete="off" className="rb-input" style={{ width:"64px", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                    <input value={stateVal} onChange={(e) => setStateVal(e.target.value)} placeholder="FL" autoComplete="off" className="rb-input" style={{ width:"64px", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                   </div>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Phone</Label>
-                  <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(305) 555-0000" type="tel" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Phone</Label>
+                  <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(305) 555-0000" type="tel" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Time In</Label>
-                  <input value={timeIn} onChange={(e) => setTimeIn(e.target.value)} placeholder="3:00 PM" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={(e)=>{ setTimeIn(formatTime(e.target.value)); e.currentTarget.style.borderColor="rgba(255,255,255,0.12)" }} />
+                  <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Time In</Label>
+                  <input value={timeIn} onChange={(e) => setTimeIn(e.target.value)} placeholder="3:00 PM" autoComplete="off" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={(e)=>{ setTimeIn(formatTime(e.target.value)); e.currentTarget.style.borderColor="var(--lc-border)" }} />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "rgba(255,255,255,0.85)" }}>Notes</Label>
-                <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Driver instructions, access codes…" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="rgba(255,255,255,0.12)"} />
+                <Label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color: "var(--lc-text-primary)" }}>Notes</Label>
+                <input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Driver instructions, access codes…" className="rb-input" style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }} onFocus={e=>e.currentTarget.style.borderColor="rgba(201,168,124,0.50)"} onBlur={e=>e.currentTarget.style.borderColor="var(--lc-border)"} />
               </div>
             </>
           )}
@@ -790,14 +790,14 @@ function RouteBuilder({ stops, setStops, stopsError }: {
         </div>
 
         {/* Role + Add */}
-        <div className="px-3 py-3 flex items-center justify-between gap-2" style={{ background: "rgba(255,255,255,0.015)", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div className="px-3 py-3 flex items-center justify-between gap-2" style={{ background: "rgba(255,255,255,0.015)", borderTop: "1px solid var(--lc-bg-glass)" }}>
           <div className="flex items-center gap-1 flex-wrap">
             {STOP_ROLES.map(({ value, label }) => (
               <label key={value}
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all select-none ${
                   role === value ? STOP_ROLE_STYLE[value].pill : "border-transparent"
                 }`}
-                style={role !== value ? { color: "rgba(255,255,255,0.88)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" } : {}}>
+                style={role !== value ? { color: "var(--lc-text-primary)", background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass)" } : {}}>
                 <input type="radio" name="edit-modal-role" value={value} checked={role === value} onChange={() => setRole(value)} className="sr-only" />
                 <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
                   role === value
@@ -811,7 +811,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
           </div>
           <button type="button" onClick={handleAdd}
             className="flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all flex-shrink-0"
-            style={{ background: "#c9a87c", color: "#0d1526", boxShadow: "0 2px 10px rgba(201,168,124,0.30)" }}
+            style={{ background: "#c9a87c", color: "var(--lc-bg-surface)", boxShadow: "0 2px 10px rgba(201,168,124,0.30)" }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#d4b688" }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "#c9a87c" }}>
             <Plus className="w-3.5 h-3.5" />
@@ -823,9 +823,9 @@ function RouteBuilder({ stops, setStops, stopsError }: {
       {/* Route list */}
       {stops.length > 0 ? (
         <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
-            <div className="px-3 py-2 border-b" style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.06)" }}>
-              <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)" }}>Routing Information</p>
+          <div className="rounded-xl overflow-hidden" style={{ border: "1px solid var(--lc-bg-glass-mid)" }}>
+            <div className="px-3 py-2 border-b" style={{ background: "var(--lc-bg-card)", borderColor: "var(--lc-bg-glass)" }}>
+              <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--lc-text-label)" }}>Routing Information</p>
             </div>
             <SortableContext items={stops.map((s) => s.id)} strategy={verticalListSortingStrategy}>
               {stops.map((stop) => (
@@ -852,7 +852,7 @@ function RouteBuilder({ stops, setStops, stopsError }: {
           </DragOverlay>
         </DndContext>
       ) : (
-        <div className="text-xs text-center py-6 rounded-xl" style={{ color: "rgba(200,212,228,0.40)", border: "1px dashed rgba(255,255,255,0.10)" }}>
+        <div className="text-xs text-center py-6 rounded-xl" style={{ color: "var(--lc-text-muted)", border: "1px dashed var(--lc-border)" }}>
           Add locations above to build the trip itinerary
         </div>
       )}
@@ -910,7 +910,7 @@ function DriverPickerCard({ drivers, value, onChange }: { drivers: Driver[]; val
             <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400" style={{ border: "2px solid #0d1526" }} />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.92)" }}>{selected.name}</div>
+            <div className="text-sm font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>{selected.name}</div>
             {selected.phone && <div className="text-[11px] truncate" style={{ color: "rgba(165,180,252,0.70)" }}>{formatPhone(selected.phone)}</div>}
           </div>
           <button type="button" onClick={() => onChange("")}
@@ -922,27 +922,27 @@ function DriverPickerCard({ drivers, value, onChange }: { drivers: Driver[]; val
       ) : (
         <button type="button" onClick={() => open ? setOpen(false) : openDropdown()}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px dashed rgba(255,255,255,0.14)", color: "rgba(200,212,228,0.50)" }}
+          style={{ background: "var(--lc-bg-card)", border: "1px dashed var(--lc-border-medium)", color: "var(--lc-text-label)" }}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,124,0.40)" }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.14)" }}>
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--lc-border-medium)" }}>
           <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.10)", border: "1px solid rgba(201,168,124,0.18)" }}>
             <UserPlus className="w-4 h-4" style={{ color: "rgba(201,168,124,0.70)" }} />
           </div>
           <span className="flex-1 text-left text-sm">Assign driver…</span>
-          <ChevronDown className={cn("w-4 h-4 transition-transform", open && "rotate-180")} style={{ color: "rgba(200,212,228,0.35)" }} />
+          <ChevronDown className={cn("w-4 h-4 transition-transform", open && "rotate-180")} style={{ color: "var(--lc-text-muted)" }} />
         </button>
       )}
       {open && !selected && createPortal(
-        <div ref={dropRef} style={{ ...dropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.10)", borderRadius: "16px", boxShadow: "0 24px 60px rgba(0,0,0,0.65)", overflow: "hidden" }}>
-          <div className="px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>Active Drivers</div>
+        <div ref={dropRef} style={{ ...dropStyle, background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", borderRadius: "16px", boxShadow: "0 24px 60px rgba(0,0,0,0.65)", overflow: "hidden" }}>
+          <div className="px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-label)", background: "var(--lc-bg-card)", borderBottom: "1px solid var(--lc-bg-glass-mid)" }}>Active Drivers</div>
           <div className="max-h-48 overflow-y-auto">
             {drivers.length === 0
-              ? <div className="px-4 py-4 text-xs text-center" style={{ color: "rgba(200,212,228,0.40)" }}>No active drivers</div>
+              ? <div className="px-4 py-4 text-xs text-center" style={{ color: "var(--lc-text-muted)" }}>No active drivers</div>
               : drivers.map((d) => (
                 <button key={d.id} type="button" onClick={() => { onChange(d.id); setOpen(false) }}
                   className="w-full flex items-center gap-3 px-3 py-2.5 transition-colors"
-                  style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+                  style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}>
                   <div className="relative flex-shrink-0">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center text-[10px] font-bold text-white overflow-hidden">
@@ -956,8 +956,8 @@ function DriverPickerCard({ drivers, value, onChange }: { drivers: Driver[]; val
                     <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400" style={{ border: "2px solid #0d1526" }} />
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <div className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>{d.name}</div>
-                    {d.phone && <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.50)" }}>{formatPhone(d.phone)}</div>}
+                    <div className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>{d.name}</div>
+                    {d.phone && <div className="text-[11px]" style={{ color: "var(--lc-text-label)" }}>{formatPhone(d.phone)}</div>}
                   </div>
                 </button>
               ))}
@@ -1000,53 +1000,53 @@ function VehicleTypePickerCard({ vehicleTypes, value, onChange }: { vehicleTypes
 
   return (
     <div ref={ref} className="space-y-1.5">
-      <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "rgba(200,212,228,0.45)" }}>Type</p>
+      <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--lc-text-label)" }}>Type</p>
       {selected ? (
-        <div className="group flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-colors" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)" }}>
+        <div className="group flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-colors" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)" }}>
           <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.12)" }}>
             <Car className="w-4 h-4" style={{ color: "#c9a87c" }} />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.92)" }}>{selected.label}</div>
-            <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.55)" }}>Booked category</div>
+            <div className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>{selected.label}</div>
+            <div className="text-[11px]" style={{ color: "var(--lc-text-dim)" }}>Booked category</div>
           </div>
           <button type="button" onClick={() => onChange("")} className="transition-colors flex-shrink-0" aria-label="Remove vehicle type"
-            style={{ color: "rgba(200,212,228,0.35)" }}
+            style={{ color: "var(--lc-text-muted)" }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.80)" }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.35)" }}>
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "var(--lc-text-muted)" }}>
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
       ) : (
         <button type="button" onClick={() => open ? setOpen(false) : openDropdown()}
           className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px dashed rgba(255,255,255,0.14)", color: "rgba(200,212,228,0.50)" }}
+          style={{ background: "var(--lc-bg-card)", border: "1px dashed var(--lc-border-medium)", color: "var(--lc-text-label)" }}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,124,0.40)" }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.14)" }}>
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.06)" }}>
-            <Car className="w-3.5 h-3.5" style={{ color: "rgba(200,212,228,0.40)" }} />
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--lc-border-medium)" }}>
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "var(--lc-bg-glass)" }}>
+            <Car className="w-3.5 h-3.5" style={{ color: "var(--lc-text-muted)" }} />
           </div>
           <span className="flex-1 text-left">Select type…</span>
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} style={{ color: "rgba(200,212,228,0.35)" }} />
+          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} style={{ color: "var(--lc-text-muted)" }} />
         </button>
       )}
       {open && !selected && createPortal(
-        <div ref={dropRef} style={{ ...dropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.10)", borderRadius: "14px", boxShadow: "0 24px 60px rgba(0,0,0,0.65)", overflow: "hidden" }}>
-          <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>Vehicle Categories</div>
+        <div ref={dropRef} style={{ ...dropStyle, background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", borderRadius: "14px", boxShadow: "0 24px 60px rgba(0,0,0,0.65)", overflow: "hidden" }}>
+          <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-label)", background: "var(--lc-bg-card)", borderBottom: "1px solid var(--lc-bg-glass-mid)" }}>Vehicle Categories</div>
           <div className="max-h-48 overflow-y-auto">
             {vehicleTypes.length === 0
-              ? <div className="px-3 py-3 text-xs text-center" style={{ color: "rgba(200,212,228,0.40)" }}>No vehicle types</div>
+              ? <div className="px-3 py-3 text-xs text-center" style={{ color: "var(--lc-text-muted)" }}>No vehicle types</div>
               : vehicleTypes.map((t) => (
                 <button key={t.value} type="button" onClick={() => { onChange(t.value); setOpen(false) }}
                   className="w-full flex items-center gap-2.5 px-3 py-2.5 transition-colors"
-                  style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+                  style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}>
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.10)" }}>
                     <Car className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
                   </div>
                   <div className="flex-1 text-left">
-                    <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{t.label}</div>
+                    <div className="text-sm font-medium" style={{ color: "var(--lc-text-primary)" }}>{t.label}</div>
                   </div>
                 </button>
               ))
@@ -1095,59 +1095,59 @@ function VehiclePickerCard({ vehicles, value, onChange }: { vehicles: Vehicle[];
 
   return (
     <div ref={ref} className="space-y-1.5">
-      <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "rgba(200,212,228,0.45)" }}>Vehicle</p>
+      <p className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: "var(--lc-text-label)" }}>Vehicle</p>
       {selected ? (
-        <div className="group flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-colors" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)" }}>
+        <div className="group flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-colors" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)" }}>
           <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.12)" }}>
             <Car className="w-4 h-4" style={{ color: "#c9a87c" }} />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.92)" }}>{selected.name}</div>
-            <div className="flex items-center gap-1 text-[11px]" style={{ color: "rgba(200,212,228,0.55)" }}>
+            <div className="text-sm font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>{selected.name}</div>
+            <div className="flex items-center gap-1 text-[11px]" style={{ color: "var(--lc-text-dim)" }}>
               <span>{VEHICLE_TYPE_LABEL[selected.type] ?? "Vehicle"}</span>
-              <span style={{ color: "rgba(200,212,228,0.25)" }}>·</span>
+              <span style={{ color: "var(--lc-text-muted)" }}>·</span>
               <span>{selected.capacity} pax</span>
-              {selected.color && <><span style={{ color: "rgba(200,212,228,0.25)" }}>·</span><span>{selected.color}</span></>}
+              {selected.color && <><span style={{ color: "var(--lc-text-muted)" }}>·</span><span>{selected.color}</span></>}
             </div>
           </div>
           <button type="button" onClick={() => onChange("")} className="transition-colors flex-shrink-0"
-            style={{ color: "rgba(200,212,228,0.35)" }}
+            style={{ color: "var(--lc-text-muted)" }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.80)" }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.35)" }}>
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "var(--lc-text-muted)" }}>
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
       ) : (
         <button type="button" onClick={() => open ? setOpen(false) : openDropdown()}
           className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px dashed rgba(255,255,255,0.14)", color: "rgba(200,212,228,0.50)" }}
+          style={{ background: "var(--lc-bg-card)", border: "1px dashed var(--lc-border-medium)", color: "var(--lc-text-label)" }}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,124,0.40)" }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.14)" }}>
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.06)" }}>
-            <Car className="w-3.5 h-3.5" style={{ color: "rgba(200,212,228,0.40)" }} />
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--lc-border-medium)" }}>
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "var(--lc-bg-glass)" }}>
+            <Car className="w-3.5 h-3.5" style={{ color: "var(--lc-text-muted)" }} />
           </div>
           <span className="flex-1 text-left">Select vehicle…</span>
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} style={{ color: "rgba(200,212,228,0.35)" }} />
+          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} style={{ color: "var(--lc-text-muted)" }} />
         </button>
       )}
       {open && !selected && createPortal(
-        <div ref={dropRef} style={{ ...dropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.10)", borderRadius: "14px", boxShadow: "0 24px 60px rgba(0,0,0,0.65)", overflow: "hidden" }}>
-          <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>Available Vehicles</div>
+        <div ref={dropRef} style={{ ...dropStyle, background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", borderRadius: "14px", boxShadow: "0 24px 60px rgba(0,0,0,0.65)", overflow: "hidden" }}>
+          <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-label)", background: "var(--lc-bg-card)", borderBottom: "1px solid var(--lc-bg-glass-mid)" }}>Available Vehicles</div>
           <div className="max-h-52 overflow-y-auto">
             {vehicles.length === 0
-              ? <div className="px-3 py-3 text-xs text-center" style={{ color: "rgba(200,212,228,0.40)" }}>No active vehicles</div>
+              ? <div className="px-3 py-3 text-xs text-center" style={{ color: "var(--lc-text-muted)" }}>No active vehicles</div>
               : vehicles.map((v) => (
                 <button key={v.id} type="button" onClick={() => { onChange(v.id); setOpen(false) }}
                   className="w-full flex items-center gap-2.5 px-3 py-2.5 transition-colors"
-                  style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+                  style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}>
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.10)" }}>
                     <Car className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{v.name}</div>
-                    <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.50)" }}>{VEHICLE_TYPE_LABEL[v.type] ?? v.type} · {v.capacity} pax{v.color ? ` · ${v.color}` : ""}</div>
+                    <div className="text-sm font-medium" style={{ color: "var(--lc-text-primary)" }}>{v.name}</div>
+                    <div className="text-[11px]" style={{ color: "var(--lc-text-label)" }}>{VEHICLE_TYPE_LABEL[v.type] ?? v.type} · {v.capacity} pax{v.color ? ` · ${v.color}` : ""}</div>
                   </div>
                 </button>
               ))}
@@ -1585,7 +1585,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
         <style>{SAVE_BUTTON_STYLES}</style>
 
         {/* ── Header ── */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0" style={{ background:"#0d1526", borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 flex-shrink-0" style={{ background:"var(--lc-bg-surface)", borderBottom:"1px solid var(--lc-bg-glass-mid)" }}>
           {/* Left: Confirmation # + Status */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             {/* Confirmation # */}
@@ -1593,12 +1593,12 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
               type="button"
               onClick={copyConfirmation}
               className="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-colors group flex-shrink-0"
-              style={{ background: "rgba(255,255,255,0.05)" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.09)" }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+              style={{ background: "var(--lc-bg-glass)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)" }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
             >
               <span className="text-xs sm:text-sm font-mono font-semibold" style={{ color:"#c9a87c" }}>{currentTrip.tripNumber}</span>
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" style={{ color:"rgba(200,212,228,0.40)" }} />}
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" style={{ color:"var(--lc-text-muted)" }} />}
             </button>
 
             {/* Status */}
@@ -1616,7 +1616,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
               <button
                 type="button"
                 onClick={() => setCopyOpen(true)}
-                className="inline-flex items-center justify-center h-9 gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-3.5 rounded-xl transition-colors duration-150 flex-shrink-0" style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.10)", color:"rgba(200,212,228,0.80)" }}
+                className="inline-flex items-center justify-center h-9 gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-3.5 rounded-xl transition-colors duration-150 flex-shrink-0" style={{ background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-secondary)" }}
               >
                 <Copy className="w-4 h-4" />
                 <span className="hidden sm:inline">Copy</span>
@@ -1626,7 +1626,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
               <button
                 type="button"
                 onClick={() => setRoundTripOpen(true)}
-                className="inline-flex items-center justify-center h-9 gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-3.5 rounded-xl transition-colors duration-150 flex-shrink-0" style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.10)", color:"rgba(200,212,228,0.80)" }}
+                className="inline-flex items-center justify-center h-9 gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-3.5 rounded-xl transition-colors duration-150 flex-shrink-0" style={{ background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-secondary)" }}
               >
                 <ArrowLeftRight className="w-4 h-4" />
                 <span className="hidden sm:inline">Round Trip</span>
@@ -1636,7 +1636,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
               <button
                 type="button"
                 onClick={() => setSendEmailOpen(true)}
-                className="inline-flex items-center justify-center h-9 gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-3.5 rounded-xl transition-colors duration-150 flex-shrink-0" style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.10)", color:"rgba(200,212,228,0.80)" }}
+                className="inline-flex items-center justify-center h-9 gap-1.5 text-xs sm:text-sm font-medium px-3 sm:px-3.5 rounded-xl transition-colors duration-150 flex-shrink-0" style={{ background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-secondary)" }}
               >
                 <Send className="w-4 h-4" />
                 <span className="hidden sm:inline">Send</span>
@@ -1683,7 +1683,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="inline-flex items-center justify-center h-9 w-9 rounded-lg transition-colors duration-150 flex-shrink-0" style={{ color:"rgba(255,255,255,0.70)" }}
+                className="inline-flex items-center justify-center h-9 w-9 rounded-lg transition-colors duration-150 flex-shrink-0" style={{ color:"var(--lc-text-secondary)" }}
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />
@@ -1693,22 +1693,22 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
         </div>
 
         {/* ── Reservation Details (Compact) ── */}
-        <div className="px-6 py-3 flex-shrink-0" style={{ background:"#0d1526", borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
+        <div className="px-6 py-3 flex-shrink-0" style={{ background:"var(--lc-bg-surface)", borderBottom:"1px solid var(--lc-bg-glass-mid)" }}>
           <div className="flex items-center gap-4 text-sm">
             {/* Created Date & Time */}
             <div className="flex items-center gap-2 min-w-0">
               <Calendar className="w-4 h-4 flex-shrink-0" style={{ color:"#c9a87c" }} />
-              <span className="font-medium" style={{ color:"rgba(255,255,255,0.82)" }}>
+              <span className="font-medium" style={{ color:"var(--lc-text-secondary)" }}>
                 {currentTrip.createdAt ? format(new Date(currentTrip.createdAt), 'MMM d, yyyy') : '—'}
               </span>
-              <span className="" style={{ color:"rgba(200,212,228,0.35)" }}>·</span>
-              <span className="" style={{ color:"rgba(200,212,228,0.55)" }}>
+              <span className="" style={{ color:"var(--lc-text-muted)" }}>·</span>
+              <span className="" style={{ color:"var(--lc-text-dim)" }}>
                 {currentTrip.createdAt ? format(new Date(currentTrip.createdAt), 'h:mm a') : '—'}
               </span>
             </div>
 
             {/* Divider */}
-            <span className="" style={{ color:"rgba(255,255,255,0.15)" }}>|</span>
+            <span className="" style={{ color:"var(--lc-border-medium)" }}>|</span>
 
             {/* Created By User & Role */}
             <div className="flex items-center gap-2.5 min-w-0 flex-1">
@@ -1722,7 +1722,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                       .slice(0, 2)
                   : '—'}
               </div>
-              <span className="font-medium truncate" style={{ color:"rgba(255,255,255,0.85)" }}>{currentTrip.createdBy?.name || 'Unknown'}</span>
+              <span className="font-medium truncate" style={{ color:"var(--lc-text-primary)" }}>{currentTrip.createdBy?.name || 'Unknown'}</span>
               {(currentTrip.createdBy?.role === 'ADMIN' || currentTrip.createdBy?.role === 'DISPATCHER') && (
                 <span className={cn(
                   "text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-md flex-shrink-0 whitespace-nowrap",
@@ -1738,7 +1738,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
         </div>
 
         {/* ── Body ── */}
-        <div className="overflow-y-auto flex-1 min-h-0 relative" style={{ background:"#080c16" }}>
+        <div className="overflow-y-auto flex-1 min-h-0 relative" style={{ background:"var(--lc-bg-page)" }}>
           <form id="trip-edit-form" onSubmit={handleSubmit(onSubmit, () => {
             setSaveError("Please check required fields")
           })}>
@@ -1748,7 +1748,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
               <div className="flex-1 p-4 sm:p-6 space-y-5 min-w-0">
 
                 {/* Schedule */}
-                <div className="rounded-2xl px-6 py-5" style={{ background:"#0d1526", border:"1px solid rgba(255,255,255,0.07)" }}>
+                <div className="rounded-2xl px-6 py-5" style={{ background:"var(--lc-bg-surface)", border:"1px solid var(--lc-bg-glass-mid)" }}>
                   <div className="flex items-center gap-2 mb-4">
                     <span className="w-0.5 h-4 rounded-full inline-block flex-shrink-0" style={{ background:"#c9a87c" }} />
                     <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color:"#c9a87c" }}>Schedule</span>
@@ -1756,7 +1756,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   {/* Row 1: Date · Time · Service Type */}
                   <div className="grid grid-cols-1 sm:grid-cols-[200px_180px_1fr] gap-4 mb-4">
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color:"rgba(255,255,255,0.85)" }}>Pickup Date</Label>
+                      <Label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color:"var(--lc-text-primary)" }}>Pickup Date</Label>
                       <DatePickerInput
                         value={watch("pickupDate") || ""}
                         onChange={(v) => setValue("pickupDate", v, { shouldValidate: true })}
@@ -1765,7 +1765,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                       {errors.pickupDate && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color:"rgba(255,255,255,0.85)" }}>Pickup Time</label>
+                      <label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color:"var(--lc-text-primary)" }}>Pickup Time</label>
                       <input
                         type="text"
                         value={watch("pickupTime") || ""}
@@ -1775,71 +1775,71 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                         className="pax-input"
                         style={{
                           width: "100%", height: "36px", padding: "0 12px", borderRadius: "10px", fontSize: "14px", outline: "none",
-                          background: "rgba(255,255,255,0.05)",
-                          border: errors.pickupTime ? "1px solid rgba(248,113,113,0.60)" : "1px solid rgba(255,255,255,0.12)",
-                          color: "rgba(255,255,255,0.88)",
+                          background: "var(--lc-bg-glass)",
+                          border: errors.pickupTime ? "1px solid rgba(248,113,113,0.60)" : "1px solid var(--lc-border)",
+                          color: "var(--lc-text-primary)",
                         }}
                         onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
                         onBlur={(e) => {
                           setValue("pickupTime", formatTime(e.target.value), { shouldValidate: true })
-                          e.currentTarget.style.borderColor = errors.pickupTime ? "rgba(248,113,113,0.60)" : "rgba(255,255,255,0.12)"
+                          e.currentTarget.style.borderColor = errors.pickupTime ? "rgba(248,113,113,0.60)" : "var(--lc-border)"
                         }}
                       />
                       {errors.pickupTime && <p className="text-xs" style={{ color:"rgba(248,113,113,0.80)" }}>Required</p>}
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color:"rgba(255,255,255,0.85)" }}>Service Type</label>
+                      <label className="text-[11px] font-semibold uppercase tracking-wider block" style={{ color:"var(--lc-text-primary)" }}>Service Type</label>
                       <div className="relative">
                         <select
                           value={tripTypeValue}
                           onChange={(e) => { setTripTypeValue(e.target.value); setValue("tripType", e.target.value) }}
                           style={{
                             width: "100%", height: "36px", padding: "0 36px 0 12px", borderRadius: "10px", fontSize: "14px", outline: "none",
-                            background: "rgba(255,255,255,0.05)",
-                            border: "1px solid rgba(255,255,255,0.12)",
-                            color: "rgba(255,255,255,0.88)",
+                            background: "var(--lc-bg-glass)",
+                            border: "1px solid var(--lc-border)",
+                            color: "var(--lc-text-primary)",
                             appearance: "none", cursor: "pointer",
                           }}
                           onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
-                          onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
+                          onBlur={e => e.currentTarget.style.borderColor = "var(--lc-border)"}
                         >
                           {enabledTypes.map((t) => (
-                            <option key={t.value} value={t.value} style={{ background: "#0d1526", color: "rgba(255,255,255,0.88)" }}>{t.label}</option>
+                            <option key={t.value} value={t.value} style={{ background: "var(--lc-bg-surface)", color: "var(--lc-text-primary)" }}>{t.label}</option>
                           ))}
                         </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "rgba(200,212,228,0.50)" }} />
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "var(--lc-text-label)" }} />
                       </div>
                     </div>
                   </div>
                   {/* Row 2: Pax & Bags with steppers */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color:"rgba(255,255,255,0.85)" }}>Passengers</Label>
-                      <div className="flex items-center gap-3 h-9 px-3 rounded-xl" style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)" }}>
-                        <button type="button" onClick={() => { const curr = watch("passengerCount") || 1; if (curr > 1) setValue("passengerCount", curr - 1) }} className="font-semibold transition-colors" style={{ color:"rgba(200,212,228,0.55)" }}>−</button>
-                        <span className="flex-1 text-center font-semibold" style={{ color:"rgba(255,255,255,0.90)" }}>{watch("passengerCount") || 1}</span>
-                        <button type="button" onClick={() => { const curr = watch("passengerCount") || 1; setValue("passengerCount", curr + 1) }} className="font-semibold transition-colors" style={{ color:"rgba(200,212,228,0.55)" }}>+</button>
+                      <Label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color:"var(--lc-text-primary)" }}>Passengers</Label>
+                      <div className="flex items-center gap-3 h-9 px-3 rounded-xl" style={{ background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)" }}>
+                        <button type="button" onClick={() => { const curr = watch("passengerCount") || 1; if (curr > 1) setValue("passengerCount", curr - 1) }} className="font-semibold transition-colors" style={{ color:"var(--lc-text-dim)" }}>−</button>
+                        <span className="flex-1 text-center font-semibold" style={{ color:"var(--lc-text-primary)" }}>{watch("passengerCount") || 1}</span>
+                        <button type="button" onClick={() => { const curr = watch("passengerCount") || 1; setValue("passengerCount", curr + 1) }} className="font-semibold transition-colors" style={{ color:"var(--lc-text-dim)" }}>+</button>
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color:"rgba(255,255,255,0.85)" }}>Bags</Label>
-                      <div className="flex items-center gap-3 h-9 px-3 rounded-xl" style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)" }}>
-                        <button type="button" onClick={() => { const curr = watch("luggageCount") || 0; if (curr > 0) setValue("luggageCount", curr - 1) }} className="font-semibold transition-colors" style={{ color:"rgba(200,212,228,0.55)" }}>−</button>
-                        <span className="flex-1 text-center font-semibold" style={{ color:"rgba(255,255,255,0.90)" }}>{watch("luggageCount") || 0}</span>
-                        <button type="button" onClick={() => { const curr = watch("luggageCount") || 0; setValue("luggageCount", curr + 1) }} className="font-semibold transition-colors" style={{ color:"rgba(200,212,228,0.55)" }}>+</button>
+                      <Label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color:"var(--lc-text-primary)" }}>Bags</Label>
+                      <div className="flex items-center gap-3 h-9 px-3 rounded-xl" style={{ background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)" }}>
+                        <button type="button" onClick={() => { const curr = watch("luggageCount") || 0; if (curr > 0) setValue("luggageCount", curr - 1) }} className="font-semibold transition-colors" style={{ color:"var(--lc-text-dim)" }}>−</button>
+                        <span className="flex-1 text-center font-semibold" style={{ color:"var(--lc-text-primary)" }}>{watch("luggageCount") || 0}</span>
+                        <button type="button" onClick={() => { const curr = watch("luggageCount") || 0; setValue("luggageCount", curr + 1) }} className="font-semibold transition-colors" style={{ color:"var(--lc-text-dim)" }}>+</button>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Passengers */}
-                <div className="rounded-2xl px-6 py-5" style={{ background:"#0d1526", border:"1px solid rgba(255,255,255,0.07)" }}>
+                <div className="rounded-2xl px-6 py-5" style={{ background:"var(--lc-bg-surface)", border:"1px solid var(--lc-bg-glass-mid)" }}>
                   <div className="flex items-center gap-2 mb-4">
                     <span className="w-0.5 h-4 rounded-full inline-block flex-shrink-0" style={{ background:"#c9a87c" }} />
                     <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color:"#c9a87c" }}>Passengers</span>
                   </div>
                   <div className="space-y-2.5">
-                    <style>{`.pax-input::placeholder{color:rgba(200,212,228,0.38)}`}</style>
+                    <style>{`.pax-input::placeholder{color:var(--lc-text-muted)}`}</style>
                     {/* Primary passenger */}
                     <div className="rounded-xl px-3.5 py-3" style={{ background:"rgba(99,102,241,0.06)", border:"1px solid rgba(99,102,241,0.18)" }}>
                       <div className="flex items-center gap-2 mb-2.5">
@@ -1848,26 +1848,26 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                       </div>
                       <div className="grid grid-cols-2 gap-2.5 mb-2.5">
                         <div className="space-y-1.5">
-                          <label className="text-[11px] font-medium block" style={{ color:"rgba(255,255,255,0.80)" }}>Name</label>
+                          <label className="text-[11px] font-medium block" style={{ color:"var(--lc-text-secondary)" }}>Name</label>
                           <input
                             {...register("passengerName")}
                             placeholder="Full name"
                             className="pax-input"
-                            style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                            style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }}
                             onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
-                            onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
+                            onBlur={e => e.currentTarget.style.borderColor = "var(--lc-border)"}
                           />
                         </div>
                         <div className="space-y-1.5">
-                          <label className="text-[11px] font-medium block" style={{ color:"rgba(255,255,255,0.80)" }}>Phone</label>
+                          <label className="text-[11px] font-medium block" style={{ color:"var(--lc-text-secondary)" }}>Phone</label>
                           <input
                             {...register("passengerPhone")}
                             type="tel"
                             placeholder="(305) 555-1234"
                             className="pax-input"
-                            style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                            style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }}
                             onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
-                            onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
+                            onBlur={e => e.currentTarget.style.borderColor = "var(--lc-border)"}
                             onChange={(e) => {
                               const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
                               let formatted = digits
@@ -1880,72 +1880,72 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                         </div>
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[11px] font-medium block" style={{ color:"rgba(255,255,255,0.80)" }}>Email</label>
+                        <label className="text-[11px] font-medium block" style={{ color:"var(--lc-text-secondary)" }}>Email</label>
                         <input
                           {...register("passengerEmail")}
                           type="email"
                           placeholder="passenger@example.com"
                           className="pax-input"
-                          style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                          style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }}
                           onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
-                          onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
+                          onBlur={e => e.currentTarget.style.borderColor = "var(--lc-border)"}
                         />
                       </div>
                     </div>
 
                     {/* Additional passengers */}
                     {additionalPassengers.map((pax, idx) => (
-                      <div key={pax.id} className="relative rounded-xl px-3.5 py-3" style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.09)" }}>
+                      <div key={pax.id} className="relative rounded-xl px-3.5 py-3" style={{ background:"var(--lc-bg-card)", border:"1px solid var(--lc-bg-glass-hover)" }}>
                         <div className="flex items-center justify-between mb-2.5">
                           <div className="flex items-center gap-2">
-                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-bold" style={{ background:"rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.70)" }}>{idx + 2}</span>
-                            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color:"rgba(200,212,228,0.50)" }}>Additional</span>
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-bold" style={{ background:"var(--lc-border)", color:"var(--lc-text-secondary)" }}>{idx + 2}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color:"var(--lc-text-label)" }}>Additional</span>
                           </div>
                           <button
                             type="button"
                             onClick={() => removeAdditionalPassenger(pax.id)}
-                            className="w-5 h-5 rounded-full flex items-center justify-center transition-all" style={{ color:"rgba(200,212,228,0.35)" }}
+                            className="w-5 h-5 rounded-full flex items-center justify-center transition-all" style={{ color:"var(--lc-text-muted)" }}
                           >
                             <X className="w-3 h-3" />
                           </button>
                         </div>
                         <div className="grid grid-cols-2 gap-2.5 mb-2.5">
                           <div className="space-y-1.5">
-                            <label className="text-[11px] font-medium block" style={{ color:"rgba(255,255,255,0.80)" }}>First Name</label>
+                            <label className="text-[11px] font-medium block" style={{ color:"var(--lc-text-secondary)" }}>First Name</label>
                             <input
                               value={pax.firstName}
                               onChange={(e) => updateAdditionalPassenger(pax.id, "firstName", e.target.value)}
                               placeholder="John"
                               className="pax-input"
-                              style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                              style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }}
                               onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
-                              onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
+                              onBlur={e => e.currentTarget.style.borderColor = "var(--lc-border)"}
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <label className="text-[11px] font-medium block" style={{ color:"rgba(255,255,255,0.80)" }}>Last Name</label>
+                            <label className="text-[11px] font-medium block" style={{ color:"var(--lc-text-secondary)" }}>Last Name</label>
                             <input
                               value={pax.lastName}
                               onChange={(e) => updateAdditionalPassenger(pax.id, "lastName", e.target.value)}
                               placeholder="Smith"
                               className="pax-input"
-                              style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                              style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }}
                               onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
-                              onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
+                              onBlur={e => e.currentTarget.style.borderColor = "var(--lc-border)"}
                             />
                           </div>
                         </div>
                         <div className="grid grid-cols-2 gap-2.5">
                           <div className="space-y-1.5">
-                            <label className="text-[11px] font-medium block" style={{ color:"rgba(255,255,255,0.80)" }}>Phone</label>
+                            <label className="text-[11px] font-medium block" style={{ color:"var(--lc-text-secondary)" }}>Phone</label>
                             <input
                               type="tel"
                               value={pax.phone}
                               placeholder="(305) 555-1234"
                               className="pax-input"
-                              style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                              style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }}
                               onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
-                              onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
+                              onBlur={e => e.currentTarget.style.borderColor = "var(--lc-border)"}
                               onChange={(e) => {
                                 const digits = e.target.value.replace(/\D/g, "").slice(0, 10)
                                 let formatted = digits
@@ -1957,16 +1957,16 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <label className="text-[11px] font-medium block" style={{ color:"rgba(255,255,255,0.80)" }}>Email</label>
+                            <label className="text-[11px] font-medium block" style={{ color:"var(--lc-text-secondary)" }}>Email</label>
                             <input
                               value={pax.email}
                               type="email"
                               placeholder="passenger@example.com"
                               onChange={(e) => updateAdditionalPassenger(pax.id, "email", e.target.value)}
                               className="pax-input"
-                              style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                              style={{ width:"100%", height:"36px", padding:"0 12px", borderRadius:"10px", fontSize:"14px", outline:"none", background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }}
                               onFocus={e => e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"}
-                              onBlur={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
+                              onBlur={e => e.currentTarget.style.borderColor = "var(--lc-border)"}
                             />
                           </div>
                         </div>
@@ -1977,7 +1977,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                     <button
                       type="button"
                       onClick={addAdditionalPassenger}
-                      className="w-full h-8 flex items-center justify-center gap-1.5 rounded-xl text-[11.5px] font-medium transition-all" style={{ border:"1px dashed rgba(255,255,255,0.12)", color:"rgba(200,212,228,0.50)" }}
+                      className="w-full h-8 flex items-center justify-center gap-1.5 rounded-xl text-[11.5px] font-medium transition-all" style={{ border:"1px dashed var(--lc-border)", color:"var(--lc-text-label)" }}
                     >
                       <Plus className="w-3 h-3" />
                       Add passenger
@@ -1986,7 +1986,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                 </div>
 
                 {/* Route */}
-                <div className="rounded-2xl px-6 py-5" style={{ background:"#0d1526", border:"1px solid rgba(255,255,255,0.07)" }}>
+                <div className="rounded-2xl px-6 py-5" style={{ background:"var(--lc-bg-surface)", border:"1px solid var(--lc-bg-glass-mid)" }}>
                   <div className="flex items-center gap-2 mb-4">
                     <span className="w-0.5 h-4 rounded-full inline-block flex-shrink-0" style={{ background:"#c9a87c" }} />
                     <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color:"#c9a87c" }}>Route</span>
@@ -1997,11 +1997,11 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                 {/* Client Ref + Notes */}
                 <div className="space-y-4">
                   {/* Trip Notes */}
-                  <div className="rounded-2xl px-6 py-5" style={{ background:"#0d1526", border:"1px solid rgba(255,255,255,0.07)" }}>
-                    <Label className="text-[11px] font-semibold uppercase tracking-wider block mb-3" style={{ color:"rgba(255,255,255,0.85)" }}>Trip Notes</Label>
-                    <p className="text-xs mb-3" style={{ color:"rgba(200,212,228,0.50)" }}>Visible to driver and client</p>
+                  <div className="rounded-2xl px-6 py-5" style={{ background:"var(--lc-bg-surface)", border:"1px solid var(--lc-bg-glass-mid)" }}>
+                    <Label className="text-[11px] font-semibold uppercase tracking-wider block mb-3" style={{ color:"var(--lc-text-primary)" }}>Trip Notes</Label>
+                    <p className="text-xs mb-3" style={{ color:"var(--lc-text-label)" }}>Visible to driver and client</p>
                     <textarea {...register("notes")} rows={3}
-                      className="w-full rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none" style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                      className="w-full rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none" style={{ background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }}
                       placeholder="Add any trip-specific notes here…" />
                   </div>
 
@@ -2012,7 +2012,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                       <span className="text-xs flex items-center gap-1" style={{ color:"rgba(251,191,36,0.60)" }}>🔒 Dispatcher only</span>
                     </div>
                     <textarea {...register("internalNotes")} rows={3}
-                      className="w-full rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none" style={{ background:"rgba(245,158,11,0.05)", border:"1px solid rgba(245,158,11,0.18)", color:"rgba(255,255,255,0.88)" }}
+                      className="w-full rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none" style={{ background:"rgba(245,158,11,0.05)", border:"1px solid rgba(245,158,11,0.18)", color:"var(--lc-text-primary)" }}
                       placeholder="Private notes, reminders, internal instructions…" />
                   </div>
                 </div>
@@ -2033,11 +2033,11 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
               </div>
 
               {/* ── RIGHT SIDEBAR ── */}
-              <div className="w-full lg:w-[320px] lg:flex-shrink-0 flex flex-col" style={{ borderLeft:"1px solid rgba(255,255,255,0.06)", background:"#0d1526" }}>
+              <div className="w-full lg:w-[320px] lg:flex-shrink-0 flex flex-col" style={{ borderLeft:"1px solid var(--lc-bg-glass)", background:"var(--lc-bg-surface)" }}>
               <div className="flex-1 overflow-y-auto p-5 space-y-4">
 
                 {/* Account / Billing Contact */}
-                <div className="rounded-xl px-4 py-3.5" style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.09)" }}>
+                <div className="rounded-xl px-4 py-3.5" style={{ background:"var(--lc-bg-card)", border:"1px solid var(--lc-bg-glass-hover)" }}>
                   <Label className="text-[10px] font-semibold uppercase tracking-wider mb-2.5 block" style={{ color:"#c9a87c" }}>Billing Contact</Label>
                   <div ref={customerPickerRef} className="relative">
                     {selectedCustomer ? (
@@ -2047,8 +2047,8 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                             {getInitials(selectedCustomer.name)}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-xs font-semibold truncate" style={{ color:"rgba(255,255,255,0.88)" }}>{selectedCustomer.name}</div>
-                            {selectedCustomer.phone && <div className="text-[10px]" style={{ color:"rgba(200,212,228,0.55)" }}>{formatPhone(selectedCustomer.phone)}</div>}
+                            <div className="text-xs font-semibold truncate" style={{ color:"var(--lc-text-primary)" }}>{selectedCustomer.name}</div>
+                            {selectedCustomer.phone && <div className="text-[10px]" style={{ color:"var(--lc-text-dim)" }}>{formatPhone(selectedCustomer.phone)}</div>}
                           </div>
                         </div>
                         <button type="button"
@@ -2060,7 +2060,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                     ) : (
                       <button type="button"
                         onClick={() => { setCustomerPickerOpen(true); setCustomerSearch("") }}
-                        className="w-full flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[11px] transition-colors" style={{ border:"1px dashed rgba(255,255,255,0.12)", color:"rgba(200,212,228,0.50)" }}>
+                        className="w-full flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-[11px] transition-colors" style={{ border:"1px dashed var(--lc-border)", color:"var(--lc-text-label)" }}>
                         <User className="w-3.5 h-3.5" />
                         Select account
                       </button>
@@ -2068,27 +2068,27 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
 
                     {/* Search dropdown */}
                     {customerPickerOpen && (
-                      <div className="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl overflow-hidden" style={{ background:"#0d1526", border:"1px solid rgba(255,255,255,0.12)", boxShadow:"0 8px 32px rgba(0,0,0,0.65)" }}>
-                        <div className="p-2" style={{ borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
+                      <div className="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl overflow-hidden" style={{ background:"var(--lc-bg-surface)", border:"1px solid var(--lc-border)", boxShadow:"0 8px 32px rgba(0,0,0,0.65)" }}>
+                        <div className="p-2" style={{ borderBottom:"1px solid var(--lc-bg-glass-mid)" }}>
                           <input autoFocus type="text" value={customerSearch}
                             onChange={(e) => setCustomerSearch(e.target.value)} placeholder="Search…"
-                            className="w-full text-sm px-2 py-1.5 rounded-lg outline-none" style={{ background:"rgba(255,255,255,0.07)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                            className="w-full text-sm px-2 py-1.5 rounded-lg outline-none" style={{ background:"var(--lc-bg-glass-mid)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }}
                           />
                         </div>
                         <div className="max-h-40 overflow-y-auto">
                           {allCustomers.length === 0 ? (
-                            <p className="text-[11px] text-center py-3" style={{ color:"rgba(200,212,228,0.45)" }}>No accounts</p>
+                            <p className="text-[11px] text-center py-3" style={{ color:"var(--lc-text-label)" }}>No accounts</p>
                           ) : (
                             allCustomers.map((c) => (
                               <button key={c.id} type="button"
                                 onClick={() => { setSelectedCustomer(c); setCustomerPickerOpen(false); setCustomerSearch("") }}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-left transition-colors" style={{ borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
+                                className="w-full flex items-center gap-2 px-3 py-2 text-left transition-colors" style={{ borderBottom:"1px solid var(--lc-bg-glass)" }}>
                                 <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0" style={{ background:"rgba(99,102,241,0.20)", color:"rgba(167,139,250,0.90)" }}>
                                   {getInitials(c.name)}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <div className="text-xs font-medium truncate" style={{ color:"rgba(255,255,255,0.85)" }}>{c.name}</div>
-                                  {c.phone && <div className="text-[10px]" style={{ color:"rgba(200,212,228,0.45)" }}>{formatPhone(c.phone)}</div>}
+                                  <div className="text-xs font-medium truncate" style={{ color:"var(--lc-text-primary)" }}>{c.name}</div>
+                                  {c.phone && <div className="text-[10px]" style={{ color:"var(--lc-text-label)" }}>{formatPhone(c.phone)}</div>}
                                 </div>
                               </button>
                             ))
@@ -2101,14 +2101,14 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
 
                 {/* ── POB (Passenger On Board) Time ── */}
                 <div className="rounded-xl border overflow-hidden transition-all duration-200"
-                  style={{ borderRadius:"12px", overflow:"hidden", border: pobTime ? "1px solid rgba(16,185,129,0.25)" : "1px solid rgba(255,255,255,0.09)" }}>
+                  style={{ borderRadius:"12px", overflow:"hidden", border: pobTime ? "1px solid rgba(16,185,129,0.25)" : "1px solid var(--lc-bg-glass-hover)" }}>
                   {/* Header */}
                   <div className="flex items-center justify-between px-4 py-2.5"
-                    style={{ background: pobTime ? "rgba(16,185,129,0.08)" : "rgba(255,255,255,0.04)", padding:"10px 16px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                    style={{ background: pobTime ? "rgba(16,185,129,0.08)" : "var(--lc-bg-card)", padding:"10px 16px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
                     <div className="flex items-center gap-2"
                       title="Passenger On Board (POB): The exact moment the passenger enters the vehicle. Auto-recorded when status changes to POB, or set manually.">
                       <div className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors duration-300 ${pobTime ? "bg-emerald-400" : "bg-white/20"}`} />
-                      <span className="text-[10px] font-semibold uppercase tracking-widest transition-colors duration-200" style={{ color: pobTime ? "rgba(52,211,153,0.90)" : "rgba(200,212,228,0.55)" }}>
+                      <span className="text-[10px] font-semibold uppercase tracking-widest transition-colors duration-200" style={{ color: pobTime ? "rgba(52,211,153,0.90)" : "var(--lc-text-dim)" }}>
                         Passenger On Board
                       </span>
                     </div>
@@ -2125,13 +2125,13 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   </div>
 
                   {/* Body */}
-                  <div className="px-4 py-3" style={{ background:"rgba(255,255,255,0.02)" }}>
+                  <div className="px-4 py-3" style={{ background:"var(--lc-bg-card)" }}>
                     {!pobEditing ? (
                       pobTime ? (
                         <div className="flex items-start gap-2.5">
                           <Clock className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
                           <div>
-                            <p className="text-[13px] font-semibold leading-snug" style={{ color:"rgba(255,255,255,0.88)" }}>
+                            <p className="text-[13px] font-semibold leading-snug" style={{ color:"var(--lc-text-primary)" }}>
                               {formatPobDisplay(pobTime)}
                             </p>
                             {pobWasEdited && (
@@ -2143,7 +2143,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          <p className="text-[12px]" style={{ color:"rgba(200,212,228,0.45)" }}>Not yet recorded</p>
+                          <p className="text-[12px]" style={{ color:"var(--lc-text-label)" }}>Not yet recorded</p>
                           <div className="flex gap-2">
                             <button
                               type="button"
@@ -2159,7 +2159,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                             <button
                               type="button"
                               onClick={() => setPobEditing(true)}
-                              className="flex-1 text-[11px] font-semibold rounded-lg px-3 py-1.5 active:scale-95 transition-all duration-150" style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(200,212,228,0.70)" }}
+                              className="flex-1 text-[11px] font-semibold rounded-lg px-3 py-1.5 active:scale-95 transition-all duration-150" style={{ background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-secondary)" }}
                             >
                               Pick Time
                             </button>
@@ -2176,7 +2176,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                             setPobTime(newDatetime)
                             setPobWasEdited(true)
                           }}
-                          className="w-full h-9 px-3 text-sm rounded-lg outline-none transition-all duration-150" style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.88)" }}
+                          className="w-full h-9 px-3 text-sm rounded-lg outline-none transition-all duration-150" style={{ background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-primary)" }}
                         />
                         <div className="flex items-center gap-2">
                           <button
@@ -2229,18 +2229,18 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
 
                   {/* Driver label row with inline Primary/Secondary toggle */}
                   <div className="flex items-center justify-between">
-                    <p className="text-xs font-semibold" style={{ color:"rgba(255,255,255,0.85)" }}>Driver</p>
+                    <p className="text-xs font-semibold" style={{ color:"var(--lc-text-primary)" }}>Driver</p>
                     <div
                       className="flex items-center gap-0.5 p-0.5 rounded-xl"
-                      style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.09)" }}
+                      style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)" }}
                     >
                       <button
                         type="button"
                         onClick={() => setDispatchTab("primary")}
                         className="px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all duration-150"
                         style={dispatchTab === "primary"
-                          ? { background: "#c9a87c", color: "#0d1526", boxShadow: "0 1px 6px rgba(201,168,124,0.30)" }
-                          : { background: "transparent", color: "rgba(255,255,255,0.65)" }
+                          ? { background: "#c9a87c", color: "var(--lc-bg-surface)", boxShadow: "0 1px 6px rgba(201,168,124,0.30)" }
+                          : { background: "transparent", color: "var(--lc-text-dim)" }
                         }
                       >
                         Primary
@@ -2250,8 +2250,8 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                         onClick={() => setDispatchTab("secondary")}
                         className="relative px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all duration-150"
                         style={dispatchTab === "secondary"
-                          ? { background: "#c9a87c", color: "#0d1526", boxShadow: "0 1px 6px rgba(201,168,124,0.30)" }
-                          : { background: "transparent", color: "rgba(255,255,255,0.65)" }
+                          ? { background: "#c9a87c", color: "var(--lc-bg-surface)", boxShadow: "0 1px 6px rgba(201,168,124,0.30)" }
+                          : { background: "transparent", color: "var(--lc-text-dim)" }
                         }
                       >
                         Secondary
@@ -2285,21 +2285,21 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   )}
 
                   {/* Client Reference — Metadata field under Dispatch */}
-                  <div className="rounded-xl px-3.5 py-3" style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)" }}>
+                  <div className="rounded-xl px-3.5 py-3" style={{ background:"var(--lc-bg-card)", border:"1px solid var(--lc-bg-glass-hover)" }}>
                     <Label className="text-[10px] font-semibold uppercase tracking-wider mb-2.5 block" style={{ color:"#c9a87c" }}>Client Reference</Label>
                     <input
                       {...register("clientRef")}
                       placeholder="e.g. 14547002*1"
                       className="w-full h-8 text-xs font-mono rounded-lg px-2.5 outline-none transition-colors"
                       style={{
-                        background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(255,255,255,0.10)",
-                        color: "rgba(255,255,255,0.88)",
+                        background: "var(--lc-bg-glass)",
+                        border: "1px solid var(--lc-border)",
+                        color: "var(--lc-text-primary)",
                       }}
                       onFocus={e => { e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)" }}
-                      onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.10)" }}
+                      onBlur={e => { e.currentTarget.style.borderColor = "var(--lc-border)" }}
                     />
-                    <p className="text-xs mt-1.5" style={{ color:"rgba(200,212,228,0.45)" }}>Affiliate or external system reference</p>
+                    <p className="text-xs mt-1.5" style={{ color:"var(--lc-text-label)" }}>Affiliate or external system reference</p>
                   </div>
                 </section>
 
@@ -2350,9 +2350,9 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                       <button
                         type="button"
                         className="w-full h-9 flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-colors"
-                        style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(200,212,228,0.75)" }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.16)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.88)" }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.10)"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.75)" }}
+                        style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-secondary)" }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.16)"; (e.currentTarget as HTMLElement).style.color = "var(--lc-text-primary)" }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--lc-border)"; (e.currentTarget as HTMLElement).style.color = "var(--lc-text-secondary)" }}
                         onClick={() => setFarmOutOpen(true)}
                       >
                         <ArrowRightLeft className="w-4 h-4" />
@@ -2362,7 +2362,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   </div>
                 )}
 
-                {!isFarmedIn && <div className="border-t" style={{ borderColor:"rgba(255,255,255,0.07)" }} />}
+                {!isFarmedIn && <div className="border-t" style={{ borderColor:"var(--lc-bg-glass-mid)" }} />}
 
                 {/* Billing Modal Trigger */}
                 {!isFarmedIn && (
@@ -2395,7 +2395,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   </>
                 )}
 
-                <div className="border-t" style={{ borderColor:"rgba(255,255,255,0.07)" }} />
+                <div className="border-t" style={{ borderColor:"var(--lc-bg-glass-mid)" }} />
 
                 {/* ADD-ONS — Refined Modern Design */}
                 <section className="space-y-4">
@@ -2423,11 +2423,11 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                           className="flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-xl transition-all duration-150 group"
                           style={val
                             ? { background:"rgba(201,168,124,0.12)", border:"1px solid rgba(201,168,124,0.30)" }
-                            : { background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.09)" }
+                            : { background:"var(--lc-bg-card)", border:"1px solid var(--lc-bg-glass-hover)" }
                           }
                         >
-                          <Icon className="w-5 h-5 transition-colors" style={{ color: val ? "#c9a87c" : "rgba(200,212,228,0.45)" }} />
-                          <span className="text-[11px] font-semibold text-center leading-tight transition-colors" style={{ color: val ? "#c9a87c" : "rgba(200,212,228,0.60)" }}>
+                          <Icon className="w-5 h-5 transition-colors" style={{ color: val ? "#c9a87c" : "var(--lc-text-label)" }} />
+                          <span className="text-[11px] font-semibold text-center leading-tight transition-colors" style={{ color: val ? "#c9a87c" : "var(--lc-text-dim)" }}>
                             {label}
                           </span>
                         </button>
@@ -2436,7 +2436,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   </div>
 
                   {/* Child Seats — Integrated Cohesively */}
-                  <div className="rounded-xl overflow-hidden" style={{ background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.09)" }}>
+                  <div className="rounded-xl overflow-hidden" style={{ background:"var(--lc-bg-card)", border:"1px solid var(--lc-bg-glass-hover)" }}>
                     <button
                       type="button"
                       onClick={() => setChildSeatsOpen((o) => !o)}
@@ -2446,8 +2446,8 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                         : {}}
                     >
                       <div className="flex items-center gap-3">
-                        <Baby className="w-5 h-5 flex-shrink-0 transition-colors" style={{ color: totalChildSeats > 0 ? "#c9a87c" : "rgba(200,212,228,0.45)" }} />
-                        <span className="text-sm font-semibold transition-colors" style={{ color: totalChildSeats > 0 ? "#c9a87c" : "rgba(255,255,255,0.80)" }}>
+                        <Baby className="w-5 h-5 flex-shrink-0 transition-colors" style={{ color: totalChildSeats > 0 ? "#c9a87c" : "var(--lc-text-label)" }} />
+                        <span className="text-sm font-semibold transition-colors" style={{ color: totalChildSeats > 0 ? "#c9a87c" : "var(--lc-text-secondary)" }}>
                           Child Seats
                         </span>
                       </div>
@@ -2457,31 +2457,31 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                             {totalChildSeats}
                           </span>
                         )}
-                        <ChevronDown className={`w-4 h-4 transition-transform flex-shrink-0 ${childSeatsOpen ? "rotate-180" : ""}`} style={{ color:"rgba(200,212,228,0.40)" }} />
+                        <ChevronDown className={`w-4 h-4 transition-transform flex-shrink-0 ${childSeatsOpen ? "rotate-180" : ""}`} style={{ color:"var(--lc-text-muted)" }} />
                       </div>
                     </button>
 
                     {childSeatsOpen && (
-                      <div className="divide-y" style={{ borderColor:"rgba(255,255,255,0.06)" }}>
+                      <div className="divide-y" style={{ borderColor:"var(--lc-bg-glass)" }}>
                         {CHILD_SEAT_TYPES.map(({ key, label }) => (
-                          <div key={key} className="flex items-center justify-between px-4 py-3 transition-colors" style={{ background:"rgba(255,255,255,0.02)" }}>
-                            <span className="text-sm font-medium" style={{ color:"rgba(255,255,255,0.82)" }}>{label}</span>
+                          <div key={key} className="flex items-center justify-between px-4 py-3 transition-colors" style={{ background:"var(--lc-bg-card)" }}>
+                            <span className="text-sm font-medium" style={{ color:"var(--lc-text-secondary)" }}>{label}</span>
                             <div className="flex items-center gap-2.5">
                               <button
                                 type="button"
                                 onClick={() => setChildSeats((s) => ({ ...s, [key]: Math.max(0, s[key] - 1) }))}
                                 disabled={childSeats[key] === 0}
-                                className="w-7 h-7 rounded-lg flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed transition-all text-base leading-none font-light" style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(200,212,228,0.70)" }}
+                                className="w-7 h-7 rounded-lg flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed transition-all text-base leading-none font-light" style={{ background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-secondary)" }}
                               >
                                 −
                               </button>
-                              <span className="w-6 text-center text-sm font-bold tabular-nums" style={{ color: childSeats[key] > 0 ? "#c9a87c" : "rgba(200,212,228,0.40)" }}>
+                              <span className="w-6 text-center text-sm font-bold tabular-nums" style={{ color: childSeats[key] > 0 ? "#c9a87c" : "var(--lc-text-muted)" }}>
                                 {childSeats[key]}
                               </span>
                               <button
                                 type="button"
                                 onClick={() => setChildSeats((s) => ({ ...s, [key]: s[key] + 1 }))}
-                                className="w-7 h-7 rounded-lg flex items-center justify-center transition-all text-base leading-none" style={{ background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(200,212,228,0.70)" }}
+                                className="w-7 h-7 rounded-lg flex items-center justify-center transition-all text-base leading-none" style={{ background:"var(--lc-bg-glass)", border:"1px solid var(--lc-border)", color:"var(--lc-text-secondary)" }}
                               >
                                 +
                               </button>
@@ -2497,7 +2497,7 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                 {/* Destructive Action — Cancel Trip */}
                 {!["COMPLETED", "CANCELLED", "NO_SHOW"].includes(currentTrip.status) && (
                   <section className="pt-2">
-                    <div className="border-t mb-4" style={{ borderColor:"rgba(255,255,255,0.07)" }} />
+                    <div className="border-t mb-4" style={{ borderColor:"var(--lc-bg-glass-mid)" }} />
                     <Button
                       type="button"
                       onClick={() => {

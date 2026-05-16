@@ -64,7 +64,7 @@ const STYLES = `
     font-family: var(--font-outfit, system-ui);
     font-size: 0.9375rem;
     font-weight: 400;
-    color: rgba(255,255,255,0.88);
+    color: var(--lc-text-primary);
     outline: none;
     transition: border-color 0.22s ease;
     letter-spacing: 0.01em;
@@ -113,7 +113,7 @@ const STYLES = `
   }
   .lk:hover { color: #e0c090; border-color: rgba(224,192,144,0.5); }
   .lk-dim {
-    color: rgba(200,212,228,0.38);
+    color: var(--lc-text-muted);
     text-decoration: none;
     font-size: 0.72rem;
     letter-spacing: 0.03em;
@@ -178,7 +178,7 @@ function LoginForm() {
   }
 
   return (
-    <div style={{ width: "100%", height: "100vh", position: "relative", overflow: "hidden", background: "#080c16", fontFamily: "var(--font-outfit, system-ui)" }}>
+    <div style={{ width: "100%", height: "100vh", position: "relative", overflow: "hidden", background: "var(--lc-bg-page)", fontFamily: "var(--font-outfit, system-ui)" }}>
       <style>{STYLES}</style>
 
       {/* ══ LAYER 1 — DARK CITY MAP ══ */}
@@ -209,7 +209,7 @@ function LoginForm() {
           </defs>
 
           {/* Base */}
-          <rect width="1440" height="900" fill="#080c16" />
+          <rect width="1440" height="900" fill="var(--lc-bg-page)" />
           {/* Center warm glow — city light bloom */}
           <rect width="1440" height="900" fill="url(#center-glow)" />
 
@@ -245,12 +245,12 @@ function LoginForm() {
           {/* Airport grounds */}
           <rect x="788" y="626" width="478" height="256" rx="5" fill="rgba(14,22,38,0.88)" />
           <rect x="788" y="626" width="478" height="256" rx="5"
-            fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="1.2" strokeDasharray="7,5" />
+            fill="none" stroke="var(--lc-bg-glass-mid)" strokeWidth="1.2" strokeDasharray="7,5" />
           {/* Runway 1 */}
           <line x1="810" y1="856" x2="1242" y2="646"
             stroke="rgba(30,42,65,1)" strokeWidth="12" strokeLinecap="round" />
           <line x1="810" y1="856" x2="1242" y2="646"
-            stroke="rgba(255,255,255,0.12)" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="18,14" />
+            stroke="var(--lc-border)" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="18,14" />
           {/* Runway 2 */}
           <line x1="832" y1="648" x2="1152" y2="858"
             stroke="rgba(30,42,65,0.9)" strokeWidth="9" strokeLinecap="round" />
@@ -258,20 +258,20 @@ function LoginForm() {
             stroke="rgba(255,255,255,0.1)" strokeWidth="2" strokeLinecap="round" strokeDasharray="14,11" />
           {/* Taxiways */}
           <path d="M 1022,726 L 1022,678 L 1094,678"
-            stroke="rgba(255,255,255,0.07)" strokeWidth="4" fill="none"
+            stroke="var(--lc-bg-glass-mid)" strokeWidth="4" fill="none"
             strokeLinecap="round" strokeLinejoin="round" />
           <path d="M 950,756 L 950,708 L 880,708"
-            stroke="rgba(255,255,255,0.06)" strokeWidth="3.5" fill="none"
+            stroke="var(--lc-bg-glass)" strokeWidth="3.5" fill="none"
             strokeLinecap="round" strokeLinejoin="round" />
           {/* Terminal */}
           <rect x="866" y="744" width="150" height="62" rx="4"
-            fill="rgba(20,32,52,0.95)" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+            fill="rgba(20,32,52,0.95)" stroke="var(--lc-bg-glass-hover)" strokeWidth="1" />
           <rect x="884" y="756" width="114" height="38" rx="2" fill="rgba(25,38,60,0.6)" />
           {[890,914,938,962,986].map(x => (
             <rect key={`gf${x}`} x={x} y={806} width={17} height={24} rx="1.5"
               fill="rgba(28,44,68,0.8)" />
           ))}
-          <text x="984" y="874" fill="rgba(200,212,228,0.22)" fontSize="7.5"
+          <text x="984" y="874" fill="var(--lc-text-muted)" fontSize="7.5"
             fontFamily="system-ui" letterSpacing="0.14em" textAnchor="middle">
             INTERNATIONAL AIRPORT
           </text>
@@ -328,12 +328,12 @@ function LoginForm() {
           {/* Secondary H */}
           {[120, 360, 600].map(y => (
             <line key={`hs${y}`} x1="0" y1={y} x2="1288" y2={y}
-              stroke="rgba(255,255,255,0.09)" strokeWidth="1.2" />
+              stroke="var(--lc-bg-glass-hover)" strokeWidth="1.2" />
           ))}
           {/* Secondary V */}
           {[300, 540, 840, 1080].map(x => (
             <line key={`vs${x}`} x1={x} y1="0" x2={x} y2="900"
-              stroke="rgba(255,255,255,0.09)" strokeWidth="1.2" />
+              stroke="var(--lc-bg-glass-hover)" strokeWidth="1.2" />
           ))}
           {/* Primary arteries H */}
           {[240, 480, 720].map(y => (
@@ -347,7 +347,7 @@ function LoginForm() {
           ))}
           {/* Expressways */}
           <path d="M 960,900 L 960,752 Q 960,724 986,714 L 1082,714"
-            stroke="rgba(255,255,255,0.22)" strokeWidth="4" fill="none"
+            stroke="var(--lc-border-medium)" strokeWidth="4" fill="none"
             strokeLinecap="round" strokeLinejoin="round" />
           <path d="M 1200,0 L 1200,608 Q 1200,624 1182,634 L 1088,680"
             stroke="rgba(255,255,255,0.2)" strokeWidth="4" fill="none"
@@ -464,15 +464,15 @@ function LoginForm() {
             fill="rgba(200,212,228,0.88)" fontSize="7" fontFamily="system-ui" fontWeight="600" letterSpacing="0.08em">RESTAURANT</text>
 
           {/* Street labels */}
-          <text x="728" y="476" fill="rgba(255,255,255,0.14)" fontSize="8.5"
+          <text x="728" y="476" fill="var(--lc-border-medium)" fontSize="8.5"
             fontFamily="system-ui" fontWeight="400" letterSpacing="0.09em"
             transform="rotate(-90 728 476)" textAnchor="middle">5TH AVENUE</text>
-          <text x="968" y="476" fill="rgba(255,255,255,0.11)" fontSize="8"
+          <text x="968" y="476" fill="var(--lc-border)" fontSize="8"
             fontFamily="system-ui" fontWeight="400" letterSpacing="0.09em"
             transform="rotate(-90 968 476)" textAnchor="middle">PARK BLVD</text>
-          <text x="494" y="236" fill="rgba(255,255,255,0.11)" fontSize="8.5"
+          <text x="494" y="236" fill="var(--lc-border)" fontSize="8.5"
             fontFamily="system-ui" fontWeight="400" letterSpacing="0.09em">GRAND AVE</text>
-          <text x="736" y="236" fill="rgba(255,255,255,0.11)" fontSize="8.5"
+          <text x="736" y="236" fill="var(--lc-border)" fontSize="8.5"
             fontFamily="system-ui" fontWeight="400" letterSpacing="0.09em">MIDTOWN BLVD</text>
           <text x="1208" y="470" fill="rgba(255,255,255,0.1)" fontSize="8"
             fontFamily="system-ui" fontWeight="400" letterSpacing="0.08em"
@@ -502,7 +502,7 @@ function LoginForm() {
         </svg>
         <span style={{
           fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.6rem", fontWeight: 500,
-          color: "rgba(255,255,255,0.82)", letterSpacing: "0.28em", textTransform: "uppercase",
+          color: "var(--lc-text-secondary)", letterSpacing: "0.28em", textTransform: "uppercase",
         }}>Livery Connect</span>
       </div>
 
@@ -526,7 +526,7 @@ function LoginForm() {
           <h1 style={{
             fontFamily: "var(--font-cormorant, serif)",
             fontSize: "clamp(2.4rem, 3.8vw, 3.2rem)", fontWeight: 400, fontStyle: "italic",
-            color: "rgba(255,255,255,0.92)", letterSpacing: "-0.02em", lineHeight: 1.12, marginBottom: "0.9rem",
+            color: "var(--lc-text-primary)", letterSpacing: "-0.02em", lineHeight: 1.12, marginBottom: "0.9rem",
           }}>Welcome back</h1>
           <p style={{
             fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.82rem",
@@ -595,7 +595,7 @@ function LoginForm() {
         <div className="lx d6" style={{
           marginTop: "1.75rem",
           paddingTop: "1.4rem",
-          borderTop: "1px solid rgba(255,255,255,0.07)",
+          borderTop: "1px solid var(--lc-bg-glass-mid)",
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
           <span style={{
@@ -620,7 +620,7 @@ function LoginForm() {
         <div style={{
           background: "rgba(8,12,22,0.88)",
           border: "1px solid rgba(201,168,124,0.18)",
-          boxShadow: "0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 var(--lc-bg-card)",
           padding: "14px 20px 16px",
           minWidth: "168px",
         }}>
@@ -636,7 +636,7 @@ function LoginForm() {
             }} />
             <span style={{
               fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.54rem", fontWeight: 500,
-              color: "rgba(200,212,228,0.38)", letterSpacing: "0.16em", textTransform: "uppercase",
+              color: "var(--lc-text-muted)", letterSpacing: "0.16em", textTransform: "uppercase",
             }}>Dispatch Active</span>
           </div>
           {[
@@ -651,7 +651,7 @@ function LoginForm() {
             }}>
               <span style={{
                 fontFamily: "var(--font-outfit, system-ui)", fontSize: "0.62rem", fontWeight: 400,
-                color: "rgba(200,212,228,0.35)", letterSpacing: "0.06em", textTransform: "uppercase",
+                color: "var(--lc-text-muted)", letterSpacing: "0.06em", textTransform: "uppercase",
               }}>{label}</span>
               <span style={{
                 fontFamily: "var(--font-cormorant, serif)", fontSize: "1.45rem", fontWeight: 600,

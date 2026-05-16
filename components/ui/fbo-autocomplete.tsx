@@ -248,7 +248,7 @@ export function FBOAutocomplete({
   return (
     <div ref={ref} className={`relative ${className || ""}`}>
       <div className="relative">
-        <Plane className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "rgba(200,212,228,0.40)" }} />
+        <Plane className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--lc-text-muted)" }} />
         <input
           type="text"
           value={query}
@@ -259,27 +259,27 @@ export function FBOAutocomplete({
             e.currentTarget.style.borderColor = hasError ? "rgba(248,113,113,0.60)" : "rgba(201,168,124,0.50)"
           }}
           onBlur={(e) => {
-            e.currentTarget.style.borderColor = hasError ? "rgba(248,113,113,0.50)" : "rgba(255,255,255,0.12)"
+            e.currentTarget.style.borderColor = hasError ? "rgba(248,113,113,0.50)" : "var(--lc-border)"
           }}
           placeholder={placeholder}
           autoComplete="off"
           className="w-full h-10 text-sm rounded-xl pl-9 pr-8 outline-none transition-colors"
           style={{
-            background: "rgba(255,255,255,0.05)",
-            border: `1px solid ${hasError ? "rgba(248,113,113,0.50)" : "rgba(255,255,255,0.12)"}`,
-            color: "rgba(255,255,255,0.88)",
+            background: "var(--lc-bg-glass)",
+            border: `1px solid ${hasError ? "rgba(248,113,113,0.50)" : "var(--lc-border)"}`,
+            color: "var(--lc-text-primary)",
           }}
         />
-        <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "rgba(200,212,228,0.35)" }} />
+        <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "var(--lc-text-muted)" }} />
       </div>
 
       {open && (results.length > 0 || query.length > 0) && createPortal(
         <div
           ref={dropRef}
-          style={{ ...dropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.10)", borderRadius: "14px", boxShadow: "0 24px 60px rgba(0,0,0,0.65)", overflow: "hidden" }}
+          style={{ ...dropStyle, background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", borderRadius: "14px", boxShadow: "0 24px 60px rgba(0,0,0,0.65)", overflow: "hidden" }}
         >
           {results.length > 0 && (
-            <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+            <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-label)", background: "var(--lc-bg-card)", borderBottom: "1px solid var(--lc-bg-glass-mid)" }}>
               {results.length} FBO{results.length !== 1 ? "s" : ""} found
             </div>
           )}
@@ -297,23 +297,23 @@ export function FBOAutocomplete({
                     onMouseEnter={() => setActiveIdx(idx)}
                     className="w-full text-left px-3 py-2.5 flex items-start gap-2.5 transition-colors"
                     style={{
-                      background: isActive ? "rgba(255,255,255,0.07)" : "transparent",
-                      borderBottom: "1px solid rgba(255,255,255,0.04)",
+                      background: isActive ? "var(--lc-bg-glass-mid)" : "transparent",
+                      borderBottom: "1px solid var(--lc-bg-card)",
                     }}
                   >
-                    <Plane className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: isActive ? "#c9a87c" : "rgba(200,212,228,0.30)" }} />
+                    <Plane className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: isActive ? "#c9a87c" : "var(--lc-text-muted)" }} />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold truncate" style={{ color: isActive ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.82)" }}>
+                      <div className="text-sm font-semibold truncate" style={{ color: isActive ? "var(--lc-text-primary)" : "var(--lc-text-secondary)" }}>
                         {fbo.name}
                       </div>
-                      <div className="text-xs truncate mt-0.5 leading-snug" style={{ color: "rgba(200,212,228,0.50)" }}>
+                      <div className="text-xs truncate mt-0.5 leading-snug" style={{ color: "var(--lc-text-label)" }}>
                         {fbo.airport} · {fbo.city}, {fbo.state}
                       </div>
                     </div>
                     <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded-md flex-shrink-0 whitespace-nowrap self-start mt-0.5"
                       style={isActive
                         ? { background: "rgba(201,168,124,0.15)", color: "#c9a87c" }
-                        : { background: "rgba(255,255,255,0.06)", color: "rgba(200,212,228,0.55)" }
+                        : { background: "var(--lc-bg-glass)", color: "var(--lc-text-dim)" }
                       }>
                       {fbo.icao}
                     </span>
@@ -323,8 +323,8 @@ export function FBOAutocomplete({
             ) : (
               <div className="px-4 py-6 text-center">
                 <Plane className="w-8 h-8 mx-auto mb-2" style={{ color: "rgba(200,212,228,0.15)" }} />
-                <div className="text-sm font-medium" style={{ color: "rgba(200,212,228,0.45)" }}>No FBOs found</div>
-                <div className="text-xs mt-0.5" style={{ color: "rgba(200,212,228,0.30)" }}>Try an ICAO code, city, or FBO name</div>
+                <div className="text-sm font-medium" style={{ color: "var(--lc-text-label)" }}>No FBOs found</div>
+                <div className="text-xs mt-0.5" style={{ color: "var(--lc-text-muted)" }}>Try an ICAO code, city, or FBO name</div>
               </div>
             )}
           </div>

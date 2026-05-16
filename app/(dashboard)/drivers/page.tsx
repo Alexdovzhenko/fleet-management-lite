@@ -381,26 +381,26 @@ function DriverCard({ driver, onEdit, index }: { driver: Driver; onEdit: (d: Dri
       onClick={() => onEdit(driver)}
       className="group relative rounded-2xl cursor-pointer overflow-hidden transition-all duration-200"
       style={{
-        background: "#0d1526",
-        borderTop: "1px solid rgba(255,255,255,0.07)",
-        borderRight: "1px solid rgba(255,255,255,0.07)",
-        borderBottom: "1px solid rgba(255,255,255,0.07)",
+        background: "var(--lc-bg-surface)",
+        borderTop: "1px solid var(--lc-bg-glass-mid)",
+        borderRight: "1px solid var(--lc-bg-glass-mid)",
+        borderBottom: "1px solid var(--lc-bg-glass-mid)",
         borderLeft: `3px solid ${cfg.accent}`,
         boxShadow: "0 2px 12px rgba(0,0,0,0.25)",
       }}
       onMouseEnter={e => {
         const el = e.currentTarget as HTMLDivElement
-        el.style.borderTopColor = "rgba(255,255,255,0.13)"
-        el.style.borderRightColor = "rgba(255,255,255,0.13)"
-        el.style.borderBottomColor = "rgba(255,255,255,0.13)"
+        el.style.borderTopColor = "var(--lc-border)"
+        el.style.borderRightColor = "var(--lc-border)"
+        el.style.borderBottomColor = "var(--lc-border)"
         el.style.background = "#111e35"
       }}
       onMouseLeave={e => {
         const el = e.currentTarget as HTMLDivElement
-        el.style.borderTopColor = "rgba(255,255,255,0.07)"
-        el.style.borderRightColor = "rgba(255,255,255,0.07)"
-        el.style.borderBottomColor = "rgba(255,255,255,0.07)"
-        el.style.background = "#0d1526"
+        el.style.borderTopColor = "var(--lc-bg-glass-mid)"
+        el.style.borderRightColor = "var(--lc-bg-glass-mid)"
+        el.style.borderBottomColor = "var(--lc-bg-glass-mid)"
+        el.style.background = "var(--lc-bg-surface)"
       }}
     >
       <div className="p-4 pb-3">
@@ -421,53 +421,53 @@ function DriverCard({ driver, onEdit, index }: { driver: Driver; onEdit: (d: Dri
             )}
             <div
               className={cn("absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2", cfg.dot)}
-              style={{ borderColor: "#0d1526" }}
+              style={{ borderColor: "var(--lc-bg-surface)" }}
             />
           </div>
           <div className="flex-1 min-w-0 pt-0.5">
             <div className="flex items-start justify-between gap-2">
-              <h3 className="font-bold text-sm leading-tight truncate" style={{ color: "rgba(255,255,255,0.90)" }}>{driver.name}</h3>
+              <h3 className="font-bold text-sm leading-tight truncate" style={{ color: "var(--lc-text-primary)" }}>{driver.name}</h3>
               <span className={cn("text-[10.5px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0", cfg.chip)}>
                 {cfg.label}
               </span>
             </div>
-            {driver.email && <p className="text-[11.5px] truncate mt-0.5" style={{ color: "rgba(200,212,228,0.50)" }}>{driver.email}</p>}
+            {driver.email && <p className="text-[11.5px] truncate mt-0.5" style={{ color: "var(--lc-text-label)" }}>{driver.email}</p>}
           </div>
         </div>
       </div>
 
-      <div className="h-px mx-4" style={{ background: "rgba(255,255,255,0.06)" }} />
+      <div className="h-px mx-4" style={{ background: "var(--lc-bg-glass)" }} />
 
       <div className="px-4 py-3 space-y-1.5">
-        <div className="flex items-center gap-2 text-[12px]" style={{ color: "rgba(200,212,228,0.65)" }}>
-          <Phone className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "rgba(200,212,228,0.35)" }} />
+        <div className="flex items-center gap-2 text-[12px]" style={{ color: "var(--lc-text-dim)" }}>
+          <Phone className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--lc-text-muted)" }} />
           <span className="font-medium">{formatPhone(driver.phone)}</span>
         </div>
         {driver.defaultVehicle && (
-          <div className="flex items-center gap-2 text-[12px]" style={{ color: "rgba(200,212,228,0.65)" }}>
-            <Car className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "rgba(200,212,228,0.35)" }} />
+          <div className="flex items-center gap-2 text-[12px]" style={{ color: "var(--lc-text-dim)" }}>
+            <Car className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--lc-text-muted)" }} />
             <span className="truncate">{driver.defaultVehicle.name}</span>
           </div>
         )}
         {driver.licenseNumber && (
           <div className="flex items-center gap-2 text-[12px]">
-            <IdCard className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "rgba(200,212,228,0.35)" }} />
-            <span className="font-mono text-[11.5px]" style={{ color: "rgba(200,212,228,0.55)" }}>{driver.licenseNumber}</span>
+            <IdCard className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "var(--lc-text-muted)" }} />
+            <span className="font-mono text-[11.5px]" style={{ color: "var(--lc-text-dim)" }}>{driver.licenseNumber}</span>
           </div>
         )}
       </div>
 
       {(driver._count?.trips !== undefined || driver.licensePhotoFront || driver.licensePhotoBack) && (
         <>
-          <div className="h-px mx-4" style={{ background: "rgba(255,255,255,0.06)" }} />
+          <div className="h-px mx-4" style={{ background: "var(--lc-bg-glass)" }} />
           <div className="px-4 py-2.5 flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               {driver._count?.trips !== undefined && (
                 <span
                   className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
                   style={{
-                    background: tripCount > 0 ? "rgba(59,130,246,0.12)" : "rgba(255,255,255,0.07)",
-                    color: tripCount > 0 ? "rgba(147,197,253,0.90)" : "rgba(200,212,228,0.50)",
+                    background: tripCount > 0 ? "rgba(59,130,246,0.12)" : "var(--lc-bg-glass-mid)",
+                    color: tripCount > 0 ? "rgba(147,197,253,0.90)" : "var(--lc-text-label)",
                   }}
                 >
                   {tripCount} trip{tripCount !== 1 ? "s" : ""}
@@ -493,8 +493,8 @@ function DriverCard({ driver, onEdit, index }: { driver: Driver; onEdit: (d: Dri
       )}
 
       <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.15)" }}>
-          <Pencil className="w-3 h-3" style={{ color: "rgba(200,212,228,0.80)" }} />
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "var(--lc-border)", border: "1px solid var(--lc-border-medium)" }}>
+          <Pencil className="w-3 h-3" style={{ color: "var(--lc-text-secondary)" }} />
         </div>
       </div>
     </motion.div>
@@ -1110,21 +1110,21 @@ function DriverModal({
 
 function DriverSkeleton() {
   return (
-    <div className="rounded-2xl p-4 animate-pulse" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
+    <div className="rounded-2xl p-4 animate-pulse" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}>
       <div className="flex items-start gap-3 mb-3">
-        <div className="w-12 h-12 rounded-2xl flex-shrink-0" style={{ background: "rgba(255,255,255,0.07)" }} />
+        <div className="w-12 h-12 rounded-2xl flex-shrink-0" style={{ background: "var(--lc-bg-glass-mid)" }} />
         <div className="flex-1 space-y-2 pt-1">
           <div className="flex justify-between gap-3">
-            <div className="h-3.5 rounded-full w-28" style={{ background: "rgba(255,255,255,0.07)" }} />
-            <div className="h-5 rounded-full w-16" style={{ background: "rgba(255,255,255,0.07)" }} />
+            <div className="h-3.5 rounded-full w-28" style={{ background: "var(--lc-bg-glass-mid)" }} />
+            <div className="h-5 rounded-full w-16" style={{ background: "var(--lc-bg-glass-mid)" }} />
           </div>
-          <div className="h-3 rounded-full w-36" style={{ background: "rgba(255,255,255,0.07)" }} />
+          <div className="h-3 rounded-full w-36" style={{ background: "var(--lc-bg-glass-mid)" }} />
         </div>
       </div>
-      <div className="h-px mb-3" style={{ background: "rgba(255,255,255,0.05)" }} />
+      <div className="h-px mb-3" style={{ background: "var(--lc-bg-glass)" }} />
       <div className="space-y-2">
-        <div className="h-3 rounded-full w-24" style={{ background: "rgba(255,255,255,0.07)" }} />
-        <div className="h-3 rounded-full w-20" style={{ background: "rgba(255,255,255,0.07)" }} />
+        <div className="h-3 rounded-full w-24" style={{ background: "var(--lc-bg-glass-mid)" }} />
+        <div className="h-3 rounded-full w-20" style={{ background: "var(--lc-bg-glass-mid)" }} />
       </div>
     </div>
   )
@@ -1153,20 +1153,20 @@ export default function DriversPage() {
       {/* Dark backdrop behind dock nav */}
       <div
         className="fixed bottom-0 inset-x-0 pointer-events-none"
-        style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "#080c16", zIndex: 0 }}
+        style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "var(--lc-bg-page)", zIndex: 0 }}
       />
 
       {/* Full-bleed dark page wrapper */}
       <div
         className="-mx-4 -mt-4 md:-mx-6 md:-mt-6"
-        style={{ background: "#080c16", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
+        style={{ background: "var(--lc-bg-page)", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
       >
         <div className="px-4 pt-4 md:px-6 md:pt-6 pb-6 max-w-6xl mx-auto space-y-3">
 
           {/* ── Header card ── */}
           <div
             className="rounded-2xl overflow-hidden"
-            style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
+            style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
           >
             <div className="flex items-center justify-between gap-4 px-5 pt-5 pb-4">
               <div className="flex items-center gap-3.5 min-w-0">
@@ -1184,7 +1184,7 @@ export default function DriversPage() {
                   }}>
                     Drivers
                   </p>
-                  <p className="leading-tight" style={{ fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "-0.01em" }}>
+                  <p className="leading-tight" style={{ fontSize: "13px", fontWeight: 600, color: "var(--lc-text-primary)", letterSpacing: "-0.01em" }}>
                     {isLoading ? "Loading…" : totalCount === 0 ? "No drivers yet" : `${totalCount} driver${totalCount !== 1 ? "s" : ""} in your fleet`}
                   </p>
                 </div>
@@ -1209,28 +1209,28 @@ export default function DriversPage() {
               </div>
             </div>
 
-            <div className="h-px mx-5" style={{ background: "rgba(255,255,255,0.06)" }} />
+            <div className="h-px mx-5" style={{ background: "var(--lc-bg-glass)" }} />
 
             <div className="flex items-center gap-2.5 px-5 py-3.5">
               <div className="relative flex-1 max-w-xs">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "rgba(200,212,228,0.38)" }} />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "var(--lc-text-muted)" }} />
                 <input
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder="Search drivers…"
                   className="h-9 pl-8.5 pr-8 w-full text-[13px] rounded-xl outline-none transition-all duration-200 font-medium"
-                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(255,255,255,0.88)" }}
+                  style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)", color: "var(--lc-text-primary)" }}
                   onFocus={e => {
                     (e.target as HTMLInputElement).style.border = "1px solid rgba(201,168,124,0.40)"
                     ;(e.target as HTMLInputElement).style.boxShadow = "0 0 0 2px rgba(201,168,124,0.08)"
                   }}
                   onBlur={e => {
-                    (e.target as HTMLInputElement).style.border = "1px solid rgba(255,255,255,0.09)"
+                    (e.target as HTMLInputElement).style.border = "1px solid var(--lc-bg-glass-hover)"
                     ;(e.target as HTMLInputElement).style.boxShadow = "none"
                   }}
                 />
                 {search && (
-                  <button onClick={() => setSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer" style={{ color: "rgba(200,212,228,0.38)" }}>
+                  <button onClick={() => setSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer" style={{ color: "var(--lc-text-muted)" }}>
                     <X className="w-3.5 h-3.5" />
                   </button>
                 )}
@@ -1238,7 +1238,7 @@ export default function DriversPage() {
 
               <div
                 className="flex items-center gap-0.5 rounded-[11px] p-1"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+                style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)" }}
               >
                 {FILTER_TABS.map(tab => (
                   <button
@@ -1246,8 +1246,8 @@ export default function DriversPage() {
                     onClick={() => setStatusFilter(tab.id)}
                     className="px-3 py-1.5 rounded-[8px] text-[12px] font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer"
                     style={statusFilter === tab.id
-                      ? { background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.92)", boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }
-                      : { color: "rgba(200,212,228,0.55)" }
+                      ? { background: "var(--lc-border)", color: "var(--lc-text-primary)", boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }
+                      : { color: "var(--lc-text-dim)" }
                     }
                   >
                     {tab.label}
@@ -1260,7 +1260,7 @@ export default function DriversPage() {
               <button
                 onClick={openAdd}
                 className="flex items-center gap-1.5 h-9 px-4 rounded-xl text-[13px] font-semibold transition-all duration-150 active:scale-95 select-none cursor-pointer"
-                style={{ background: "#c9a87c", color: "#080c16", boxShadow: "0 2px 12px rgba(201,168,124,0.28)" }}
+                style={{ background: "#c9a87c", color: "var(--lc-bg-page)", boxShadow: "0 2px 12px rgba(201,168,124,0.28)" }}
                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#d4b98c" }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#c9a87c" }}
               >
@@ -1284,10 +1284,10 @@ export default function DriversPage() {
               >
                 <UserCheck className="w-7 h-7" style={{ color: "rgba(201,168,124,0.60)" }} />
               </div>
-              <p className="font-bold text-sm" style={{ color: "rgba(255,255,255,0.75)" }}>
+              <p className="font-bold text-sm" style={{ color: "var(--lc-text-secondary)" }}>
                 {search || statusFilter ? "No drivers match your filters" : "No drivers yet"}
               </p>
-              <p className="text-xs mt-1.5 max-w-xs leading-relaxed" style={{ color: "rgba(200,212,228,0.45)" }}>
+              <p className="text-xs mt-1.5 max-w-xs leading-relaxed" style={{ color: "var(--lc-text-label)" }}>
                 {search || statusFilter
                   ? "Try adjusting your search or filter"
                   : "Add your first driver to start building your fleet roster"}
@@ -1296,7 +1296,7 @@ export default function DriversPage() {
                 <button
                   onClick={openAdd}
                   className="mt-5 flex items-center gap-1.5 h-9 px-5 rounded-xl text-[13px] font-semibold transition-all duration-150 active:scale-95 cursor-pointer"
-                  style={{ background: "#c9a87c", color: "#080c16", boxShadow: "0 2px 12px rgba(201,168,124,0.28)" }}
+                  style={{ background: "#c9a87c", color: "var(--lc-bg-page)", boxShadow: "0 2px 12px rgba(201,168,124,0.28)" }}
                 >
                   <Plus className="w-4 h-4" strokeWidth={2.5} />
                   Add First Driver

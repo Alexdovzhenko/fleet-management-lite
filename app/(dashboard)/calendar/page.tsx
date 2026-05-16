@@ -108,7 +108,7 @@ export default function CalendarPage() {
       {/* ── Header ──────────────────────────────────────────────────── */}
       <div
         className="flex-shrink-0 rounded-2xl mb-3 overflow-hidden"
-        style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+        style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
       >
         {/* Top row */}
         <div className="flex items-center gap-3 px-4 py-3">
@@ -117,18 +117,18 @@ export default function CalendarPage() {
             <button
               onClick={() => setCurrentDate(d => navigate(view, d, -1))}
               className="w-8 h-8 flex items-center justify-center rounded-xl transition-colors"
-              style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.70)" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.10)" }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)" }}
+              style={{ background: "var(--lc-bg-glass)", color: "var(--lc-text-secondary)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-border)" }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => setCurrentDate(d => navigate(view, d, 1))}
               className="w-8 h-8 flex items-center justify-center rounded-xl transition-colors"
-              style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.70)" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.10)" }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)" }}
+              style={{ background: "var(--lc-bg-glass)", color: "var(--lc-text-secondary)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-border)" }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -139,7 +139,7 @@ export default function CalendarPage() {
             onClick={() => setCurrentDate(new Date())}
             className="flex-1 text-left"
           >
-            <span className="text-base font-bold" style={{ color: "rgba(255,255,255,0.92)" }}>
+            <span className="text-base font-bold" style={{ color: "var(--lc-text-primary)" }}>
               {periodLabel(view, currentDate)}
             </span>
           </button>
@@ -147,7 +147,7 @@ export default function CalendarPage() {
           {/* View toggle */}
           <div
             className="flex items-center gap-0.5 p-0.5 rounded-xl"
-            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}
+            style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)" }}
           >
             {VIEW_TABS.map(tab => (
               <button
@@ -155,8 +155,8 @@ export default function CalendarPage() {
                 onClick={() => setView(tab.value)}
                 className="px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all"
                 style={view === tab.value
-                  ? { background: "#c9a87c", color: "#0d1526" }
-                  : { color: "rgba(255,255,255,0.60)", background: "transparent" }
+                  ? { background: "#c9a87c", color: "var(--lc-bg-surface)" }
+                  : { color: "var(--lc-text-dim)", background: "transparent" }
                 }
               >
                 {tab.label}
@@ -170,7 +170,7 @@ export default function CalendarPage() {
             className="flex items-center gap-1.5 h-8 px-3 rounded-xl text-[11px] font-semibold transition-colors"
             style={showFilters || hasActiveFilter
               ? { background: "rgba(201,168,124,0.15)", color: "#c9a87c", border: "1px solid rgba(201,168,124,0.25)" }
-              : { background: "rgba(255,255,255,0.06)", color: "rgba(200,212,228,0.60)", border: "1px solid rgba(255,255,255,0.08)" }
+              : { background: "var(--lc-bg-glass)", color: "var(--lc-text-dim)", border: "1px solid var(--lc-bg-glass-hover)" }
             }
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -196,7 +196,7 @@ export default function CalendarPage() {
             >
               <div
                 className="px-4 py-3 flex items-center gap-2 overflow-x-auto"
-                style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+                style={{ borderTop: "1px solid var(--lc-bg-glass)" }}
               >
                 {STATUS_FILTERS.map(sf => {
                   const active = statusFilter === sf.value
@@ -208,10 +208,10 @@ export default function CalendarPage() {
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap flex-shrink-0 transition-all"
                       style={active
                         ? { background: sc?.bg ?? "rgba(201,168,124,0.15)", color: sc?.text ?? "#c9a87c", border: `1px solid ${sc?.border ?? "rgba(201,168,124,0.30)"}` }
-                        : { background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.88)", border: "1px solid rgba(255,255,255,0.12)" }
+                        : { background: "var(--lc-bg-card)", color: "var(--lc-text-primary)", border: "1px solid var(--lc-border)" }
                       }
                     >
-                      {sc && <span className="w-1.5 h-1.5 rounded-full" style={{ background: active ? sc.dot : "rgba(255,255,255,0.35)" }} />}
+                      {sc && <span className="w-1.5 h-1.5 rounded-full" style={{ background: active ? sc.dot : "var(--lc-border-strong)" }} />}
                       {sf.label}
                     </button>
                   )
@@ -235,7 +235,7 @@ export default function CalendarPage() {
       {/* ── Calendar body ────────────────────────────────────────────── */}
       <div
         className="flex-1 min-h-0 rounded-2xl overflow-hidden flex flex-col"
-        style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+        style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
       >
         <AnimatePresence mode="wait">
           <motion.div

@@ -187,11 +187,11 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
             </button>
           )}
           {showDropdown && (
-            <div className="absolute top-full left-0 right-0 mt-1 z-50 rounded-xl overflow-hidden max-h-64 overflow-y-auto" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }}>
+            <div className="absolute top-full left-0 right-0 mt-1 z-50 rounded-xl overflow-hidden max-h-64 overflow-y-auto" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }}>
               {/* Customer results */}
               {hasCustomers && (
                 <>
-                  <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+                  <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--lc-text-label)", background: "var(--lc-bg-card)", borderBottom: "1px solid var(--lc-bg-glass-mid)" }}>
                     Accounts
                   </div>
                   {customerResults.map((c) => (
@@ -202,18 +202,18 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
                       className="w-full text-left px-4 py-2.5 transition-colors flex items-center gap-3 hover:bg-white/5"
                     >
                       <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.12)" }}>
-                        <User className="w-3.5 h-3.5" style={{ color: "rgba(200,212,228,0.40)" }} />
+                        <User className="w-3.5 h-3.5" style={{ color: "var(--lc-text-muted)" }} />
                       </div>
                       <div className="flex-1 min-w-0">
                         {c.company && (
-                          <div className="text-xs font-semibold truncate" style={{ color: "rgba(200,212,228,0.50)" }}>{c.company}</div>
+                          <div className="text-xs font-semibold truncate" style={{ color: "var(--lc-text-label)" }}>{c.company}</div>
                         )}
-                        <div className="text-sm font-medium truncate" style={{ color: "rgba(255,255,255,0.85)" }}>{c.name}</div>
+                        <div className="text-sm font-medium truncate" style={{ color: "var(--lc-text-primary)" }}>{c.name}</div>
                         {(c.phone || c.email) && (
-                          <div className="text-xs truncate" style={{ color: "rgba(200,212,228,0.45)" }}>{c.phone ? formatPhone(c.phone) : c.email}</div>
+                          <div className="text-xs truncate" style={{ color: "var(--lc-text-label)" }}>{c.phone ? formatPhone(c.phone) : c.email}</div>
                         )}
                       </div>
-                      {c.customerNumber && <span className="text-xs font-mono flex-shrink-0" style={{ color: "rgba(200,212,228,0.40)" }}>#{c.customerNumber}</span>}
+                      {c.customerNumber && <span className="text-xs font-mono flex-shrink-0" style={{ color: "var(--lc-text-muted)" }}>#{c.customerNumber}</span>}
                     </button>
                   ))}
                 </>
@@ -222,7 +222,7 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
               {/* Affiliate results */}
               {hasAffiliates && (
                 <>
-                  <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.03)", borderBottom: "1px solid rgba(255,255,255,0.07)", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+                  <div className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--lc-text-label)", background: "var(--lc-bg-card)", borderBottom: "1px solid var(--lc-bg-glass-mid)", borderTop: "1px solid var(--lc-bg-glass-mid)" }}>
                     Affiliates
                   </div>
                   {affiliateResults.map((a) => (
@@ -237,8 +237,8 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
                         {a.name.slice(0, 2).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.85)" }}>{a.name}</div>
-                        <div className="text-xs truncate" style={{ color: "rgba(200,212,228,0.45)" }}>
+                        <div className="text-sm font-medium" style={{ color: "var(--lc-text-primary)" }}>{a.name}</div>
+                        <div className="text-xs truncate" style={{ color: "var(--lc-text-label)" }}>
                           {[a.city, a.state].filter(Boolean).join(", ") || a.email || ""}
                         </div>
                       </div>
@@ -282,7 +282,7 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
       </div>
 
       {selected && (
-        <div className="mt-2.5 flex items-center gap-3 rounded-xl px-3.5 py-3" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}>
+        <div className="mt-2.5 flex items-center gap-3 rounded-xl px-3.5 py-3" style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-hover)" }}>
           <div
             className="w-9 h-9 flex items-center justify-center flex-shrink-0 text-[11px] font-bold"
             style={selectedIsAffiliate
@@ -295,10 +295,10 @@ function CustomerSearch({ onSelect, onClear, error }: { onSelect: (c: Customer) 
           </div>
           <div className="flex-1 min-w-0">
             {!selectedIsAffiliate && selected.company && (
-              <div className="text-[11px] font-semibold truncate" style={{ color: "rgba(200,212,228,0.55)" }}>{selected.company}</div>
+              <div className="text-[11px] font-semibold truncate" style={{ color: "var(--lc-text-dim)" }}>{selected.company}</div>
             )}
-            <div className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.90)" }}>{selected.name}</div>
-            <div className="text-xs truncate" style={{ color: "rgba(200,212,228,0.50)" }}>
+            <div className="text-sm font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>{selected.name}</div>
+            <div className="text-xs truncate" style={{ color: "var(--lc-text-label)" }}>
               {selectedIsAffiliate ? "Affiliate account" : (selected.phone ? formatPhone(selected.phone) : selected.email || "")}
             </div>
           </div>
@@ -826,7 +826,7 @@ function AirportPicker({
     <div className="grid grid-cols-2 gap-2">
       {/* Code field */}
       <div className="space-y-1.5">
-        <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Airport Code</Label>
+        <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Airport Code</Label>
         <div ref={codeRef} className="relative">
           <input
             value={codeQuery}
@@ -834,10 +834,10 @@ function AirportPicker({
             onFocus={openCodeDrop}
             autoComplete="new-password"
             className="w-full h-9 text-sm border rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]"
-            style={{ background: "rgba(255,255,255,0.05)", borderColor: codeError ? "rgba(248,113,113,0.70)" : "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.85)" }}
+            style={{ background: "var(--lc-bg-glass)", borderColor: codeError ? "rgba(248,113,113,0.70)" : "var(--lc-border)", color: "var(--lc-text-primary)" }}
           />
           {codeOpen && codeFiltered.length > 0 && createPortal(
-            <div ref={codeDropRef} style={{ ...codeDropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
+            <div ref={codeDropRef} style={{ ...codeDropStyle, background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
               <div className="max-h-60 overflow-y-auto">
                 {codeFiltered.map((a) => (
                   <button
@@ -848,8 +848,8 @@ function AirportPicker({
                   >
                     <span className="text-xs font-mono font-bold w-8 flex-shrink-0" style={{ color: "#c9a87c" }}>{a.iata}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs truncate" style={{ color: "rgba(255,255,255,0.80)" }}>{a.name}</div>
-                      <div className="text-[10px]" style={{ color: "rgba(200,212,228,0.45)" }}>{a.city}, {a.country}</div>
+                      <div className="text-xs truncate" style={{ color: "var(--lc-text-secondary)" }}>{a.name}</div>
+                      <div className="text-[10px]" style={{ color: "var(--lc-text-label)" }}>{a.city}, {a.country}</div>
                     </div>
                     {a.iata === codeValue && <Check className="w-3 h-3 flex-shrink-0" style={{ color: "#c9a87c" }} />}
                   </button>
@@ -862,17 +862,17 @@ function AirportPicker({
       </div>
       {/* Name field */}
       <div className="space-y-1.5">
-        <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Airport Name</Label>
+        <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Airport Name</Label>
         <div ref={nameRef} className="relative">
           <input
             value={nameQuery}
             onChange={(e) => { setNameQuery(e.target.value); onNameChange(e.target.value); if (e.target.value) { openNameDrop() } else { setNameOpen(false) } }}
             onFocus={() => { if (nameQuery) openNameDrop() }}
             autoComplete="new-password"
-            className="w-full h-10 text-sm rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.85)" }}
+            className="w-full h-10 text-sm rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-primary)" }}
           />
           {nameOpen && nameFiltered.length > 0 && createPortal(
-            <div ref={nameDropRef} style={{ ...nameDropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
+            <div ref={nameDropRef} style={{ ...nameDropStyle, background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
               <div className="max-h-60 overflow-y-auto">
                 {nameFiltered.map((a) => (
                   <button
@@ -883,8 +883,8 @@ function AirportPicker({
                   >
                     <span className="text-xs font-mono font-bold w-8 flex-shrink-0" style={{ color: "#c9a87c" }}>{a.iata}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs truncate" style={{ color: "rgba(255,255,255,0.80)" }}>{a.name}</div>
-                      <div className="text-[10px]" style={{ color: "rgba(200,212,228,0.45)" }}>{a.city}, {a.country}</div>
+                      <div className="text-xs truncate" style={{ color: "var(--lc-text-secondary)" }}>{a.name}</div>
+                      <div className="text-[10px]" style={{ color: "var(--lc-text-label)" }}>{a.city}, {a.country}</div>
                     </div>
                     {a.iata === codeValue && <Check className="w-3 h-3 flex-shrink-0" style={{ color: "#c9a87c" }} />}
                   </button>
@@ -1121,17 +1121,17 @@ function AirlinePicker({
   return (
     <div className="grid grid-cols-[100px_1fr] gap-2">
       <div className="space-y-1.5">
-        <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Airline Code</Label>
+        <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Airline Code</Label>
         <div ref={codeRef} className="relative">
           <input
             value={codeQuery}
             onChange={(e) => { setCodeQuery(e.target.value); onCodeChange(e.target.value); openCodeDrop() }}
             onFocus={openCodeDrop}
             autoComplete="new-password"
-            className="w-full h-10 text-sm rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.85)" }}
+            className="w-full h-10 text-sm rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-primary)" }}
           />
           {codeOpen && codeFiltered.length > 0 && createPortal(
-            <div ref={codeDropRef} style={{ ...codeDropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
+            <div ref={codeDropRef} style={{ ...codeDropStyle, background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
               <div className="max-h-60 overflow-y-auto">
                 {codeFiltered.map((a) => (
                   <button key={a.iata} type="button" onMouseDown={(e) => { e.preventDefault(); selectAirline(a) }}
@@ -1139,8 +1139,8 @@ function AirlinePicker({
                   >
                     <span className="text-xs font-mono font-bold text-gray-900 w-6 flex-shrink-0">{a.iata}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs truncate" style={{ color: "rgba(255,255,255,0.80)" }}>{a.name}</div>
-                      <div className="text-[10px]" style={{ color: "rgba(200,212,228,0.45)" }}>{a.country}</div>
+                      <div className="text-xs truncate" style={{ color: "var(--lc-text-secondary)" }}>{a.name}</div>
+                      <div className="text-[10px]" style={{ color: "var(--lc-text-label)" }}>{a.country}</div>
                     </div>
                     {a.iata === codeValue && <Check className="w-3 h-3 flex-shrink-0" style={{ color: "#c9a87c" }} />}
                   </button>
@@ -1152,17 +1152,17 @@ function AirlinePicker({
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Airline Name</Label>
+        <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Airline Name</Label>
         <div ref={nameRef} className="relative">
           <input
             value={nameQuery}
             onChange={(e) => { setNameQuery(e.target.value); onNameChange(e.target.value); if (e.target.value) { openNameDrop() } else { setNameOpen(false) } }}
             onFocus={() => { if (nameQuery) openNameDrop() }}
             autoComplete="new-password"
-            className="w-full h-10 text-sm rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.85)" }}
+            className="w-full h-10 text-sm rounded-md pl-2.5 pr-2.5 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-primary)" }}
           />
           {nameOpen && nameFiltered.length > 0 && createPortal(
-            <div ref={nameDropRef} style={{ ...nameDropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
+            <div ref={nameDropRef} style={{ ...nameDropStyle, background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
               <div className="max-h-60 overflow-y-auto">
                 {nameFiltered.map((a) => (
                   <button key={a.iata} type="button" onMouseDown={(e) => { e.preventDefault(); selectAirline(a) }}
@@ -1170,8 +1170,8 @@ function AirlinePicker({
                   >
                     <span className="text-xs font-mono font-bold text-gray-900 w-6 flex-shrink-0">{a.iata}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs truncate" style={{ color: "rgba(255,255,255,0.80)" }}>{a.name}</div>
-                      <div className="text-[10px]" style={{ color: "rgba(200,212,228,0.45)" }}>{a.country}</div>
+                      <div className="text-xs truncate" style={{ color: "var(--lc-text-secondary)" }}>{a.name}</div>
+                      <div className="text-[10px]" style={{ color: "var(--lc-text-label)" }}>{a.country}</div>
                     </div>
                     {a.iata === codeValue && <Check className="w-3 h-3 flex-shrink-0" style={{ color: "#c9a87c" }} />}
                   </button>
@@ -1238,11 +1238,11 @@ function StateCombobox({ value, onChange }: { value: string; onChange: (v: strin
         onChange={(e) => { setQuery(e.target.value); openDropdown() }}
         onFocus={openDropdown}
         autoComplete="new-password"
-        className="w-full h-10 text-sm rounded-md pl-2.5 pr-6 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.85)" }}
+        className="w-full h-10 text-sm rounded-md pl-2.5 pr-6 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-primary)" }}
       />
       <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
       {open && filtered.length > 0 && createPortal(
-        <div ref={dropRef} style={{ ...dropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
+        <div ref={dropRef} style={{ ...dropStyle, background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
           <div className="max-h-52 overflow-y-auto">
             {filtered.map((s) => (
               <button
@@ -1252,7 +1252,7 @@ function StateCombobox({ value, onChange }: { value: string; onChange: (v: strin
                 className={`w-full text-left px-3 py-2 transition-colors flex items-center gap-2.5 hover:bg-white/5 ${s.code === value ? "bg-white/8" : ""}`}
               >
                 <span className="text-xs font-mono font-bold w-7 flex-shrink-0" style={{ color: "#c9a87c" }}>{s.code}</span>
-                <span className="text-xs flex-1" style={{ color: "rgba(200,212,228,0.60)" }}>{s.name}</span>
+                <span className="text-xs flex-1" style={{ color: "var(--lc-text-dim)" }}>{s.name}</span>
                 {s.code === value && <Check className="w-3 h-3 flex-shrink-0" style={{ color: "#c9a87c" }} />}
               </button>
             ))}
@@ -1375,11 +1375,11 @@ function CountryCombobox({ value, onChange }: { value: string; onChange: (v: str
         onChange={(e) => { setQuery(e.target.value); openDropdown() }}
         onFocus={openDropdown}
         autoComplete="new-password"
-        className="w-full h-10 text-sm rounded-md pl-2.5 pr-6 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.85)" }}
+        className="w-full h-10 text-sm rounded-md pl-2.5 pr-6 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-primary)" }}
       />
       <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
       {open && filtered.length > 0 && createPortal(
-        <div ref={dropRef} style={{ ...dropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
+        <div ref={dropRef} style={{ ...dropStyle, background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }} className="rounded-xl overflow-hidden">
           <div className="max-h-52 overflow-y-auto">
             {filtered.map((c) => (
               <button
@@ -1389,7 +1389,7 @@ function CountryCombobox({ value, onChange }: { value: string; onChange: (v: str
                 className={`w-full text-left px-3 py-2 transition-colors flex items-center gap-2.5 hover:bg-white/5 ${c.code === value ? "bg-white/8" : ""}`}
               >
                 <span className="text-xs font-mono font-bold w-8 flex-shrink-0" style={{ color: "#c9a87c" }}>{c.code}</span>
-                <span className="text-xs flex-1" style={{ color: "rgba(200,212,228,0.60)" }}>{c.name}</span>
+                <span className="text-xs flex-1" style={{ color: "var(--lc-text-dim)" }}>{c.name}</span>
                 {c.code === value && <Check className="w-3 h-3 flex-shrink-0" style={{ color: "#c9a87c" }} />}
               </button>
             ))}
@@ -1519,8 +1519,8 @@ function SortableStopRow({
       ref={setNodeRef}
       style={{
         ...style,
-        background: isDragOverlay ? "#0d1526" : ROLE_ROW_BG[stop.role].bg,
-        borderBottom: isDragOverlay ? "none" : `1px solid rgba(255,255,255,0.05)`,
+        background: isDragOverlay ? "var(--lc-bg-surface)" : ROLE_ROW_BG[stop.role].bg,
+        borderBottom: isDragOverlay ? "none" : `1px solid var(--lc-bg-glass)`,
         borderLeft: isDragOverlay ? "none" : `2px solid ${ROLE_ROW_BG[stop.role].border}`,
         ...(isDragOverlay ? {
           boxShadow: "0 8px 32px rgba(0,0,0,0.60)",
@@ -1544,9 +1544,9 @@ function SortableStopRow({
           className={`flex-shrink-0 mt-0.5 touch-none transition-colors ${
             isDragOverlay ? "cursor-grabbing" : "cursor-grab"
           }`}
-          style={{ color: "rgba(200,212,228,0.30)" }}
-          onMouseEnter={e => (e.currentTarget.style.color = "rgba(200,212,228,0.65)")}
-          onMouseLeave={e => (e.currentTarget.style.color = "rgba(200,212,228,0.30)")}
+          style={{ color: "var(--lc-text-muted)" }}
+          onMouseEnter={e => (e.currentTarget.style.color = "var(--lc-text-dim)")}
+          onMouseLeave={e => (e.currentTarget.style.color = "var(--lc-text-muted)")}
           aria-label="Drag to reorder"
           {...attributes}
           {...listeners}
@@ -1565,9 +1565,9 @@ function SortableStopRow({
       {/* Content */}
       <div className="flex-1 min-w-0">
         {stop.locationName && (
-          <div className="text-xs font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>{stop.locationName}</div>
+          <div className="text-xs font-semibold" style={{ color: "var(--lc-text-primary)" }}>{stop.locationName}</div>
         )}
-        <div className="text-sm font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>{stop.address}</div>
+        <div className="text-sm font-medium" style={{ color: "var(--lc-text-secondary)" }}>{stop.address}</div>
         {stop.tailNumber && (
           <div className="text-[11px] opacity-70">Tail: {stop.tailNumber}</div>
         )}
@@ -1616,7 +1616,7 @@ function SortableStopRow({
       <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
         {!isEditing && !isDragOverlay && (
           <span className="opacity-0 group-hover:opacity-100 transition-opacity">
-            <Pencil className="w-3 h-3" style={{ color: "rgba(200,212,228,0.40)" }} />
+            <Pencil className="w-3 h-3" style={{ color: "var(--lc-text-muted)" }} />
           </span>
         )}
         {!isDragOverlay && (
@@ -1628,9 +1628,9 @@ function SortableStopRow({
             }}
             disabled={isEditing}
             className="transition-colors disabled:pointer-events-none"
-            style={{ color: "rgba(200,212,228,0.30)" }}
+            style={{ color: "var(--lc-text-muted)" }}
             onMouseEnter={e => (e.currentTarget.style.color = "rgba(248,113,113,0.80)")}
-            onMouseLeave={e => (e.currentTarget.style.color = "rgba(200,212,228,0.30)")}
+            onMouseLeave={e => (e.currentTarget.style.color = "var(--lc-text-muted)")}
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -1911,17 +1911,17 @@ function RouteBuilder({
   return (
     <div className="space-y-3">
       {/* Entry form */}
-      <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
+      <div className="rounded-2xl overflow-hidden" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}>
         {/* Location type — pill segmented control */}
         <div className="px-3 pt-3 pb-2.5">
-          <div className="inline-flex gap-1 p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+          <div className="inline-flex gap-1 p-1 rounded-xl" style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-mid)" }}>
             {STOP_LOC_TABS.map(({ type: t, label, Icon }) => (
               <button
                 key={t} type="button" onClick={() => handleLocTab(t)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
                 style={locType === t
-                  ? { background: "#c9a87c", color: "#0d1526", boxShadow: "0 1px 6px rgba(201,168,124,0.35)" }
-                  : { background: "transparent", color: "rgba(255,255,255,0.75)" }
+                  ? { background: "#c9a87c", color: "var(--lc-bg-surface)", boxShadow: "0 1px 6px rgba(201,168,124,0.35)" }
+                  : { background: "transparent", color: "var(--lc-text-secondary)" }
                 }
               >
                 <Icon className="w-3 h-3" />{label}
@@ -1929,14 +1929,14 @@ function RouteBuilder({
             ))}
           </div>
         </div>
-        <div className="mx-3 mb-0" style={{ height: "1px", background: "rgba(255,255,255,0.06)" }} />
+        <div className="mx-3 mb-0" style={{ height: "1px", background: "var(--lc-bg-glass)" }} />
 
         {/* Fields */}
         <div className="p-3 pt-3.5 space-y-2.5">
           {locType === "address" && (
             <>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.85)" }}>Location name <span style={{ color: "rgba(200,212,228,0.30)", fontWeight: 400 }}>(optional)</span></Label>
+                <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Location name <span style={{ color: "var(--lc-text-muted)", fontWeight: 400 }}>(optional)</span></Label>
                 <AddressAutocomplete
                   value={locationName}
                   onChange={(v) => setLocationName(v)}
@@ -1946,7 +1946,7 @@ function RouteBuilder({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-medium flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.88)" }}>
+                <Label className="text-[11px] font-medium flex items-center gap-1.5" style={{ color: "var(--lc-text-primary)" }}>
                   Address line 1
                   <span style={{ color: "#c9a87c", fontSize: "10px" }}>required</span>
                 </Label>
@@ -1959,44 +1959,44 @@ function RouteBuilder({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.85)" }}>Address line 2 <span style={{ color: "rgba(200,212,228,0.30)", fontWeight: 400 }}>(optional)</span></Label>
+                <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Address line 2 <span style={{ color: "var(--lc-text-muted)", fontWeight: 400 }}>(optional)</span></Label>
                 <Input value={address2} onChange={(e) => setAddress2(e.target.value)}
                   className="h-10 text-sm" autoComplete="off" />
               </div>
               <div className="grid grid-cols-[2fr_90px_80px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>City</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>City</Label>
                   <CityAutocomplete value={city} onChange={setCity} onStateChange={setStateVal} placeholder="Miami" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>State</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>State</Label>
                   <StateCombobox value={stateVal} onChange={setStateVal} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Zip</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Zip</Label>
                   <Input value={zip} onChange={(e) => setZip(e.target.value)}
                     className="h-10 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Country</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Country</Label>
                   <CountryCombobox value={country} onChange={setCountry} />
                 </div>
               </div>
               {/* ── Details section divider ── */}
               <div className="flex items-center gap-2 pt-1">
-                <div className="flex-1" style={{ height: "1px", background: "rgba(255,255,255,0.06)" }} />
-                <span className="text-[9px] font-bold uppercase tracking-[0.18em]" style={{ color: "rgba(200,212,228,0.30)" }}>Details</span>
-                <div className="flex-1" style={{ height: "1px", background: "rgba(255,255,255,0.06)" }} />
+                <div className="flex-1" style={{ height: "1px", background: "var(--lc-bg-glass)" }} />
+                <span className="text-[9px] font-bold uppercase tracking-[0.18em]" style={{ color: "var(--lc-text-muted)" }}>Details</span>
+                <div className="flex-1" style={{ height: "1px", background: "var(--lc-bg-glass)" }} />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Phone number</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Phone number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     type="tel" className="h-10 text-sm" />
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-1.5">
-                    <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Time in</Label>
+                    <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Time in</Label>
                     <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded" style={{ background: "rgba(201,168,124,0.10)", color: "rgba(201,168,124,0.70)" }}>KEY</span>
                   </div>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
@@ -2005,7 +2005,7 @@ function RouteBuilder({
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Notes <span style={{ color: "rgba(200,212,228,0.35)", fontWeight: 400 }}>(optional)</span></Label>
+                <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Notes <span style={{ color: "var(--lc-text-muted)", fontWeight: 400 }}>(optional)</span></Label>
                 <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                   className="h-9 text-xs" />
               </div>
@@ -2028,32 +2028,32 @@ function RouteBuilder({
                   onNameChange={setAirlineName}
                 />
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Flight #</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Flight #</Label>
                   <Input value={flightNumber} onChange={(e) => setFlightNumber(e.target.value)}
                     className="h-10 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-[120px_120px_1fr_120px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Arr/Dep</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Arr/Dep</Label>
                   <select value={arrDep} onChange={(e) => setArrDep(e.target.value)}
-                    className="w-full h-9 text-sm rounded-md px-2 focus:outline-none focus:ring-1" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.80)", outline: "none" }}>
+                    className="w-full h-9 text-sm rounded-md px-2 focus:outline-none focus:ring-1" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-secondary)", outline: "none" }}>
                     <option value="Arrival">Arrival</option>
                     <option value="Departure">Departure</option>
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Terminal/Gate</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Terminal/Gate</Label>
                   <Input value={terminalGate} onChange={(e) => setTerminalGate(e.target.value)}
                     className="h-10 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Airport Instructions</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Airport Instructions</Label>
                   <Input value={airportInstructions} onChange={(e) => setAirportInstructions(e.target.value)}
                     className="h-10 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>ETA/ETD</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>ETA/ETD</Label>
                   <Input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)}
                     onBlur={(e) => setEtaEtd(formatTime(e.target.value))}
                     className="h-10 text-sm" autoComplete="off" />
@@ -2061,9 +2061,9 @@ function RouteBuilder({
               </div>
               <div className="grid grid-cols-[140px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Meet Option</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Meet Option</Label>
                   <select value={meetOption} onChange={(e) => setMeetOption(e.target.value)}
-                    className="w-full h-9 text-sm rounded-md px-2 focus:outline-none focus:ring-1" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.80)", outline: "none" }}>
+                    className="w-full h-9 text-sm rounded-md px-2 focus:outline-none focus:ring-1" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-secondary)", outline: "none" }}>
                     <option value="">Select…</option>
                     <option value="Curbside">Curbside</option>
                     <option value="Inside">Inside</option>
@@ -2072,19 +2072,19 @@ function RouteBuilder({
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Notes</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Notes</Label>
                   <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                     placeholder="Driver instructions, special requests…" className="h-10 text-sm" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Phone Number</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     placeholder="(305) 555-0000" type="tel" className="h-10 text-sm" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Time In</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
                     placeholder="e.g. 3:00 PM" className="h-10 text-sm" autoComplete="off" />
@@ -2096,43 +2096,43 @@ function RouteBuilder({
             <>
               <div className="grid grid-cols-[120px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Seaport Code *</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Seaport Code *</Label>
                   <Input value={seaportCode} onChange={(e) => { setSeaportCode(e.target.value.toUpperCase()); setAddError("") }}
                     placeholder="MIA" className={`h-9 text-sm ${addError ? "border-red-400" : ""}`} autoComplete="off" maxLength={6} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Port of Call Name</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Port of Call Name</Label>
                   <Input value={portName} onChange={(e) => { setPortName(e.target.value); setAddError("") }}
                     placeholder="Port of Miami" className="h-10 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Cruise Ship Name</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Cruise Ship Name</Label>
                   <Input value={cruiseShipName} onChange={(e) => setCruiseShipName(e.target.value)}
                     placeholder="Symphony of the Seas" className="h-10 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Cruise Line Name</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Cruise Line Name</Label>
                   <Input value={cruiseLineName} onChange={(e) => setCruiseLineName(e.target.value)}
                     placeholder="Royal Caribbean" className="h-10 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Arriving From / Departing To</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Arriving From / Departing To</Label>
                   <Input value={arrivingDepartingTo} onChange={(e) => setArrivingDepartingTo(e.target.value)}
                     placeholder="Nassau, Bahamas" className="h-10 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>ETA / ETD</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>ETA / ETD</Label>
                   <Input value={etaEtd} onChange={(e) => setEtaEtd(e.target.value)}
                     onBlur={(e) => setEtaEtd(formatTime(e.target.value))}
                     placeholder="e.g. 9:00 AM" className="h-10 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Seaport Instructions</Label>
+                <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Seaport Instructions</Label>
                 <Select value={seaportInstructions} onValueChange={(v) => typeof v === "string" && setSeaportInstructions(v)}>
                   <SelectTrigger className="h-10 text-sm">
                     <SelectValue placeholder="Select instructions…" />
@@ -2147,18 +2147,18 @@ function RouteBuilder({
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Notes</Label>
+                <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Notes</Label>
                 <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                   placeholder="Pier, terminal, additional instructions…" className="h-9 text-xs" />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Phone Number</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     placeholder="+1 (555) 000-0000" className="h-10 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Time In</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
                     placeholder="e.g. 9:30 AM" className="h-10 text-sm" autoComplete="off" />
@@ -2170,7 +2170,7 @@ function RouteBuilder({
             <>
               <div className="grid grid-cols-[1fr_140px] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Location Description / FBO Name *</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Location Description / FBO Name *</Label>
                   <FBOAutocomplete
                     value={locationName}
                     onChange={(v) => { setLocationName(v); setAddError("") }}
@@ -2188,14 +2188,14 @@ function RouteBuilder({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Tail #</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Tail #</Label>
                   <Input value={tailNumber} onChange={(e) => setTailNumber(e.target.value)}
                     className="h-10 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Address 1</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Address 1</Label>
                   <AddressAutocomplete
                     value={address1}
                     onChange={(v) => setAddress1(v)}
@@ -2204,43 +2204,43 @@ function RouteBuilder({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Address 2</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Address 2</Label>
                   <Input value={address2} onChange={(e) => setAddress2(e.target.value)}
                     className="h-10 text-sm" autoComplete="off" />
                 </div>
               </div>
               <div className="grid grid-cols-[2fr_90px_80px_1fr] gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>City</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>City</Label>
                   <CityAutocomplete value={city} onChange={setCity} onStateChange={setStateVal} placeholder="Miami" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>State</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>State</Label>
                   <StateCombobox value={stateVal} onChange={setStateVal} />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Zip</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Zip</Label>
                   <Input value={zip} onChange={(e) => setZip(e.target.value)}
                     className="h-10 text-sm" autoComplete="off" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Country</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Country</Label>
                   <CountryCombobox value={country} onChange={setCountry} />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Notes</Label>
+                <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Notes</Label>
                 <Input value={notes} onChange={(e) => setNotes(e.target.value)}
                   className="h-9 text-xs" />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Phone Number</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Phone Number</Label>
                   <Input value={phone} onChange={(e) => setPhone(e.target.value)}
                     type="tel" className="h-10 text-sm" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Time In</Label>
+                  <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Time In</Label>
                   <Input value={timeIn} onChange={(e) => setTimeIn(e.target.value)}
                     onBlur={(e) => setTimeIn(formatTime(e.target.value))}
                     className="h-10 text-sm" autoComplete="off" />
@@ -2252,7 +2252,7 @@ function RouteBuilder({
         </div>
 
         {/* Role selector + Add button */}
-        <div className="px-3 py-3 border-t flex items-center justify-between gap-2" style={{ background: "rgba(255,255,255,0.015)", borderColor: "rgba(255,255,255,0.06)" }}>
+        <div className="px-3 py-3 border-t flex items-center justify-between gap-2" style={{ background: "rgba(255,255,255,0.015)", borderColor: "var(--lc-bg-glass)" }}>
           {/* Role pills — inline segmented feel */}
           <div className="flex items-center gap-1 flex-wrap">
             {STOP_ROLES.map(({ value, label }) => (
@@ -2261,7 +2261,7 @@ function RouteBuilder({
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-all select-none ${
                   role === value ? STOP_ROLE_STYLE[value].pill : "border-transparent"
                 }`}
-                style={role !== value ? { color: "rgba(255,255,255,0.88)", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" } : {}}
+                style={role !== value ? { color: "var(--lc-text-primary)", background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass)" } : {}}
               >
                 <input type="radio" name="entry-role" value={value} checked={role === value}
                   onChange={() => setRole(value)} className="sr-only" />
@@ -2279,7 +2279,7 @@ function RouteBuilder({
           <button
             type="button" onClick={handleAdd}
             className="flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-xl transition-all flex-shrink-0"
-            style={{ background: "#c9a87c", color: "#0d1526", boxShadow: "0 2px 10px rgba(201,168,124,0.30)" }}
+            style={{ background: "#c9a87c", color: "var(--lc-bg-surface)", boxShadow: "0 2px 10px rgba(201,168,124,0.30)" }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#d4b688" }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "#c9a87c" }}
           >
@@ -2292,9 +2292,9 @@ function RouteBuilder({
       {/* Route list */}
       {stops.length > 0 ? (
         <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
-            <div className="px-3 py-2 border-b" style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.06)" }}>
-              <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)" }}>Routing Information</p>
+          <div className="rounded-xl overflow-hidden" style={{ border: "1px solid var(--lc-bg-glass-mid)" }}>
+            <div className="px-3 py-2 border-b" style={{ background: "var(--lc-bg-card)", borderColor: "var(--lc-bg-glass)" }}>
+              <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--lc-text-label)" }}>Routing Information</p>
             </div>
             <SortableContext items={stops.map((s) => s.id)} strategy={verticalListSortingStrategy}>
               {stops.map((stop) => (
@@ -2321,7 +2321,7 @@ function RouteBuilder({
           </DragOverlay>
         </DndContext>
       ) : (
-        <div className="text-xs text-center py-6 rounded-xl" style={{ color: "rgba(200,212,228,0.40)", border: "1px dashed rgba(255,255,255,0.10)" }}>
+        <div className="text-xs text-center py-6 rounded-xl" style={{ color: "var(--lc-text-muted)", border: "1px dashed var(--lc-border)" }}>
           Add locations above to build the trip itinerary
         </div>
       )}
@@ -2384,9 +2384,9 @@ function StepHeader({ step, icon: Icon, title, subtitle }: { step: number; icon:
       <span className="flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold flex-shrink-0" style={{ background: "rgba(201,168,124,0.20)", color: "#c9a87c" }}>
         {step}
       </span>
-      <Icon className="w-3.5 h-3.5" style={{ color: "rgba(200,212,228,0.40)" }} />
-      <h4 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>{title}</h4>
-      {subtitle && <span className="text-xs" style={{ color: "rgba(200,212,228,0.45)" }}>{subtitle}</span>}
+      <Icon className="w-3.5 h-3.5" style={{ color: "var(--lc-text-muted)" }} />
+      <h4 className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>{title}</h4>
+      {subtitle && <span className="text-xs" style={{ color: "var(--lc-text-label)" }}>{subtitle}</span>}
     </div>
   )
 }
@@ -2575,17 +2575,17 @@ export default function NewTripPage() {
     <div className="h-full flex flex-col">
 
       {/* ─── Header ─── */}
-      <div className="flex items-center gap-3 px-5 py-3 border-b flex-shrink-0" style={{ background: "#0d1526", borderColor: "rgba(255,255,255,0.07)" }}>
+      <div className="flex items-center gap-3 px-5 py-3 border-b flex-shrink-0" style={{ background: "var(--lc-bg-surface)", borderColor: "var(--lc-bg-glass-mid)" }}>
         <button
           type="button"
           onClick={() => router.push("/dispatch")}
-          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors flex-shrink-0" style={{ color: "rgba(255,255,255,0.85)" }} onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.88)" }} onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.55)" }}
+          className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors flex-shrink-0" style={{ color: "var(--lc-text-primary)" }} onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"; (e.currentTarget as HTMLElement).style.color = "var(--lc-text-primary)" }} onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "var(--lc-text-dim)" }}
           aria-label="Go to dispatch"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
-        <div className="h-5 w-px flex-shrink-0" style={{ background: "rgba(255,255,255,0.08)" }} />
-        <h1 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.90)" }}>New Reservation</h1>
+        <div className="h-5 w-px flex-shrink-0" style={{ background: "var(--lc-bg-glass-hover)" }} />
+        <h1 className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>New Reservation</h1>
         <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full flex-shrink-0" style={{ background: "rgba(245,158,11,0.12)", color: "rgba(251,191,36,0.90)", border: "1px solid rgba(245,158,11,0.25)" }}>
           <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0" />
           Draft
@@ -2618,14 +2618,14 @@ export default function NewTripPage() {
           form="new-trip-form"
           type="submit"
           disabled={createTrip.isPending}
-          className="h-9 px-5 text-sm font-semibold rounded-xl transition-colors" style={{ background: "#c9a87c", color: "#0d1526" }}
+          className="h-9 px-5 text-sm font-semibold rounded-xl transition-colors" style={{ background: "#c9a87c", color: "var(--lc-bg-surface)" }}
         >
           {createTrip.isPending ? "Creating…" : "Create Reservation"}
         </Button>
       </div>
 
       {/* ─── Body ─── */}
-      <div className="overflow-y-auto flex-1" style={{ background: "#080c16", "--border": "rgba(255,255,255,0.08)", "--input": "rgba(255,255,255,0.06)", "--ring": "#c9a87c", "--foreground": "rgba(255,255,255,0.88)", "--muted-foreground": "rgba(200,212,228,0.50)", color: "rgba(255,255,255,0.88)" } as React.CSSProperties}>
+      <div className="overflow-y-auto flex-1" style={{ background: "var(--lc-bg-page)", "--border": "var(--lc-bg-glass-hover)", "--input": "var(--lc-bg-glass)", "--ring": "#c9a87c", "--foreground": "var(--lc-text-primary)", "--muted-foreground": "var(--lc-text-label)", color: "var(--lc-text-primary)" } as React.CSSProperties}>
         <form id="new-trip-form" onSubmit={handleSubmit(onSubmit, (errs) => {
           const labels: Record<string, string> = {
             customerId: "Account (Bill To)", pickupDate: "Pickup Date",
@@ -2640,16 +2640,16 @@ export default function NewTripPage() {
             <div className="flex-1 min-w-0 space-y-4 w-full">
 
               {/* ── Card 1: Bill To & Passenger ── */}
-              <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
-                <div className="flex items-center gap-3 px-5 py-3.5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+              <div className="rounded-2xl overflow-hidden" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}>
+                <div className="flex items-center gap-3 px-5 py-3.5 border-b" style={{ borderColor: "var(--lc-bg-glass)" }}>
                   <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.15)" }}>
                     <User className="w-3 h-3" style={{ color: "#c9a87c" }} />
                   </div>
-                  <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Bill To &amp; Passenger</h3>
+                  <h3 className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>Bill To &amp; Passenger</h3>
                 </div>
 
                 {/* Account sub-section */}
-                <div className="px-5 pt-4 pb-4 border-b" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
+                <div className="px-5 pt-4 pb-4 border-b" style={{ borderColor: "var(--lc-bg-glass)" }}>
                   <p className="text-[10px] font-bold uppercase tracking-widest mb-2.5 flex items-center gap-1.5" style={{ color: "#c9a87c" }}>
                     <span className="w-1 h-3 rounded-full inline-block flex-shrink-0" style={{ background: "#c9a87c" }} />
                     Account
@@ -2667,9 +2667,9 @@ export default function NewTripPage() {
                   />
                   {/* Client Reference # */}
                   <div className="mt-3 space-y-1.5">
-                    <Label className="text-[11px] font-semibold flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.88)" }}>
+                    <Label className="text-[11px] font-semibold flex items-center gap-1.5" style={{ color: "var(--lc-text-primary)" }}>
                       Client Reference #
-                      <span className="text-[10px] font-normal normal-case" style={{ color: "rgba(200,212,228,0.55)" }}>— affiliate&apos;s confirmation number for this job</span>
+                      <span className="text-[10px] font-normal normal-case" style={{ color: "var(--lc-text-dim)" }}>— affiliate&apos;s confirmation number for this job</span>
                     </Label>
                     <Input
                       {...register("clientRef")}
@@ -2681,32 +2681,32 @@ export default function NewTripPage() {
 
                 {/* Booked By sub-section */}
                 {selectedAccount && (
-                  <div className="px-5 pt-4 pb-4 border-b" style={{ borderColor: "rgba(255,255,255,0.05)" }}>
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.88)" }}>
-                      <span className="w-1 h-3 rounded-full inline-block flex-shrink-0" style={{ background: "rgba(200,212,228,0.40)" }} />
+                  <div className="px-5 pt-4 pb-4 border-b" style={{ borderColor: "var(--lc-bg-glass)" }}>
+                    <p className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: "var(--lc-text-primary)" }}>
+                      <span className="w-1 h-3 rounded-full inline-block flex-shrink-0" style={{ background: "var(--lc-text-muted)" }} />
                       Booked By
                     </p>
                     <div className="grid grid-cols-2 gap-x-6 gap-y-2.5">
                       <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "rgba(200,212,228,0.40)" }}>Name</p>
-                        <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{selectedAccount.name}</p>
+                        <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "var(--lc-text-muted)" }}>Name</p>
+                        <p className="text-sm font-medium" style={{ color: "var(--lc-text-primary)" }}>{selectedAccount.name}</p>
                       </div>
                       {selectedAccount.company && (
                         <div>
-                          <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "rgba(200,212,228,0.40)" }}>Company</p>
-                          <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{selectedAccount.company}</p>
+                          <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "var(--lc-text-muted)" }}>Company</p>
+                          <p className="text-sm font-medium" style={{ color: "var(--lc-text-primary)" }}>{selectedAccount.company}</p>
                         </div>
                       )}
                       {selectedAccount.phone && (
                         <div>
-                          <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "rgba(200,212,228,0.40)" }}>Phone</p>
-                          <p className="text-sm" style={{ color: "rgba(200,212,228,0.70)" }}>{formatPhone(selectedAccount.phone)}</p>
+                          <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "var(--lc-text-muted)" }}>Phone</p>
+                          <p className="text-sm" style={{ color: "var(--lc-text-secondary)" }}>{formatPhone(selectedAccount.phone)}</p>
                         </div>
                       )}
                       {selectedAccount.email && (
                         <div>
-                          <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "rgba(200,212,228,0.40)" }}>Email</p>
-                          <p className="text-sm" style={{ color: "rgba(200,212,228,0.70)" }}>{selectedAccount.email}</p>
+                          <p className="text-[10px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "var(--lc-text-muted)" }}>Email</p>
+                          <p className="text-sm" style={{ color: "var(--lc-text-secondary)" }}>{selectedAccount.email}</p>
                         </div>
                       )}
                     </div>
@@ -2715,33 +2715,33 @@ export default function NewTripPage() {
 
                 {/* Passenger sub-section */}
                 <div className="px-5 pt-4 pb-5">
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.88)" }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: "var(--lc-text-primary)" }}>
                     <span className="w-1 h-3 rounded-full inline-block flex-shrink-0" style={{ background: "#c9a87c" }} />
                     Passengers
                     <span className="font-normal normal-case" style={{ color: "rgba(255,255,255,0.45)" }}>— if different from account holder</span>
                   </p>
                   <div className="space-y-2.5">
                     {/* Primary passenger */}
-                    <div className="rounded-xl px-4 py-3.5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                    <div className="rounded-xl px-4 py-3.5" style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-mid)" }}>
                       <div className="flex items-center gap-2 mb-3">
                         <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-bold" style={{ background: "rgba(201,168,124,0.20)", color: "#c9a87c" }}>1</span>
                         <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#c9a87c" }}>Primary</span>
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-2.5">
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>First Name</Label>
+                          <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>First Name</Label>
                           <Input {...register("passengerFirstName")} className="h-10 text-sm" />
                         </div>
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Last Name</Label>
+                          <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Last Name</Label>
                           <Input {...register("passengerLastName")} className="h-10 text-sm" />
                         </div>
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Company</Label>
+                          <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Company</Label>
                           <Input {...register("passengerCompany")} className="h-10 text-sm" />
                         </div>
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Phone</Label>
+                          <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Phone</Label>
                           <Input
                             {...register("passengerPhone")}
                             type="tel"
@@ -2760,7 +2760,7 @@ export default function NewTripPage() {
                       </div>
                       <div className="w-[calc(75%-6px)]">
                         <div className="space-y-1.5">
-                          <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Email</Label>
+                          <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Email</Label>
                           <Input {...register("passengerEmail")} type="email" className="h-10 text-sm" />
                         </div>
                       </div>
@@ -2768,31 +2768,31 @@ export default function NewTripPage() {
 
                     {/* Additional passengers */}
                     {additionalPassengers.map((pax, idx) => (
-                      <div key={pax.id} className="group relative rounded-xl px-4 py-3.5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                      <div key={pax.id} className="group relative rounded-xl px-4 py-3.5" style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-mid)" }}>
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-2">
-                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-bold" style={{ background: "rgba(255,255,255,0.08)", color: "rgba(200,212,228,0.65)" }}>{idx + 2}</span>
-                            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)" }}>Additional</span>
+                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[9px] font-bold" style={{ background: "var(--lc-bg-glass-hover)", color: "var(--lc-text-dim)" }}>{idx + 2}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-label)" }}>Additional</span>
                           </div>
                           <button
                             type="button"
                             onClick={() => removeAdditionalPassenger(pax.id)}
-                            className="w-6 h-6 rounded-full flex items-center justify-center transition-all" style={{ color: "rgba(200,212,228,0.30)" }}
+                            className="w-6 h-6 rounded-full flex items-center justify-center transition-all" style={{ color: "var(--lc-text-muted)" }}
                           >
                             <X className="w-3.5 h-3.5" />
                           </button>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>First Name</Label>
+                            <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>First Name</Label>
                             <Input value={pax.firstName} onChange={(e) => updateAdditionalPassenger(pax.id, "firstName", e.target.value)} className="h-10 text-sm" />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Last Name</Label>
+                            <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Last Name</Label>
                             <Input value={pax.lastName} onChange={(e) => updateAdditionalPassenger(pax.id, "lastName", e.target.value)} className="h-10 text-sm" />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Phone</Label>
+                            <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Phone</Label>
                             <Input
                               type="tel"
                               value={pax.phone}
@@ -2808,7 +2808,7 @@ export default function NewTripPage() {
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <Label className="text-[11px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Email</Label>
+                            <Label className="text-[11px] font-medium" style={{ color: "var(--lc-text-primary)" }}>Email</Label>
                             <Input value={pax.email} type="email" onChange={(e) => updateAdditionalPassenger(pax.id, "email", e.target.value)} className="h-10 text-sm" />
                           </div>
                         </div>
@@ -2819,7 +2819,7 @@ export default function NewTripPage() {
                     <button
                       type="button"
                       onClick={addAdditionalPassenger}
-                      className="w-full h-9 flex items-center justify-center gap-1.5 border border-dashed rounded-xl text-[12px] font-medium transition-all" style={{ borderColor: "rgba(255,255,255,0.10)", color: "rgba(200,212,228,0.40)" }}
+                      className="w-full h-9 flex items-center justify-center gap-1.5 border border-dashed rounded-xl text-[12px] font-medium transition-all" style={{ borderColor: "var(--lc-border)", color: "var(--lc-text-muted)" }}
                     >
                       <Plus className="w-3.5 h-3.5" />
                       Add passenger
@@ -2829,17 +2829,17 @@ export default function NewTripPage() {
               </div>
 
               {/* ── Card 2: Schedule ── */}
-              <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
-                <div className="flex items-center gap-3 px-5 py-3.5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+              <div className="rounded-2xl overflow-hidden" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}>
+                <div className="flex items-center gap-3 px-5 py-3.5 border-b" style={{ borderColor: "var(--lc-bg-glass)" }}>
                   <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.15)" }}>
                     <Calendar className="w-3 h-3" style={{ color: "#c9a87c" }} />
                   </div>
-                  <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Schedule</h3>
+                  <h3 className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>Schedule</h3>
                 </div>
                 <div className="px-4 sm:px-5 py-4">
                   <div className="grid grid-cols-2 sm:grid-cols-[180px_160px_1fr_72px_72px] gap-2 sm:gap-3">
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Pickup Date</Label>
+                      <Label className="text-[11px] font-semibold" style={{ color: "var(--lc-text-primary)" }}>Pickup Date</Label>
                       <DatePickerInput
                         value={watch("pickupDate") || ""}
                         onChange={(v) => setValue("pickupDate", v, { shouldValidate: true })}
@@ -2848,7 +2848,7 @@ export default function NewTripPage() {
                       {errors.pickupDate && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Pickup Time</Label>
+                      <Label className="text-[11px] font-semibold" style={{ color: "var(--lc-text-primary)" }}>Pickup Time</Label>
                       <Input
                         type="text"
                         value={watch("pickupTime") || ""}
@@ -2861,7 +2861,7 @@ export default function NewTripPage() {
                       {errors.pickupTime && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Service Type</Label>
+                      <Label className="text-[11px] font-semibold" style={{ color: "var(--lc-text-primary)" }}>Service Type</Label>
                       <Select
                         value={tripTypeValue}
                         onValueChange={(v) => {
@@ -2872,7 +2872,7 @@ export default function NewTripPage() {
                         }}
                       >
                         <SelectTrigger className={`h-9 text-sm w-full ${errors.tripType ? "border-red-400" : ""}`}>
-                          <span className="text-sm" style={{ color: tripTypeValue ? "rgba(255,255,255,0.88)" : "rgba(200,212,228,0.35)" }}>
+                          <span className="text-sm" style={{ color: tripTypeValue ? "var(--lc-text-primary)" : "var(--lc-text-muted)" }}>
                             {tripTypeValue
                               ? (enabledTypes.find(t => t.value === tripTypeValue)?.label ?? tripTypeValue)
                               : "Select type"}
@@ -2887,7 +2887,7 @@ export default function NewTripPage() {
                       {errors.tripType && <p className="text-xs text-red-500">Required</p>}
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Pax</Label>
+                      <Label className="text-[11px] font-semibold" style={{ color: "var(--lc-text-primary)" }}>Pax</Label>
                       <Input
                         type="number" min={1}
                         {...register("passengerCount", { valueAsNumber: true })}
@@ -2895,7 +2895,7 @@ export default function NewTripPage() {
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[11px] font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Bags</Label>
+                      <Label className="text-[11px] font-semibold" style={{ color: "var(--lc-text-primary)" }}>Bags</Label>
                       <Input
                         type="number" min={0}
                         {...register("luggageCount", { valueAsNumber: true })}
@@ -2908,12 +2908,12 @@ export default function NewTripPage() {
               </div>
 
               {/* ── Card 3: Route ── */}
-              <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
-                <div className="flex items-center gap-3 px-5 py-3.5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+              <div className="rounded-2xl overflow-hidden" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}>
+                <div className="flex items-center gap-3 px-5 py-3.5 border-b" style={{ borderColor: "var(--lc-bg-glass)" }}>
                   <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.15)" }}>
                     <MapPin className="w-3 h-3" style={{ color: "#c9a87c" }} />
                   </div>
-                  <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Route</h3>
+                  <h3 className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>Route</h3>
                   {stops.length > 0 && (
                     <span className="ml-auto text-[11px] font-semibold px-2.5 py-0.5 rounded-full" style={{ background: "rgba(52,211,153,0.12)", color: "rgba(52,211,153,0.90)", border: "1px solid rgba(52,211,153,0.20)" }}>
                       {stops.length} stop{stops.length !== 1 ? "s" : ""} added
@@ -2926,20 +2926,20 @@ export default function NewTripPage() {
               </div>
 
               {/* ── Card 4: Notes (tabbed) ── */}
-              <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
-                <div className="flex items-center gap-3 px-4 py-3.5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}>
+              <div className="rounded-2xl overflow-hidden" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}>
+                <div className="flex items-center gap-3 px-4 py-3.5 border-b" style={{ borderColor: "var(--lc-bg-glass)", background: "var(--lc-bg-card)" }}>
                   <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.12)", border: "1px solid rgba(201,168,124,0.20)" }}>
                     <FileText className="w-3 h-3" style={{ color: "#c9a87c" }} />
                   </div>
-                  <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Notes</h3>
-                  <div className="ml-auto flex items-center rounded-lg p-0.5" style={{ background: "rgba(255,255,255,0.06)" }}>
+                  <h3 className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>Notes</h3>
+                  <div className="ml-auto flex items-center rounded-lg p-0.5" style={{ background: "var(--lc-bg-glass)" }}>
                     {(["trip", "internal"] as const).map((tab) => (
                       <button
                         key={tab}
                         type="button"
                         onClick={() => setNotesTab(tab)}
                         className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${notesTab === tab ? "text-white shadow-sm" : ""}`}
-                        style={{ background: notesTab === tab ? "rgba(255,255,255,0.12)" : "transparent", color: notesTab === tab ? "rgba(255,255,255,0.90)" : "rgba(200,212,228,0.50)" }}
+                        style={{ background: notesTab === tab ? "var(--lc-border)" : "transparent", color: notesTab === tab ? "var(--lc-text-primary)" : "var(--lc-text-label)" }}
                       >
                         {tab === "trip" ? "Trip Notes" : "Internal"}
                       </button>
@@ -2983,21 +2983,21 @@ export default function NewTripPage() {
             <div className="w-full lg:w-[288px] lg:flex-shrink-0 lg:sticky lg:top-5 space-y-4">
 
               {/* Dispatch card */}
-              <div className="rounded-2xl" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
-                <div className="flex items-center gap-2.5 px-4 py-3 border-b rounded-t-2xl" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+              <div className="rounded-2xl" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}>
+                <div className="flex items-center gap-2.5 px-4 py-3 border-b rounded-t-2xl" style={{ borderColor: "var(--lc-bg-glass)" }}>
                   <Car className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
-                  <h4 className="text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.85)" }}>Dispatch</h4>
+                  <h4 className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-primary)" }}>Dispatch</h4>
                 </div>
                 <div className="px-4 py-3.5 space-y-2.5">
                   {/* Driver label row with inline Primary/Secondary toggle */}
                   <div className="flex items-center justify-between">
-                    <Label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)" }}>Driver</Label>
-                    <div className="flex items-center gap-0.5 rounded-lg p-0.5" style={{ background: "rgba(255,255,255,0.06)" }}>
+                    <Label className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--lc-text-primary)" }}>Driver</Label>
+                    <div className="flex items-center gap-0.5 rounded-lg p-0.5" style={{ background: "var(--lc-bg-glass)" }}>
                       <button
                         type="button"
                         onClick={() => setDispatchTab("primary")}
                         className={cn("px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150", dispatchTab === "primary" ? "text-white shadow-sm" : "")}
-                        style={{ background: dispatchTab === "primary" ? "rgba(255,255,255,0.12)" : "transparent", color: dispatchTab === "primary" ? "rgba(255,255,255,0.90)" : "rgba(200,212,228,0.45)" }}
+                        style={{ background: dispatchTab === "primary" ? "var(--lc-border)" : "transparent", color: dispatchTab === "primary" ? "var(--lc-text-primary)" : "var(--lc-text-label)" }}
                       >
                         Primary
                       </button>
@@ -3005,7 +3005,7 @@ export default function NewTripPage() {
                         type="button"
                         onClick={() => setDispatchTab("secondary")}
                         className={cn("relative px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all duration-150", dispatchTab === "secondary" ? "text-white shadow-sm" : "")}
-                        style={{ background: dispatchTab === "secondary" ? "rgba(255,255,255,0.12)" : "transparent", color: dispatchTab === "secondary" ? "rgba(255,255,255,0.90)" : "rgba(200,212,228,0.45)" }}
+                        style={{ background: dispatchTab === "secondary" ? "var(--lc-border)" : "transparent", color: dispatchTab === "secondary" ? "var(--lc-text-primary)" : "var(--lc-text-label)" }}
                       >
                         Secondary
                         {(secondaryDriverIdValue || secondaryVehicleIdValue) && (
@@ -3100,13 +3100,13 @@ export default function NewTripPage() {
               />
 
               {/* ADD-ONS — Refined Modern Design (Matching Edit Modal) */}
-              <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
+              <div className="rounded-2xl overflow-hidden" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}>
                 <div className="px-4 py-3.5 space-y-4">
                   {/* Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
                       <div className="w-1 h-4 rounded-full" style={{ background: "#c9a87c" }} />
-                      <h3 className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: "rgba(255,255,255,0.85)" }}>ADD-ONS</h3>
+                      <h3 className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: "var(--lc-text-primary)" }}>ADD-ONS</h3>
                     </div>
                   </div>
 
@@ -3120,11 +3120,11 @@ export default function NewTripPage() {
                         className="flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-xl border-2 transition-all duration-150 group"
                         style={active
                           ? { background: "rgba(201,168,124,0.12)", border: "2px solid rgba(201,168,124,0.50)" }
-                          : { background: "rgba(255,255,255,0.03)", border: "2px solid rgba(255,255,255,0.08)" }
+                          : { background: "var(--lc-bg-card)", border: "2px solid var(--lc-bg-glass-hover)" }
                         }
                       >
-                        <Icon className="w-5 h-5 transition-colors" style={{ color: active ? "#c9a87c" : "rgba(200,212,228,0.40)" }} />
-                        <span className="text-[11px] font-semibold text-center leading-tight transition-colors" style={{ color: active ? "#c9a87c" : "rgba(200,212,228,0.55)" }}>
+                        <Icon className="w-5 h-5 transition-colors" style={{ color: active ? "#c9a87c" : "var(--lc-text-muted)" }} />
+                        <span className="text-[11px] font-semibold text-center leading-tight transition-colors" style={{ color: active ? "#c9a87c" : "var(--lc-text-dim)" }}>
                           {label}
                         </span>
                       </button>
@@ -3132,16 +3132,16 @@ export default function NewTripPage() {
                   </div>
 
                   {/* Child Seats — Integrated Cohesively */}
-                  <div className="rounded-xl overflow-hidden" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                  <div className="rounded-xl overflow-hidden" style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-mid)" }}>
                     <button
                       type="button"
                       onClick={() => setChildSeatsOpen((o) => !o)}
                       className={`w-full flex items-center justify-between px-4 py-3 transition-all ${totalChildSeats > 0 ? "border-b" : ""}`}
-                      style={totalChildSeats > 0 ? { background: "rgba(201,168,124,0.06)", borderColor: "rgba(255,255,255,0.06)" } : {}}
+                      style={totalChildSeats > 0 ? { background: "rgba(201,168,124,0.06)", borderColor: "var(--lc-bg-glass)" } : {}}
                     >
                       <div className="flex items-center gap-3">
-                        <Baby className="w-5 h-5 flex-shrink-0 transition-colors" style={{ color: totalChildSeats > 0 ? "#c9a87c" : "rgba(200,212,228,0.40)" }} />
-                        <span className="text-sm font-semibold transition-colors" style={{ color: totalChildSeats > 0 ? "#c9a87c" : "rgba(200,212,228,0.70)" }}>
+                        <Baby className="w-5 h-5 flex-shrink-0 transition-colors" style={{ color: totalChildSeats > 0 ? "#c9a87c" : "var(--lc-text-muted)" }} />
+                        <span className="text-sm font-semibold transition-colors" style={{ color: totalChildSeats > 0 ? "#c9a87c" : "var(--lc-text-secondary)" }}>
                           Child Seats
                         </span>
                       </div>
@@ -3151,31 +3151,31 @@ export default function NewTripPage() {
                             {totalChildSeats}
                           </span>
                         )}
-                        <ChevronDown className={`w-4 h-4 transition-transform flex-shrink-0 ${childSeatsOpen ? "rotate-180" : ""}`} style={{ color: "rgba(200,212,228,0.45)" }} />
+                        <ChevronDown className={`w-4 h-4 transition-transform flex-shrink-0 ${childSeatsOpen ? "rotate-180" : ""}`} style={{ color: "var(--lc-text-label)" }} />
                       </div>
                     </button>
 
                     {childSeatsOpen && (
-                      <div className="divide-y" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                      <div className="divide-y" style={{ borderColor: "var(--lc-bg-glass)" }}>
                         {CHILD_SEAT_TYPES.map(({ key, label }) => (
                           <div key={key} className="flex items-center justify-between px-4 py-3 transition-colors" style={{ }}>
-                            <span className="text-sm font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>{label}</span>
+                            <span className="text-sm font-medium" style={{ color: "var(--lc-text-secondary)" }}>{label}</span>
                             <div className="flex items-center gap-2.5">
                               <button
                                 type="button"
                                 onClick={() => setChildSeats((s) => ({ ...s, [key]: Math.max(0, s[key] - 1) }))}
                                 disabled={childSeats[key] === 0}
-                                className="w-7 h-7 rounded-lg flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed transition-all text-base leading-none font-light" style={{ border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)", color: "rgba(200,212,228,0.65)" }}
+                                className="w-7 h-7 rounded-lg flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed transition-all text-base leading-none font-light" style={{ border: "1px solid var(--lc-border)", background: "var(--lc-bg-card)", color: "var(--lc-text-dim)" }}
                               >
                                 −
                               </button>
-                              <span className="w-6 text-center text-sm font-bold tabular-nums" style={{ color: childSeats[key] > 0 ? "#c9a87c" : "rgba(200,212,228,0.35)" }}>
+                              <span className="w-6 text-center text-sm font-bold tabular-nums" style={{ color: childSeats[key] > 0 ? "#c9a87c" : "var(--lc-text-muted)" }}>
                                 {childSeats[key]}
                               </span>
                               <button
                                 type="button"
                                 onClick={() => setChildSeats((s) => ({ ...s, [key]: s[key] + 1 }))}
-                                className="w-7 h-7 rounded-lg flex items-center justify-center transition-all text-base leading-none" style={{ border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)", color: "rgba(200,212,228,0.65)" }}
+                                className="w-7 h-7 rounded-lg flex items-center justify-center transition-all text-base leading-none" style={{ border: "1px solid var(--lc-border)", background: "var(--lc-bg-card)", color: "var(--lc-text-dim)" }}
                               >
                                 +
                               </button>
@@ -3203,7 +3203,7 @@ export default function NewTripPage() {
                 type="submit"
                 disabled={createTrip.isPending}
                 className="w-full h-11 text-sm font-semibold rounded-xl transition-colors"
-                style={{ background: "#c9a87c", color: "#0d1526", boxShadow: "0 4px 14px rgba(201,168,124,0.25)" }}
+                style={{ background: "#c9a87c", color: "var(--lc-bg-surface)", boxShadow: "0 4px 14px rgba(201,168,124,0.25)" }}
               >
                 {createTrip.isPending ? "Creating…" : "Create Reservation"}
               </Button>

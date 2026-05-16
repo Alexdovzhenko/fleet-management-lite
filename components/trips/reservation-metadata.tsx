@@ -15,7 +15,7 @@ const ROLE_LABEL: Record<string, string> = {
 const ROLE_STYLE: Record<string, React.CSSProperties> = {
   OWNER:      { background: "rgba(99,102,241,0.15)", color: "rgba(165,180,252,0.90)" },
   DISPATCHER: { background: "rgba(14,165,233,0.12)", color: "rgba(125,211,252,0.90)" },
-  VIEWER:     { background: "rgba(255,255,255,0.06)", color: "rgba(200,212,228,0.60)" },
+  VIEWER:     { background: "var(--lc-bg-glass)", color: "var(--lc-text-dim)" },
 }
 
 // ── Date/time helpers ────────────────────────────────────────────────────────
@@ -82,11 +82,11 @@ export function ReservationMetadata({ createdAt, createdByUser, className }: Res
   const roleStyle = ROLE_STYLE[role] ?? ROLE_STYLE.DISPATCHER
 
   return (
-    <div className={cn("rounded-2xl overflow-hidden", className)} style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
+    <div className={cn("rounded-2xl overflow-hidden", className)} style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}>
       {/* Header */}
-      <div className="flex items-center gap-2.5 px-4 py-3 border-b" style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}>
+      <div className="flex items-center gap-2.5 px-4 py-3 border-b" style={{ borderColor: "var(--lc-bg-glass)", background: "var(--lc-bg-card)" }}>
         <div className="w-1 h-4 rounded-full flex-shrink-0" style={{ background: "#c9a87c" }} />
-        <span className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: "rgba(200,212,228,0.55)" }}>
+        <span className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--lc-text-dim)" }}>
           {isNew ? "Creating As" : "Reservation Details"}
         </span>
       </div>
@@ -97,19 +97,19 @@ export function ReservationMetadata({ createdAt, createdByUser, className }: Res
         {/* Date + Time row */}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-0.5">
-            <p className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.45)" }}>
+            <p className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "var(--lc-text-label)" }}>
               {isNew ? "Today" : "Created"}
             </p>
-            <p className="text-sm font-semibold tabular-nums" style={{ color: "rgba(255,255,255,0.88)" }}>{date}</p>
+            <p className="text-sm font-semibold tabular-nums" style={{ color: "var(--lc-text-primary)" }}>{date}</p>
           </div>
           <div className="space-y-0.5">
-            <p className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "rgba(200,212,228,0.45)" }}>Time</p>
-            <p className="text-sm font-semibold tabular-nums" style={{ color: "rgba(255,255,255,0.88)" }}>{time}</p>
+            <p className="text-[10px] font-medium uppercase tracking-[0.12em]" style={{ color: "var(--lc-text-label)" }}>Time</p>
+            <p className="text-sm font-semibold tabular-nums" style={{ color: "var(--lc-text-primary)" }}>{time}</p>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }} />
+        <div className="border-t" style={{ borderColor: "var(--lc-bg-glass)" }} />
 
         {/* Creator row */}
         {displayUser ? (
@@ -118,8 +118,8 @@ export function ReservationMetadata({ createdAt, createdByUser, className }: Res
               <span className="text-[10px] font-bold text-white leading-none">{initials}</span>
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold truncate leading-tight" style={{ color: "rgba(255,255,255,0.88)" }}>{name}</p>
-              <p className="text-[10px] leading-tight mt-0.5" style={{ color: "rgba(200,212,228,0.45)" }}>
+              <p className="text-xs font-semibold truncate leading-tight" style={{ color: "var(--lc-text-primary)" }}>{name}</p>
+              <p className="text-[10px] leading-tight mt-0.5" style={{ color: "var(--lc-text-label)" }}>
                 {isNew ? "Creating this reservation" : "Created this reservation"}
               </p>
             </div>
@@ -129,14 +129,14 @@ export function ReservationMetadata({ createdAt, createdByUser, className }: Res
           </div>
         ) : !isNew ? (
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} style={{ color: "rgba(200,212,228,0.40)" }}>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)" }}>
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} style={{ color: "var(--lc-text-muted)" }}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
               </svg>
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold truncate leading-tight" style={{ color: "rgba(200,212,228,0.55)" }}>Not recorded</p>
-              <p className="text-[10px] leading-tight mt-0.5" style={{ color: "rgba(200,212,228,0.35)" }}>Created before tracking was enabled</p>
+              <p className="text-xs font-semibold truncate leading-tight" style={{ color: "var(--lc-text-dim)" }}>Not recorded</p>
+              <p className="text-[10px] leading-tight mt-0.5" style={{ color: "var(--lc-text-muted)" }}>Created before tracking was enabled</p>
             </div>
           </div>
         ) : null}

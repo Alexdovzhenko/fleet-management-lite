@@ -19,7 +19,7 @@ const S = {
   input: {
     width: "100%",
     height: "44px",
-    background: "rgba(255,255,255,0.05)",
+    background: "var(--lc-bg-glass)",
     border: "1px solid rgba(255,255,255,0.1)",
     borderRadius: "10px",
     padding: "0 14px",
@@ -43,7 +43,7 @@ const S = {
     transition: "opacity 0.15s, transform 0.1s",
     fontFamily: "inherit",
     background: "linear-gradient(135deg,#2563eb 0%,#4f46e5 100%)",
-    boxShadow: "0 4px 16px rgba(37,99,235,0.3),inset 0 1px 0 rgba(255,255,255,0.12)",
+    boxShadow: "0 4px 16px rgba(37,99,235,0.3),inset 0 1px 0 var(--lc-border)",
   } as React.CSSProperties,
   error: {
     padding: "10px 14px",
@@ -173,7 +173,7 @@ export default function ForgotPasswordPage() {
           )}
         </div>
 
-        <div style={{ height: "1px", background: "rgba(255,255,255,0.07)", marginBottom: "20px" }} />
+        <div style={{ height: "1px", background: "var(--lc-bg-glass-mid)", marginBottom: "20px" }} />
 
         <p style={{ margin: 0, fontSize: "13px", color: "#64748b", textAlign: "center" }}>
           <button

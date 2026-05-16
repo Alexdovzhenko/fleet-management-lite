@@ -109,18 +109,18 @@ function CardSkeleton() {
   return (
     <div
       className="rounded-2xl overflow-hidden animate-pulse"
-      style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+      style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
     >
-      <div className="aspect-[16/9]" style={{ background: "rgba(255,255,255,0.05)" }} />
+      <div className="aspect-[16/9]" style={{ background: "var(--lc-bg-glass)" }} />
       <div className="px-5 pt-4 pb-5 space-y-3">
-        <div className="h-4 rounded-full w-2/3" style={{ background: "rgba(255,255,255,0.07)" }} />
-        <div className="h-3 rounded-full w-1/2" style={{ background: "rgba(255,255,255,0.04)" }} />
+        <div className="h-4 rounded-full w-2/3" style={{ background: "var(--lc-bg-glass-mid)" }} />
+        <div className="h-3 rounded-full w-1/2" style={{ background: "var(--lc-bg-card)" }} />
         <div className="flex items-center justify-between pt-1">
           <div className="flex gap-2">
-            <div className="h-7 rounded-xl w-16" style={{ background: "rgba(255,255,255,0.05)" }} />
-            <div className="h-7 rounded-xl w-20" style={{ background: "rgba(255,255,255,0.05)" }} />
+            <div className="h-7 rounded-xl w-16" style={{ background: "var(--lc-bg-glass)" }} />
+            <div className="h-7 rounded-xl w-20" style={{ background: "var(--lc-bg-glass)" }} />
           </div>
-          <div className="h-9 rounded-xl w-16" style={{ background: "rgba(255,255,255,0.05)" }} />
+          <div className="h-9 rounded-xl w-16" style={{ background: "var(--lc-bg-glass)" }} />
         </div>
       </div>
     </div>
@@ -249,8 +249,8 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
       <div
         className="rounded-2xl overflow-hidden transition-all duration-300 ease-out"
         style={{
-          background: hovered ? "#111e35" : "#0d1526",
-          border: hovered ? "1px solid rgba(255,255,255,0.13)" : "1px solid rgba(255,255,255,0.07)",
+          background: hovered ? "#111e35" : "var(--lc-bg-surface)",
+          border: hovered ? "1px solid var(--lc-border)" : "1px solid var(--lc-bg-glass-mid)",
           boxShadow: hovered ? "0 8px 32px rgba(0,0,0,0.45)" : "0 4px 16px rgba(0,0,0,0.30)",
           transform: hovered ? "translateY(-2px)" : "translateY(0)",
         }}
@@ -263,7 +263,7 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
             "relative aspect-[16/9] overflow-hidden",
             thumb ? "cursor-zoom-in" : ""
           )}
-          style={{ background: "rgba(255,255,255,0.04)" }}
+          style={{ background: "var(--lc-bg-card)" }}
           onClick={() => thumb && setLightbox(true)}
         >
           {thumb ? (
@@ -283,7 +283,7 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
               >
                 <Car className="w-7 h-7" style={{ color: "rgba(201,168,124,0.60)" }} />
               </div>
-              <span className="text-xs font-medium tracking-wide" style={{ color: "rgba(200,212,228,0.35)" }}>
+              <span className="text-xs font-medium tracking-wide" style={{ color: "var(--lc-text-muted)" }}>
                 No photo added
               </span>
             </div>
@@ -327,7 +327,7 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
                   style={{
                     width: i === idx ? "16px" : "6px",
                     height: "6px",
-                    background: i === idx ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.40)",
+                    background: i === idx ? "var(--lc-text-primary)" : "rgba(255,255,255,0.40)",
                   }}
                 />
               ))}
@@ -368,11 +368,11 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
           {/* Show name here only when there's no photo */}
           {!thumb && (
             <div className="mb-3.5">
-              <h3 className="text-[15px] font-bold leading-snug tracking-tight" style={{ color: "rgba(255,255,255,0.90)" }}>
+              <h3 className="text-[15px] font-bold leading-snug tracking-tight" style={{ color: "var(--lc-text-primary)" }}>
                 {vehicle.name}
               </h3>
               {subtitle && (
-                <p className="text-[13px] mt-0.5 font-medium" style={{ color: "rgba(200,212,228,0.50)" }}>
+                <p className="text-[13px] mt-0.5 font-medium" style={{ color: "var(--lc-text-label)" }}>
                   {subtitle}
                 </p>
               )}
@@ -396,7 +396,7 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
               {vehicle.licensePlate && (
                 <span
                   className="inline-flex items-center text-[11px] font-mono font-bold px-2.5 py-1.5 rounded-xl tracking-widest uppercase"
-                  style={{ background: "rgba(255,255,255,0.07)", color: "rgba(200,212,228,0.70)" }}
+                  style={{ background: "var(--lc-bg-glass-mid)", color: "var(--lc-text-secondary)" }}
                 >
                   {vehicle.licensePlate}
                 </span>
@@ -404,7 +404,7 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
 
               {/* Color */}
               {vehicle.color && (
-                <span className="text-[12px] font-medium" style={{ color: "rgba(200,212,228,0.45)" }}>
+                <span className="text-[12px] font-medium" style={{ color: "var(--lc-text-label)" }}>
                   {vehicle.color}
                 </span>
               )}
@@ -414,16 +414,16 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
             <button
               onClick={onEdit}
               className="flex-shrink-0 inline-flex items-center gap-1.5 h-9 px-4 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer"
-              style={{ background: "rgba(255,255,255,0.07)", color: "rgba(200,212,228,0.70)", border: "1px solid rgba(255,255,255,0.09)" }}
+              style={{ background: "var(--lc-bg-glass-mid)", color: "var(--lc-text-secondary)", border: "1px solid var(--lc-bg-glass-hover)" }}
               onMouseEnter={e => {
                 (e.currentTarget as HTMLButtonElement).style.background = "rgba(201,168,124,0.15)"
                 ;(e.currentTarget as HTMLButtonElement).style.color = "#c9a87c"
                 ;(e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(201,168,124,0.30)"
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)"
-                ;(e.currentTarget as HTMLButtonElement).style.color = "rgba(200,212,228,0.70)"
-                ;(e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.09)"
+                (e.currentTarget as HTMLButtonElement).style.background = "var(--lc-bg-glass-mid)"
+                ;(e.currentTarget as HTMLButtonElement).style.color = "var(--lc-text-secondary)"
+                ;(e.currentTarget as HTMLButtonElement).style.borderColor = "var(--lc-bg-glass-hover)"
               }}
             >
               <Pencil className="w-3 h-3" />
@@ -883,20 +883,20 @@ export default function VehiclesPage() {
       {/* Dark backdrop behind dock nav */}
       <div
         className="fixed bottom-0 inset-x-0 pointer-events-none"
-        style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "#080c16", zIndex: 0 }}
+        style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "var(--lc-bg-page)", zIndex: 0 }}
       />
 
       {/* Full-bleed dark page wrapper */}
       <div
         className="-mx-4 -mt-4 md:-mx-6 md:-mt-6"
-        style={{ background: "#080c16", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
+        style={{ background: "var(--lc-bg-page)", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
       >
         <div className="px-4 pt-4 md:px-6 md:pt-6 pb-6 max-w-6xl mx-auto space-y-3">
 
           {/* ── Header card ── */}
           <div
             className="rounded-2xl overflow-hidden"
-            style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
+            style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
           >
             {/* Top row */}
             <div className="flex items-center justify-between gap-4 px-5 pt-5 pb-4">
@@ -915,7 +915,7 @@ export default function VehiclesPage() {
                   }}>
                     Fleet
                   </p>
-                  <p className="leading-tight" style={{ fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "-0.01em" }}>
+                  <p className="leading-tight" style={{ fontSize: "13px", fontWeight: 600, color: "var(--lc-text-primary)", letterSpacing: "-0.01em" }}>
                     {isLoading ? "Loading…" : totalCount === 0 ? "No vehicles yet" : `${totalCount} vehicle${totalCount !== 1 ? "s" : ""} in your fleet`}
                   </p>
                 </div>
@@ -943,7 +943,7 @@ export default function VehiclesPage() {
             </div>
 
             {/* Divider */}
-            <div className="h-px mx-5" style={{ background: "rgba(255,255,255,0.06)" }} />
+            <div className="h-px mx-5" style={{ background: "var(--lc-bg-glass)" }} />
 
             {/* Controls row */}
             <div className="flex items-center gap-2.5 px-5 py-3.5 flex-wrap">
@@ -951,7 +951,7 @@ export default function VehiclesPage() {
               {/* Status filter tabs */}
               <div
                 className="flex items-center gap-0.5 rounded-[11px] p-1"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+                style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)" }}
               >
                 {FILTERS.map(({ key, label }) => {
                   const count =
@@ -966,8 +966,8 @@ export default function VehiclesPage() {
                       onClick={() => setFilter(key as typeof filter)}
                       className="px-3 py-1.5 rounded-[8px] text-[12px] font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer"
                       style={filter === key
-                        ? { background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.92)", boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }
-                        : { color: "rgba(200,212,228,0.55)" }
+                        ? { background: "var(--lc-border)", color: "var(--lc-text-primary)", boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }
+                        : { color: "var(--lc-text-dim)" }
                       }
                     >
                       {label}
@@ -986,7 +986,7 @@ export default function VehiclesPage() {
                     style={
                       typeFilter !== "ALL"
                         ? { background: "rgba(201,168,124,0.18)", border: "1px solid rgba(201,168,124,0.35)", color: "#c9a87c" }
-                        : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(200,212,228,0.70)" }
+                        : { background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)", color: "var(--lc-text-secondary)" }
                     }
                   >
                     <option value="ALL">All types</option>
@@ -998,7 +998,7 @@ export default function VehiclesPage() {
                   </select>
                   <ChevronDown
                     className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none"
-                    style={{ color: typeFilter !== "ALL" ? "#c9a87c" : "rgba(200,212,228,0.45)" }}
+                    style={{ color: typeFilter !== "ALL" ? "#c9a87c" : "var(--lc-text-label)" }}
                   />
                 </div>
               )}
@@ -1009,7 +1009,7 @@ export default function VehiclesPage() {
               <button
                 onClick={() => setShowAdd(true)}
                 className="flex items-center gap-1.5 h-9 px-4 rounded-xl text-[13px] font-semibold transition-all duration-150 active:scale-95 select-none cursor-pointer"
-                style={{ background: "#c9a87c", color: "#080c16", boxShadow: "0 2px 12px rgba(201,168,124,0.28)" }}
+                style={{ background: "#c9a87c", color: "var(--lc-bg-page)", boxShadow: "0 2px 12px rgba(201,168,124,0.28)" }}
                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#d4b98c" }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#c9a87c" }}
               >
@@ -1033,16 +1033,16 @@ export default function VehiclesPage() {
               >
                 <Car className="w-9 h-9" style={{ color: "rgba(201,168,124,0.50)" }} />
               </div>
-              <h3 className="text-lg font-bold tracking-tight" style={{ color: "rgba(255,255,255,0.88)" }}>
+              <h3 className="text-lg font-bold tracking-tight" style={{ color: "var(--lc-text-primary)" }}>
                 No vehicles yet
               </h3>
-              <p className="text-sm mt-1.5 mb-6 max-w-xs leading-relaxed" style={{ color: "rgba(200,212,228,0.50)" }}>
+              <p className="text-sm mt-1.5 mb-6 max-w-xs leading-relaxed" style={{ color: "var(--lc-text-label)" }}>
                 Add your first vehicle to start assigning trips and managing your fleet.
               </p>
               <button
                 onClick={() => setShowAdd(true)}
                 className="flex items-center gap-2 px-5 h-10 rounded-xl font-semibold text-sm transition-all duration-150 active:scale-95 cursor-pointer"
-                style={{ background: "#c9a87c", color: "#080c16", boxShadow: "0 2px 12px rgba(201,168,124,0.28)" }}
+                style={{ background: "#c9a87c", color: "var(--lc-bg-page)", boxShadow: "0 2px 12px rgba(201,168,124,0.28)" }}
                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#d4b98c" }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#c9a87c" }}
               >
@@ -1052,7 +1052,7 @@ export default function VehiclesPage() {
             </div>
           ) : !filtered?.length ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <p className="text-sm" style={{ color: "rgba(200,212,228,0.50)" }}>
+              <p className="text-sm" style={{ color: "var(--lc-text-label)" }}>
                 No vehicles match this filter.
               </p>
               <button

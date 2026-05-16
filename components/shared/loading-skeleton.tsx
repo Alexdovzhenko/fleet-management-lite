@@ -38,16 +38,16 @@ export function TableSkeleton({ rows = 5, dark = false }: { rows?: number; dark?
     return (
       <div
         className="rounded-2xl overflow-hidden flex-1"
-        style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
+        style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
       >
         {/* Header */}
         <div
           className="flex items-center gap-0"
-          style={{ background: "rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+          style={{ background: "var(--lc-bg-card)", borderBottom: "1px solid var(--lc-bg-glass-hover)" }}
         >
           {cols.map((col, i) => (
             <div key={i} className="px-3 py-2.5 flex-shrink-0" style={{ width: `${col.w}px` }}>
-              <div className="h-2 rounded-full" style={{ width: `${col.label}px`, background: "rgba(255,255,255,0.09)", animation: "pulse 2s cubic-bezier(0.4,0,0.6,1) infinite" }} />
+              <div className="h-2 rounded-full" style={{ width: `${col.label}px`, background: "var(--lc-bg-glass-hover)", animation: "pulse 2s cubic-bezier(0.4,0,0.6,1) infinite" }} />
             </div>
           ))}
         </div>
@@ -56,7 +56,7 @@ export function TableSkeleton({ rows = 5, dark = false }: { rows?: number; dark?
           <div
             key={i}
             className="flex items-center gap-0"
-            style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", animationDelay: `${i * 40}ms` }}
+            style={{ borderBottom: "1px solid var(--lc-bg-glass)", animationDelay: `${i * 40}ms` }}
           >
             {cols.map((col, j) => {
               const variant = rowWidthVariants[(i + j) % rowWidthVariants.length]
@@ -69,7 +69,7 @@ export function TableSkeleton({ rows = 5, dark = false }: { rows?: number; dark?
                     style={{
                       height: isStatus ? "22px" : isTime ? "14px" : "10px",
                       width: isStatus ? "80px" : `${Math.round(col.label * variant)}px`,
-                      background: "rgba(255,255,255,0.06)",
+                      background: "var(--lc-bg-glass)",
                       animation: `pulse 2s cubic-bezier(0.4,0,0.6,1) ${i * 40 + j * 15}ms infinite`,
                       borderRadius: isStatus ? "999px" : "4px",
                     }}

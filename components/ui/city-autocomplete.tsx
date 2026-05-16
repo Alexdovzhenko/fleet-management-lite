@@ -170,7 +170,7 @@ export function CityAutocomplete({
           onFocus={() => { console.log(`[CityAutocomplete] onFocus: query="${query}" results.length=${results.length}`); query.length > 0 && results.length > 0 && openDropdown() }}
           placeholder={placeholder}
           autoComplete="off"
-          className="w-full h-10 text-sm rounded-md pl-2.5 pr-6 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.85)" }}
+          className="w-full h-10 text-sm rounded-md pl-2.5 pr-6 focus:outline-none focus:ring-1 focus:ring-[#c9a87c]" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-primary)" }}
         />
         <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
       </div>
@@ -178,7 +178,7 @@ export function CityAutocomplete({
       {open && results.length > 0 && (() => { console.log(`[CityAutocomplete] Rendering portal with ${results.length} results`); return true; })() && createPortal(
         <div
           ref={dropRef}
-          style={{ ...dropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }}
+          style={{ ...dropStyle, background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", boxShadow: "0 8px 32px rgba(0,0,0,0.6)" }}
           className="rounded-xl overflow-hidden"
         >
           <div className="max-h-[220px] overflow-y-auto">
@@ -194,8 +194,8 @@ export function CityAutocomplete({
                 }`}
               >
                 <MapPin className="w-3 h-3 flex-shrink-0" style={{ color: "rgba(201,168,124,0.60)" }} />
-                <span className="text-sm font-medium flex-1 truncate" style={{ color: "rgba(255,255,255,0.85)" }}>{entry.city}</span>
-                <span className="text-xs flex-shrink-0 whitespace-nowrap" style={{ color: "rgba(200,212,228,0.45)" }}>
+                <span className="text-sm font-medium flex-1 truncate" style={{ color: "var(--lc-text-primary)" }}>{entry.city}</span>
+                <span className="text-xs flex-shrink-0 whitespace-nowrap" style={{ color: "var(--lc-text-label)" }}>
                   {STATE_NAMES[entry.state] ?? entry.state}
                 </span>
               </button>

@@ -34,9 +34,9 @@ interface CopyReservationModalProps {
 const SERVICE_TYPES: TripType[] = ["ONE_WAY", "ROUND_TRIP", "HOURLY", "AIRPORT_PICKUP", "AIRPORT_DROPOFF", "MULTI_STOP", "SHUTTLE"]
 
 const inputStyle: React.CSSProperties = {
-  background: "rgba(255,255,255,0.05)",
-  border: "1px solid rgba(255,255,255,0.12)",
-  color: "rgba(255,255,255,0.88)",
+  background: "var(--lc-bg-glass)",
+  border: "1px solid var(--lc-border)",
+  color: "var(--lc-text-primary)",
   borderRadius: "10px",
   height: "40px",
   width: "100%",
@@ -138,13 +138,13 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
       <DialogContent
         showCloseButton={false}
         className="w-full max-w-xl rounded-2xl p-0 overflow-hidden gap-0"
-        style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.09)", boxShadow: "0 32px 80px rgba(0,0,0,0.70)" }}
+        style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-hover)", boxShadow: "0 32px 80px rgba(0,0,0,0.70)" }}
       >
         {/* Header */}
-        <div className="flex items-start justify-between px-6 py-5 flex-shrink-0" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+        <div className="flex items-start justify-between px-6 py-5 flex-shrink-0" style={{ borderBottom: "1px solid var(--lc-bg-glass-mid)" }}>
           <div>
-            <h2 className="text-lg font-semibold" style={{ color: "rgba(255,255,255,0.92)" }}>Copy Reservation</h2>
-            <p className="text-xs mt-0.5" style={{ color: "rgba(200,212,228,0.50)" }}>
+            <h2 className="text-lg font-semibold" style={{ color: "var(--lc-text-primary)" }}>Copy Reservation</h2>
+            <p className="text-xs mt-0.5" style={{ color: "var(--lc-text-label)" }}>
               Confirmation{" "}
               <span className="font-mono font-semibold" style={{ color: "#c9a87c" }}>{trip.tripNumber}</span>
             </p>
@@ -153,9 +153,9 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
             type="button"
             onClick={onClose}
             className="flex items-center justify-center w-7 h-7 rounded-lg transition-colors flex-shrink-0"
-            style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.05)" }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.09)" }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+            style={{ color: "var(--lc-text-label)", background: "var(--lc-bg-glass)" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)" }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
           >
             <X className="w-4 h-4" />
           </button>
@@ -168,18 +168,18 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
               <Check className="w-8 h-8" style={{ color: "#34d399" }} strokeWidth={2.5} />
             </div>
             <div className="text-center">
-              <h3 className="text-lg font-semibold" style={{ color: "rgba(255,255,255,0.92)" }}>Reservation Copied</h3>
-              <p className="text-sm mt-1" style={{ color: "rgba(200,212,228,0.55)" }}>New reservation created with all original details.</p>
+              <h3 className="text-lg font-semibold" style={{ color: "var(--lc-text-primary)" }}>Reservation Copied</h3>
+              <p className="text-sm mt-1" style={{ color: "var(--lc-text-dim)" }}>New reservation created with all original details.</p>
             </div>
-            <div className="px-6 py-3 rounded-xl" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)" }}>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-center mb-1" style={{ color: "rgba(200,212,228,0.40)" }}>New Confirmation</p>
+            <div className="px-6 py-3 rounded-xl" style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)" }}>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-center mb-1" style={{ color: "var(--lc-text-muted)" }}>New Confirmation</p>
               <p className="text-lg font-mono font-bold text-center" style={{ color: "#c9a87c" }}>{success.tripNumber}</p>
             </div>
             <button
               type="button"
               onClick={onClose}
               className="w-full max-w-xs py-2.5 rounded-xl text-sm font-semibold transition-colors"
-              style={{ background: "#c9a87c", color: "#0d1526" }}
+              style={{ background: "#c9a87c", color: "var(--lc-bg-surface)" }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#d4b688" }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "#c9a87c" }}
             >
@@ -192,16 +192,16 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
 
               {/* Route */}
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.40)" }}>Route</p>
-                <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--lc-text-muted)" }}>Route</p>
+                <div className="rounded-xl overflow-hidden" style={{ border: "1px solid var(--lc-bg-glass-hover)" }}>
                   {/* Pickup */}
-                  <div className="flex items-start gap-3 px-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                  <div className="flex items-start gap-3 px-4 py-3" style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}>
                     <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.20)" }}>
                       <MapPin className="w-3.5 h-3.5" style={{ color: "#34d399" }} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold uppercase tracking-wide mb-0.5" style={{ color: "rgba(52,211,153,0.70)" }}>Pickup</p>
-                      <p className="text-sm leading-snug" style={{ color: "rgba(255,255,255,0.85)" }}>{trip.pickupAddress}</p>
+                      <p className="text-sm leading-snug" style={{ color: "var(--lc-text-primary)" }}>{trip.pickupAddress}</p>
                     </div>
                   </div>
                   {/* Drop-off */}
@@ -211,7 +211,7 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-semibold uppercase tracking-wide mb-0.5" style={{ color: "rgba(248,113,113,0.65)" }}>Destination</p>
-                      <p className="text-sm leading-snug" style={{ color: "rgba(255,255,255,0.85)" }}>{trip.dropoffAddress}</p>
+                      <p className="text-sm leading-snug" style={{ color: "var(--lc-text-primary)" }}>{trip.dropoffAddress}</p>
                     </div>
                   </div>
                 </div>
@@ -220,44 +220,44 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
               {/* Service Type + Vehicle */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(200,212,228,0.40)" }}>Service Type</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "var(--lc-text-muted)" }}>Service Type</p>
                   <div className="relative">
                     <select
                       value={serviceType}
                       onChange={(e) => setServiceType(e.target.value as TripType)}
                       style={inputStyle}
                       onFocus={e => { e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)" }}
-                      onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)" }}
+                      onBlur={e => { e.currentTarget.style.borderColor = "var(--lc-border)" }}
                     >
                       {SERVICE_TYPES.map(type => (
-                        <option key={type} value={type} style={{ background: "#0d1526", color: "rgba(255,255,255,0.88)" }}>
+                        <option key={type} value={type} style={{ background: "var(--lc-bg-surface)", color: "var(--lc-text-primary)" }}>
                           {type.replace(/_/g, " ")}
                         </option>
                       ))}
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "rgba(200,212,228,0.35)" }} />
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "var(--lc-text-muted)" }} />
                   </div>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(200,212,228,0.40)" }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "var(--lc-text-muted)" }}>
                     Vehicle <span style={{ color: "rgba(248,113,113,0.80)" }}>*</span>
                   </p>
                   <div className="relative">
                     <select
                       value={vehicleId}
                       onChange={(e) => { setVehicleId(e.target.value); if (timeError === "Please select a vehicle") setTimeError("") }}
-                      style={{ ...inputStyle, borderColor: timeError === "Please select a vehicle" ? "rgba(248,113,113,0.50)" : "rgba(255,255,255,0.12)" }}
+                      style={{ ...inputStyle, borderColor: timeError === "Please select a vehicle" ? "rgba(248,113,113,0.50)" : "var(--lc-border)" }}
                       onFocus={e => { e.currentTarget.style.borderColor = timeError === "Please select a vehicle" ? "rgba(248,113,113,0.60)" : "rgba(201,168,124,0.50)" }}
-                      onBlur={e => { e.currentTarget.style.borderColor = timeError === "Please select a vehicle" ? "rgba(248,113,113,0.50)" : "rgba(255,255,255,0.12)" }}
+                      onBlur={e => { e.currentTarget.style.borderColor = timeError === "Please select a vehicle" ? "rgba(248,113,113,0.50)" : "var(--lc-border)" }}
                     >
-                      <option value="" style={{ background: "#0d1526", color: "rgba(200,212,228,0.50)" }}>Select a vehicle</option>
+                      <option value="" style={{ background: "var(--lc-bg-surface)", color: "var(--lc-text-label)" }}>Select a vehicle</option>
                       {vehicles.map(v => (
-                        <option key={v.id} value={v.id} style={{ background: "#0d1526", color: "rgba(255,255,255,0.88)" }}>
+                        <option key={v.id} value={v.id} style={{ background: "var(--lc-bg-surface)", color: "var(--lc-text-primary)" }}>
                           {v.name} ({v.type})
                         </option>
                       ))}
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "rgba(200,212,228,0.35)" }} />
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "var(--lc-text-muted)" }} />
                   </div>
                 </div>
               </div>
@@ -265,28 +265,28 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
               {/* Billing Contact + Passenger */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(200,212,228,0.40)" }}>Billing Contact</p>
-                  <p className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>{customerName}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "var(--lc-text-muted)" }}>Billing Contact</p>
+                  <p className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>{customerName}</p>
                   {customerPhone !== "-" && (
-                    <p className="text-xs mt-0.5" style={{ color: "rgba(200,212,228,0.50)" }}>{formatPhone(customerPhone)}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--lc-text-label)" }}>{formatPhone(customerPhone)}</p>
                   )}
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(200,212,228,0.40)" }}>Passenger</p>
-                  <p className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>{passengerLabel}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "var(--lc-text-muted)" }}>Passenger</p>
+                  <p className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>{passengerLabel}</p>
                 </div>
               </div>
 
               {/* Adjustments */}
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.40)" }}>Adjustments</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--lc-text-muted)" }}>Adjustments</p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-xs font-medium mb-2" style={{ color: "rgba(200,212,228,0.60)" }}>Pickup Date</p>
+                    <p className="text-xs font-medium mb-2" style={{ color: "var(--lc-text-dim)" }}>Pickup Date</p>
                     <DatePickerInput value={pickupDate} onChange={setPickupDate} className="w-full" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium mb-2" style={{ color: "rgba(200,212,228,0.60)" }}>Pickup Time</p>
+                    <p className="text-xs font-medium mb-2" style={{ color: "var(--lc-text-dim)" }}>Pickup Time</p>
                     <input
                       type="text"
                       value={pickupTime}
@@ -297,10 +297,10 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
                       style={{
                         ...inputStyle,
                         padding: "0 12px",
-                        borderColor: timeError && timeError !== "Please select a vehicle" ? "rgba(248,113,113,0.50)" : "rgba(255,255,255,0.12)",
+                        borderColor: timeError && timeError !== "Please select a vehicle" ? "rgba(248,113,113,0.50)" : "var(--lc-border)",
                       }}
                       onFocus={e => { e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)" }}
-                      onBlur={e => { e.currentTarget.style.borderColor = timeError && timeError !== "Please select a vehicle" ? "rgba(248,113,113,0.50)" : "rgba(255,255,255,0.12)" }}
+                      onBlur={e => { e.currentTarget.style.borderColor = timeError && timeError !== "Please select a vehicle" ? "rgba(248,113,113,0.50)" : "var(--lc-border)" }}
                     />
                   </div>
                 </div>
@@ -315,7 +315,7 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
               {/* Notes */}
               <div
                 className="flex items-start gap-3 rounded-xl px-4 py-3 cursor-pointer transition-colors"
-                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}
+                style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-hover)" }}
                 onClick={() => setCopyNotes(v => !v)}
               >
                 <Checkbox
@@ -325,8 +325,8 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
                   onClick={e => e.stopPropagation()}
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Include notes</p>
-                  <p className="text-xs mt-1 leading-relaxed" style={{ color: "rgba(200,212,228,0.50)" }}>
+                  <p className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>Include notes</p>
+                  <p className="text-xs mt-1 leading-relaxed" style={{ color: "var(--lc-text-label)" }}>
                     {trip.notes
                       ? `"${trip.notes.substring(0, 100)}${trip.notes.length > 100 ? "…" : ""}"`
                       : "No notes on original reservation"}
@@ -337,7 +337,7 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
               {/* Attachments */}
               {trip.attachments && trip.attachments.length > 0 && (
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.40)" }}>Attached Files</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--lc-text-muted)" }}>Attached Files</p>
                   <div className="space-y-2">
                     {trip.attachments.map((attachment) => {
                       const Icon = getFileIcon(attachment.mimeType)
@@ -347,8 +347,8 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
                           key={attachment.id}
                           className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl cursor-pointer transition-colors"
                           style={{
-                            background: isSelected ? "rgba(201,168,124,0.08)" : "rgba(255,255,255,0.04)",
-                            border: `1px solid ${isSelected ? "rgba(201,168,124,0.20)" : "rgba(255,255,255,0.08)"}`,
+                            background: isSelected ? "rgba(201,168,124,0.08)" : "var(--lc-bg-card)",
+                            border: `1px solid ${isSelected ? "rgba(201,168,124,0.20)" : "var(--lc-bg-glass-hover)"}`,
                           }}
                         >
                           <Checkbox
@@ -362,12 +362,12 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
                               })
                             }}
                           />
-                          <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.08)" }}>
-                            <Icon className="w-3.5 h-3.5" style={{ color: "rgba(200,212,228,0.55)" }} />
+                          <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0" style={{ background: "var(--lc-bg-glass-hover)" }}>
+                            <Icon className="w-3.5 h-3.5" style={{ color: "var(--lc-text-dim)" }} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-semibold truncate" style={{ color: "rgba(255,255,255,0.85)" }}>{attachment.name}</p>
-                            <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.40)" }}>{formatFileSize(attachment.size)}</p>
+                            <p className="text-xs font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>{attachment.name}</p>
+                            <p className="text-[11px]" style={{ color: "var(--lc-text-muted)" }}>{formatFileSize(attachment.size)}</p>
                           </div>
                         </label>
                       )
@@ -378,15 +378,15 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
             </div>
 
             {/* Footer */}
-            <div className="flex items-center gap-3 px-6 py-4 flex-shrink-0" style={{ borderTop: "1px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.02)" }}>
+            <div className="flex items-center gap-3 px-6 py-4 flex-shrink-0" style={{ borderTop: "1px solid var(--lc-bg-glass-mid)", background: "var(--lc-bg-card)" }}>
               <button
                 type="button"
                 onClick={onClose}
                 disabled={createTrip.isPending}
                 className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors"
-                style={{ background: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.75)", border: "1px solid rgba(255,255,255,0.10)" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.10)" }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)" }}
+                style={{ background: "var(--lc-bg-glass-mid)", color: "var(--lc-text-secondary)", border: "1px solid var(--lc-border)" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-border)" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-mid)" }}
               >
                 Cancel
               </button>
@@ -394,7 +394,7 @@ export function CopyReservationModal({ trip, open, onClose }: CopyReservationMod
                 type="submit"
                 disabled={createTrip.isPending}
                 className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
-                style={{ background: "#c9a87c", color: "#0d1526" }}
+                style={{ background: "#c9a87c", color: "var(--lc-bg-surface)" }}
                 onMouseEnter={e => { if (!createTrip.isPending) (e.currentTarget as HTMLElement).style.background = "#d4b688" }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "#c9a87c" }}
               >

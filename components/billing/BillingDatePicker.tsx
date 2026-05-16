@@ -78,9 +78,9 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
     const beforeStart  = selectedStart && selectionMode === "end" && isBefore(day, selectedStart)
 
     if (beforeStart) return { color: "rgba(200,212,228,0.20)", cursor: "not-allowed" }
-    if (isStart || isEnd) return { background: "#c9a87c", color: "#080c16", fontWeight: 600, cursor: "pointer", borderRadius: "8px" }
-    if (inRange) return { background: "rgba(201,168,124,0.12)", color: "rgba(255,255,255,0.80)", cursor: "pointer", borderRadius: "8px" }
-    return { color: "rgba(200,212,228,0.75)", cursor: "pointer", borderRadius: "8px" }
+    if (isStart || isEnd) return { background: "#c9a87c", color: "var(--lc-bg-page)", fontWeight: 600, cursor: "pointer", borderRadius: "8px" }
+    if (inRange) return { background: "rgba(201,168,124,0.12)", color: "var(--lc-text-secondary)", cursor: "pointer", borderRadius: "8px" }
+    return { color: "var(--lc-text-secondary)", cursor: "pointer", borderRadius: "8px" }
   }
 
   return (
@@ -90,7 +90,7 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
         className="flex items-center gap-2 h-9 px-3 rounded-xl text-[13px] font-medium transition-all duration-150 cursor-pointer whitespace-nowrap"
         style={isActive
           ? { background: "rgba(201,168,124,0.15)", border: "1px solid rgba(201,168,124,0.30)", color: "#c9a87c" }
-          : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(200,212,228,0.70)" }
+          : { background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)", color: "var(--lc-text-secondary)" }
         }
       >
         <Calendar className="w-3.5 h-3.5 shrink-0" />
@@ -99,7 +99,7 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
           <span
             onClick={handleClear}
             className="cursor-pointer"
-            style={{ color: isActive ? "rgba(201,168,124,0.60)" : "rgba(200,212,228,0.38)" }}
+            style={{ color: isActive ? "rgba(201,168,124,0.60)" : "var(--lc-text-muted)" }}
             onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = "1"}
             onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = "0.6"}
           >
@@ -112,21 +112,21 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
         <div
           className="absolute top-full mt-1.5 left-0 z-50 rounded-2xl p-4 w-[300px]"
           style={{
-            background: "#0d1526",
-            border: "1px solid rgba(255,255,255,0.10)",
+            background: "var(--lc-bg-surface)",
+            border: "1px solid var(--lc-border)",
             boxShadow: "0 20px 60px rgba(0,0,0,0.70)",
           }}
         >
           {/* Mode toggle */}
-          <div className="flex gap-1.5 mb-4 p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.05)" }}>
+          <div className="flex gap-1.5 mb-4 p-1 rounded-xl" style={{ background: "var(--lc-bg-glass)" }}>
             {(["single", "range"] as const).map((mode) => (
               <button
                 key={mode}
                 onClick={() => { setDateMode(mode); setSelectionMode("start"); if (mode === "single") setSelectedEnd(null) }}
                 className="flex-1 py-1.5 rounded-[9px] text-[12px] font-semibold transition-all duration-150 cursor-pointer capitalize"
                 style={dateMode === mode
-                  ? { background: "#c9a87c", color: "#080c16" }
-                  : { color: "rgba(200,212,228,0.55)" }
+                  ? { background: "#c9a87c", color: "var(--lc-bg-page)" }
+                  : { color: "var(--lc-text-dim)" }
                 }
               >
                 {mode === "single" ? "Single Date" : "Date Range"}
@@ -138,14 +138,14 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
           {dateMode === "range" && (
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.40)", letterSpacing: "0.14em" }}>
+                <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: "var(--lc-text-muted)", letterSpacing: "0.14em" }}>
                   Step {selectionMode === "start" ? "1" : "2"} / 2
                 </span>
-                <span className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.55)" }}>
+                <span className="text-[11px] font-medium" style={{ color: "var(--lc-text-dim)" }}>
                   {selectionMode === "start" ? "Select start date" : "Select end date"}
                 </span>
               </div>
-              <div className="h-0.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.07)" }}>
+              <div className="h-0.5 rounded-full overflow-hidden" style={{ background: "var(--lc-bg-glass-mid)" }}>
                 <div
                   className="h-full rounded-full transition-all duration-300"
                   style={{ width: selectionMode === "start" ? "50%" : "100%", background: "#c9a87c" }}
@@ -170,7 +170,7 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
                     {format(selectedStart, "MMM d")}
                   </span>
                   <Arrow className="w-4 h-4" style={{ color: "rgba(201,168,124,0.50)" }} />
-                  <span className="text-[13px] font-semibold" style={{ color: selectedEnd ? "#c9a87c" : "rgba(200,212,228,0.55)" }}>
+                  <span className="text-[13px] font-semibold" style={{ color: selectedEnd ? "#c9a87c" : "var(--lc-text-dim)" }}>
                     {selectedEnd ? format(selectedEnd, "MMM d, yyyy") : "End date"}
                   </span>
                 </>
@@ -183,9 +183,9 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
             <button
               onClick={(e) => { e.stopPropagation(); setSelectedStart(null); setSelectedEnd(null); setSelectionMode("start"); onChange(null, null) }}
               className="w-full mb-4 py-2 rounded-xl text-[12px] font-semibold transition-all duration-150 cursor-pointer"
-              style={{ color: "rgba(200,212,228,0.55)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+              style={{ color: "var(--lc-text-dim)", background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-hover)" }}
               onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "#f87171"}
-              onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.55)"}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "var(--lc-text-dim)"}
             >
               Clear selection
             </button>
@@ -196,20 +196,20 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
             <button
               onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
               className="w-7 h-7 flex items-center justify-center rounded-lg transition-all duration-100 cursor-pointer"
-              style={{ color: "rgba(200,212,228,0.55)" }}
-              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"}
+              style={{ color: "var(--lc-text-dim)" }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)"}
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-[13px] font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>
+            <span className="text-[13px] font-semibold" style={{ color: "var(--lc-text-primary)" }}>
               {format(currentMonth, "MMMM yyyy")}
             </span>
             <button
               onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
               className="w-7 h-7 flex items-center justify-center rounded-lg transition-all duration-100 cursor-pointer"
-              style={{ color: "rgba(200,212,228,0.55)" }}
-              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"}
+              style={{ color: "var(--lc-text-dim)" }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)"}
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
             >
               <ChevronRightIcon className="w-4 h-4" />
@@ -219,7 +219,7 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
           {/* Day headers */}
           <div className="grid grid-cols-7 gap-0.5 mb-1">
             {["Su","Mo","Tu","We","Th","Fr","Sa"].map((d) => (
-              <div key={d} className="h-8 flex items-center justify-center text-[11px] font-semibold" style={{ color: "rgba(200,212,228,0.55)" }}>
+              <div key={d} className="h-8 flex items-center justify-center text-[11px] font-semibold" style={{ color: "var(--lc-text-dim)" }}>
                 {d}
               </div>
             ))}
@@ -236,7 +236,7 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
                 style={getDayStyle(day)}
                 onMouseEnter={e => {
                   const s = getDayStyle(day)
-                  if (!s.background) (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"
+                  if (!s.background) (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"
                 }}
                 onMouseLeave={e => {
                   const s = getDayStyle(day)
@@ -249,7 +249,7 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
           </div>
 
           {/* Quick ranges */}
-          <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: "12px" }} className="space-y-0.5">
+          <div style={{ borderTop: "1px solid var(--lc-bg-glass-mid)", paddingTop: "12px" }} className="space-y-0.5">
             {[
               { label: "Today",       action: () => { const t = new Date(); setSelectedStart(t); setSelectedEnd(t); onChange(format(t,"yyyy-MM-dd"), format(t,"yyyy-MM-dd")); setIsOpen(false) } },
               { label: "Last 7 days", action: () => { const t = new Date(); const s = new Date(t); s.setDate(t.getDate()-7); setSelectedStart(s); setSelectedEnd(t); onChange(format(s,"yyyy-MM-dd"), format(t,"yyyy-MM-dd")); setIsOpen(false) } },
@@ -259,14 +259,14 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
                 key={label}
                 onClick={action}
                 className="w-full text-left px-3 py-2 rounded-lg text-[12px] font-medium transition-colors duration-100 cursor-pointer"
-                style={{ color: "rgba(200,212,228,0.65)" }}
+                style={{ color: "var(--lc-text-dim)" }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"
-                  ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.88)"
+                  (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"
+                  ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-primary)"
                 }}
                 onMouseLeave={e => {
                   (e.currentTarget as HTMLElement).style.background = "transparent"
-                  ;(e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.65)"
+                  ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-dim)"
                 }}
               >
                 {label}

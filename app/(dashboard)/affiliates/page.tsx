@@ -120,14 +120,14 @@ const filterTriggerActive = {
 } as const
 
 const filterTriggerInactive = {
-  background: "rgba(255,255,255,0.05)",
-  border: "1px solid rgba(255,255,255,0.09)",
-  color: "rgba(200,212,228,0.70)",
+  background: "var(--lc-bg-glass)",
+  border: "1px solid var(--lc-bg-glass-hover)",
+  color: "var(--lc-text-secondary)",
 } as const
 
 const darkPanel = {
-  background: "#0d1526",
-  border: "1px solid rgba(255,255,255,0.10)",
+  background: "var(--lc-bg-surface)",
+  border: "1px solid var(--lc-border)",
   boxShadow: "0 16px 48px rgba(0,0,0,0.60)",
 } as const
 
@@ -211,7 +211,7 @@ function LocationMultiSelect({ value, onChange }: { value: string[]; onChange: (
             {/* Search zone */}
             <div className="p-2.5 pb-2">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "rgba(200,212,228,0.38)" }} />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "var(--lc-text-muted)" }} />
                 <input
                   ref={inputRef}
                   type="text"
@@ -220,16 +220,16 @@ function LocationMultiSelect({ value, onChange }: { value: string[]; onChange: (
                   placeholder="Search cities & states…"
                   className="w-full pl-8.5 pr-8 h-9 text-sm rounded-xl outline-none transition-all"
                   style={{
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.09)",
-                    color: "rgba(255,255,255,0.88)",
+                    background: "var(--lc-bg-glass)",
+                    border: "1px solid var(--lc-bg-glass-hover)",
+                    color: "var(--lc-text-primary)",
                   }}
                   onFocus={e => {
                     (e.target as HTMLInputElement).style.border = "1px solid rgba(201,168,124,0.40)"
                     ;(e.target as HTMLInputElement).style.boxShadow = "0 0 0 2px rgba(201,168,124,0.08)"
                   }}
                   onBlur={e => {
-                    (e.target as HTMLInputElement).style.border = "1px solid rgba(255,255,255,0.09)"
+                    (e.target as HTMLInputElement).style.border = "1px solid var(--lc-bg-glass-hover)"
                     ;(e.target as HTMLInputElement).style.boxShadow = "none"
                   }}
                 />
@@ -238,9 +238,9 @@ function LocationMultiSelect({ value, onChange }: { value: string[]; onChange: (
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => { setInputVal(""); inputRef.current?.focus() }}
                     className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full flex items-center justify-center transition-colors cursor-pointer"
-                    style={{ background: "rgba(255,255,255,0.10)" }}
+                    style={{ background: "var(--lc-border)" }}
                   >
-                    <X className="w-2.5 h-2.5" style={{ color: "rgba(200,212,228,0.70)" }} />
+                    <X className="w-2.5 h-2.5" style={{ color: "var(--lc-text-secondary)" }} />
                   </button>
                 )}
               </div>
@@ -248,14 +248,14 @@ function LocationMultiSelect({ value, onChange }: { value: string[]; onChange: (
 
             {/* Suggestions list */}
             <div className="overflow-y-auto" style={{ maxHeight: "204px" }}>
-              <p className="px-3.5 pt-1 pb-1 text-[10px] font-semibold uppercase tracking-[0.08em]" style={{ color: "rgba(200,212,228,0.38)" }}>
+              <p className="px-3.5 pt-1 pb-1 text-[10px] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--lc-text-muted)" }}>
                 {inputVal.trim() ? "Results" : "Popular markets"}
               </p>
 
               {suggestions.length === 0 && inputVal.trim() ? (
                 <div className="py-5 px-4 text-center">
-                  <p className="text-[13px]" style={{ color: "rgba(200,212,228,0.50)" }}>
-                    No results for <span className="font-medium" style={{ color: "rgba(255,255,255,0.70)" }}>"{inputVal}"</span>
+                  <p className="text-[13px]" style={{ color: "var(--lc-text-label)" }}>
+                    No results for <span className="font-medium" style={{ color: "var(--lc-text-secondary)" }}>"{inputVal}"</span>
                   </p>
                 </div>
               ) : (
@@ -270,18 +270,18 @@ function LocationMultiSelect({ value, onChange }: { value: string[]; onChange: (
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => addLocation(s)}
                         className="w-full text-left px-3 py-1.5 flex items-center gap-2.5 transition-colors cursor-pointer group/row"
-                        style={{ color: "rgba(200,212,228,0.70)" }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)" }}
+                        style={{ color: "var(--lc-text-secondary)" }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-card)" }}
                         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}
                       >
-                        <div className="w-[26px] h-[26px] rounded-lg flex items-center justify-center flex-shrink-0 transition-colors" style={{ background: "rgba(255,255,255,0.07)" }}>
-                          <MapPin className="w-3 h-3" style={{ color: "rgba(200,212,228,0.45)" }} />
+                        <div className="w-[26px] h-[26px] rounded-lg flex items-center justify-center flex-shrink-0 transition-colors" style={{ background: "var(--lc-bg-glass-mid)" }}>
+                          <MapPin className="w-3 h-3" style={{ color: "var(--lc-text-label)" }} />
                         </div>
                         <span className="flex-1 truncate text-sm">
-                          <span className="font-medium" style={{ color: "rgba(255,255,255,0.85)" }}>{city}</span>
+                          <span className="font-medium" style={{ color: "var(--lc-text-primary)" }}>{city}</span>
                           {state
-                            ? <span style={{ color: "rgba(200,212,228,0.45)" }}>, {state}</span>
-                            : <span className="text-[12px]" style={{ color: "rgba(200,212,228,0.38)" }}> — State</span>
+                            ? <span style={{ color: "var(--lc-text-label)" }}>, {state}</span>
+                            : <span className="text-[12px]" style={{ color: "var(--lc-text-muted)" }}> — State</span>
                           }
                         </span>
                         <span className="text-[10px] font-semibold opacity-0 group-hover/row:opacity-100 transition-opacity tracking-wide" style={{ color: "#c9a87c" }}>
@@ -303,12 +303,12 @@ function LocationMultiSelect({ value, onChange }: { value: string[]; onChange: (
                   transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
                   className="overflow-hidden"
                 >
-                  <div className="mx-3 h-px" style={{ background: "rgba(255,255,255,0.07)" }} />
+                  <div className="mx-3 h-px" style={{ background: "var(--lc-bg-glass-mid)" }} />
                   <div className="p-3">
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.08em]" style={{ color: "rgba(200,212,228,0.40)" }}>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.08em]" style={{ color: "var(--lc-text-muted)" }}>
                         Selected
-                        <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-[9px] font-bold" style={{ background: "#c9a87c", color: "#080c16" }}>
+                        <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-[9px] font-bold" style={{ background: "#c9a87c", color: "var(--lc-bg-page)" }}>
                           {value.length}
                         </span>
                       </p>
@@ -316,9 +316,9 @@ function LocationMultiSelect({ value, onChange }: { value: string[]; onChange: (
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => { onChange([]); setInputVal(""); inputRef.current?.focus() }}
                         className="text-[11px] font-medium transition-colors cursor-pointer"
-                        style={{ color: "rgba(200,212,228,0.45)" }}
+                        style={{ color: "var(--lc-text-label)" }}
                         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#f87171" }}
-                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.45)" }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)" }}
                       >
                         Clear all
                       </button>
@@ -414,7 +414,7 @@ function PassengerFilter({ value, onChange }: { value: number; onChange: (v: num
             className="absolute top-full left-0 mt-1.5 w-64 rounded-2xl z-50 p-4"
             style={darkPanel}
           >
-            <p className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "rgba(200,212,228,0.40)" }}>
+            <p className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "var(--lc-text-muted)" }}>
               Min. passenger capacity
             </p>
             <div className="flex items-center gap-3 mb-4">
@@ -422,15 +422,15 @@ function PassengerFilter({ value, onChange }: { value: number; onChange: (v: num
                 type="button"
                 onClick={() => setDraft((d) => Math.max(0, d - 1))}
                 className="w-9 h-9 rounded-xl flex items-center justify-center text-lg font-medium transition-all cursor-pointer"
-                style={{ border: "1px solid rgba(255,255,255,0.10)", color: "rgba(200,212,228,0.70)", background: "rgba(255,255,255,0.05)" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.09)" }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+                style={{ border: "1px solid var(--lc-border)", color: "var(--lc-text-secondary)", background: "var(--lc-bg-glass)" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
               >−</button>
               <div className="flex-1 text-center">
                 {draft === 0
-                  ? <span className="text-sm font-medium" style={{ color: "rgba(200,212,228,0.50)" }}>Any</span>
-                  : <span className="text-xl font-bold" style={{ color: "rgba(255,255,255,0.90)" }}>
-                      {draft}<span className="text-sm font-normal ml-0.5" style={{ color: "rgba(200,212,228,0.50)" }}>+</span>
+                  ? <span className="text-sm font-medium" style={{ color: "var(--lc-text-label)" }}>Any</span>
+                  : <span className="text-xl font-bold" style={{ color: "var(--lc-text-primary)" }}>
+                      {draft}<span className="text-sm font-normal ml-0.5" style={{ color: "var(--lc-text-label)" }}>+</span>
                     </span>
                 }
               </div>
@@ -438,20 +438,20 @@ function PassengerFilter({ value, onChange }: { value: number; onChange: (v: num
                 type="button"
                 onClick={() => setDraft((d) => d + 1)}
                 className="w-9 h-9 rounded-xl flex items-center justify-center text-lg font-medium transition-all cursor-pointer"
-                style={{ border: "1px solid rgba(255,255,255,0.10)", color: "rgba(200,212,228,0.70)", background: "rgba(255,255,255,0.05)" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.09)" }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+                style={{ border: "1px solid var(--lc-border)", color: "var(--lc-text-secondary)", background: "var(--lc-bg-glass)" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
               >+</button>
             </div>
-            <p className="text-[11px] mb-2" style={{ color: "rgba(200,212,228,0.40)" }}>Quick select</p>
+            <p className="text-[11px] mb-2" style={{ color: "var(--lc-text-muted)" }}>Quick select</p>
             <div className="flex flex-wrap gap-1.5 mb-4">
               <button
                 type="button"
                 onClick={() => setDraft(0)}
                 className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer"
                 style={draft === 0
-                  ? { background: "#c9a87c", color: "#080c16" }
-                  : { background: "rgba(255,255,255,0.07)", color: "rgba(200,212,228,0.65)" }
+                  ? { background: "#c9a87c", color: "var(--lc-bg-page)" }
+                  : { background: "var(--lc-bg-glass-mid)", color: "var(--lc-text-dim)" }
                 }
               >Any</button>
               {PASSENGER_QUICK_PICKS.map((n) => (
@@ -461,8 +461,8 @@ function PassengerFilter({ value, onChange }: { value: number; onChange: (v: num
                   onClick={() => setDraft(n)}
                   className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer"
                   style={draft === n
-                    ? { background: "#c9a87c", color: "#080c16" }
-                    : { background: "rgba(255,255,255,0.07)", color: "rgba(200,212,228,0.65)" }
+                    ? { background: "#c9a87c", color: "var(--lc-bg-page)" }
+                    : { background: "var(--lc-bg-glass-mid)", color: "var(--lc-text-dim)" }
                   }
                 >{n}+</button>
               ))}
@@ -471,7 +471,7 @@ function PassengerFilter({ value, onChange }: { value: number; onChange: (v: num
               type="button"
               onClick={() => apply(draft)}
               className="w-full h-9 text-sm font-semibold rounded-xl transition-all cursor-pointer"
-              style={{ background: "#c9a87c", color: "#080c16" }}
+              style={{ background: "#c9a87c", color: "var(--lc-bg-page)" }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#d4b98c" }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "#c9a87c" }}
             >Apply</button>
@@ -534,19 +534,19 @@ function VehicleTypeFilter({ selected, onToggle, onClear }: { selected: string[]
                     className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all cursor-pointer"
                     style={checked
                       ? { background: "rgba(201,168,124,0.12)", color: "#c9a87c" }
-                      : { color: "rgba(200,212,228,0.70)" }
+                      : { color: "var(--lc-text-secondary)" }
                     }
-                    onMouseEnter={e => { if (!checked) (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)" }}
+                    onMouseEnter={e => { if (!checked) (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-card)" }}
                     onMouseLeave={e => { if (!checked) (e.currentTarget as HTMLElement).style.background = "transparent" }}
                   >
                     <div
                       className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0 transition-all"
                       style={checked
                         ? { background: "#c9a87c", border: "1px solid #c9a87c" }
-                        : { background: "transparent", border: "1px solid rgba(255,255,255,0.20)" }
+                        : { background: "transparent", border: "1px solid var(--lc-border-medium)" }
                       }
                     >
-                      {checked && <Check className="w-2.5 h-2.5" style={{ color: "#080c16" }} />}
+                      {checked && <Check className="w-2.5 h-2.5" style={{ color: "var(--lc-bg-page)" }} />}
                     </div>
                     <span className="font-medium">{vf.label}</span>
                   </button>
@@ -555,14 +555,14 @@ function VehicleTypeFilter({ selected, onToggle, onClear }: { selected: string[]
             </div>
             {selected.length > 0 && (
               <>
-                <div className="mx-2 h-px" style={{ background: "rgba(255,255,255,0.07)" }} />
+                <div className="mx-2 h-px" style={{ background: "var(--lc-bg-glass-mid)" }} />
                 <div className="p-2">
                   <button
                     onClick={() => { onClear(); setOpen(false) }}
                     className="w-full text-center py-2 text-xs font-medium transition-colors cursor-pointer"
-                    style={{ color: "rgba(200,212,228,0.45)" }}
+                    style={{ color: "var(--lc-text-label)" }}
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#f87171" }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.45)" }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)" }}
                   >
                     Clear selection
                   </button>
@@ -589,7 +589,7 @@ function AvatarOrInitials({ logo, name, size = "md" }: { logo?: string | null; n
   if (logo) {
     return (
       <div className={`${dim} rounded-xl overflow-hidden flex-shrink-0`}
-        style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.10)" }}>
+        style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)" }}>
         <img src={logo} alt={name} className="w-full h-full object-cover" />
       </div>
     )
@@ -630,7 +630,7 @@ function ConnectionButton({ affiliate, size = "default" }: { affiliate: Affiliat
     return (
       <span
         className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full"
-        style={{ background: "rgba(255,255,255,0.07)", color: "rgba(200,212,228,0.60)", border: "1px solid rgba(255,255,255,0.09)" }}
+        style={{ background: "var(--lc-bg-glass-mid)", color: "var(--lc-text-dim)", border: "1px solid var(--lc-bg-glass-hover)" }}
       >
         <Clock className="w-3 h-3" />
         Pending
@@ -643,7 +643,7 @@ function ConnectionButton({ affiliate, size = "default" }: { affiliate: Affiliat
       <div className="flex items-center gap-1.5">
         <button
           className="h-7 px-3 text-xs rounded-lg font-semibold flex items-center gap-1 cursor-pointer transition-all active:scale-95"
-          style={{ background: "#c9a87c", color: "#080c16" }}
+          style={{ background: "#c9a87c", color: "var(--lc-bg-page)" }}
           onClick={() => connectionId && respond.mutate({ connectionId, action: "accept" })}
           disabled={respond.isPending}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#d4b98c" }}
@@ -654,7 +654,7 @@ function ConnectionButton({ affiliate, size = "default" }: { affiliate: Affiliat
         </button>
         <button
           className="h-7 px-2.5 text-xs rounded-lg font-medium flex items-center gap-1 cursor-pointer transition-all"
-          style={{ background: "rgba(255,255,255,0.07)", color: "rgba(200,212,228,0.60)", border: "1px solid rgba(255,255,255,0.09)" }}
+          style={{ background: "var(--lc-bg-glass-mid)", color: "var(--lc-text-dim)", border: "1px solid var(--lc-bg-glass-hover)" }}
           onClick={() => connectionId && respond.mutate({ connectionId, action: "decline" })}
           disabled={respond.isPending}
         >
@@ -668,7 +668,7 @@ function ConnectionButton({ affiliate, size = "default" }: { affiliate: Affiliat
   return (
     <button
       className="h-8 px-3 text-xs rounded-lg font-semibold flex items-center gap-1.5 cursor-pointer transition-all active:scale-95"
-      style={{ background: "#c9a87c", color: "#080c16" }}
+      style={{ background: "#c9a87c", color: "var(--lc-bg-page)" }}
       onClick={() => send.mutate(affiliate.id)}
       disabled={send.isPending}
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#d4b98c" }}
@@ -694,8 +694,8 @@ function AffiliateCard({ affiliate, showFavorite = false }: { affiliate: Affilia
       href={`/affiliates/${affiliate.id}`}
       className="block rounded-2xl overflow-hidden transition-all duration-200"
       style={{
-        background:   hovered ? "#111e35" : "#0d1526",
-        border:       hovered ? "1px solid rgba(255,255,255,0.13)" : "1px solid rgba(255,255,255,0.07)",
+        background:   hovered ? "#111e35" : "var(--lc-bg-surface)",
+        border:       hovered ? "1px solid var(--lc-border)" : "1px solid var(--lc-bg-glass-mid)",
         boxShadow:    hovered ? "0 8px 28px rgba(0,0,0,0.45)" : "0 2px 12px rgba(0,0,0,0.28)",
         transform:    hovered ? "translateY(-2px)" : "translateY(0)",
       }}
@@ -713,7 +713,7 @@ function AffiliateCard({ affiliate, showFavorite = false }: { affiliate: Affilia
       >
         {/* Logo overlapping banner */}
         <div className="absolute -bottom-5 left-4">
-          <div className="border-2 rounded-xl" style={{ borderColor: hovered ? "#111e35" : "#0d1526" }}>
+          <div className="border-2 rounded-xl" style={{ borderColor: hovered ? "#111e35" : "var(--lc-bg-surface)" }}>
             <AvatarOrInitials logo={affiliate.logo} name={affiliate.name} size="md" />
           </div>
         </div>
@@ -740,11 +740,11 @@ function AffiliateCard({ affiliate, showFavorite = false }: { affiliate: Affilia
       {/* Card body */}
       <div className="pt-8 px-4 pb-3">
         <div className="mb-2.5">
-          <h3 className="font-semibold text-sm truncate leading-snug" style={{ color: "rgba(255,255,255,0.90)" }}>
+          <h3 className="font-semibold text-sm truncate leading-snug" style={{ color: "var(--lc-text-primary)" }}>
             {affiliate.name}
           </h3>
           {(affiliate.city || affiliate.state) && (
-            <p className="text-xs mt-0.5 flex items-center gap-1" style={{ color: "rgba(200,212,228,0.48)" }}>
+            <p className="text-xs mt-0.5 flex items-center gap-1" style={{ color: "var(--lc-text-label)" }}>
               <MapPin className="w-2.5 h-2.5" />
               {[affiliate.city, affiliate.state].filter(Boolean).join(", ")}
             </p>
@@ -802,13 +802,13 @@ function RequestRow({ connection, direction }: { connection: AffiliateConnection
   return (
     <div
       className="flex items-center gap-3 p-3 rounded-xl"
-      style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+      style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
     >
       <AvatarOrInitials logo={other.logo} name={other.name} size="sm" />
 
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-sm truncate" style={{ color: "rgba(255,255,255,0.90)" }}>{other.name}</p>
-        <p className="text-xs truncate" style={{ color: "rgba(200,212,228,0.48)" }}>
+        <p className="font-medium text-sm truncate" style={{ color: "var(--lc-text-primary)" }}>{other.name}</p>
+        <p className="text-xs truncate" style={{ color: "var(--lc-text-label)" }}>
           {[other.city, other.state].filter(Boolean).join(", ") || other.email}
         </p>
       </div>
@@ -816,9 +816,9 @@ function RequestRow({ connection, direction }: { connection: AffiliateConnection
       <Link
         href={`/affiliates/${other.id}`}
         className="text-xs font-medium shrink-0 hidden sm:block transition-colors"
-        style={{ color: "rgba(200,212,228,0.42)" }}
+        style={{ color: "var(--lc-text-muted)" }}
         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#c9a87c" }}
-        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.42)" }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "var(--lc-text-muted)" }}
       >
         Profile
       </Link>
@@ -827,7 +827,7 @@ function RequestRow({ connection, direction }: { connection: AffiliateConnection
         <div className="flex items-center gap-1.5 shrink-0">
           <button
             className="h-7 px-3 text-xs rounded-lg font-semibold flex items-center gap-1 cursor-pointer transition-all active:scale-95"
-            style={{ background: "#c9a87c", color: "#080c16" }}
+            style={{ background: "#c9a87c", color: "var(--lc-bg-page)" }}
             onClick={() => respond.mutate({ connectionId: connection.id, action: "accept" })}
             disabled={respond.isPending}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#d4b98c" }}
@@ -838,7 +838,7 @@ function RequestRow({ connection, direction }: { connection: AffiliateConnection
           </button>
           <button
             className="h-7 px-2.5 text-xs rounded-lg flex items-center cursor-pointer transition-all"
-            style={{ background: "rgba(255,255,255,0.07)", color: "rgba(200,212,228,0.60)", border: "1px solid rgba(255,255,255,0.09)" }}
+            style={{ background: "var(--lc-bg-glass-mid)", color: "var(--lc-text-dim)", border: "1px solid var(--lc-bg-glass-hover)" }}
             onClick={() => respond.mutate({ connectionId: connection.id, action: "decline" })}
             disabled={respond.isPending}
           >
@@ -849,7 +849,7 @@ function RequestRow({ connection, direction }: { connection: AffiliateConnection
         <div className="flex items-center gap-2 shrink-0">
           <span
             className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium"
-            style={{ background: "rgba(255,255,255,0.07)", color: "rgba(200,212,228,0.55)" }}
+            style={{ background: "var(--lc-bg-glass-mid)", color: "var(--lc-text-dim)" }}
           >
             <Clock className="w-2.5 h-2.5" />
             Sent
@@ -858,9 +858,9 @@ function RequestRow({ connection, direction }: { connection: AffiliateConnection
             onClick={() => respond.mutate({ connectionId: connection.id, action: "cancel" })}
             disabled={respond.isPending}
             className="transition-colors cursor-pointer"
-            style={{ color: "rgba(200,212,228,0.30)" }}
+            style={{ color: "var(--lc-text-muted)" }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#f87171" }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.30)" }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "var(--lc-text-muted)" }}
             title="Cancel"
           >
             <X className="w-3.5 h-3.5" />
@@ -882,8 +882,8 @@ function EmptyState({ icon: Icon, title, description }: { icon: React.ElementTyp
       >
         <Icon className="w-6 h-6" style={{ color: "rgba(201,168,124,0.50)" }} />
       </div>
-      <p className="font-medium text-sm" style={{ color: "rgba(255,255,255,0.70)" }}>{title}</p>
-      <p className="text-xs mt-1 max-w-xs leading-relaxed" style={{ color: "rgba(200,212,228,0.45)" }}>{description}</p>
+      <p className="font-medium text-sm" style={{ color: "var(--lc-text-secondary)" }}>{title}</p>
+      <p className="text-xs mt-1 max-w-xs leading-relaxed" style={{ color: "var(--lc-text-label)" }}>{description}</p>
     </div>
   )
 }
@@ -911,7 +911,7 @@ function TabBar({ active, onChange, pendingCount, connectedCount }: {
           key={tab.id}
           onClick={() => onChange(tab.id)}
           className="relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-150 select-none cursor-pointer"
-          style={active === tab.id ? { color: "rgba(255,255,255,0.92)" } : { color: "rgba(200,212,228,0.50)" }}
+          style={active === tab.id ? { color: "var(--lc-text-primary)" } : { color: "var(--lc-text-label)" }}
         >
           {tab.label}
           {tab.badge ? (
@@ -921,7 +921,7 @@ function TabBar({ active, onChange, pendingCount, connectedCount }: {
                 tab.id === "requests" && tab.badge > 0 ? "bg-red-500 text-white" : ""
               )}
               style={!(tab.id === "requests" && tab.badge > 0)
-                ? { background: "rgba(255,255,255,0.10)", color: "rgba(200,212,228,0.70)" }
+                ? { background: "var(--lc-border)", color: "var(--lc-text-secondary)" }
                 : {}
               }
             >
@@ -1020,20 +1020,20 @@ function AffiliatesContent() {
       {/* Dark backdrop behind dock nav */}
       <div
         className="fixed bottom-0 inset-x-0 pointer-events-none"
-        style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "#080c16", zIndex: 0 }}
+        style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "var(--lc-bg-page)", zIndex: 0 }}
       />
 
       {/* Full-bleed dark page wrapper */}
       <div
         className="-mx-4 -mt-4 md:-mx-6 md:-mt-6"
-        style={{ background: "#080c16", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
+        style={{ background: "var(--lc-bg-page)", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
       >
         <div className="px-4 pt-4 md:px-6 md:pt-6 pb-6 max-w-5xl mx-auto space-y-3">
 
           {/* ── Header card ─────────────────────────────────────────── */}
           <div
             className="rounded-2xl overflow-hidden"
-            style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
+            style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
           >
             {/* Title row + stat pills */}
             <div className="flex items-center justify-between gap-4 px-5 pt-5 pb-4">
@@ -1052,7 +1052,7 @@ function AffiliatesContent() {
                   }}>
                     Network
                   </p>
-                  <p className="leading-tight" style={{ fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "-0.01em" }}>
+                  <p className="leading-tight" style={{ fontSize: "13px", fontWeight: 600, color: "var(--lc-text-primary)", letterSpacing: "-0.01em" }}>
                     Connect with trusted limo companies
                   </p>
                 </div>
@@ -1084,7 +1084,7 @@ function AffiliatesContent() {
             </div>
 
             {/* Divider */}
-            <div className="h-px mx-5" style={{ background: "rgba(255,255,255,0.06)" }} />
+            <div className="h-px mx-5" style={{ background: "var(--lc-bg-glass)" }} />
 
             {/* Tab bar */}
             <div className="px-2">
@@ -1101,10 +1101,10 @@ function AffiliatesContent() {
           {activeTab === "browse" && (
             <div
               className="rounded-2xl p-4 space-y-3"
-              style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+              style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
             >
               <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "rgba(200,212,228,0.38)" }} />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--lc-text-muted)" }} />
                 <input
                   type="text"
                   value={search}
@@ -1112,16 +1112,16 @@ function AffiliatesContent() {
                   placeholder="Search by company name…"
                   className="w-full pl-10 pr-10 h-11 text-sm rounded-xl outline-none transition-all font-medium"
                   style={{
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.09)",
-                    color: "rgba(255,255,255,0.88)",
+                    background: "var(--lc-bg-glass)",
+                    border: "1px solid var(--lc-bg-glass-hover)",
+                    color: "var(--lc-text-primary)",
                   }}
                   onFocus={e => {
                     (e.target as HTMLInputElement).style.border = "1px solid rgba(201,168,124,0.40)"
                     ;(e.target as HTMLInputElement).style.boxShadow = "0 0 0 2px rgba(201,168,124,0.08)"
                   }}
                   onBlur={e => {
-                    (e.target as HTMLInputElement).style.border = "1px solid rgba(255,255,255,0.09)"
+                    (e.target as HTMLInputElement).style.border = "1px solid var(--lc-bg-glass-hover)"
                     ;(e.target as HTMLInputElement).style.boxShadow = "none"
                   }}
                 />
@@ -1132,9 +1132,9 @@ function AffiliatesContent() {
                   <button
                     onClick={() => setSearch("")}
                     className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center transition-colors cursor-pointer"
-                    style={{ background: "rgba(255,255,255,0.10)" }}
+                    style={{ background: "var(--lc-border)" }}
                   >
-                    <X className="w-3 h-3" style={{ color: "rgba(200,212,228,0.70)" }} />
+                    <X className="w-3 h-3" style={{ color: "var(--lc-text-secondary)" }} />
                   </button>
                 )}
               </div>
@@ -1145,7 +1145,7 @@ function AffiliatesContent() {
                 <VehicleTypeFilter selected={vehicleTypeFilter} onToggle={toggleVehicleType} onClear={() => setVehicleTypeFilter([])} />
                 <div className="flex-1" />
                 {!affiliatesLoading && (
-                  <span className="text-xs whitespace-nowrap" style={{ color: "rgba(200,212,228,0.38)" }}>
+                  <span className="text-xs whitespace-nowrap" style={{ color: "var(--lc-text-muted)" }}>
                     {browseList.length} {browseList.length === 1 ? "affiliate" : "affiliates"}
                   </span>
                 )}
@@ -1153,9 +1153,9 @@ function AffiliatesContent() {
                   <button
                     onClick={clearFilters}
                     className="flex items-center gap-1 text-xs font-medium transition-colors cursor-pointer"
-                    style={{ color: "rgba(200,212,228,0.45)" }}
+                    style={{ color: "var(--lc-text-label)" }}
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#f87171" }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.45)" }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)" }}
                   >
                     <X className="w-3 h-3" />
                     Clear all
@@ -1195,10 +1195,10 @@ function AffiliatesContent() {
           {activeTab === "connected" && connectedCount > 0 && (
             <div
               className="rounded-2xl p-4 space-y-3"
-              style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+              style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
             >
               <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "rgba(200,212,228,0.38)" }} />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--lc-text-muted)" }} />
                 <input
                   type="text"
                   value={connectedSearch}
@@ -1206,16 +1206,16 @@ function AffiliatesContent() {
                   placeholder="Search connected affiliates…"
                   className="w-full pl-10 pr-10 h-11 text-sm rounded-xl outline-none transition-all font-medium"
                   style={{
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.09)",
-                    color: "rgba(255,255,255,0.88)",
+                    background: "var(--lc-bg-glass)",
+                    border: "1px solid var(--lc-bg-glass-hover)",
+                    color: "var(--lc-text-primary)",
                   }}
                   onFocus={e => {
                     (e.target as HTMLInputElement).style.border = "1px solid rgba(201,168,124,0.40)"
                     ;(e.target as HTMLInputElement).style.boxShadow = "0 0 0 2px rgba(201,168,124,0.08)"
                   }}
                   onBlur={e => {
-                    (e.target as HTMLInputElement).style.border = "1px solid rgba(255,255,255,0.09)"
+                    (e.target as HTMLInputElement).style.border = "1px solid var(--lc-bg-glass-hover)"
                     ;(e.target as HTMLInputElement).style.boxShadow = "none"
                   }}
                 />
@@ -1223,9 +1223,9 @@ function AffiliatesContent() {
                   <button
                     onClick={() => setConnectedSearch("")}
                     className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full flex items-center justify-center transition-colors cursor-pointer"
-                    style={{ background: "rgba(255,255,255,0.10)" }}
+                    style={{ background: "var(--lc-border)" }}
                   >
-                    <X className="w-3 h-3" style={{ color: "rgba(200,212,228,0.70)" }} />
+                    <X className="w-3 h-3" style={{ color: "var(--lc-text-secondary)" }} />
                   </button>
                 )}
               </div>
@@ -1236,7 +1236,7 @@ function AffiliatesContent() {
                 <VehicleTypeFilter selected={connectedVehicleTypeFilter} onToggle={toggleConnectedVehicleType} onClear={() => setConnectedVehicleTypeFilter([])} />
                 <div className="flex-1" />
                 {!connectedAffiliatesLoading && (
-                  <span className="text-xs whitespace-nowrap" style={{ color: "rgba(200,212,228,0.38)" }}>
+                  <span className="text-xs whitespace-nowrap" style={{ color: "var(--lc-text-muted)" }}>
                     {filteredConnectedList.length} {filteredConnectedList.length === 1 ? "connection" : "connections"}
                   </span>
                 )}
@@ -1244,9 +1244,9 @@ function AffiliatesContent() {
                   <button
                     onClick={clearConnectedFilters}
                     className="flex items-center gap-1 text-xs font-medium transition-colors cursor-pointer"
-                    style={{ color: "rgba(200,212,228,0.45)" }}
+                    style={{ color: "var(--lc-text-label)" }}
                     onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#f87171" }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.45)" }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)" }}
                   >
                     <X className="w-3 h-3" />
                     Clear all
@@ -1266,7 +1266,7 @@ function AffiliatesContent() {
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {Array.from({ length: 8 }).map((_, i) => (
                       <div key={i} className="rounded-2xl h-36 animate-pulse"
-                        style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }} />
+                        style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }} />
                     ))}
                   </div>
                 ) : browseList.length === 0 ? (
@@ -1295,7 +1295,7 @@ function AffiliatesContent() {
                 {/* Incoming */}
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.40)" }}>
+                    <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-muted)" }}>
                       Incoming Requests
                     </h2>
                     {pendingCount > 0 && (
@@ -1308,13 +1308,13 @@ function AffiliatesContent() {
                     <div className="space-y-2">
                       {[1, 2].map((i) => (
                         <div key={i} className="h-16 rounded-xl animate-pulse"
-                          style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }} />
+                          style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }} />
                       ))}
                     </div>
                   ) : incoming.length === 0 ? (
                     <div
                       className="text-sm px-4 py-5 text-center rounded-xl"
-                      style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(200,212,228,0.45)" }}
+                      style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)", color: "var(--lc-text-label)" }}
                     >
                       No pending incoming requests
                     </div>
@@ -1329,20 +1329,20 @@ function AffiliatesContent() {
 
                 {/* Sent */}
                 <div>
-                  <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.40)" }}>
+                  <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--lc-text-muted)" }}>
                     Sent Requests
                   </h2>
                   {sentLoading ? (
                     <div className="space-y-2">
                       {[1].map((i) => (
                         <div key={i} className="h-16 rounded-xl animate-pulse"
-                          style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }} />
+                          style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }} />
                       ))}
                     </div>
                   ) : sent.length === 0 ? (
                     <div
                       className="text-sm px-4 py-5 text-center rounded-xl"
-                      style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(200,212,228,0.45)" }}
+                      style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)", color: "var(--lc-text-label)" }}
                     >
                       No outgoing requests
                     </div>
@@ -1364,7 +1364,7 @@ function AffiliatesContent() {
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {Array.from({ length: 4 }).map((_, i) => (
                       <div key={i} className="rounded-2xl h-36 animate-pulse"
-                        style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }} />
+                        style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }} />
                     ))}
                   </div>
                 ) : connectedCount === 0 ? (
@@ -1386,8 +1386,8 @@ function AffiliatesContent() {
                       <div>
                         <div className="flex items-center gap-2 mb-3">
                           <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                          <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.40)" }}>Pinned</h2>
-                          <span className="text-[10px] font-medium" style={{ color: "rgba(200,212,228,0.30)" }}>{pinnedList.length}</span>
+                          <h2 className="text-xs font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-muted)" }}>Pinned</h2>
+                          <span className="text-[10px] font-medium" style={{ color: "var(--lc-text-muted)" }}>{pinnedList.length}</span>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                           {pinnedList.map((affiliate) => (
@@ -1400,7 +1400,7 @@ function AffiliatesContent() {
                     {/* All connections */}
                     <div>
                       {pinnedList.length > 0 && (
-                        <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.40)" }}>
+                        <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "var(--lc-text-muted)" }}>
                           All Connections
                         </h2>
                       )}

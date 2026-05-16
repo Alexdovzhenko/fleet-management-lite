@@ -27,9 +27,9 @@ export function BillingTriggerButton({ billingData, payments = [], invoiceTotal,
     <button
       onClick={onClick}
       className="w-full rounded-2xl overflow-hidden transition-all group"
-      style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+      style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,124,0.30)" }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)" }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--lc-bg-glass-mid)" }}
     >
       <div className="px-4 py-3.5 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -41,20 +41,20 @@ export function BillingTriggerButton({ billingData, payments = [], invoiceTotal,
             </div>
           </div>
           <div className="text-left min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: "rgba(255,255,255,0.88)" }}>Billing</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--lc-text-primary)" }}>Billing</p>
             {hasData ? (
-              <p className="text-sm font-bold tabular-nums" style={{ color: "rgba(255,255,255,0.90)" }}>
+              <p className="text-sm font-bold tabular-nums" style={{ color: "var(--lc-text-primary)" }}>
                 {formatCurrency(displayTotal)}
                 {totals.balance > 0 && (
                   <span className="ml-2 text-xs font-medium" style={{ color: "rgba(248,113,113,0.80)" }}>Balance due</span>
                 )}
               </p>
             ) : (
-              <p className="text-sm" style={{ color: "rgba(200,212,228,0.45)" }}>Set up pricing →</p>
+              <p className="text-sm" style={{ color: "var(--lc-text-label)" }}>Set up pricing →</p>
             )}
           </div>
         </div>
-        <ChevronRight className="w-4 h-4 flex-shrink-0 transition-colors" style={{ color: "rgba(200,212,228,0.30)" }} />
+        <ChevronRight className="w-4 h-4 flex-shrink-0 transition-colors" style={{ color: "var(--lc-text-muted)" }} />
       </div>
     </button>
   )

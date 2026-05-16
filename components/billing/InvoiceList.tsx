@@ -26,19 +26,19 @@ export function InvoiceList({
             key={i}
             className="h-[62px] rounded-xl"
             style={{
-              background: "#0d1526",
-              border: "1px solid rgba(255,255,255,0.07)",
+              background: "var(--lc-bg-surface)",
+              border: "1px solid var(--lc-bg-glass-mid)",
               opacity: 1 - i * 0.15,
             }}
           >
             <div className="flex items-center gap-4 px-4 py-3.5 h-full">
               <div className="flex-1 space-y-2">
-                <div className="h-3 w-40 rounded-full" style={{ background: "rgba(255,255,255,0.07)" }} />
-                <div className="h-2.5 w-56 rounded-full" style={{ background: "rgba(255,255,255,0.05)" }} />
+                <div className="h-3 w-40 rounded-full" style={{ background: "var(--lc-bg-glass-mid)" }} />
+                <div className="h-2.5 w-56 rounded-full" style={{ background: "var(--lc-bg-glass)" }} />
               </div>
               <div className="flex items-center gap-3">
-                <div className="h-4 w-16 rounded-full" style={{ background: "rgba(255,255,255,0.07)" }} />
-                <div className="h-5 w-14 rounded-full" style={{ background: "rgba(255,255,255,0.05)" }} />
+                <div className="h-4 w-16 rounded-full" style={{ background: "var(--lc-bg-glass-mid)" }} />
+                <div className="h-5 w-14 rounded-full" style={{ background: "var(--lc-bg-glass)" }} />
               </div>
             </div>
           </div>
@@ -51,7 +51,7 @@ export function InvoiceList({
     return (
       <div
         className="rounded-2xl p-8 text-center"
-        style={{ background: "#0d1526", border: "1px solid rgba(248,113,113,0.20)" }}
+        style={{ background: "var(--lc-bg-surface)", border: "1px solid rgba(248,113,113,0.20)" }}
       >
         <div
           className="inline-flex items-center justify-center w-12 h-12 rounded-2xl mb-4"
@@ -59,10 +59,10 @@ export function InvoiceList({
         >
           <AlertCircle className="w-6 h-6" style={{ color: "#f87171" }} />
         </div>
-        <h3 className="text-[14px] font-semibold mb-1" style={{ color: "rgba(255,255,255,0.88)" }}>
+        <h3 className="text-[14px] font-semibold mb-1" style={{ color: "var(--lc-text-primary)" }}>
           Failed to load invoices
         </h3>
-        <p className="text-[13px]" style={{ color: "rgba(200,212,228,0.55)" }}>
+        <p className="text-[13px]" style={{ color: "var(--lc-text-dim)" }}>
           There was an issue loading your invoices. Please try again.
         </p>
       </div>
@@ -73,7 +73,7 @@ export function InvoiceList({
     return (
       <div
         className="rounded-2xl p-12 flex flex-col items-center text-center"
-        style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+        style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
       >
         <div
           className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
@@ -81,10 +81,10 @@ export function InvoiceList({
         >
           <FileText className="w-7 h-7" style={{ color: "#c9a87c" }} strokeWidth={1.5} />
         </div>
-        <h3 className="text-[14px] font-semibold mb-1.5" style={{ color: "rgba(255,255,255,0.88)" }}>
+        <h3 className="text-[14px] font-semibold mb-1.5" style={{ color: "var(--lc-text-primary)" }}>
           {isSettledTab ? "No settled invoices" : "No open invoices"}
         </h3>
-        <p className="text-[13px] mb-5 max-w-xs" style={{ color: "rgba(200,212,228,0.50)" }}>
+        <p className="text-[13px] mb-5 max-w-xs" style={{ color: "var(--lc-text-label)" }}>
           {isSettledTab
             ? "Invoices you mark as settled will appear here."
             : "All invoices are settled — great work!"}
@@ -107,7 +107,7 @@ export function InvoiceList({
       {/* Count label */}
       <p
         className="text-[11px] font-semibold uppercase tracking-widest px-1"
-        style={{ color: "rgba(200,212,228,0.55)", letterSpacing: "0.14em" }}
+        style={{ color: "var(--lc-text-dim)", letterSpacing: "0.14em" }}
       >
         {invoices.length} invoice{invoices.length !== 1 ? "s" : ""}
       </p>

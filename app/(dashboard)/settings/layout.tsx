@@ -66,12 +66,12 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
   return (
     <div
       className="-mx-4 -mt-4 md:-mx-6 md:-mt-6 flex flex-col md:flex-row"
-      style={{ background: "#080c16", minHeight: "calc(100dvh - 56px)" }}
+      style={{ background: "var(--lc-bg-page)", minHeight: "calc(100dvh - 56px)" }}
     >
       {/* ── Mobile Tab Bar ── */}
       <div
         className="md:hidden relative overflow-hidden"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+        style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}
       >
         <div className="flex px-2 py-2 gap-0.5 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
           {indicator.ready && (
@@ -94,7 +94,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                 ref={el => { tabRefs.current[idx] = el }}
                 onClick={() => handleSectionChange(item.key)}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors whitespace-nowrap flex-shrink-0"
-                style={{ color: active ? "#c9a87c" : "rgba(200,212,228,0.45)" }}
+                style={{ color: active ? "#c9a87c" : "var(--lc-text-label)" }}
               >
                 <item.icon className="w-[13px] h-[13px] flex-shrink-0" />
                 <span>{item.label}</span>
@@ -102,11 +102,11 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
             )
           })}
         </div>
-        <div className="px-2 py-2" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+        <div className="px-2 py-2" style={{ borderTop: "1px solid var(--lc-bg-glass)" }}>
           <button
             onClick={handleLogout}
             className="w-full flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors"
-            style={{ color: "rgba(200,212,228,0.40)" }}
+            style={{ color: "var(--lc-text-muted)" }}
           >
             <LogOut className="w-[13px] h-[13px]" />
             <span>Sign Out</span>
@@ -117,12 +117,12 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
       {/* ── Desktop Sidebar ── */}
       <aside
         className="hidden md:flex md:w-[212px] md:shrink-0 md:flex-col"
-        style={{ borderRight: "1px solid rgba(255,255,255,0.06)", background: "#0a1120" }}
+        style={{ borderRight: "1px solid var(--lc-bg-glass)", background: "#0a1120" }}
       >
         {/* Header */}
-        <div className="px-5 py-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-          <p className="text-[13px] font-bold tracking-tight" style={{ color: "rgba(255,255,255,0.88)" }}>Settings</p>
-          <p className="text-[11px] mt-0.5" style={{ color: "rgba(200,212,228,0.38)" }}>Manage your workspace</p>
+        <div className="px-5 py-5" style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}>
+          <p className="text-[13px] font-bold tracking-tight" style={{ color: "var(--lc-text-primary)" }}>Settings</p>
+          <p className="text-[11px] mt-0.5" style={{ color: "var(--lc-text-muted)" }}>Manage your workspace</p>
         </div>
 
         {/* Nav */}
@@ -131,7 +131,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
             <div key={group.label}>
               <p
                 className="text-[10px] font-semibold uppercase tracking-widest px-2.5 mb-2"
-                style={{ color: "rgba(200,212,228,0.30)", letterSpacing: "0.12em" }}
+                style={{ color: "var(--lc-text-muted)", letterSpacing: "0.12em" }}
               >
                 {group.label}
               </p>
@@ -145,12 +145,12 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                       className="w-full flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[13px] text-left transition-all relative group"
                       style={{
                         background: active ? "rgba(201,168,124,0.10)" : "transparent",
-                        color: active ? "#c9a87c" : "rgba(200,212,228,0.55)",
+                        color: active ? "#c9a87c" : "var(--lc-text-dim)",
                         fontWeight: active ? 600 : 400,
                         borderLeft: active ? "2px solid #c9a87c" : "2px solid transparent",
                       }}
                       onMouseEnter={e => {
-                        if (!active) (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)"
+                        if (!active) (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-card)"
                       }}
                       onMouseLeave={e => {
                         if (!active) (e.currentTarget as HTMLElement).style.background = "transparent"
@@ -158,7 +158,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                     >
                       <item.icon
                         className="w-[15px] h-[15px] flex-shrink-0"
-                        style={{ color: active ? "#c9a87c" : "rgba(200,212,228,0.40)" }}
+                        style={{ color: active ? "#c9a87c" : "var(--lc-text-muted)" }}
                       />
                       {item.label}
                     </button>
@@ -170,18 +170,18 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
         </nav>
 
         {/* Sign Out */}
-        <div className="px-3 py-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div className="px-3 py-4" style={{ borderTop: "1px solid var(--lc-bg-glass)" }}>
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[13px] text-left transition-all"
-            style={{ color: "rgba(200,212,228,0.45)" }}
+            style={{ color: "var(--lc-text-label)" }}
             onMouseEnter={e => {
               ;(e.currentTarget as HTMLElement).style.background = "rgba(248,113,113,0.08)"
               ;(e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.80)"
             }}
             onMouseLeave={e => {
               ;(e.currentTarget as HTMLElement).style.background = "transparent"
-              ;(e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.45)"
+              ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)"
             }}
           >
             <LogOut className="w-[15px] h-[15px] flex-shrink-0" />
@@ -194,12 +194,12 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
       <div
         className="flex-1 min-w-0 overflow-y-auto"
         style={{
-          "--border": "rgba(255,255,255,0.08)",
-          "--input": "rgba(255,255,255,0.06)",
+          "--border": "var(--lc-bg-glass-hover)",
+          "--input": "var(--lc-bg-glass)",
           "--ring": "#c9a87c",
-          "--foreground": "rgba(255,255,255,0.88)",
-          "--muted-foreground": "rgba(200,212,228,0.50)",
-          color: "rgba(255,255,255,0.88)",
+          "--foreground": "var(--lc-text-primary)",
+          "--muted-foreground": "var(--lc-text-label)",
+          color: "var(--lc-text-primary)",
         } as React.CSSProperties}
       >
         {/* md:pr-[212px] mirrors the sidebar width on the right so mx-auto

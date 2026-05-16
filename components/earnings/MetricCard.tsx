@@ -40,13 +40,13 @@ export function MetricCard({ type, label, value, format = "currency", trend, isL
     <div
       className="rounded-xl p-4 cursor-default select-none"
       style={{
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.07)",
+        background: "var(--lc-bg-card)",
+        border: "1px solid var(--lc-bg-glass-mid)",
         transition: "transform 200ms cubic-bezier(0.23,1,0.32,1), box-shadow 200ms cubic-bezier(0.23,1,0.32,1)",
       }}
       onMouseEnter={e => {
         (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"
-        ;(e.currentTarget as HTMLElement).style.boxShadow = `0 8px 24px rgba(0,0,0,0.40), 0 0 0 1px rgba(255,255,255,0.09)`
+        ;(e.currentTarget as HTMLElement).style.boxShadow = `0 8px 24px rgba(0,0,0,0.40), 0 0 0 1px var(--lc-bg-glass-hover)`
       }}
       onMouseLeave={e => {
         (e.currentTarget as HTMLElement).style.transform = "translateY(0)"
@@ -82,17 +82,17 @@ export function MetricCard({ type, label, value, format = "currency", trend, isL
       {/* Value + label */}
       {isLoading ? (
         <div className="space-y-2 mt-1">
-          <div className="h-6 w-20 rounded-lg animate-pulse" style={{ background: "rgba(255,255,255,0.07)" }} />
-          <div className="h-3 w-24 rounded animate-pulse" style={{ background: "rgba(255,255,255,0.05)" }} />
+          <div className="h-6 w-20 rounded-lg animate-pulse" style={{ background: "var(--lc-bg-glass-mid)" }} />
+          <div className="h-3 w-24 rounded animate-pulse" style={{ background: "var(--lc-bg-glass)" }} />
         </div>
       ) : (
         <div>
-          <p className="text-[22px] font-bold tabular-nums tracking-tight leading-none" style={{ color: "rgba(255,255,255,0.92)" }}>
+          <p className="text-[22px] font-bold tabular-nums tracking-tight leading-none" style={{ color: "var(--lc-text-primary)" }}>
             {formatted}
           </p>
-          <p className="text-[12px] font-medium mt-1.5" style={{ color: "rgba(200,212,228,0.45)" }}>{label}</p>
+          <p className="text-[12px] font-medium mt-1.5" style={{ color: "var(--lc-text-label)" }}>{label}</p>
           {trend && (
-            <p className="text-[11px] mt-0.5" style={{ color: "rgba(200,212,228,0.28)" }}>vs last period</p>
+            <p className="text-[11px] mt-0.5" style={{ color: "var(--lc-text-muted)" }}>vs last period</p>
           )}
         </div>
       )}

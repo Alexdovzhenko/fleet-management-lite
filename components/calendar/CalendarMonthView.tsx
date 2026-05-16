@@ -80,13 +80,13 @@ export function CalendarMonthView({ currentDate, events, today, onSelectEvent, o
       <div className="grid grid-cols-7 mb-1">
         {DAY_LABELS.map(d => (
           <div key={d} className="text-center py-2">
-            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.40)" }}>{d}</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-muted)" }}>{d}</span>
           </div>
         ))}
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-7 flex-1 rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
+      <div className="grid grid-cols-7 flex-1 rounded-2xl overflow-hidden" style={{ border: "1px solid var(--lc-bg-glass-mid)" }}>
         {days.map((day, idx) => {
           const key = format(day, "yyyy-MM-dd")
           const dayEvents = eventMap.get(key) ?? []
@@ -105,15 +105,15 @@ export function CalendarMonthView({ currentDate, events, today, onSelectEvent, o
               style={{
                 minHeight: "100px",
                 background: isThisToday ? "rgba(201,168,124,0.06)" : "transparent",
-                borderRight: colStart < 6 ? "1px solid rgba(255,255,255,0.06)" : "none",
-                borderBottom: idx < 35 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                borderRight: colStart < 6 ? "1px solid var(--lc-bg-glass)" : "none",
+                borderBottom: idx < 35 ? "1px solid var(--lc-bg-glass)" : "none",
                 opacity: isCurrentMonth ? 1 : 0.4,
               }}
             >
               {/* Hover state */}
               <div
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none rounded-sm"
-                style={{ background: "rgba(255,255,255,0.03)" }}
+                style={{ background: "var(--lc-bg-card)" }}
               />
 
               {/* Day number */}
@@ -121,8 +121,8 @@ export function CalendarMonthView({ currentDate, events, today, onSelectEvent, o
                 <span
                   className="w-7 h-7 flex items-center justify-center rounded-full text-sm font-semibold"
                   style={isThisToday
-                    ? { background: "#c9a87c", color: "#0d1526" }
-                    : { color: isCurrentMonth ? "rgba(255,255,255,0.80)" : "rgba(200,212,228,0.30)" }
+                    ? { background: "#c9a87c", color: "var(--lc-bg-surface)" }
+                    : { color: isCurrentMonth ? "var(--lc-text-secondary)" : "var(--lc-text-muted)" }
                   }
                 >
                   {format(day, "d")}
@@ -149,7 +149,7 @@ export function CalendarMonthView({ currentDate, events, today, onSelectEvent, o
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setExpandedDay(null) }}
                     className="text-[9px] font-semibold px-1.5 py-0.5 rounded-md text-left transition-colors"
-                    style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.04)" }}
+                    style={{ color: "var(--lc-text-label)", background: "var(--lc-bg-card)" }}
                   >
                     Show less
                   </button>

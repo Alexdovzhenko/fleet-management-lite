@@ -32,7 +32,7 @@ export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: 
         className="flex items-center gap-2 h-9 px-3 rounded-xl text-[13px] font-medium transition-all duration-150 cursor-pointer disabled:opacity-50 whitespace-nowrap"
         style={isActive
           ? { background: "rgba(201,168,124,0.15)", border: "1px solid rgba(201,168,124,0.30)", color: "#c9a87c" }
-          : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(200,212,228,0.70)" }
+          : { background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)", color: "var(--lc-text-secondary)" }
         }
       >
         <span className="max-w-[120px] truncate">{selectedLabel}</span>
@@ -48,8 +48,8 @@ export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: 
           <div
             className="absolute top-full mt-1.5 left-0 z-20 rounded-xl overflow-hidden py-1 min-w-[180px]"
             style={{
-              background: "#0d1526",
-              border: "1px solid rgba(255,255,255,0.10)",
+              background: "var(--lc-bg-surface)",
+              border: "1px solid var(--lc-border)",
               boxShadow: "0 16px 48px rgba(0,0,0,0.60)",
             }}
           >
@@ -57,8 +57,8 @@ export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: 
             <button
               onClick={() => { onChange(null); setIsOpen(false) }}
               className="w-full text-left px-4 py-2.5 text-[13px] flex items-center justify-between transition-colors duration-100 cursor-pointer"
-              style={{ color: "rgba(255,255,255,0.80)" }}
-              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"}
+              style={{ color: "var(--lc-text-secondary)" }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"}
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
             >
               All Accounts
@@ -70,7 +70,7 @@ export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: 
               <>
                 <div
                   className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-widest"
-                  style={{ color: "rgba(200,212,228,0.55)", letterSpacing: "0.14em", borderTop: "1px solid rgba(255,255,255,0.06)", marginTop: "2px", paddingTop: "8px" }}
+                  style={{ color: "var(--lc-text-dim)", letterSpacing: "0.14em", borderTop: "1px solid var(--lc-bg-glass)", marginTop: "2px", paddingTop: "8px" }}
                 >
                   Customers
                 </div>
@@ -80,7 +80,7 @@ export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: 
                     onClick={() => { onChange(a.id); setIsOpen(false) }}
                     className="w-full text-left px-4 py-2.5 text-[13px] flex items-center justify-between transition-colors duration-100 cursor-pointer"
                     style={{ color: value === a.id ? "#c9a87c" : "rgba(255,255,255,0.72)" }}
-                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"}
+                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"}
                     onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
                   >
                     <span className="truncate max-w-[160px]">{a.name}</span>
@@ -95,7 +95,7 @@ export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: 
               <>
                 <div
                   className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-widest"
-                  style={{ color: "rgba(200,212,228,0.55)", letterSpacing: "0.14em", borderTop: "1px solid rgba(255,255,255,0.06)", marginTop: "2px", paddingTop: "8px" }}
+                  style={{ color: "var(--lc-text-dim)", letterSpacing: "0.14em", borderTop: "1px solid var(--lc-bg-glass)", marginTop: "2px", paddingTop: "8px" }}
                 >
                   Affiliates
                 </div>
@@ -105,7 +105,7 @@ export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: 
                     onClick={() => { onChange(a.id); setIsOpen(false) }}
                     className="w-full text-left px-4 py-2.5 text-[13px] flex items-center justify-between transition-colors duration-100 cursor-pointer"
                     style={{ color: value === a.id ? "#c9a87c" : "rgba(255,255,255,0.72)" }}
-                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"}
+                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"}
                     onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
                   >
                     <span className="truncate max-w-[160px]">{a.name}</span>
@@ -116,7 +116,7 @@ export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: 
             )}
 
             {customers.length === 0 && affiliates.length === 0 && (
-              <div className="px-4 py-3 text-[13px] text-center" style={{ color: "rgba(200,212,228,0.65)" }}>
+              <div className="px-4 py-3 text-[13px] text-center" style={{ color: "var(--lc-text-dim)" }}>
                 No accounts available
               </div>
             )}

@@ -69,20 +69,20 @@ export default function CustomersPage() {
       {/* Dark backdrop behind dock nav */}
       <div
         className="fixed bottom-0 inset-x-0 pointer-events-none"
-        style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "#080c16", zIndex: 0 }}
+        style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "var(--lc-bg-page)", zIndex: 0 }}
       />
 
       {/* Full-bleed dark page wrapper */}
       <div
         className="-mx-4 -mt-4 md:-mx-6 md:-mt-6"
-        style={{ background: "#080c16", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
+        style={{ background: "var(--lc-bg-page)", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
       >
         <div className="px-4 pt-4 md:px-6 md:pt-6 pb-6 max-w-6xl mx-auto space-y-3">
 
           {/* ── Header card ── */}
           <div
             className="rounded-2xl overflow-hidden"
-            style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
+            style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
           >
             {/* Top row */}
             <div className="flex items-center justify-between gap-4 px-5 pt-5 pb-4">
@@ -101,7 +101,7 @@ export default function CustomersPage() {
                   }}>
                     Customers
                   </p>
-                  <p className="leading-tight" style={{ fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "-0.01em" }}>
+                  <p className="leading-tight" style={{ fontSize: "13px", fontWeight: 600, color: "var(--lc-text-primary)", letterSpacing: "-0.01em" }}>
                     {isLoading ? "Loading…" : totalCount === 0 ? "No customers yet" : `${totalCount} customer${totalCount !== 1 ? "s" : ""} in your directory`}
                   </p>
                 </div>
@@ -128,30 +128,30 @@ export default function CustomersPage() {
             </div>
 
             {/* Divider */}
-            <div className="h-px mx-5" style={{ background: "rgba(255,255,255,0.06)" }} />
+            <div className="h-px mx-5" style={{ background: "var(--lc-bg-glass)" }} />
 
             {/* Controls row */}
             <div className="flex items-center gap-2.5 px-5 py-3.5">
 
               {/* Search */}
               <div className="relative flex-1 max-w-xs">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "rgba(200,212,228,0.38)" }} />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "var(--lc-text-muted)" }} />
                 <input
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder="Search customers…"
                   className="h-9 pl-8.5 pr-8 w-full text-[13px] rounded-xl outline-none transition-all duration-200 font-medium"
                   style={{
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.09)",
-                    color: "rgba(255,255,255,0.88)",
+                    background: "var(--lc-bg-glass)",
+                    border: "1px solid var(--lc-bg-glass-hover)",
+                    color: "var(--lc-text-primary)",
                   }}
                   onFocus={e => {
                     (e.target as HTMLInputElement).style.border = "1px solid rgba(201,168,124,0.40)"
                     ;(e.target as HTMLInputElement).style.boxShadow = "0 0 0 2px rgba(201,168,124,0.08)"
                   }}
                   onBlur={e => {
-                    (e.target as HTMLInputElement).style.border = "1px solid rgba(255,255,255,0.09)"
+                    (e.target as HTMLInputElement).style.border = "1px solid var(--lc-bg-glass-hover)"
                     ;(e.target as HTMLInputElement).style.boxShadow = "none"
                   }}
                 />
@@ -159,7 +159,7 @@ export default function CustomersPage() {
                   <button
                     onClick={() => setSearch("")}
                     className="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer"
-                    style={{ color: "rgba(200,212,228,0.38)" }}
+                    style={{ color: "var(--lc-text-muted)" }}
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -169,7 +169,7 @@ export default function CustomersPage() {
               {/* Filter tabs */}
               <div
                 className="flex items-center gap-0.5 rounded-[11px] p-1"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+                style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)" }}
               >
                 {FILTER_TABS.map(tab => (
                   <button
@@ -177,8 +177,8 @@ export default function CustomersPage() {
                     onClick={() => setFilter(tab.id)}
                     className="px-3 py-1.5 rounded-[8px] text-[12px] font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer"
                     style={filter === tab.id
-                      ? { background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.92)", boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }
-                      : { color: "rgba(200,212,228,0.55)" }
+                      ? { background: "var(--lc-border)", color: "var(--lc-text-primary)", boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }
+                      : { color: "var(--lc-text-dim)" }
                     }
                   >
                     {tab.label}
@@ -192,7 +192,7 @@ export default function CustomersPage() {
               <button
                 onClick={openForm}
                 className="flex items-center gap-1.5 h-9 px-4 rounded-xl text-[13px] font-semibold transition-all duration-150 active:scale-95 select-none cursor-pointer"
-                style={{ background: "#c9a87c", color: "#080c16", boxShadow: "0 2px 12px rgba(201,168,124,0.28)" }}
+                style={{ background: "#c9a87c", color: "var(--lc-bg-page)", boxShadow: "0 2px 12px rgba(201,168,124,0.28)" }}
                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#d4b98c" }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#c9a87c" }}
               >
@@ -223,14 +223,14 @@ export default function CustomersPage() {
                     key={customer.id}
                     onClick={() => setSelectedId(customer.id)}
                     className="w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-150 text-left cursor-pointer"
-                    style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+                    style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
                     onMouseEnter={e => {
                       (e.currentTarget as HTMLButtonElement).style.background = "#111e35"
-                      ;(e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.12)"
+                      ;(e.currentTarget as HTMLButtonElement).style.borderColor = "var(--lc-border)"
                     }}
                     onMouseLeave={e => {
-                      (e.currentTarget as HTMLButtonElement).style.background = "#0d1526"
-                      ;(e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.07)"
+                      (e.currentTarget as HTMLButtonElement).style.background = "var(--lc-bg-surface)"
+                      ;(e.currentTarget as HTMLButtonElement).style.borderColor = "var(--lc-bg-glass-mid)"
                     }}
                   >
                     {/* Avatar */}
@@ -246,16 +246,16 @@ export default function CustomersPage() {
                     {/* Name + contact */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-[13px] font-semibold truncate" style={{ color: "rgba(255,255,255,0.90)" }}>
+                        <span className="text-[13px] font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>
                           {customer.name}
                         </span>
                         {customer.customerNumber && (
-                          <span className="text-[11px] font-mono flex-shrink-0" style={{ color: "rgba(200,212,228,0.38)" }}>
+                          <span className="text-[11px] font-mono flex-shrink-0" style={{ color: "var(--lc-text-muted)" }}>
                             #{customer.customerNumber}
                           </span>
                         )}
                         {customer.company && (
-                          <span className="hidden sm:flex items-center gap-1 text-[11px] font-medium flex-shrink-0" style={{ color: "rgba(200,212,228,0.55)" }}>
+                          <span className="hidden sm:flex items-center gap-1 text-[11px] font-medium flex-shrink-0" style={{ color: "var(--lc-text-dim)" }}>
                             <Building2 className="w-3 h-3" />
                             {customer.company}
                           </span>
@@ -263,13 +263,13 @@ export default function CustomersPage() {
                       </div>
                       <div className="flex items-center gap-3 mt-1">
                         {customer.phone && (
-                          <span className="text-[12px] flex items-center gap-1" style={{ color: "rgba(200,212,228,0.55)" }}>
+                          <span className="text-[12px] flex items-center gap-1" style={{ color: "var(--lc-text-dim)" }}>
                             <Phone className="w-3 h-3" />
                             {formatPhone(customer.phone)}
                           </span>
                         )}
                         {customer.email && (
-                          <span className="hidden sm:flex text-[12px] items-center gap-1" style={{ color: "rgba(200,212,228,0.55)" }}>
+                          <span className="hidden sm:flex text-[12px] items-center gap-1" style={{ color: "var(--lc-text-dim)" }}>
                             <Mail className="w-3 h-3" />
                             {customer.email}
                           </span>
@@ -279,14 +279,14 @@ export default function CustomersPage() {
 
                     {/* Right side: date + trip count */}
                     <div className="flex items-center gap-3 flex-shrink-0">
-                      <span className="text-[11px] hidden md:block" style={{ color: "rgba(200,212,228,0.38)" }}>
+                      <span className="text-[11px] hidden md:block" style={{ color: "var(--lc-text-muted)" }}>
                         Added {formatDate(customer.createdAt)}
                       </span>
                       <span
                         className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
                         style={{
-                          background: tripCount >= 2 ? "rgba(52,211,153,0.10)" : "rgba(255,255,255,0.07)",
-                          color: tripCount >= 2 ? "rgba(52,211,153,0.90)" : "rgba(200,212,228,0.55)",
+                          background: tripCount >= 2 ? "rgba(52,211,153,0.10)" : "var(--lc-bg-glass-mid)",
+                          color: tripCount >= 2 ? "rgba(52,211,153,0.90)" : "var(--lc-text-dim)",
                         }}
                       >
                         {tripCount} {tripCount === 1 ? "trip" : "trips"}

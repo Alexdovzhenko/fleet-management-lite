@@ -40,7 +40,7 @@ export function EmptyState({ icon: Icon, title, description, actionLabel, onActi
         <div
           ref={cardRef}
           className="empty-state-card relative rounded-2xl p-8 text-center"
-          style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+          style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
         >
           {/* Floating icon with radial glow */}
           <motion.div
@@ -56,7 +56,7 @@ export function EmptyState({ icon: Icon, title, description, actionLabel, onActi
               />
               <div
                 className="empty-state-float relative flex h-20 w-20 items-center justify-center rounded-full"
-                style={{ background: "#0d1526", border: "2px solid rgba(201,168,124,0.30)" }}
+                style={{ background: "var(--lc-bg-surface)", border: "2px solid rgba(201,168,124,0.30)" }}
               >
                 <Icon className="h-9 w-9" style={{ color: "#c9a87c" }} />
               </div>
@@ -69,7 +69,7 @@ export function EmptyState({ icon: Icon, title, description, actionLabel, onActi
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.25, ease }}
             className="text-lg font-semibold mb-2"
-            style={{ color: "rgba(255,255,255,0.90)" }}
+            style={{ color: "var(--lc-text-primary)" }}
           >
             {title}
           </motion.h3>
@@ -80,7 +80,7 @@ export function EmptyState({ icon: Icon, title, description, actionLabel, onActi
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.32, ease }}
             className="text-sm leading-relaxed max-w-xs mx-auto"
-            style={{ color: "rgba(200,212,228,0.55)" }}
+            style={{ color: "var(--lc-text-dim)" }}
           >
             {description}
           </motion.p>
@@ -97,7 +97,7 @@ export function EmptyState({ icon: Icon, title, description, actionLabel, onActi
               className="mt-7 inline-flex items-center justify-center rounded-xl px-6 py-2.5 text-sm font-semibold transition-colors"
               style={{
                 background: "#c9a87c",
-                color: "#0d1526",
+                color: "var(--lc-bg-surface)",
               }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "#d4b688" }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "#c9a87c" }}

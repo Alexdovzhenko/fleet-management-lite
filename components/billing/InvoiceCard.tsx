@@ -28,21 +28,21 @@ export function InvoiceCard({ invoice, onMarkSettled, onViewDetails, isSettledTa
       onMouseLeave={() => setHovered(false)}
       className="flex items-center gap-4 px-4 py-3.5 rounded-xl cursor-pointer transition-all duration-150"
       style={{
-        background: hovered ? "#111e35" : "#0d1526",
-        border: `1px solid ${hovered ? "rgba(255,255,255,0.11)" : "rgba(255,255,255,0.07)"}`,
+        background: hovered ? "#111e35" : "var(--lc-bg-surface)",
+        border: `1px solid ${hovered ? "var(--lc-border)" : "var(--lc-bg-glass-mid)"}`,
       }}
     >
       {/* Left: customer + meta */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-0.5">
-          <span className="text-[13px] font-semibold truncate" style={{ color: "rgba(255,255,255,0.90)" }}>
+          <span className="text-[13px] font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>
             {customerName}
           </span>
-          <span className="text-[11px] font-mono shrink-0" style={{ color: "rgba(200,212,228,0.38)" }}>
+          <span className="text-[11px] font-mono shrink-0" style={{ color: "var(--lc-text-muted)" }}>
             #{invoiceNumber}
           </span>
         </div>
-        <div className="flex items-center gap-2 text-[12px]" style={{ color: "rgba(200,212,228,0.50)" }}>
+        <div className="flex items-center gap-2 text-[12px]" style={{ color: "var(--lc-text-label)" }}>
           <span>{serviceDate}</span>
           <span style={{ opacity: 0.4 }}>·</span>
           <span>Res #{reservationNum}</span>
@@ -53,7 +53,7 @@ export function InvoiceCard({ invoice, onMarkSettled, onViewDetails, isSettledTa
       <div className="flex items-center gap-3 shrink-0">
         <span
           className="text-[15px] font-bold tabular-nums"
-          style={{ color: isOpen ? "rgba(255,255,255,0.90)" : "rgba(255,255,255,0.55)" }}
+          style={{ color: isOpen ? "var(--lc-text-primary)" : "rgba(255,255,255,0.55)" }}
         >
           ${amount}
         </span>
@@ -92,7 +92,7 @@ export function InvoiceCard({ invoice, onMarkSettled, onViewDetails, isSettledTa
 
         <ChevronRight
           className="w-4 h-4 shrink-0 transition-colors duration-150"
-          style={{ color: hovered ? "rgba(200,212,228,0.60)" : "rgba(200,212,228,0.28)" }}
+          style={{ color: hovered ? "var(--lc-text-dim)" : "var(--lc-text-muted)" }}
         />
       </div>
     </div>

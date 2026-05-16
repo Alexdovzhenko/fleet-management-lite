@@ -186,13 +186,13 @@ function DispatchPageInner() {
     {/* Covers the dock nav padding-bottom area so bg-gray-50 layout doesn't bleed through */}
     <div
       className="fixed bottom-0 inset-x-0 pointer-events-none"
-      style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "#080c16", zIndex: 0 }}
+      style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "var(--lc-bg-page)", zIndex: 0 }}
     />
 
     {/* Full-bleed dark page wrapper — cancels main padding and extends background edge-to-edge */}
     <div
       className="-mx-4 -mt-4 md:-mx-6 md:-mt-6"
-      style={{ background: "#080c16", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
+      style={{ background: "var(--lc-bg-page)", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
     >
       <div className="px-4 pt-4 md:px-6 md:pt-6 flex flex-col gap-3">
 
@@ -200,8 +200,8 @@ function DispatchPageInner() {
         <div
           className="rounded-2xl shrink-0"
           style={{
-            background: "#0d1526",
-            border: "1px solid rgba(255,255,255,0.07)",
+            background: "var(--lc-bg-surface)",
+            border: "1px solid var(--lc-bg-glass-mid)",
             boxShadow: "0 4px 24px rgba(0,0,0,0.35)",
           }}
         >
@@ -229,7 +229,7 @@ function DispatchPageInner() {
                 </p>
                 <p
                   className="leading-tight truncate"
-                  style={{ fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "-0.01em" }}
+                  style={{ fontSize: "13px", fontWeight: 600, color: "var(--lc-text-primary)", letterSpacing: "-0.01em" }}
                 >
                   {isSearching
                     ? `${counts.all} reservation${counts.all !== 1 ? "s" : ""} found`
@@ -265,7 +265,7 @@ function DispatchPageInner() {
               <button
                 onClick={() => router.push("/trips/new")}
                 className="flex items-center gap-1.5 h-9 px-4 rounded-xl text-[13px] font-semibold transition-all duration-150 active:scale-95 select-none cursor-pointer"
-                style={{ background: "#c9a87c", color: "#080c16", boxShadow: "0 2px 12px rgba(201,168,124,0.28)" }}
+                style={{ background: "#c9a87c", color: "var(--lc-bg-page)", boxShadow: "0 2px 12px rgba(201,168,124,0.28)" }}
                 onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#d4b98c" }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#c9a87c" }}
               >
@@ -277,7 +277,7 @@ function DispatchPageInner() {
           </div>
 
           {/* Divider */}
-          <div className="h-px mx-5" style={{ background: "rgba(255,255,255,0.06)" }} />
+          <div className="h-px mx-5" style={{ background: "var(--lc-bg-glass)" }} />
 
           {/* Bottom controls */}
           <div className="flex flex-col gap-2.5 px-5 py-3.5">
@@ -289,13 +289,13 @@ function DispatchPageInner() {
               {!isSearching && (
                 <div
                   className="flex items-center gap-0 rounded-xl p-0.5 shrink-0"
-                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)" }}
+                  style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)" }}
                 >
                   <button
                     onClick={() => setSelectedDate(d => subDays(d, 1))}
                     className="w-7 h-7 rounded-[9px] flex items-center justify-center transition-all duration-150 active:scale-90 cursor-pointer"
-                    style={{ color: "rgba(200,212,228,0.55)" }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)" }}
+                    style={{ color: "var(--lc-text-dim)" }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--lc-bg-glass-hover)" }}
                     onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
                   >
                     <ChevronLeft className="w-3.5 h-3.5" />
@@ -305,11 +305,11 @@ function DispatchPageInner() {
                     <button
                       onClick={() => { setShowCalendar(s => !s); setCalendarMonth(selectedDate) }}
                       className="flex items-center gap-1.5 text-[12px] font-semibold px-2.5 py-1 rounded-[9px] min-w-[90px] text-center justify-center transition-all duration-150 cursor-pointer"
-                      style={{ color: "rgba(255,255,255,0.88)" }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)" }}
+                      style={{ color: "var(--lc-text-primary)" }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--lc-bg-glass-hover)" }}
                       onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
                     >
-                      <CalendarDays className="w-3 h-3" style={{ color: "rgba(200,212,228,0.45)" }} />
+                      <CalendarDays className="w-3 h-3" style={{ color: "var(--lc-text-label)" }} />
                       {isToday(selectedDate) ? "Today" : format(selectedDate, "MM/dd/yyyy")}
                     </button>
 
@@ -317,8 +317,8 @@ function DispatchPageInner() {
                       <div
                         className="absolute top-full left-0 mt-2 z-50 rounded-2xl overflow-hidden"
                         style={{
-                          background: "#0d1526",
-                          border: "1px solid rgba(255,255,255,0.09)",
+                          background: "var(--lc-bg-surface)",
+                          border: "1px solid var(--lc-bg-glass-hover)",
                           boxShadow: "0 8px 40px rgba(0,0,0,0.55)",
                         }}
                       >
@@ -333,22 +333,22 @@ function DispatchPageInner() {
                                 key={label}
                                 onClick={action}
                                 className="w-full text-left px-4 py-2.5 text-[13px] font-medium transition-colors cursor-pointer"
-                                style={{ color: "rgba(255,255,255,0.88)" }}
-                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)" }}
+                                style={{ color: "var(--lc-text-primary)" }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--lc-bg-glass-mid)" }}
                                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
                               >
                                 {label}
                               </button>
                             ))}
-                            <div className="h-px mx-3 my-1" style={{ background: "rgba(255,255,255,0.07)" }} />
+                            <div className="h-px mx-3 my-1" style={{ background: "var(--lc-bg-glass-mid)" }} />
                             <button
                               onClick={() => { setShowSpecificDate(true); setCalendarMonth(selectedDate) }}
                               className="w-full text-left px-4 py-2.5 text-[13px] font-medium transition-colors flex items-center justify-between cursor-pointer"
-                              style={{ color: "rgba(255,255,255,0.88)" }}
-                              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)" }}
+                              style={{ color: "var(--lc-text-primary)" }}
+                              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--lc-bg-glass-mid)" }}
                               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
                             >
-                              Pick a date <ChevronRight className="w-3.5 h-3.5" style={{ color: "rgba(200,212,228,0.38)" }} />
+                              Pick a date <ChevronRight className="w-3.5 h-3.5" style={{ color: "var(--lc-text-muted)" }} />
                             </button>
                           </div>
                         ) : (
@@ -357,30 +357,30 @@ function DispatchPageInner() {
                               <button
                                 onClick={() => setShowSpecificDate(false)}
                                 className="w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer"
-                                style={{ color: "rgba(200,212,228,0.55)" }}
-                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)" }}
+                                style={{ color: "var(--lc-text-dim)" }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--lc-bg-glass-mid)" }}
                                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
                               >
                                 <ChevronLeft className="w-4 h-4" />
                               </button>
-                              <span className="text-[13px] font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>Pick a date</span>
+                              <span className="text-[13px] font-semibold" style={{ color: "var(--lc-text-primary)" }}>Pick a date</span>
                             </div>
                             <div className="flex items-center justify-between mb-3">
                               <button
                                 onClick={() => setCalendarMonth(m => subMonths(m, 1))}
                                 className="w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer"
-                                style={{ color: "rgba(200,212,228,0.55)" }}
-                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)" }}
+                                style={{ color: "var(--lc-text-dim)" }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--lc-bg-glass-mid)" }}
                                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
                               >
                                 <ChevronLeft className="w-3.5 h-3.5" />
                               </button>
-                              <span className="text-[13px] font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>{format(calendarMonth, "MMMM yyyy")}</span>
+                              <span className="text-[13px] font-semibold" style={{ color: "var(--lc-text-primary)" }}>{format(calendarMonth, "MMMM yyyy")}</span>
                               <button
                                 onClick={() => setCalendarMonth(m => addMonths(m, 1))}
                                 className="w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer"
-                                style={{ color: "rgba(200,212,228,0.55)" }}
-                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)" }}
+                                style={{ color: "var(--lc-text-dim)" }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--lc-bg-glass-mid)" }}
                                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
                               >
                                 <ChevronRight className="w-3.5 h-3.5" />
@@ -388,7 +388,7 @@ function DispatchPageInner() {
                             </div>
                             <div className="grid grid-cols-7 mb-1">
                               {["Su","Mo","Tu","We","Th","Fr","Sa"].map(d => (
-                                <div key={d} className="text-center text-[11px] font-semibold py-1 uppercase tracking-wide" style={{ color: "rgba(200,212,228,0.38)" }}>{d}</div>
+                                <div key={d} className="text-center text-[11px] font-semibold py-1 uppercase tracking-wide" style={{ color: "var(--lc-text-muted)" }}>{d}</div>
                               ))}
                             </div>
                             <div className="grid grid-cols-7 gap-y-0.5">
@@ -402,14 +402,14 @@ function DispatchPageInner() {
                                   className="text-center text-[13px] py-1.5 rounded-full transition-all duration-150 font-medium cursor-pointer"
                                   style={
                                     isSameDay(day, selectedDate)
-                                      ? { background: "#c9a87c", color: "#080c16" }
+                                      ? { background: "#c9a87c", color: "var(--lc-bg-page)" }
                                       : isToday(day)
                                       ? { color: "#c9a87c", fontWeight: 700 }
-                                      : { color: "rgba(255,255,255,0.80)" }
+                                      : { color: "var(--lc-text-secondary)" }
                                   }
                                   onMouseEnter={e => {
                                     if (!isSameDay(day, selectedDate))
-                                      (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)"
+                                      (e.currentTarget as HTMLButtonElement).style.background = "var(--lc-bg-glass-hover)"
                                   }}
                                   onMouseLeave={e => {
                                     if (!isSameDay(day, selectedDate))
@@ -429,8 +429,8 @@ function DispatchPageInner() {
                   <button
                     onClick={() => setSelectedDate(d => addDays(d, 1))}
                     className="w-7 h-7 rounded-[9px] flex items-center justify-center transition-all duration-150 active:scale-90 cursor-pointer"
-                    style={{ color: "rgba(200,212,228,0.55)" }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)" }}
+                    style={{ color: "var(--lc-text-dim)" }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--lc-bg-glass-hover)" }}
                     onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
                   >
                     <ChevronRight className="w-3.5 h-3.5" />
@@ -442,7 +442,7 @@ function DispatchPageInner() {
               <div className="relative flex-1 min-w-0">
                 <Search
                   className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none transition-colors duration-200"
-                  style={{ color: committed ? "#c9a87c" : "rgba(200,212,228,0.38)" }}
+                  style={{ color: committed ? "#c9a87c" : "var(--lc-text-muted)" }}
                 />
                 <input
                   ref={searchRef}
@@ -452,9 +452,9 @@ function DispatchPageInner() {
                   placeholder="Search reservations…"
                   className="h-9 pl-8.5 w-full text-[13px] rounded-xl outline-none transition-all duration-200 font-medium"
                   style={{
-                    background: "rgba(255,255,255,0.05)",
-                    border: committed ? "1px solid rgba(201,168,124,0.45)" : "1px solid rgba(255,255,255,0.09)",
-                    color: "rgba(255,255,255,0.88)",
+                    background: "var(--lc-bg-glass)",
+                    border: committed ? "1px solid rgba(201,168,124,0.45)" : "1px solid var(--lc-bg-glass-hover)",
+                    color: "var(--lc-text-primary)",
                     paddingRight: committed || search ? "56px" : "12px",
                     boxShadow: committed ? "0 0 0 2px rgba(201,168,124,0.10)" : "none",
                   }}
@@ -466,7 +466,7 @@ function DispatchPageInner() {
                   }}
                   onBlur={e => {
                     if (!committed) {
-                      (e.target as HTMLInputElement).style.border = "1px solid rgba(255,255,255,0.09)"
+                      (e.target as HTMLInputElement).style.border = "1px solid var(--lc-bg-glass-hover)"
                       ;(e.target as HTMLInputElement).style.boxShadow = "none"
                     }
                   }}
@@ -484,7 +484,7 @@ function DispatchPageInner() {
                   <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
                     <kbd
                       className="text-[10px] font-mono rounded-[5px] px-1.5 py-0.5 leading-none"
-                      style={{ color: "rgba(200,212,228,0.38)", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)" }}
+                      style={{ color: "var(--lc-text-muted)", background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)" }}
                     >↵</kbd>
                   </div>
                 ) : null}
@@ -497,7 +497,7 @@ function DispatchPageInner() {
               {/* Segmented control */}
               <div
                 className="flex items-center gap-0.5 rounded-[11px] p-1 flex-1 overflow-x-auto"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+                style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)" }}
               >
                 {allFilterTabs.map(tab => (
                   <button
@@ -505,8 +505,8 @@ function DispatchPageInner() {
                     onClick={() => setStatusFilter(tab.value)}
                     className="px-3 py-1.5 rounded-[8px] text-[12px] font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer flex-shrink-0"
                     style={statusFilter === tab.value
-                      ? { background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.92)", boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }
-                      : { color: "rgba(200,212,228,0.55)" }
+                      ? { background: "var(--lc-border)", color: "var(--lc-text-primary)", boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }
+                      : { color: "var(--lc-text-dim)" }
                     }
                   >
                     {tab.label}
@@ -520,8 +520,8 @@ function DispatchPageInner() {
                   onClick={() => setShowFilterConfig(s => !s)}
                   className="w-9 h-9 rounded-[10px] flex items-center justify-center transition-all duration-150 cursor-pointer"
                   style={showFilterConfig
-                    ? { background: "#c9a87c", border: "1px solid #c9a87c", color: "#080c16" }
-                    : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(200,212,228,0.55)" }
+                    ? { background: "#c9a87c", border: "1px solid #c9a87c", color: "var(--lc-bg-page)" }
+                    : { background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)", color: "var(--lc-text-dim)" }
                   }
                 >
                   <Settings2 className="w-3.5 h-3.5" />
@@ -531,13 +531,13 @@ function DispatchPageInner() {
                   <div
                     className="absolute top-full right-0 mt-2 z-50 rounded-2xl w-52 overflow-hidden"
                     style={{
-                      background: "#0d1526",
-                      border: "1px solid rgba(255,255,255,0.09)",
+                      background: "var(--lc-bg-surface)",
+                      border: "1px solid var(--lc-bg-glass-hover)",
                       boxShadow: "0 8px 40px rgba(0,0,0,0.55)",
                     }}
                   >
                     <div className="px-4 pt-3.5 pb-2">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.08em]" style={{ color: "rgba(200,212,228,0.38)" }}>Visible Filters</p>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.08em]" style={{ color: "var(--lc-text-muted)" }}>Visible Filters</p>
                     </div>
                     <div className="px-2 pb-2">
                       {ALL_STATUS_OPTIONS.map(opt => {
@@ -550,13 +550,13 @@ function DispatchPageInner() {
                             disabled={isLast}
                             className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl transition-colors text-left cursor-pointer"
                             style={{ opacity: isLast ? 0.4 : 1 }}
-                            onMouseEnter={e => { if (!isLast) (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.06)" }}
+                            onMouseEnter={e => { if (!isLast) (e.currentTarget as HTMLButtonElement).style.background = "var(--lc-bg-glass)" }}
                             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent" }}
                           >
-                            <span className="text-[13px] font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{opt.label}</span>
+                            <span className="text-[13px] font-medium" style={{ color: "var(--lc-text-primary)" }}>{opt.label}</span>
                             <div
                               className="w-[34px] h-[20px] rounded-full transition-all duration-200 relative shrink-0"
-                              style={{ background: isEnabled ? "#c9a87c" : "rgba(255,255,255,0.12)" }}
+                              style={{ background: isEnabled ? "#c9a87c" : "var(--lc-border)" }}
                             >
                               <div
                                 className={cn(
@@ -581,8 +581,8 @@ function DispatchPageInner() {
                   onChange={e => setDriverFilter(e.target.value)}
                   className="appearance-none h-9 pl-3 pr-7 rounded-[10px] text-[12px] font-semibold cursor-pointer transition-all outline-none"
                   style={driverFilter !== "all"
-                    ? { background: "#c9a87c", border: "1px solid #c9a87c", color: "#080c16" }
-                    : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(255,255,255,0.80)" }
+                    ? { background: "#c9a87c", border: "1px solid #c9a87c", color: "var(--lc-bg-page)" }
+                    : { background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)", color: "var(--lc-text-secondary)" }
                   }
                 >
                   <option value="all">All Drivers</option>
@@ -593,7 +593,7 @@ function DispatchPageInner() {
                 </select>
                 <ChevronRight
                   className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none rotate-90"
-                  style={{ color: driverFilter !== "all" ? "rgba(8,12,22,0.7)" : "rgba(200,212,228,0.38)" }}
+                  style={{ color: driverFilter !== "all" ? "rgba(8,12,22,0.7)" : "var(--lc-text-muted)" }}
                 />
               </div>
             </div>

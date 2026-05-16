@@ -75,11 +75,11 @@ function Lightbox({ photos, index, onClose, onNav }: {
   const photo = photos[index]
   return (
     <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 9999, background: "rgba(0,0,0,0.93)" }} onClick={onClose}>
-      <button className="absolute top-5 right-5 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.12)" }} onClick={onClose}>
+      <button className="absolute top-5 right-5 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: "var(--lc-border)" }} onClick={onClose}>
         <X className="w-5 h-5 text-white" />
       </button>
       {photos.length > 1 && (
-        <div className="absolute top-5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-white text-xs font-medium" style={{ background: "rgba(255,255,255,0.12)" }}>
+        <div className="absolute top-5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-white text-xs font-medium" style={{ background: "var(--lc-border)" }}>
           {index + 1} / {photos.length}
         </div>
       )}
@@ -92,10 +92,10 @@ function Lightbox({ photos, index, onClose, onNav }: {
       </div>
       {photos.length > 1 && (
         <>
-          <button className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.12)" }} onClick={e => { e.stopPropagation(); onNav((index - 1 + photos.length) % photos.length) }}>
+          <button className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center" style={{ background: "var(--lc-border)" }} onClick={e => { e.stopPropagation(); onNav((index - 1 + photos.length) % photos.length) }}>
             <ChevronLeft className="w-6 h-6 text-white" />
           </button>
-          <button className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.12)" }} onClick={e => { e.stopPropagation(); onNav((index + 1) % photos.length) }}>
+          <button className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full flex items-center justify-center" style={{ background: "var(--lc-border)" }} onClick={e => { e.stopPropagation(); onNav((index + 1) % photos.length) }}>
             <ChevronRight className="w-6 h-6 text-white" />
           </button>
         </>

@@ -16,9 +16,9 @@ const MONTH_OPTIONS = [
 ]
 
 const darkSelect: React.CSSProperties = {
-  background: "rgba(255,255,255,0.05)",
-  border: "1px solid rgba(255,255,255,0.10)",
-  color: "rgba(255,255,255,0.80)",
+  background: "var(--lc-bg-glass)",
+  border: "1px solid var(--lc-border)",
+  color: "var(--lc-text-secondary)",
   borderRadius: "10px",
   padding: "8px 12px",
   fontSize: "13px",
@@ -44,9 +44,9 @@ export function CompareTab({ startDate, endDate }: CompareTabProps) {
   if (!p1Data || !p2Data) {
     return (
       <div className="space-y-4">
-        <div className="h-32 rounded-2xl animate-pulse" style={{ background: "#0d1526" }} />
+        <div className="h-32 rounded-2xl animate-pulse" style={{ background: "var(--lc-bg-surface)" }} />
         <div className="grid grid-cols-2 gap-4">
-          {[0,1,2,3].map(i => <div key={i} className="h-32 rounded-2xl animate-pulse" style={{ background: "#0d1526" }} />)}
+          {[0,1,2,3].map(i => <div key={i} className="h-32 rounded-2xl animate-pulse" style={{ background: "var(--lc-bg-surface)" }} />)}
         </div>
       </div>
     )
@@ -65,9 +65,9 @@ export function CompareTab({ startDate, endDate }: CompareTabProps) {
           <div
             key={label}
             className="rounded-2xl p-5"
-            style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+            style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
           >
-            <p className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.38)", letterSpacing: "0.14em" }}>
+            <p className="text-[11px] font-semibold uppercase tracking-widest mb-3" style={{ color: "var(--lc-text-muted)", letterSpacing: "0.14em" }}>
               {label}
             </p>
             <div className="relative">
@@ -76,14 +76,14 @@ export function CompareTab({ startDate, endDate }: CompareTabProps) {
                   <option
                     key={opt.label}
                     value={opt.label.toLowerCase().split(" ")[0]}
-                    style={{ background: "#0d1526", color: "rgba(255,255,255,0.80)" }}
+                    style={{ background: "var(--lc-bg-surface)", color: "var(--lc-text-secondary)" }}
                   >
                     {opt.label}
                   </option>
                 ))}
               </select>
             </div>
-            <p className="text-[11px] mt-2" style={{ color: "rgba(200,212,228,0.35)" }}>
+            <p className="text-[11px] mt-2" style={{ color: "var(--lc-text-muted)" }}>
               {getRange(value).start} → {getRange(value).end}
             </p>
           </div>
@@ -104,9 +104,9 @@ export function CompareTab({ startDate, endDate }: CompareTabProps) {
       {/* Breakdown */}
       <div
         className="rounded-2xl p-5"
-        style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+        style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
       >
-        <p className="text-[10px] font-semibold uppercase tracking-widest mb-5" style={{ color: "rgba(200,212,228,0.38)", letterSpacing: "0.14em" }}>
+        <p className="text-[10px] font-semibold uppercase tracking-widest mb-5" style={{ color: "var(--lc-text-muted)", letterSpacing: "0.14em" }}>
           Breakdown
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -117,22 +117,22 @@ export function CompareTab({ startDate, endDate }: CompareTabProps) {
             const profit = data.metrics.totalRevenue - data.metrics.totalExpenses
             return (
               <div key={label}>
-                <p className="text-[13px] font-semibold mb-3" style={{ color: "rgba(255,255,255,0.75)" }}>{label}</p>
+                <p className="text-[13px] font-semibold mb-3" style={{ color: "var(--lc-text-secondary)" }}>{label}</p>
                 <div className="space-y-2.5 text-[13px]">
                   {[
                     { key: "Revenue",  value: data.metrics.totalRevenue,  color: "rgba(52,211,153,0.90)" },
                     { key: "Expenses", value: data.metrics.totalExpenses, color: "rgba(248,113,113,0.80)" },
                   ].map(({ key, value, color }) => (
                     <div key={key} className="flex justify-between items-center">
-                      <span style={{ color: "rgba(200,212,228,0.55)" }}>{key}</span>
+                      <span style={{ color: "var(--lc-text-dim)" }}>{key}</span>
                       <span className="font-semibold tabular-nums" style={{ color }}>{fmtK(value)}</span>
                     </div>
                   ))}
                   <div
                     className="flex justify-between items-center pt-2.5"
-                    style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
+                    style={{ borderTop: "1px solid var(--lc-bg-glass-mid)" }}
                   >
-                    <span className="font-semibold" style={{ color: "rgba(200,212,228,0.70)" }}>Profit</span>
+                    <span className="font-semibold" style={{ color: "var(--lc-text-secondary)" }}>Profit</span>
                     <span
                       className="font-bold tabular-nums"
                       style={{ color: profit >= 0 ? "rgba(52,211,153,0.90)" : "rgba(248,113,113,0.90)" }}

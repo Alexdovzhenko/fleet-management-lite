@@ -58,20 +58,20 @@ export function EarningsPage() {
       {/* Dark backdrop behind dock nav */}
       <div
         className="fixed bottom-0 inset-x-0 pointer-events-none"
-        style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "#080c16", zIndex: 0 }}
+        style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "var(--lc-bg-page)", zIndex: 0 }}
       />
 
       {/* Full-bleed dark page wrapper */}
       <div
         className="-mx-4 -mt-4 md:-mx-6 md:-mt-6"
-        style={{ background: "#080c16", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
+        style={{ background: "var(--lc-bg-page)", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
       >
         <div className="px-4 pt-4 md:px-6 md:pt-6 pb-6 max-w-6xl mx-auto space-y-4">
 
           {/* ── Header card ── */}
           <div
             className="rounded-2xl overflow-hidden"
-            style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
+            style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
           >
             {/* Title row */}
             <div className="flex items-center justify-between gap-4 px-5 pt-5 pb-4 flex-wrap gap-y-3">
@@ -90,7 +90,7 @@ export function EarningsPage() {
                   }}>
                     Earnings
                   </p>
-                  <p className="leading-tight" style={{ fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "-0.01em" }}>
+                  <p className="leading-tight" style={{ fontSize: "13px", fontWeight: 600, color: "var(--lc-text-primary)", letterSpacing: "-0.01em" }}>
                     {summaryLoading ? "Loading…" : `${fmtCurrency(summary?.metrics.totalRevenue ?? 0)} revenue · ${fmtCurrency(summary?.metrics.totalExpenses ?? 0)} expenses`}
                   </p>
                 </div>
@@ -101,7 +101,7 @@ export function EarningsPage() {
             </div>
 
             {/* Divider */}
-            <div className="h-px mx-5" style={{ background: "rgba(255,255,255,0.06)" }} />
+            <div className="h-px mx-5" style={{ background: "var(--lc-bg-glass)" }} />
 
             {/* Metric cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 p-4">
@@ -124,7 +124,7 @@ export function EarningsPage() {
             </div>
 
             {/* Divider */}
-            <div className="h-px mx-5" style={{ background: "rgba(255,255,255,0.06)" }} />
+            <div className="h-px mx-5" style={{ background: "var(--lc-bg-glass)" }} />
 
             {/* Tab bar */}
             <div className="px-3 py-1">
@@ -148,7 +148,7 @@ export function EarningsPage() {
                     ref={(el) => { tabRefs.current[i] = el }}
                     onClick={() => setActiveTab(tab.id)}
                     className="relative z-10 px-4 py-2.5 text-[13px] font-semibold transition-colors duration-150 cursor-pointer whitespace-nowrap select-none"
-                    style={activeTab === tab.id ? { color: "#c9a87c" } : { color: "rgba(200,212,228,0.50)" }}
+                    style={activeTab === tab.id ? { color: "#c9a87c" } : { color: "var(--lc-text-label)" }}
                   >
                     {tab.label}
                   </button>

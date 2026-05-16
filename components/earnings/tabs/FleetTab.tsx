@@ -6,7 +6,7 @@ import { FleetPerformanceTable } from "../charts/FleetPerformanceTable"
 
 export function FleetTab({ data, isLoading }: { data?: EarningsBreakdown; isLoading: boolean }) {
   if (isLoading) {
-    return <div className="h-96 rounded-2xl animate-pulse" style={{ background: "#0d1526" }} />
+    return <div className="h-96 rounded-2xl animate-pulse" style={{ background: "var(--lc-bg-surface)" }} />
   }
 
   const alertCount   = data?.fleetPerformance?.filter((v) => v.status === "alert").length   ?? 0

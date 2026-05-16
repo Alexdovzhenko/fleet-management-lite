@@ -56,14 +56,14 @@ export function DriverPickerCard({
   return (
     <div ref={ref} className={label ? "space-y-1.5" : ""}>
       {label && (
-        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)" }}>{label}</p>
+        <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--lc-text-primary)" }}>{label}</p>
       )}
       {isLoading ? (
         <Skeleton className="h-10 w-full rounded-xl" />
       ) : selected ? (
         <div
           className="flex items-center gap-2.5 rounded-xl px-3 py-2.5"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}
+          style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-hover)" }}
         >
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0 overflow-hidden"
@@ -77,9 +77,9 @@ export function DriverPickerCard({
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.90)" }}>{selected.name}</div>
+            <div className="text-sm font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>{selected.name}</div>
             {selected.phone && (
-              <div className="text-[11px] truncate" style={{ color: "rgba(200,212,228,0.50)" }}>{formatPhone(selected.phone)}</div>
+              <div className="text-[11px] truncate" style={{ color: "var(--lc-text-label)" }}>{formatPhone(selected.phone)}</div>
             )}
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -94,9 +94,9 @@ export function DriverPickerCard({
               type="button"
               onClick={() => onChange("")}
               className="transition-colors"
-              style={{ color: "rgba(200,212,228,0.35)" }}
-              onMouseEnter={e => (e.currentTarget.style.color = "rgba(200,212,228,0.70)")}
-              onMouseLeave={e => (e.currentTarget.style.color = "rgba(200,212,228,0.35)")}
+              style={{ color: "var(--lc-text-muted)" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "var(--lc-text-secondary)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "var(--lc-text-muted)")}
               aria-label="Remove driver assignment"
             >
               <X className="w-3.5 h-3.5" />
@@ -108,15 +108,15 @@ export function DriverPickerCard({
           type="button"
           onClick={() => (open ? setOpen(false) : openDropdown())}
           className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all"
-          style={{ border: "1px dashed rgba(255,255,255,0.12)", color: "rgba(200,212,228,0.50)", background: "transparent" }}
+          style={{ border: "1px dashed var(--lc-border)", color: "var(--lc-text-label)", background: "transparent" }}
           onMouseEnter={e => {
             (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,124,0.35)"
             ;(e.currentTarget as HTMLElement).style.color = "rgba(201,168,124,0.80)"
             ;(e.currentTarget as HTMLElement).style.background = "rgba(201,168,124,0.04)"
           }}
           onMouseLeave={e => {
-            (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)"
-            ;(e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.50)"
+            (e.currentTarget as HTMLElement).style.borderColor = "var(--lc-border)"
+            ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)"
             ;(e.currentTarget as HTMLElement).style.background = "transparent"
           }}
         >
@@ -133,18 +133,18 @@ export function DriverPickerCard({
       {open && !selected && createPortal(
         <div
           ref={dropRef}
-          style={{ ...dropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.10)", boxShadow: "0 8px 32px rgba(0,0,0,0.60)" }}
+          style={{ ...dropStyle, background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", boxShadow: "0 8px 32px rgba(0,0,0,0.60)" }}
           className="rounded-xl overflow-hidden"
         >
           <div
             className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest border-b"
-            style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.07)" }}
+            style={{ color: "var(--lc-text-label)", background: "var(--lc-bg-card)", borderColor: "var(--lc-bg-glass-mid)" }}
           >
             Active Drivers
           </div>
           <div className="max-h-44 overflow-y-auto">
             {drivers.length === 0 ? (
-              <div className="px-3 py-3 text-xs text-center" style={{ color: "rgba(200,212,228,0.40)" }}>No active drivers</div>
+              <div className="px-3 py-3 text-xs text-center" style={{ color: "var(--lc-text-muted)" }}>No active drivers</div>
             ) : (
               drivers.map((d) => (
                 <button
@@ -153,8 +153,8 @@ export function DriverPickerCard({
                   onMouseDown={e => e.preventDefault()}
                   onClick={() => { onChange(d.id); setOpen(false) }}
                   className="w-full flex items-center gap-2.5 px-3 py-2.5 transition-colors"
-                  style={{ color: "rgba(255,255,255,0.85)" }}
-                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
+                  style={{ color: "var(--lc-text-primary)" }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "var(--lc-bg-glass)")}
                   onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                 >
                   <div
@@ -169,8 +169,8 @@ export function DriverPickerCard({
                     )}
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{d.name}</div>
-                    {d.phone && <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.45)" }}>{formatPhone(d.phone)}</div>}
+                    <div className="text-sm font-medium" style={{ color: "var(--lc-text-primary)" }}>{d.name}</div>
+                    {d.phone && <div className="text-[11px]" style={{ color: "var(--lc-text-label)" }}>{formatPhone(d.phone)}</div>}
                   </div>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
                 </button>

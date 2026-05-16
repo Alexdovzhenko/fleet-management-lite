@@ -80,21 +80,21 @@ export function TripDetailModal({ event, onClose }: TripDetailModalProps) {
             transition={{ type: "spring", stiffness: 380, damping: 38, mass: 0.85 }}
             className="fixed bottom-0 inset-x-0 z-[201] flex flex-col rounded-t-3xl overflow-hidden"
             style={{
-              background: "#0d1526",
-              border: "1px solid rgba(255,255,255,0.09)",
+              background: "var(--lc-bg-surface)",
+              border: "1px solid var(--lc-bg-glass-hover)",
               boxShadow: "0 -24px 80px rgba(0,0,0,0.60)",
               maxHeight: "88vh",
             }}
           >
             {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
-              <div className="w-10 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.20)" }} />
+              <div className="w-10 h-1 rounded-full" style={{ background: "var(--lc-border-medium)" }} />
             </div>
 
             {/* Scrollable content */}
             <div className="overflow-y-auto flex-1">
               {/* Header */}
-              <div className="px-5 pt-3 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+              <div className="px-5 pt-3 pb-4" style={{ borderBottom: "1px solid var(--lc-bg-glass-mid)" }}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     {/* Status badge */}
@@ -106,18 +106,18 @@ export function TripDetailModal({ event, onClose }: TripDetailModalProps) {
                         <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: sc?.dot }} />
                         {sc?.label}
                       </span>
-                      <span className="text-[11px] font-mono" style={{ color: "rgba(200,212,228,0.40)" }}>
+                      <span className="text-[11px] font-mono" style={{ color: "var(--lc-text-muted)" }}>
                         {event.tripNumber}
                       </span>
                     </div>
-                    <h2 className="text-xl font-bold leading-tight" style={{ color: "rgba(255,255,255,0.95)" }}>
+                    <h2 className="text-xl font-bold leading-tight" style={{ color: "var(--lc-text-primary)" }}>
                       {event.clientName}
                     </h2>
                   </div>
                   <button
                     onClick={onClose}
                     className="w-8 h-8 flex items-center justify-center rounded-xl flex-shrink-0 transition-colors"
-                    style={{ background: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.60)" }}
+                    style={{ background: "var(--lc-bg-glass-mid)", color: "var(--lc-text-dim)" }}
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -133,12 +133,12 @@ export function TripDetailModal({ event, onClose }: TripDetailModalProps) {
                     <Calendar className="w-4 h-4" style={{ color: "#c9a87c" }} />
                   </div>
                   <div>
-                    <div className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.90)" }}>
+                    <div className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>
                       {startDate ? format(startDate, "EEEE, MMMM d, yyyy") : "—"}
                     </div>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                      <Clock className="w-3 h-3" style={{ color: "rgba(200,212,228,0.45)" }} />
-                      <span className="text-[12px]" style={{ color: "rgba(200,212,228,0.65)" }}>
+                      <Clock className="w-3 h-3" style={{ color: "var(--lc-text-label)" }} />
+                      <span className="text-[12px]" style={{ color: "var(--lc-text-dim)" }}>
                         {formatTimeRange(event)}
                       </span>
                     </div>
@@ -148,22 +148,22 @@ export function TripDetailModal({ event, onClose }: TripDetailModalProps) {
                 {/* Route */}
                 <div
                   className="rounded-2xl p-4 space-y-3"
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
+                  style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-mid)" }}
                 >
                   <div className="flex items-start gap-3">
                     <div className="flex flex-col items-center flex-shrink-0 mt-1">
                       <div className="w-2.5 h-2.5 rounded-full" style={{ background: "#34d399" }} />
-                      <div className="w-px flex-1 my-1" style={{ background: "rgba(255,255,255,0.12)", height: "32px" }} />
+                      <div className="w-px flex-1 my-1" style={{ background: "var(--lc-border)", height: "32px" }} />
                       <MapPin className="w-3.5 h-3.5" style={{ color: "#f87171" }} />
                     </div>
                     <div className="flex-1 space-y-3">
                       <div>
                         <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: "rgba(52,211,153,0.70)" }}>Pickup</div>
-                        <div className="text-sm font-medium leading-snug" style={{ color: "rgba(255,255,255,0.88)" }}>{event.pickupAddress}</div>
+                        <div className="text-sm font-medium leading-snug" style={{ color: "var(--lc-text-primary)" }}>{event.pickupAddress}</div>
                       </div>
                       <div>
                         <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: "rgba(248,113,113,0.70)" }}>Drop-off</div>
-                        <div className="text-sm font-medium leading-snug" style={{ color: "rgba(255,255,255,0.88)" }}>{event.dropoffAddress}</div>
+                        <div className="text-sm font-medium leading-snug" style={{ color: "var(--lc-text-primary)" }}>{event.dropoffAddress}</div>
                       </div>
                     </div>
                   </div>
@@ -176,7 +176,7 @@ export function TripDetailModal({ event, onClose }: TripDetailModalProps) {
                       <UserCheck className="w-3.5 h-3.5" style={{ color: "rgba(165,180,252,0.80)" }} />
                       <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(165,180,252,0.65)" }}>Driver</span>
                     </div>
-                    <div className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>
+                    <div className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>
                       {event.driverName ?? <span style={{ color: "rgba(245,158,11,0.80)" }}>Unassigned</span>}
                     </div>
                     {event.driverName && (
@@ -188,25 +188,25 @@ export function TripDetailModal({ event, onClose }: TripDetailModalProps) {
                       </div>
                     )}
                   </div>
-                  <div className="rounded-xl px-3.5 py-3" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}>
+                  <div className="rounded-xl px-3.5 py-3" style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-hover)" }}>
                     <div className="flex items-center gap-2 mb-1.5">
-                      <Car className="w-3.5 h-3.5" style={{ color: "rgba(200,212,228,0.50)" }} />
-                      <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)" }}>Vehicle</span>
+                      <Car className="w-3.5 h-3.5" style={{ color: "var(--lc-text-label)" }} />
+                      <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-label)" }}>Vehicle</span>
                     </div>
-                    <div className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>
+                    <div className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>
                       {VEHICLE_LABEL[event.vehicleType] ?? event.vehicleType}
                     </div>
                     {event.vehicleId && (
-                      <div className="text-[11px] mt-0.5" style={{ color: "rgba(200,212,228,0.45)" }}>{event.vehicleId}</div>
+                      <div className="text-[11px] mt-0.5" style={{ color: "var(--lc-text-label)" }}>{event.vehicleId}</div>
                     )}
                   </div>
                 </div>
 
                 {/* Passengers */}
-                <div className="flex items-center gap-2.5 px-3.5 py-3 rounded-xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                  <Users className="w-4 h-4 flex-shrink-0" style={{ color: "rgba(200,212,228,0.50)" }} />
-                  <span className="text-sm" style={{ color: "rgba(255,255,255,0.80)" }}>
-                    <strong style={{ color: "rgba(255,255,255,0.95)" }}>{event.passengerCount}</strong>{" "}
+                <div className="flex items-center gap-2.5 px-3.5 py-3 rounded-xl" style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-mid)" }}>
+                  <Users className="w-4 h-4 flex-shrink-0" style={{ color: "var(--lc-text-label)" }} />
+                  <span className="text-sm" style={{ color: "var(--lc-text-secondary)" }}>
+                    <strong style={{ color: "var(--lc-text-primary)" }}>{event.passengerCount}</strong>{" "}
                     {event.passengerCount === 1 ? "passenger" : "passengers"}
                   </span>
                 </div>
@@ -218,7 +218,7 @@ export function TripDetailModal({ event, onClose }: TripDetailModalProps) {
                       <FileText className="w-3.5 h-3.5" style={{ color: "rgba(251,191,36,0.70)" }} />
                       <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(251,191,36,0.65)" }}>Notes</span>
                     </div>
-                    <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.75)" }}>{event.notes}</p>
+                    <p className="text-sm leading-relaxed" style={{ color: "var(--lc-text-secondary)" }}>{event.notes}</p>
                   </div>
                 )}
               </div>
@@ -228,22 +228,22 @@ export function TripDetailModal({ event, onClose }: TripDetailModalProps) {
             <div
               className="flex gap-3 px-5 py-4 flex-shrink-0"
               style={{
-                borderTop: "1px solid rgba(255,255,255,0.07)",
-                background: "#080c16",
+                borderTop: "1px solid var(--lc-bg-glass-mid)",
+                background: "var(--lc-bg-page)",
                 paddingBottom: "max(16px, env(safe-area-inset-bottom))",
               }}
             >
               <button
                 onClick={onClose}
                 className="flex-1 h-11 text-sm font-semibold rounded-2xl transition-colors"
-                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.75)" }}
+                style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-secondary)" }}
               >
                 Close
               </button>
               <Link
                 href={`/dispatch?open=${event.id}`}
                 className="flex-1 h-11 text-sm font-semibold rounded-2xl flex items-center justify-center gap-2 transition-colors"
-                style={{ background: "#c9a87c", color: "#0d1526" }}
+                style={{ background: "#c9a87c", color: "var(--lc-bg-surface)" }}
                 onClick={onClose}
               >
                 <ExternalLink className="w-3.5 h-3.5" />

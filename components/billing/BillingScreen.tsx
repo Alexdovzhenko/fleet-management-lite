@@ -74,20 +74,20 @@ export function BillingScreen() {
       {/* Dark backdrop behind dock nav */}
       <div
         className="fixed bottom-0 inset-x-0 pointer-events-none"
-        style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "#080c16", zIndex: 0 }}
+        style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "var(--lc-bg-page)", zIndex: 0 }}
       />
 
       {/* Full-bleed dark page wrapper */}
       <div
         className="-mx-4 -mt-4 md:-mx-6 md:-mt-6"
-        style={{ background: "#080c16", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
+        style={{ background: "var(--lc-bg-page)", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
       >
         <div className="px-4 pt-4 md:px-6 md:pt-6 pb-6 max-w-6xl mx-auto space-y-3">
 
           {/* ── Header card ── */}
           <div
             className="rounded-2xl overflow-hidden"
-            style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
+            style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
           >
             {/* Title row */}
             <div className="flex items-center justify-between gap-4 px-5 pt-5 pb-4">
@@ -106,7 +106,7 @@ export function BillingScreen() {
                   }}>
                     Billing
                   </p>
-                  <p className="leading-tight" style={{ fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "-0.01em" }}>
+                  <p className="leading-tight" style={{ fontSize: "13px", fontWeight: 600, color: "var(--lc-text-primary)", letterSpacing: "-0.01em" }}>
                     {isLoading ? "Loading…" : openCount === 0 ? "All invoices are settled" : `${openCount} open invoice${openCount !== 1 ? "s" : ""} · $${totalOutstanding.toFixed(2)} outstanding`}
                   </p>
                 </div>
@@ -132,7 +132,7 @@ export function BillingScreen() {
             </div>
 
             {/* Divider */}
-            <div className="h-px mx-5" style={{ background: "rgba(255,255,255,0.06)" }} />
+            <div className="h-px mx-5" style={{ background: "var(--lc-bg-glass)" }} />
 
             {/* Controls row */}
             <div className="flex items-center gap-2.5 px-5 py-3.5 flex-wrap">
@@ -157,14 +157,14 @@ export function BillingScreen() {
                 <button
                   onClick={clearFilters}
                   className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold transition-all duration-150 cursor-pointer"
-                  style={{ color: "rgba(200,212,228,0.55)", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+                  style={{ color: "var(--lc-text-dim)", background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)" }}
                   onMouseEnter={e => {
                     (e.currentTarget as HTMLElement).style.color = "#f87171"
                     ;(e.currentTarget as HTMLElement).style.background = "rgba(248,113,113,0.08)"
                   }}
                   onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.55)"
-                    ;(e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"
+                    (e.currentTarget as HTMLElement).style.color = "var(--lc-text-dim)"
+                    ;(e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"
                   }}
                 >
                   Clear
@@ -174,7 +174,7 @@ export function BillingScreen() {
             </div>
 
             {/* Divider */}
-            <div className="h-px mx-5" style={{ background: "rgba(255,255,255,0.06)" }} />
+            <div className="h-px mx-5" style={{ background: "var(--lc-bg-glass)" }} />
 
             {/* Tabs row */}
             <div className="px-3">

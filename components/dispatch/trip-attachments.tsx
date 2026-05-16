@@ -94,34 +94,34 @@ function AttachmentPreviewModal({ attachment, onClose }: PreviewModalProps) {
 
   return (
     <Dialog open={!!attachment} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl w-full p-0 overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.10)" }}>
-        <DialogHeader className="px-5 py-4 border-b" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
-          <DialogTitle className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.90)" }}>{name}</DialogTitle>
+      <DialogContent className="max-w-3xl w-full p-0 overflow-hidden" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)" }}>
+        <DialogHeader className="px-5 py-4 border-b" style={{ borderColor: "var(--lc-bg-glass-mid)" }}>
+          <DialogTitle className="text-sm font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>{name}</DialogTitle>
         </DialogHeader>
         <div className="p-4">
           {isImage(mimeType) && (
             <img src={url!} alt={name} className="max-w-full max-h-[70vh] object-contain mx-auto block rounded-xl" />
           )}
           {isPdf(mimeType) && (
-            <iframe src={url!} className="w-full h-[70vh] rounded-xl border" style={{ borderColor: "rgba(255,255,255,0.08)" }} title={name} />
+            <iframe src={url!} className="w-full h-[70vh] rounded-xl border" style={{ borderColor: "var(--lc-bg-glass-hover)" }} title={name} />
           )}
           {isText(mimeType) && (
             textLoading ? (
               <div className="flex items-center justify-center h-40">
-                <Loader2 className="w-5 h-5 animate-spin" style={{ color: "rgba(200,212,228,0.40)" }} />
+                <Loader2 className="w-5 h-5 animate-spin" style={{ color: "var(--lc-text-muted)" }} />
               </div>
             ) : (
-              <pre className="text-sm whitespace-pre-wrap overflow-auto max-h-[70vh] rounded-xl p-4 font-mono" style={{ background: "rgba(255,255,255,0.04)", color: "rgba(200,212,228,0.80)", border: "1px solid rgba(255,255,255,0.07)" }}>
+              <pre className="text-sm whitespace-pre-wrap overflow-auto max-h-[70vh] rounded-xl p-4 font-mono" style={{ background: "var(--lc-bg-card)", color: "var(--lc-text-secondary)", border: "1px solid var(--lc-bg-glass-mid)" }}>
                 {textContent}
               </pre>
             )
           )}
           {isOffice(mimeType) && (
-            <div className="flex flex-col items-center justify-center gap-4 py-12" style={{ color: "rgba(200,212,228,0.55)" }}>
-              <FileText className="w-12 h-12" style={{ color: "rgba(200,212,228,0.25)" }} />
-              <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.75)" }}>{name}</p>
+            <div className="flex flex-col items-center justify-center gap-4 py-12" style={{ color: "var(--lc-text-dim)" }}>
+              <FileText className="w-12 h-12" style={{ color: "var(--lc-text-muted)" }} />
+              <p className="text-sm font-medium" style={{ color: "var(--lc-text-secondary)" }}>{name}</p>
               <p className="text-xs">Office documents cannot be previewed in the browser</p>
-              <a href={url!} download={name} className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-colors" style={{ background: "#c9a87c", color: "#0d1526" }}>
+              <a href={url!} download={name} className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-colors" style={{ background: "#c9a87c", color: "var(--lc-bg-surface)" }}>
                 <Download className="w-4 h-4" />
                 Download file
               </a>
@@ -153,8 +153,8 @@ function AttachmentCard({ name, mimeType, size, isDeleting, isUploading, onPrevi
     <div
       className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all"
       style={{
-        background: busy ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(255,255,255,0.08)",
+        background: busy ? "var(--lc-bg-card)" : "var(--lc-bg-card)",
+        border: "1px solid var(--lc-bg-glass-hover)",
         opacity: busy ? 0.6 : 1,
       }}
     >
@@ -165,8 +165,8 @@ function AttachmentCard({ name, mimeType, size, isDeleting, isUploading, onPrevi
         }
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold truncate" style={{ color: "rgba(255,255,255,0.88)" }}>{name}</p>
-        <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.45)" }}>{formatFileSize(size)}</p>
+        <p className="text-xs font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>{name}</p>
+        <p className="text-[11px]" style={{ color: "var(--lc-text-label)" }}>{formatFileSize(size)}</p>
       </div>
       <div className="flex items-center gap-1 flex-shrink-0">
         <button
@@ -174,9 +174,9 @@ function AttachmentCard({ name, mimeType, size, isDeleting, isUploading, onPrevi
           onClick={onPreview}
           disabled={busy}
           className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors disabled:opacity-40"
-          style={{ color: "rgba(200,212,228,0.45)" }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.85)" }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.45)" }}
+          style={{ color: "var(--lc-text-label)" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-mid)"; (e.currentTarget as HTMLElement).style.color = "var(--lc-text-primary)" }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)" }}
         >
           <Eye className="w-3.5 h-3.5" />
         </button>
@@ -185,9 +185,9 @@ function AttachmentCard({ name, mimeType, size, isDeleting, isUploading, onPrevi
           onClick={onRemove}
           disabled={busy}
           className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors disabled:opacity-40"
-          style={{ color: "rgba(200,212,228,0.45)" }}
+          style={{ color: "var(--lc-text-label)" }}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(248,113,113,0.10)"; (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.85)" }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.45)" }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)" }}
         >
           <X className="w-3.5 h-3.5" />
         </button>
@@ -302,15 +302,15 @@ export function TripAttachmentsSection({ mode, tripId, existingAttachments = [],
   const atLimit = totalCount >= MAX_FILES
 
   return (
-    <div className="rounded-2xl overflow-hidden" style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}>
+    <div className="rounded-2xl overflow-hidden" style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}>
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3.5 border-b" style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}>
+      <div className="flex items-center gap-3 px-4 py-3.5 border-b" style={{ borderColor: "var(--lc-bg-glass)", background: "var(--lc-bg-card)" }}>
         <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.12)", border: "1px solid rgba(201,168,124,0.20)" }}>
           <Paperclip className="w-3 h-3" style={{ color: "#c9a87c" }} />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.90)" }}>Attachments</h3>
-          <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.45)" }}>Up to {MAX_FILES} files · Max 3 MB each</p>
+          <h3 className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>Attachments</h3>
+          <p className="text-[11px]" style={{ color: "var(--lc-text-label)" }}>Up to {MAX_FILES} files · Max 3 MB each</p>
         </div>
         <button
           type="button"
@@ -392,15 +392,15 @@ export function TripAttachmentsSection({ mode, tripId, existingAttachments = [],
             onDrop={(e) => { e.preventDefault(); setIsDragOver(false); handleFileSelect(e.dataTransfer.files) }}
             className="w-full flex flex-col items-center justify-center gap-2 py-6 rounded-xl transition-all cursor-pointer"
             style={{
-              background: isDragOver ? "rgba(201,168,124,0.08)" : "rgba(255,255,255,0.02)",
-              border: `1px dashed ${isDragOver ? "rgba(201,168,124,0.50)" : "rgba(255,255,255,0.10)"}`,
+              background: isDragOver ? "rgba(201,168,124,0.08)" : "var(--lc-bg-card)",
+              border: `1px dashed ${isDragOver ? "rgba(201,168,124,0.50)" : "var(--lc-border)"}`,
             }}
           >
-            <CloudUpload className="w-6 h-6" style={{ color: isDragOver ? "#c9a87c" : "rgba(200,212,228,0.25)" }} />
-            <p className="text-xs font-medium" style={{ color: isDragOver ? "#c9a87c" : "rgba(200,212,228,0.40)" }}>
-              Drop files here or <span style={{ color: isDragOver ? "#c9a87c" : "rgba(200,212,228,0.65)", textDecoration: "underline", textUnderlineOffset: "2px" }}>browse</span>
+            <CloudUpload className="w-6 h-6" style={{ color: isDragOver ? "#c9a87c" : "var(--lc-text-muted)" }} />
+            <p className="text-xs font-medium" style={{ color: isDragOver ? "#c9a87c" : "var(--lc-text-muted)" }}>
+              Drop files here or <span style={{ color: isDragOver ? "#c9a87c" : "var(--lc-text-dim)", textDecoration: "underline", textUnderlineOffset: "2px" }}>browse</span>
             </p>
-            <p className="text-[10px]" style={{ color: "rgba(200,212,228,0.28)" }}>
+            <p className="text-[10px]" style={{ color: "var(--lc-text-muted)" }}>
               JPG, PNG, PDF, DOC, TXT · Max 3 MB
             </p>
           </button>

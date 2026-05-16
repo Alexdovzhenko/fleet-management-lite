@@ -60,7 +60,7 @@ export function CollapsibleSection({
   return (
     <div
       className="rounded-2xl overflow-hidden"
-      style={{ border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 1px 12px rgba(0,0,0,0.25)" }}
+      style={{ border: "1px solid var(--lc-bg-glass-mid)", boxShadow: "0 1px 12px rgba(0,0,0,0.25)" }}
     >
       {/* Header */}
       <button
@@ -68,9 +68,9 @@ export function CollapsibleSection({
         aria-expanded={isOpen}
         aria-controls={`section-${title}`}
         className="w-full px-5 py-4 flex items-center justify-between gap-4 transition-colors"
-        style={{ background: isOpen ? "rgba(255,255,255,0.03)" : "#0d1526" }}
-        onMouseEnter={e => { if (!isOpen) (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.02)" }}
-        onMouseLeave={e => { if (!isOpen) (e.currentTarget as HTMLElement).style.background = "#0d1526" }}
+        style={{ background: isOpen ? "var(--lc-bg-card)" : "var(--lc-bg-surface)" }}
+        onMouseEnter={e => { if (!isOpen) (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-card)" }}
+        onMouseLeave={e => { if (!isOpen) (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-surface)" }}
       >
         <div className="flex items-center gap-3 flex-1">
           <div className="w-1 h-5 rounded-full flex-shrink-0" style={{ background: config.accentColor }} />
@@ -80,11 +80,11 @@ export function CollapsibleSection({
           >
             <IconComponent className="w-3.5 h-3.5" style={{ color: config.iconColor }} strokeWidth={1.75} />
           </div>
-          <h3 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>{title}</h3>
+          <h3 className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>{title}</h3>
         </div>
         <ChevronDown
           className="w-4 h-4 flex-shrink-0 transition-transform duration-200"
-          style={{ color: "rgba(200,212,228,0.45)", transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+          style={{ color: "var(--lc-text-label)", transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
           strokeWidth={2}
         />
       </button>
@@ -100,7 +100,7 @@ export function CollapsibleSection({
           className="space-y-1 px-5 py-4"
           style={{
             background: "rgba(255,255,255,0.015)",
-            borderTop: "1px solid rgba(255,255,255,0.06)",
+            borderTop: "1px solid var(--lc-bg-glass)",
             opacity: isOpen ? 1 : 0,
             transition: "opacity 250ms ease-out",
             pointerEvents: isOpen ? "auto" : "none",

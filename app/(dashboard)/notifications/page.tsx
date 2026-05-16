@@ -191,7 +191,7 @@ function TabBar({ active, onChange, unreadCount }: {
           ref={(el) => { tabRefs.current[i] = el }}
           onClick={() => onChange(tab.id)}
           className="relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors duration-150 select-none cursor-pointer whitespace-nowrap"
-          style={active === tab.id ? { color: "rgba(255,255,255,0.92)" } : { color: "rgba(200,212,228,0.50)" }}
+          style={active === tab.id ? { color: "var(--lc-text-primary)" } : { color: "var(--lc-text-label)" }}
         >
           {tab.label}
           {tab.id === "unread" && unreadCount > 0 && (
@@ -249,13 +249,13 @@ function NotificationCard({ notif, onRead, selectMode, selected, onToggleSelect 
     selected  ? "rgba(201,168,124,0.09)" :
     isUnread  ? meta.accentBg :
     hovered   ? "#111e35" :
-    "rgba(255,255,255,0.04)"
+    "var(--lc-bg-card)"
 
   const cardBorderColor =
     selected  ? "rgba(201,168,124,0.28)" :
-    isUnread  ? "rgba(255,255,255,0.09)" :
-    hovered   ? "rgba(255,255,255,0.11)" :
-    "rgba(255,255,255,0.07)"
+    isUnread  ? "var(--lc-bg-glass-hover)" :
+    hovered   ? "var(--lc-border)" :
+    "var(--lc-bg-glass-mid)"
 
   return (
     <div
@@ -284,12 +284,12 @@ function NotificationCard({ notif, onRead, selectMode, selected, onToggleSelect 
           className="w-[18px] h-[18px] rounded-[5px] border-2 flex items-center justify-center transition-all duration-150"
           style={selected
             ? { background: "#c9a87c", borderColor: "#c9a87c" }
-            : { background: "transparent", borderColor: "rgba(255,255,255,0.25)" }
+            : { background: "transparent", borderColor: "var(--lc-border-strong)" }
           }
         >
           {selected && (
             <svg viewBox="0 0 10 8" className="w-2.5 h-2" fill="none">
-              <path d="M1 3.5L3.5 6.5L9 1" stroke="#080c16" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M1 3.5L3.5 6.5L9 1" stroke="var(--lc-bg-page)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           )}
         </div>
@@ -314,20 +314,20 @@ function NotificationCard({ notif, onRead, selectMode, selected, onToggleSelect 
           <p
             className="text-[13.5px] leading-snug"
             style={isUnread
-              ? { fontWeight: 600, color: "rgba(255,255,255,0.92)" }
-              : { fontWeight: 500, color: "rgba(200,212,228,0.60)" }
+              ? { fontWeight: 600, color: "var(--lc-text-primary)" }
+              : { fontWeight: 500, color: "var(--lc-text-dim)" }
             }
           >
             {notif.title}
           </p>
-          <span className="text-[11px] whitespace-nowrap font-medium flex-shrink-0 mt-0.5" style={{ color: "rgba(200,212,228,0.38)" }}>
+          <span className="text-[11px] whitespace-nowrap font-medium flex-shrink-0 mt-0.5" style={{ color: "var(--lc-text-muted)" }}>
             {formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true })}
           </span>
         </div>
 
         <p
           className="text-[12.5px] leading-relaxed mb-2.5"
-          style={isUnread ? { color: "rgba(200,212,228,0.68)" } : { color: "rgba(200,212,228,0.45)" }}
+          style={isUnread ? { color: "var(--lc-text-dim)" } : { color: "var(--lc-text-label)" }}
         >
           {notif.body}
         </p>
@@ -342,7 +342,7 @@ function NotificationCard({ notif, onRead, selectMode, selected, onToggleSelect 
           {!selectMode && notif.entityId && notif.entityType && (
             <span
               className="inline-flex items-center gap-1 text-[11px] font-medium transition-colors"
-              style={{ color: isUnread ? "rgba(200,212,228,0.45)" : "rgba(200,212,228,0.30)" }}
+              style={{ color: isUnread ? "var(--lc-text-label)" : "var(--lc-text-muted)" }}
             >
               {notif.entityType === "trip" ? "View reservation" : notif.entityType === "quote_request" ? "View quote" : "View affiliate"}
               <ArrowUpRight className="w-3 h-3" />
@@ -382,8 +382,8 @@ function ConfirmDialog({ title, body, confirmLabel, onConfirm, onCancel, isPendi
         transition={{ duration: 0.18 }}
         className="relative rounded-2xl w-full max-w-sm p-6 z-10"
         style={{
-          background: "#0d1526",
-          border: "1px solid rgba(255,255,255,0.10)",
+          background: "var(--lc-bg-surface)",
+          border: "1px solid var(--lc-border)",
           boxShadow: "0 24px 64px rgba(0,0,0,0.60)",
         }}
       >
@@ -395,22 +395,22 @@ function ConfirmDialog({ title, body, confirmLabel, onConfirm, onCancel, isPendi
             <Trash2 className="w-4 h-4" style={{ color: "#f87171" }} />
           </div>
           <div>
-            <p className="font-semibold text-[15px]" style={{ color: "rgba(255,255,255,0.92)" }}>{title}</p>
-            <p className="text-[13px] mt-1 leading-relaxed" style={{ color: "rgba(200,212,228,0.60)" }}>{body}</p>
+            <p className="font-semibold text-[15px]" style={{ color: "var(--lc-text-primary)" }}>{title}</p>
+            <p className="text-[13px] mt-1 leading-relaxed" style={{ color: "var(--lc-text-dim)" }}>{body}</p>
           </div>
         </div>
         <div className="flex gap-2 justify-end">
           <button
             onClick={onCancel}
             className="px-4 py-2 text-sm font-medium rounded-xl transition-all cursor-pointer"
-            style={{ color: "rgba(200,212,228,0.65)", background: "transparent" }}
+            style={{ color: "var(--lc-text-dim)", background: "transparent" }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"
-              ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.85)"
+              (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-mid)"
+              ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-primary)"
             }}
             onMouseLeave={e => {
               (e.currentTarget as HTMLElement).style.background = "transparent"
-              ;(e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.65)"
+              ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-dim)"
             }}
           >
             Cancel
@@ -472,8 +472,8 @@ function EmptyState({ tab }: { tab: NotificationTab }) {
       >
         <Icon className="w-6 h-6" style={{ color: "rgba(201,168,124,0.50)" }} />
       </div>
-      <p className="font-semibold text-sm" style={{ color: "rgba(255,255,255,0.70)" }}>{title}</p>
-      <p className="text-xs mt-1.5 max-w-xs leading-relaxed" style={{ color: "rgba(200,212,228,0.45)" }}>{body}</p>
+      <p className="font-semibold text-sm" style={{ color: "var(--lc-text-secondary)" }}>{title}</p>
+      <p className="text-xs mt-1.5 max-w-xs leading-relaxed" style={{ color: "var(--lc-text-label)" }}>{body}</p>
     </div>
   )
 }
@@ -486,19 +486,19 @@ function SkeletonCard({ delay }: { delay: number }) {
       className="flex gap-4 p-4 rounded-2xl animate-pulse"
       style={{
         animationDelay: `${delay}ms`,
-        background: "#0d1526",
-        border: "1px solid rgba(255,255,255,0.07)",
+        background: "var(--lc-bg-surface)",
+        border: "1px solid var(--lc-bg-glass-mid)",
       }}
     >
-      <div className="w-11 h-11 rounded-full flex-shrink-0" style={{ background: "rgba(255,255,255,0.07)" }} />
+      <div className="w-11 h-11 rounded-full flex-shrink-0" style={{ background: "var(--lc-bg-glass-mid)" }} />
       <div className="flex-1 space-y-2 py-0.5">
         <div className="flex justify-between gap-4">
-          <div className="h-3.5 rounded-full w-2/5" style={{ background: "rgba(255,255,255,0.07)" }} />
-          <div className="h-3 rounded-full w-14"   style={{ background: "rgba(255,255,255,0.05)" }} />
+          <div className="h-3.5 rounded-full w-2/5" style={{ background: "var(--lc-bg-glass-mid)" }} />
+          <div className="h-3 rounded-full w-14"   style={{ background: "var(--lc-bg-glass)" }} />
         </div>
-        <div className="h-3 rounded-full w-4/5" style={{ background: "rgba(255,255,255,0.06)" }} />
-        <div className="h-3 rounded-full w-3/5" style={{ background: "rgba(255,255,255,0.05)" }} />
-        <div className="h-5 rounded-md w-20 mt-1" style={{ background: "rgba(255,255,255,0.05)" }} />
+        <div className="h-3 rounded-full w-4/5" style={{ background: "var(--lc-bg-glass)" }} />
+        <div className="h-3 rounded-full w-3/5" style={{ background: "var(--lc-bg-glass)" }} />
+        <div className="h-5 rounded-md w-20 mt-1" style={{ background: "var(--lc-bg-glass)" }} />
       </div>
     </div>
   )
@@ -590,13 +590,13 @@ export default function NotificationsPage() {
       {/* Dark backdrop behind dock nav */}
       <div
         className="fixed bottom-0 inset-x-0 pointer-events-none"
-        style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "#080c16", zIndex: 0 }}
+        style={{ height: "max(141px, calc(141px + env(safe-area-inset-bottom)))", background: "var(--lc-bg-page)", zIndex: 0 }}
       />
 
       {/* Full-bleed dark page wrapper */}
       <div
         className="-mx-4 -mt-4 md:-mx-6 md:-mt-6"
-        style={{ background: "#080c16", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
+        style={{ background: "var(--lc-bg-page)", minHeight: "calc(100dvh - 56px)", position: "relative", zIndex: 1 }}
       >
         <div className="px-4 pt-4 md:px-6 md:pt-6 pb-6 max-w-5xl mx-auto space-y-3">
 
@@ -627,7 +627,7 @@ export default function NotificationsPage() {
           {/* ── Header card ── */}
           <div
             className="rounded-2xl overflow-hidden"
-            style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
+            style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)", boxShadow: "0 4px 24px rgba(0,0,0,0.35)" }}
           >
             {/* Title row + stat pills */}
             <div className="flex items-center justify-between gap-4 px-5 pt-5 pb-4">
@@ -646,7 +646,7 @@ export default function NotificationsPage() {
                   }}>
                     Notifications
                   </p>
-                  <p className="leading-tight" style={{ fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.88)", letterSpacing: "-0.01em" }}>
+                  <p className="leading-tight" style={{ fontSize: "13px", fontWeight: 600, color: "var(--lc-text-primary)", letterSpacing: "-0.01em" }}>
                     {unreadCount > 0
                       ? `${unreadCount} update${unreadCount !== 1 ? "s" : ""} waiting for review`
                       : "Stay on top of affiliate and reservation activity"}
@@ -676,7 +676,7 @@ export default function NotificationsPage() {
             </div>
 
             {/* Divider */}
-            <div className="h-px mx-5" style={{ background: "rgba(255,255,255,0.06)" }} />
+            <div className="h-px mx-5" style={{ background: "var(--lc-bg-glass)" }} />
 
             {/* Tab bar + action buttons */}
             <div className="flex items-center justify-between gap-4 px-2">
@@ -708,13 +708,13 @@ export default function NotificationsPage() {
                     <button
                       onClick={() => setClearDropdownOpen((v) => !v)}
                       className="flex items-center gap-1.5 text-[12px] font-semibold px-2.5 py-1 rounded-lg transition-all cursor-pointer"
-                      style={{ color: "rgba(200,212,228,0.50)" }}
+                      style={{ color: "var(--lc-text-label)" }}
                       onMouseEnter={e => {
                         (e.currentTarget as HTMLElement).style.color = "#f87171"
                         ;(e.currentTarget as HTMLElement).style.background = "rgba(248,113,113,0.08)"
                       }}
                       onMouseLeave={e => {
-                        (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.50)"
+                        (e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)"
                         ;(e.currentTarget as HTMLElement).style.background = "transparent"
                       }}
                     >
@@ -734,8 +734,8 @@ export default function NotificationsPage() {
                             transition={{ duration: 0.14 }}
                             className="absolute right-0 top-full mt-1 w-52 rounded-xl z-20 overflow-hidden py-1"
                             style={{
-                              background: "#0d1526",
-                              border: "1px solid rgba(255,255,255,0.10)",
+                              background: "var(--lc-bg-surface)",
+                              border: "1px solid var(--lc-border)",
                               boxShadow: "0 16px 48px rgba(0,0,0,0.60)",
                             }}
                           >
@@ -748,14 +748,14 @@ export default function NotificationsPage() {
                                 key={item.range}
                                 onClick={() => { setClearDropdownOpen(false); setConfirm({ type: "range", range: item.range }) }}
                                 className="w-full text-left px-4 py-2.5 text-[13px] font-medium transition-colors cursor-pointer"
-                                style={{ color: "rgba(200,212,228,0.70)" }}
+                                style={{ color: "var(--lc-text-secondary)" }}
                                 onMouseEnter={e => {
                                   (e.currentTarget as HTMLElement).style.background = "rgba(248,113,113,0.08)"
                                   ;(e.currentTarget as HTMLElement).style.color = "#f87171"
                                 }}
                                 onMouseLeave={e => {
                                   (e.currentTarget as HTMLElement).style.background = "transparent"
-                                  ;(e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.70)"
+                                  ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-secondary)"
                                 }}
                               >
                                 {item.label}
@@ -794,7 +794,7 @@ export default function NotificationsPage() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.15 }}
                 className="rounded-2xl"
-                style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+                style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
               >
                 <EmptyState tab={tab} />
               </motion.div>
@@ -813,12 +813,12 @@ export default function NotificationsPage() {
                     <div className="flex items-center gap-3 mb-3 px-1">
                       <span
                         className="text-[11px] font-bold uppercase tracking-[0.08em] whitespace-nowrap"
-                        style={{ color: "rgba(200,212,228,0.38)" }}
+                        style={{ color: "var(--lc-text-muted)" }}
                       >
                         {group.label}
                       </span>
-                      <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
-                      <span className="text-[11px] font-medium whitespace-nowrap" style={{ color: "rgba(200,212,228,0.28)" }}>
+                      <div className="flex-1 h-px" style={{ background: "var(--lc-bg-glass)" }} />
+                      <span className="text-[11px] font-medium whitespace-nowrap" style={{ color: "var(--lc-text-muted)" }}>
                         {group.items.length} {group.items.length !== 1 ? "updates" : "update"}
                       </span>
                     </div>
@@ -874,27 +874,27 @@ export default function NotificationsPage() {
             <div
               className="flex items-center gap-3 rounded-2xl px-4 py-3"
               style={{
-                background: "#0d1526",
-                border: "1px solid rgba(255,255,255,0.12)",
-                boxShadow: "0 16px 48px rgba(0,0,0,0.60), 0 0 0 1px rgba(255,255,255,0.05)",
+                background: "var(--lc-bg-surface)",
+                border: "1px solid var(--lc-border)",
+                boxShadow: "0 16px 48px rgba(0,0,0,0.60), 0 0 0 1px var(--lc-bg-glass)",
               }}
             >
               {/* Select all */}
               <button
                 onClick={toggleSelectAll}
                 className="flex items-center gap-2 text-[13px] font-medium transition-colors pr-3 cursor-pointer"
-                style={{ color: "rgba(200,212,228,0.80)", borderRight: "1px solid rgba(255,255,255,0.12)" }}
+                style={{ color: "var(--lc-text-secondary)", borderRight: "1px solid var(--lc-border)" }}
               >
                 <div
                   className="w-[18px] h-[18px] rounded-[4px] border-2 flex items-center justify-center transition-all"
                   style={allSelected
                     ? { background: "#c9a87c", borderColor: "#c9a87c" }
-                    : { borderColor: "rgba(255,255,255,0.30)" }
+                    : { borderColor: "var(--lc-border-strong)" }
                   }
                 >
                   {allSelected && (
                     <svg viewBox="0 0 10 8" className="w-2.5 h-2" fill="none">
-                      <path d="M1 3.5L3.5 6.5L9 1" stroke="#080c16" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M1 3.5L3.5 6.5L9 1" stroke="var(--lc-bg-page)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   )}
                 </div>
@@ -902,7 +902,7 @@ export default function NotificationsPage() {
               </button>
 
               {/* Count */}
-              <span className="text-[13px] font-semibold min-w-[80px] text-center" style={{ color: "rgba(255,255,255,0.88)" }}>
+              <span className="text-[13px] font-semibold min-w-[80px] text-center" style={{ color: "var(--lc-text-primary)" }}>
                 {selectedIds.size === 0 ? "Select items" : `${selectedIds.size} selected`}
               </span>
 
@@ -920,13 +920,13 @@ export default function NotificationsPage() {
               <button
                 onClick={() => { setSelectMode(false); setSelectedIds(new Set()) }}
                 className="w-7 h-7 flex items-center justify-center rounded-xl transition-colors cursor-pointer"
-                style={{ color: "rgba(200,212,228,0.50)" }}
+                style={{ color: "var(--lc-text-label)" }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.88)"
-                  ;(e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"
+                  (e.currentTarget as HTMLElement).style.color = "var(--lc-text-primary)"
+                  ;(e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)"
                 }}
                 onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.50)"
+                  (e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)"
                   ;(e.currentTarget as HTMLElement).style.background = "transparent"
                 }}
               >

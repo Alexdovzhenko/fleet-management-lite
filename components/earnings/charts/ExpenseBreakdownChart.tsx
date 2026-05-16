@@ -15,9 +15,9 @@ export function ExpenseBreakdownChart({ data }: { data: { fixed: number; variabl
     return (
       <div
         className="rounded-2xl p-5 flex items-center justify-center h-[240px]"
-        style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+        style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
       >
-        <p className="text-[13px]" style={{ color: "rgba(200,212,228,0.40)" }}>No expenses recorded</p>
+        <p className="text-[13px]" style={{ color: "var(--lc-text-muted)" }}>No expenses recorded</p>
       </div>
     )
   }
@@ -25,19 +25,19 @@ export function ExpenseBreakdownChart({ data }: { data: { fixed: number; variabl
   return (
     <div
       className="rounded-2xl p-5"
-      style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 4px 24px rgba(0,0,0,0.25)" }}
+      style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)", boxShadow: "0 4px 24px rgba(0,0,0,0.25)" }}
     >
-      <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: "rgba(200,212,228,0.38)", letterSpacing: "0.14em" }}>
+      <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--lc-text-muted)", letterSpacing: "0.14em" }}>
         Expense Breakdown
       </p>
 
-      <p className="text-[28px] font-bold tabular-nums tracking-tight leading-none" style={{ color: "rgba(255,255,255,0.92)" }}>
+      <p className="text-[28px] font-bold tabular-nums tracking-tight leading-none" style={{ color: "var(--lc-text-primary)" }}>
         {fmtAmt(total)}
       </p>
-      <p className="text-[12px] mt-1.5 mb-6" style={{ color: "rgba(200,212,228,0.40)" }}>total expenses</p>
+      <p className="text-[12px] mt-1.5 mb-6" style={{ color: "var(--lc-text-muted)" }}>total expenses</p>
 
       {/* Stacked bar */}
-      <div className="h-3 rounded-full flex overflow-hidden mb-5" style={{ background: "rgba(255,255,255,0.06)" }}>
+      <div className="h-3 rounded-full flex overflow-hidden mb-5" style={{ background: "var(--lc-bg-glass)" }}>
         {data.fixed > 0 && (
           <motion.div
             className="h-full"
@@ -59,7 +59,7 @@ export function ExpenseBreakdownChart({ data }: { data: { fixed: number; variabl
       </div>
 
       {/* Legend rows */}
-      <div className="space-y-3 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="space-y-3 pt-4" style={{ borderTop: "1px solid var(--lc-bg-glass)" }}>
         {[
           { label: "Fixed",    value: data.fixed,    pct: fixedPct,    dot: "#f87171" },
           { label: "Variable", value: data.variable, pct: variablePct, dot: "#fbbf24" },
@@ -67,11 +67,11 @@ export function ExpenseBreakdownChart({ data }: { data: { fixed: number; variabl
           <div key={label} className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: dot }} />
-              <p className="text-[13px] font-medium" style={{ color: "rgba(200,212,228,0.70)" }}>{label}</p>
+              <p className="text-[13px] font-medium" style={{ color: "var(--lc-text-secondary)" }}>{label}</p>
             </div>
             <div className="text-right">
-              <span className="text-[14px] font-bold tabular-nums" style={{ color: "rgba(255,255,255,0.88)" }}>{fmtAmt(value)}</span>
-              <span className="text-[11px] ml-2" style={{ color: "rgba(200,212,228,0.38)" }}>{pct}%</span>
+              <span className="text-[14px] font-bold tabular-nums" style={{ color: "var(--lc-text-primary)" }}>{fmtAmt(value)}</span>
+              <span className="text-[11px] ml-2" style={{ color: "var(--lc-text-muted)" }}>{pct}%</span>
             </div>
           </div>
         ))}

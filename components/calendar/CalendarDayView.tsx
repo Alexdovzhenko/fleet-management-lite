@@ -67,9 +67,9 @@ export function CalendarDayView({ currentDate, events, today, onSelectEvent }: D
       {/* Summary bar */}
       <div
         className="flex items-center gap-3 px-4 py-3 flex-shrink-0"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+        style={{ borderBottom: "1px solid var(--lc-bg-glass-mid)" }}
       >
-        <span className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.90)" }}>
+        <span className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>
           {dayEvents.length === 0 ? "No trips" : `${dayEvents.length} trip${dayEvents.length !== 1 ? "s" : ""}`}
         </span>
         <div className="flex items-center gap-1.5">
@@ -80,11 +80,11 @@ export function CalendarDayView({ currentDate, events, today, onSelectEvent }: D
             )
           })}
           {dayEvents.length > 6 && (
-            <span className="text-[10px]" style={{ color: "rgba(200,212,228,0.40)" }}>+{dayEvents.length - 6}</span>
+            <span className="text-[10px]" style={{ color: "var(--lc-text-muted)" }}>+{dayEvents.length - 6}</span>
           )}
         </div>
         {dayEvents.length === 0 && (
-          <span className="text-xs" style={{ color: "rgba(200,212,228,0.40)" }}>
+          <span className="text-xs" style={{ color: "var(--lc-text-muted)" }}>
             — nothing scheduled for {format(currentDate, "MMMM d")}
           </span>
         )}
@@ -102,7 +102,7 @@ export function CalendarDayView({ currentDate, events, today, onSelectEvent }: D
                 className="absolute right-0 pr-2 flex items-center"
                 style={{ top: `${(h - HOUR_START) * HOUR_H - 9}px`, height: "18px" }}
               >
-                <span className="text-[10px] tabular-nums" style={{ color: "rgba(200,212,228,0.30)" }}>
+                <span className="text-[10px] tabular-nums" style={{ color: "var(--lc-text-muted)" }}>
                   {h === 0 ? "12am" : h < 12 ? `${h}am` : h === 12 ? "12pm" : `${h - 12}pm`}
                 </span>
               </div>
@@ -110,13 +110,13 @@ export function CalendarDayView({ currentDate, events, today, onSelectEvent }: D
           </div>
 
           {/* Content column */}
-          <div className="flex-1 relative" style={{ borderLeft: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="flex-1 relative" style={{ borderLeft: "1px solid var(--lc-bg-glass)" }}>
             {/* Hour lines */}
             {hours.map(h => (
               <div
                 key={h}
                 className="absolute inset-x-0"
-                style={{ top: `${(h - HOUR_START) * HOUR_H}px`, height: "1px", background: "rgba(255,255,255,0.05)" }}
+                style={{ top: `${(h - HOUR_START) * HOUR_H}px`, height: "1px", background: "var(--lc-bg-glass)" }}
               />
             ))}
 
@@ -132,10 +132,10 @@ export function CalendarDayView({ currentDate, events, today, onSelectEvent }: D
             {dayEvents.length === 0 && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div className="w-12 h-12 rounded-2xl mx-auto mb-3 flex items-center justify-center" style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-hover)" }}>
                     <span className="text-2xl">📅</span>
                   </div>
-                  <p className="text-sm font-medium" style={{ color: "rgba(200,212,228,0.45)" }}>No trips scheduled</p>
+                  <p className="text-sm font-medium" style={{ color: "var(--lc-text-label)" }}>No trips scheduled</p>
                 </div>
               </div>
             )}
@@ -181,7 +181,7 @@ export function CalendarDayView({ currentDate, events, today, onSelectEvent }: D
 
                   {/* Client name + vehicle inline */}
                   <div className="flex items-center gap-2 leading-tight">
-                    <span className="text-sm font-bold truncate" style={{ color: "rgba(255,255,255,0.95)" }}>
+                    <span className="text-sm font-bold truncate" style={{ color: "var(--lc-text-primary)" }}>
                       {ev.clientName}
                     </span>
                     {ev.vehicleName && (

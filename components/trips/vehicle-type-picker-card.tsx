@@ -61,13 +61,13 @@ export function VehicleTypePickerCard({
 
   return (
     <div ref={ref} className="space-y-1.5">
-      <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)" }}>Type</p>
+      <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "var(--lc-text-primary)" }}>Type</p>
 
       {/* Trigger */}
       {selected ? (
         <div
           className="flex items-center gap-2.5 rounded-xl px-3 py-2.5"
-          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}
+          style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-hover)" }}
         >
           <div
             className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -76,8 +76,8 @@ export function VehicleTypePickerCard({
             <Layers className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.90)" }}>{selected.label}</div>
-            <div className="text-[11px] truncate" style={{ color: "rgba(200,212,228,0.50)" }}>
+            <div className="text-sm font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>{selected.label}</div>
+            <div className="text-[11px] truncate" style={{ color: "var(--lc-text-label)" }}>
               {TYPE_DESCRIPTION[selected.value] ?? "Vehicle type"}
             </div>
           </div>
@@ -85,9 +85,9 @@ export function VehicleTypePickerCard({
             type="button"
             onClick={() => onChange("")}
             className="transition-colors flex-shrink-0"
-            style={{ color: "rgba(200,212,228,0.35)" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "rgba(200,212,228,0.70)")}
-            onMouseLeave={e => (e.currentTarget.style.color = "rgba(200,212,228,0.35)")}
+            style={{ color: "var(--lc-text-muted)" }}
+            onMouseEnter={e => (e.currentTarget.style.color = "var(--lc-text-secondary)")}
+            onMouseLeave={e => (e.currentTarget.style.color = "var(--lc-text-muted)")}
             aria-label="Clear vehicle type"
           >
             <X className="w-3.5 h-3.5" />
@@ -98,7 +98,7 @@ export function VehicleTypePickerCard({
           type="button"
           onClick={() => (open ? setOpen(false) : openDropdown())}
           className="w-full flex items-center gap-2.5 px-3 rounded-xl text-sm transition-all"
-          style={{ border: "1px dashed rgba(255,255,255,0.12)", color: "rgba(200,212,228,0.50)", background: "transparent", paddingTop: "10px", paddingBottom: "10px", height: "auto" }}
+          style={{ border: "1px dashed var(--lc-border)", color: "var(--lc-text-label)", background: "transparent", paddingTop: "10px", paddingBottom: "10px", height: "auto" }}
           onMouseEnter={e => {
             const el = e.currentTarget as HTMLElement
             el.style.borderColor = "rgba(201,168,124,0.35)"
@@ -107,8 +107,8 @@ export function VehicleTypePickerCard({
           }}
           onMouseLeave={e => {
             const el = e.currentTarget as HTMLElement
-            el.style.borderColor = "rgba(255,255,255,0.12)"
-            el.style.color = "rgba(200,212,228,0.50)"
+            el.style.borderColor = "var(--lc-border)"
+            el.style.color = "var(--lc-text-label)"
             el.style.background = "transparent"
           }}
         >
@@ -127,18 +127,18 @@ export function VehicleTypePickerCard({
       {open && !selected && createPortal(
         <div
           ref={dropRef}
-          style={{ ...dropStyle, background: "#0d1526", border: "1px solid rgba(255,255,255,0.10)", boxShadow: "0 8px 32px rgba(0,0,0,0.60)" }}
+          style={{ ...dropStyle, background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", boxShadow: "0 8px 32px rgba(0,0,0,0.60)" }}
           className="rounded-xl overflow-hidden"
         >
           <div
             className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest border-b"
-            style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.07)" }}
+            style={{ color: "var(--lc-text-label)", background: "var(--lc-bg-card)", borderColor: "var(--lc-bg-glass-mid)" }}
           >
             Vehicle Types
           </div>
           <div className="max-h-52 overflow-y-auto">
             {vehicleTypes.length === 0 ? (
-              <div className="px-3 py-3 text-xs text-center" style={{ color: "rgba(200,212,228,0.40)" }}>No types available</div>
+              <div className="px-3 py-3 text-xs text-center" style={{ color: "var(--lc-text-muted)" }}>No types available</div>
             ) : (
               vehicleTypes.map((t) => (
                 <button
@@ -147,7 +147,7 @@ export function VehicleTypePickerCard({
                   onMouseDown={e => e.preventDefault()}
                   onClick={() => { onChange(t.value); setOpen(false) }}
                   className="w-full flex items-center gap-2.5 px-3 py-2.5 transition-colors"
-                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
+                  onMouseEnter={e => (e.currentTarget.style.background = "var(--lc-bg-glass)")}
                   onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                 >
                   <div
@@ -157,8 +157,8 @@ export function VehicleTypePickerCard({
                     <Layers className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
                   </div>
                   <div className="flex-1 min-w-0 text-left">
-                    <div className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>{t.label}</div>
-                    <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.45)" }}>
+                    <div className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>{t.label}</div>
+                    <div className="text-[11px]" style={{ color: "var(--lc-text-label)" }}>
                       {TYPE_DESCRIPTION[t.value] ?? "Vehicle type"}
                     </div>
                   </div>

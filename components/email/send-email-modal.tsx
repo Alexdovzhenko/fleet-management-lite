@@ -36,8 +36,8 @@ const TABS: TabDef[] = [
     getEmail:  (t) => t.driver?.email ?? null,
     docType:   "Job Order",
     docDesc:   "Operational format — fast to read, driver-optimized",
-    iconBg:    "rgba(255,255,255,0.08)",
-    iconColor: "rgba(200,212,228,0.70)",
+    iconBg:    "var(--lc-bg-glass-hover)",
+    iconColor: "var(--lc-text-secondary)",
   },
   {
     key:       "client",
@@ -130,14 +130,14 @@ function DriverAssignmentModal({ trip, drivers, vehicles, open, onOpenChange, on
         className="p-0 max-w-md overflow-hidden"
         showCloseButton={false}
         style={{
-          background: "#0d1526",
-          border: "1px solid rgba(255,255,255,0.09)",
+          background: "var(--lc-bg-surface)",
+          border: "1px solid var(--lc-bg-glass-hover)",
           borderRadius: "18px",
           boxShadow: "0 32px 80px rgba(0,0,0,0.70)",
         }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+        <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid var(--lc-bg-glass-hover)" }}>
           <div className="flex items-center gap-2.5">
             <div
               className="w-8 h-8 rounded-xl flex items-center justify-center"
@@ -146,8 +146,8 @@ function DriverAssignmentModal({ trip, drivers, vehicles, open, onOpenChange, on
               <UserCheck className="w-4 h-4" style={{ color: "#c9a87c" }} />
             </div>
             <div>
-              <h2 className="text-sm font-bold" style={{ color: "rgba(255,255,255,0.90)" }}>Assign Driver & Vehicle</h2>
-              <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.50)" }}>{trip.tripNumber}</p>
+              <h2 className="text-sm font-bold" style={{ color: "var(--lc-text-primary)" }}>Assign Driver & Vehicle</h2>
+              <p className="text-[11px]" style={{ color: "var(--lc-text-label)" }}>{trip.tripNumber}</p>
             </div>
           </div>
         </div>
@@ -155,7 +155,7 @@ function DriverAssignmentModal({ trip, drivers, vehicles, open, onOpenChange, on
         <div className="px-5 py-5 space-y-4">
           {/* Driver Picker */}
           <div ref={driverRef} className="space-y-1.5">
-            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)" }}>Driver</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-label)" }}>Driver</p>
             {selectedDriver ? (
               <div
                 className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl"
@@ -169,12 +169,12 @@ function DriverAssignmentModal({ trip, drivers, vehicles, open, onOpenChange, on
                   ) : getInitials(selectedDriver.name)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.88)" }}>{selectedDriver.name}</div>
-                  {selectedDriver.phone && <div className="text-[11px] truncate" style={{ color: "rgba(200,212,228,0.55)" }}>{selectedDriver.phone}</div>}
+                  <div className="text-sm font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>{selectedDriver.name}</div>
+                  {selectedDriver.phone && <div className="text-[11px] truncate" style={{ color: "var(--lc-text-dim)" }}>{selectedDriver.phone}</div>}
                 </div>
-                <button type="button" onClick={() => setSelectedDriverId("")} style={{ color: "rgba(200,212,228,0.40)" }}
+                <button type="button" onClick={() => setSelectedDriverId("")} style={{ color: "var(--lc-text-muted)" }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.80)" }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.40)" }}>
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "var(--lc-text-muted)" }}>
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -184,14 +184,14 @@ function DriverAssignmentModal({ trip, drivers, vehicles, open, onOpenChange, on
                 onClick={() => setDriverDropOpen(!driverDropOpen)}
                 className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-colors"
                 style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px dashed rgba(255,255,255,0.12)",
-                  color: "rgba(200,212,228,0.50)",
+                  background: "var(--lc-bg-card)",
+                  border: "1px dashed var(--lc-border)",
+                  color: "var(--lc-text-label)",
                 }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(201,168,124,0.35)"; (e.currentTarget as HTMLElement).style.color = "rgba(201,168,124,0.85)" }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.50)" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--lc-border)"; (e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)" }}
               >
-                <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.06)" }}>
+                <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "var(--lc-bg-glass)" }}>
                   <UserCheck className="w-3.5 h-3.5" />
                 </div>
                 <span className="flex-1 text-left text-sm">Select driver…</span>
@@ -207,27 +207,27 @@ function DriverAssignmentModal({ trip, drivers, vehicles, open, onOpenChange, on
                   left: driverRef.current?.getBoundingClientRect().left ?? 0,
                   width: driverRef.current?.getBoundingClientRect().width ?? 0,
                   zIndex: 9999,
-                  background: "#0d1526",
-                  border: "1px solid rgba(255,255,255,0.10)",
+                  background: "var(--lc-bg-surface)",
+                  border: "1px solid var(--lc-border)",
                   borderRadius: "14px",
                   boxShadow: "0 16px 48px rgba(0,0,0,0.70)",
                   overflow: "hidden",
                 }}
               >
-                <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+                <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-label)", borderBottom: "1px solid var(--lc-bg-glass-mid)" }}>
                   Active Drivers
                 </div>
                 <div className="max-h-44 overflow-y-auto">
                   {drivers.length === 0 ? (
-                    <div className="px-3 py-3 text-xs text-center" style={{ color: "rgba(200,212,228,0.45)" }}>No active drivers</div>
+                    <div className="px-3 py-3 text-xs text-center" style={{ color: "var(--lc-text-label)" }}>No active drivers</div>
                   ) : drivers.map(d => (
                     <button
                       key={d.id}
                       type="button"
                       onClick={() => { setSelectedDriverId(d.id); setDriverDropOpen(false) }}
                       className="w-full flex items-center gap-2.5 px-3 py-2.5 transition-colors"
-                      style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+                      style={{ borderBottom: "1px solid var(--lc-bg-card)" }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
                       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}
                     >
                       <div className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 overflow-hidden"
@@ -238,8 +238,8 @@ function DriverAssignmentModal({ trip, drivers, vehicles, open, onOpenChange, on
                         ) : getInitials(d.name)}
                       </div>
                       <div className="flex-1 min-w-0 text-left">
-                        <div className="text-sm font-medium truncate" style={{ color: "rgba(255,255,255,0.82)" }}>{d.name}</div>
-                        {d.phone && <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.50)" }}>{d.phone}</div>}
+                        <div className="text-sm font-medium truncate" style={{ color: "var(--lc-text-secondary)" }}>{d.name}</div>
+                        {d.phone && <div className="text-[11px]" style={{ color: "var(--lc-text-label)" }}>{d.phone}</div>}
                       </div>
                       <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#34d399" }} />
                     </button>
@@ -252,26 +252,26 @@ function DriverAssignmentModal({ trip, drivers, vehicles, open, onOpenChange, on
 
           {/* Vehicle Picker */}
           <div ref={vehicleRef} className="space-y-1.5">
-            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)" }}>
-              Vehicle <span style={{ color: "rgba(200,212,228,0.35)", fontWeight: 400, textTransform: "none", letterSpacing: 0, fontSize: "11px" }}>(optional)</span>
+            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-label)" }}>
+              Vehicle <span style={{ color: "var(--lc-text-muted)", fontWeight: 400, textTransform: "none", letterSpacing: 0, fontSize: "11px" }}>(optional)</span>
             </p>
             {selectedVehicle ? (
               <div
                 className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl"
-                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)" }}
+                style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)" }}
               >
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.07)" }}>
-                  <Car className="w-4 h-4" style={{ color: "rgba(200,212,228,0.70)" }} />
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "var(--lc-bg-glass-mid)" }}>
+                  <Car className="w-4 h-4" style={{ color: "var(--lc-text-secondary)" }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.88)" }}>{selectedVehicle.name}</div>
-                  <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.55)" }}>
+                  <div className="text-sm font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>{selectedVehicle.name}</div>
+                  <div className="text-[11px]" style={{ color: "var(--lc-text-dim)" }}>
                     {VEHICLE_TYPE_LABEL[selectedVehicle.type] ?? "Vehicle"} · {selectedVehicle.capacity} pax
                   </div>
                 </div>
-                <button type="button" onClick={() => setSelectedVehicleId("")} style={{ color: "rgba(200,212,228,0.40)" }}
+                <button type="button" onClick={() => setSelectedVehicleId("")} style={{ color: "var(--lc-text-muted)" }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.80)" }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.40)" }}>
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "var(--lc-text-muted)" }}>
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -281,14 +281,14 @@ function DriverAssignmentModal({ trip, drivers, vehicles, open, onOpenChange, on
                 onClick={() => setVehicleDropOpen(!vehicleDropOpen)}
                 className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-colors"
                 style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px dashed rgba(255,255,255,0.12)",
-                  color: "rgba(200,212,228,0.50)",
+                  background: "var(--lc-bg-card)",
+                  border: "1px dashed var(--lc-border)",
+                  color: "var(--lc-text-label)",
                 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.20)"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.75)" }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.12)"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.50)" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--lc-border-medium)"; (e.currentTarget as HTMLElement).style.color = "var(--lc-text-secondary)" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--lc-border)"; (e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)" }}
               >
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.06)" }}>
+                <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "var(--lc-bg-glass)" }}>
                   <Car className="w-3.5 h-3.5" />
                 </div>
                 <span className="flex-1 text-left text-sm">Select vehicle…</span>
@@ -304,35 +304,35 @@ function DriverAssignmentModal({ trip, drivers, vehicles, open, onOpenChange, on
                   left: vehicleRef.current?.getBoundingClientRect().left ?? 0,
                   width: vehicleRef.current?.getBoundingClientRect().width ?? 0,
                   zIndex: 9999,
-                  background: "#0d1526",
-                  border: "1px solid rgba(255,255,255,0.10)",
+                  background: "var(--lc-bg-surface)",
+                  border: "1px solid var(--lc-border)",
                   borderRadius: "14px",
                   boxShadow: "0 16px 48px rgba(0,0,0,0.70)",
                   overflow: "hidden",
                 }}
               >
-                <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+                <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-label)", borderBottom: "1px solid var(--lc-bg-glass-mid)" }}>
                   Available Vehicles
                 </div>
                 <div className="max-h-44 overflow-y-auto">
                   {vehicles.length === 0 ? (
-                    <div className="px-3 py-3 text-xs text-center" style={{ color: "rgba(200,212,228,0.45)" }}>No active vehicles</div>
+                    <div className="px-3 py-3 text-xs text-center" style={{ color: "var(--lc-text-label)" }}>No active vehicles</div>
                   ) : vehicles.map(v => (
                     <button
                       key={v.id}
                       type="button"
                       onClick={() => { setSelectedVehicleId(v.id); setVehicleDropOpen(false) }}
                       className="w-full flex items-center gap-2.5 px-3 py-2.5 transition-colors"
-                      style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+                      style={{ borderBottom: "1px solid var(--lc-bg-card)" }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
                       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}
                     >
-                      <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.07)" }}>
-                        <Car className="w-3.5 h-3.5" style={{ color: "rgba(200,212,228,0.60)" }} />
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "var(--lc-bg-glass-mid)" }}>
+                        <Car className="w-3.5 h-3.5" style={{ color: "var(--lc-text-dim)" }} />
                       </div>
                       <div className="flex-1 min-w-0 text-left">
-                        <div className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.82)" }}>{v.name}</div>
-                        <div className="text-[11px]" style={{ color: "rgba(200,212,228,0.50)" }}>{VEHICLE_TYPE_LABEL[v.type] ?? "Vehicle"} · {v.capacity} pax</div>
+                        <div className="text-sm font-medium" style={{ color: "var(--lc-text-secondary)" }}>{v.name}</div>
+                        <div className="text-[11px]" style={{ color: "var(--lc-text-label)" }}>{VEHICLE_TYPE_LABEL[v.type] ?? "Vehicle"} · {v.capacity} pax</div>
                       </div>
                     </button>
                   ))}
@@ -348,7 +348,7 @@ function DriverAssignmentModal({ trip, drivers, vehicles, open, onOpenChange, on
             disabled={!selectedDriverId || isLoading}
             onClick={() => selectedDriverId && onAssign(selectedDriverId, selectedVehicleId)}
             className="w-full h-11 rounded-xl text-sm font-semibold transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
-            style={{ background: "#c9a87c", color: "#0d1526" }}
+            style={{ background: "#c9a87c", color: "var(--lc-bg-surface)" }}
             onMouseEnter={e => { if (selectedDriverId && !isLoading) (e.currentTarget as HTMLElement).style.opacity = "0.85" }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = "1" }}
           >
@@ -373,16 +373,16 @@ function SenderSelector({ senders, selected, onChange }: { senders: SenderEmail[
         onClick={() => setOpen(v => !v)}
         className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left transition-colors"
         style={{
-          background: open ? "rgba(255,255,255,0.07)" : "rgba(255,255,255,0.05)",
-          border: `1px solid ${open ? "rgba(201,168,124,0.35)" : "rgba(255,255,255,0.12)"}`,
+          background: open ? "var(--lc-bg-glass-mid)" : "var(--lc-bg-glass)",
+          border: `1px solid ${open ? "rgba(201,168,124,0.35)" : "var(--lc-border)"}`,
         }}
       >
         <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "rgba(201,168,124,0.10)" }}>
           <Mail className="w-3.5 h-3.5" style={{ color: "#c9a87c" }} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.88)" }}>{current?.email ?? "Select sender"}</p>
-          {current?.label && <p className="text-[11px] leading-tight" style={{ color: "rgba(200,212,228,0.50)" }}>{current.label}</p>}
+          <p className="text-sm font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>{current?.email ?? "Select sender"}</p>
+          {current?.label && <p className="text-[11px] leading-tight" style={{ color: "var(--lc-text-label)" }}>{current.label}</p>}
         </div>
         {current?.isDefault && (
           <span
@@ -392,15 +392,15 @@ function SenderSelector({ senders, selected, onChange }: { senders: SenderEmail[
             Default
           </span>
         )}
-        <ChevronDown className={cn("w-3.5 h-3.5 flex-shrink-0 transition-transform", open && "rotate-180")} style={{ color: "rgba(200,212,228,0.35)" }} />
+        <ChevronDown className={cn("w-3.5 h-3.5 flex-shrink-0 transition-transform", open && "rotate-180")} style={{ color: "var(--lc-text-muted)" }} />
       </button>
 
       {open && (
         <div
           className="absolute top-full left-0 right-0 mt-1.5 z-50 overflow-hidden"
           style={{
-            background: "#0d1526",
-            border: "1px solid rgba(255,255,255,0.10)",
+            background: "var(--lc-bg-surface)",
+            border: "1px solid var(--lc-border)",
             borderRadius: "14px",
             boxShadow: "0 16px 48px rgba(0,0,0,0.65)",
           }}
@@ -411,17 +411,17 @@ function SenderSelector({ senders, selected, onChange }: { senders: SenderEmail[
               type="button"
               onClick={() => { onChange(s.id); setOpen(false) }}
               className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left transition-colors"
-              style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)" }}
+              style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}
             >
               <div
                 className="w-2 h-2 rounded-full flex-shrink-0"
-                style={{ background: s.id === selected ? "#c9a87c" : "rgba(255,255,255,0.15)" }}
+                style={{ background: s.id === selected ? "#c9a87c" : "var(--lc-border-medium)" }}
               />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate" style={{ color: s.id === selected ? "#c9a87c" : "rgba(255,255,255,0.82)" }}>{s.email}</p>
-                {s.label && <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.50)" }}>{s.label}</p>}
+                <p className="text-sm font-medium truncate" style={{ color: s.id === selected ? "#c9a87c" : "var(--lc-text-secondary)" }}>{s.email}</p>
+                {s.label && <p className="text-[11px]" style={{ color: "var(--lc-text-label)" }}>{s.label}</p>}
               </div>
               {s.isDefault && (
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "rgba(52,211,153,0.12)", color: "#34d399" }}>Default</span>
@@ -440,14 +440,14 @@ function DocTypeCard({ type, desc, iconBg, iconColor }: { type: string; desc: st
   return (
     <div
       className="flex items-center gap-3 px-3.5 py-3 rounded-xl"
-      style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+      style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-hover)" }}
     >
       <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: iconBg }}>
         <FileText className="w-4 h-4" style={{ color: iconColor }} />
       </div>
       <div className="min-w-0">
-        <p className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.88)" }}>{type}</p>
-        <p className="text-[11px] leading-snug mt-0.5" style={{ color: "rgba(200,212,228,0.50)" }}>{desc}</p>
+        <p className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>{type}</p>
+        <p className="text-[11px] leading-snug mt-0.5" style={{ color: "var(--lc-text-label)" }}>{desc}</p>
       </div>
     </div>
   )
@@ -557,14 +557,14 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
           className="p-0 max-w-md overflow-hidden"
           showCloseButton={false}
           style={{
-            background: "#0d1526",
-            border: "1px solid rgba(255,255,255,0.09)",
+            background: "var(--lc-bg-surface)",
+            border: "1px solid var(--lc-bg-glass-hover)",
             borderRadius: "20px",
             boxShadow: "0 32px 80px rgba(0,0,0,0.70)",
           }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid var(--lc-bg-glass-hover)" }}>
             <div className="flex items-center gap-2.5">
               <div
                 className="w-8 h-8 rounded-xl flex items-center justify-center"
@@ -573,17 +573,17 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
                 <Send className="w-4 h-4" style={{ color: "#c9a87c" }} />
               </div>
               <div>
-                <h2 className="text-sm font-bold" style={{ color: "rgba(255,255,255,0.90)" }}>Send Reservation Email</h2>
-                <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.50)" }}>{trip.tripNumber}</p>
+                <h2 className="text-sm font-bold" style={{ color: "var(--lc-text-primary)" }}>Send Reservation Email</h2>
+                <p className="text-[11px]" style={{ color: "var(--lc-text-label)" }}>{trip.tripNumber}</p>
               </div>
             </div>
             <button
               type="button"
               onClick={() => onOpenChange(false)}
               className="p-1.5 rounded-lg transition-colors"
-              style={{ color: "rgba(200,212,228,0.40)" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.70)" }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.40)" }}
+              style={{ color: "var(--lc-text-muted)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"; (e.currentTarget as HTMLElement).style.color = "var(--lc-text-secondary)" }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "var(--lc-text-muted)" }}
             >
               <X className="w-4 h-4" />
             </button>
@@ -598,19 +598,19 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
               >
                 <CheckCircle2 className="w-8 h-8" style={{ color: "#34d399" }} />
               </div>
-              <h3 className="text-base font-bold mb-1" style={{ color: "rgba(255,255,255,0.90)" }}>Email Sent</h3>
-              <p className="text-sm mb-6" style={{ color: "rgba(200,212,228,0.55)" }}>
+              <h3 className="text-base font-bold mb-1" style={{ color: "var(--lc-text-primary)" }}>Email Sent</h3>
+              <p className="text-sm mb-6" style={{ color: "var(--lc-text-dim)" }}>
                 The {tab.docType.toLowerCase()} was sent to{" "}
-                <span className="font-medium" style={{ color: "rgba(255,255,255,0.82)" }}>{toEmail}</span>
+                <span className="font-medium" style={{ color: "var(--lc-text-secondary)" }}>{toEmail}</span>
               </p>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => { setStatus("idle"); setActiveTab(activeTab) }}
                   className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors"
-                  style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(200,212,228,0.70)" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.09)" }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)" }}
+                  style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-secondary)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)" }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
                 >
                   Send Another
                 </button>
@@ -618,7 +618,7 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
                   type="button"
                   onClick={() => onOpenChange(false)}
                   className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-opacity"
-                  style={{ background: "#c9a87c", color: "#0d1526" }}
+                  style={{ background: "#c9a87c", color: "var(--lc-bg-surface)" }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = "0.85" }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = "1" }}
                 >
@@ -631,8 +631,8 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
 
               {/* Recipient tabs */}
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>Recipient</p>
-                <div className="flex gap-1.5 p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "var(--lc-text-label)" }}>Recipient</p>
+                <div className="flex gap-1.5 p-1 rounded-xl" style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-mid)" }}>
                   {TABS.map(({ key, label, Icon }) => {
                     const isDisabled = key === "affiliate" && !hasAffiliate
                     const isActive = activeTab === key
@@ -645,13 +645,13 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
                         className="flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs font-semibold transition-all"
                         style={
                           isActive
-                            ? { background: "rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.92)", boxShadow: "0 1px 4px rgba(0,0,0,0.30)" }
+                            ? { background: "var(--lc-border)", color: "var(--lc-text-primary)", boxShadow: "0 1px 4px rgba(0,0,0,0.30)" }
                             : isDisabled
-                            ? { color: "rgba(200,212,228,0.25)", cursor: "not-allowed" }
-                            : { color: "rgba(200,212,228,0.55)" }
+                            ? { color: "var(--lc-text-muted)", cursor: "not-allowed" }
+                            : { color: "var(--lc-text-dim)" }
                         }
-                        onMouseEnter={e => { if (!isActive && !isDisabled) (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.80)" }}
-                        onMouseLeave={e => { if (!isActive && !isDisabled) (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.55)" }}
+                        onMouseEnter={e => { if (!isActive && !isDisabled) (e.currentTarget as HTMLElement).style.color = "var(--lc-text-secondary)" }}
+                        onMouseLeave={e => { if (!isActive && !isDisabled) (e.currentTarget as HTMLElement).style.color = "var(--lc-text-dim)" }}
                       >
                         <Icon className="w-3.5 h-3.5 flex-shrink-0" />
                         {label}
@@ -663,15 +663,15 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
 
               {/* Recipient email "To" */}
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>To</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "var(--lc-text-label)" }}>To</p>
                 {resolved ? (
                   <div
                     className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl"
-                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)" }}
+                    style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)" }}
                   >
                     <div
                       className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden text-[10px] font-bold"
-                      style={{ background: "rgba(255,255,255,0.08)", color: "rgba(200,212,228,0.70)" }}
+                      style={{ background: "var(--lc-bg-glass-hover)", color: "var(--lc-text-secondary)" }}
                     >
                       {activeTab === "driver" && trip.driver?.avatarUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -685,10 +685,10 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold truncate" style={{ color: "rgba(255,255,255,0.88)" }}>
+                      <p className="text-sm font-semibold truncate" style={{ color: "var(--lc-text-primary)" }}>
                         {activeTab === "driver" ? trip.driver?.name : activeTab === "client" ? (trip.passengerName ?? trip.customer?.name) : "Affiliate"}
                       </p>
-                      <p className="text-xs truncate" style={{ color: "rgba(200,212,228,0.55)" }}>{resolved}</p>
+                      <p className="text-xs truncate" style={{ color: "var(--lc-text-dim)" }}>{resolved}</p>
                     </div>
                     <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: "#34d399" }} />
                   </div>
@@ -707,7 +707,7 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
                     </div>
                     {activeTab !== "affiliate" && (
                       <div>
-                        <p className="text-xs mb-1.5" style={{ color: "rgba(200,212,228,0.60)" }}>Enter email address manually</p>
+                        <p className="text-xs mb-1.5" style={{ color: "var(--lc-text-dim)" }}>Enter email address manually</p>
                         <input
                           type="email"
                           placeholder={activeTab === "driver" ? "driver@example.com" : "client@example.com"}
@@ -715,12 +715,12 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
                           onChange={e => setRecipientEmailOverride(e.target.value)}
                           className="w-full h-9 text-sm outline-none rounded-xl px-3 transition-colors"
                           style={{
-                            background: "rgba(255,255,255,0.05)",
-                            border: "1px solid rgba(255,255,255,0.12)",
-                            color: "rgba(255,255,255,0.88)",
+                            background: "var(--lc-bg-glass)",
+                            border: "1px solid var(--lc-border)",
+                            color: "var(--lc-text-primary)",
                           }}
                           onFocus={e => { e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)" }}
-                          onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)" }}
+                          onBlur={e => { e.currentTarget.style.borderColor = "var(--lc-border)" }}
                         />
                       </div>
                     )}
@@ -730,24 +730,24 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
 
               {/* Attached document */}
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>Attached Document</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "var(--lc-text-label)" }}>Attached Document</p>
                 <DocTypeCard type={tab.docType} desc={tab.docDesc} iconBg={tab.iconBg} iconColor={tab.iconColor} />
               </div>
 
               {/* Sender */}
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>Sent From (Reply-To)</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "var(--lc-text-label)" }}>Sent From (Reply-To)</p>
                 {senders.length > 0 ? (
                   <SenderSelector senders={senders} selected={senderEmailId} onChange={setSenderEmailId} />
                 ) : (
                   <div
                     className="px-3.5 py-2.5 rounded-xl"
-                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+                    style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-hover)" }}
                   >
-                    <p className="text-xs" style={{ color: "rgba(200,212,228,0.40)" }}>Loading sender emails…</p>
+                    <p className="text-xs" style={{ color: "var(--lc-text-muted)" }}>Loading sender emails…</p>
                   </div>
                 )}
-                <p className="text-[11px] mt-1.5 leading-snug" style={{ color: "rgba(200,212,228,0.40)" }}>
+                <p className="text-[11px] mt-1.5 leading-snug" style={{ color: "var(--lc-text-muted)" }}>
                   Replies from recipients will go to this address.
                 </p>
               </div>
@@ -769,7 +769,7 @@ export function SendEmailModal({ trip, open, onOpenChange, defaultRecipient = "d
                 disabled={!toEmail || status === "sending"}
                 onClick={handleSend}
                 className="w-full h-11 rounded-xl text-sm font-semibold transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
-                style={{ background: "#c9a87c", color: "#0d1526" }}
+                style={{ background: "#c9a87c", color: "var(--lc-bg-surface)" }}
                 onMouseEnter={e => { if (toEmail && status !== "sending") (e.currentTarget as HTMLElement).style.opacity = "0.85" }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = "1" }}
               >

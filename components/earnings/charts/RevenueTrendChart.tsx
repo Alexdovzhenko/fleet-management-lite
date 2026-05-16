@@ -13,9 +13,9 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
   return (
     <div
       className="px-3.5 py-2.5 rounded-xl min-w-[110px]"
-      style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 12px 32px rgba(0,0,0,0.60)" }}
+      style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", boxShadow: "0 12px 32px rgba(0,0,0,0.60)" }}
     >
-      <p className="text-[11px] font-medium mb-1" style={{ color: "rgba(200,212,228,0.50)" }}>{label}</p>
+      <p className="text-[11px] font-medium mb-1" style={{ color: "var(--lc-text-label)" }}>{label}</p>
       <p className="text-[15px] font-bold tabular-nums" style={{ color: "#c9a87c" }}>
         ${(payload[0]?.value ?? 0).toLocaleString("en-US")}
       </p>
@@ -28,9 +28,9 @@ export function RevenueTrendChart({ data }: { data: Array<{ date: string; revenu
     return (
       <div
         className="rounded-2xl p-5 flex items-center justify-center h-[280px]"
-        style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+        style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
       >
-        <p className="text-[13px]" style={{ color: "rgba(200,212,228,0.40)" }}>No revenue data for this period</p>
+        <p className="text-[13px]" style={{ color: "var(--lc-text-muted)" }}>No revenue data for this period</p>
       </div>
     )
   }
@@ -50,27 +50,27 @@ export function RevenueTrendChart({ data }: { data: Array<{ date: string; revenu
   return (
     <div
       className="rounded-2xl p-5"
-      style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 4px 24px rgba(0,0,0,0.25)" }}
+      style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)", boxShadow: "0 4px 24px rgba(0,0,0,0.25)" }}
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-widest mb-1.5" style={{ color: "rgba(200,212,228,0.38)", letterSpacing: "0.14em" }}>
+          <p className="text-[10px] font-semibold uppercase tracking-widest mb-1.5" style={{ color: "var(--lc-text-muted)", letterSpacing: "0.14em" }}>
             Revenue Trend
           </p>
-          <p className="text-[28px] font-bold tabular-nums tracking-tight leading-none" style={{ color: "rgba(255,255,255,0.92)" }}>
+          <p className="text-[28px] font-bold tabular-nums tracking-tight leading-none" style={{ color: "var(--lc-text-primary)" }}>
             ${total.toLocaleString("en-US", { maximumFractionDigits: 0 })}
           </p>
-          <p className="text-[12px] mt-1.5" style={{ color: "rgba(200,212,228,0.40)" }}>total for period</p>
+          <p className="text-[12px] mt-1.5" style={{ color: "var(--lc-text-muted)" }}>total for period</p>
         </div>
         <div className="flex gap-5">
           <div className="text-right">
-            <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(200,212,228,0.38)", letterSpacing: "0.12em" }}>Peak</p>
-            <p className="text-[14px] font-bold tabular-nums" style={{ color: "rgba(255,255,255,0.80)" }}>{fmtAxis(Math.round(peak))}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: "var(--lc-text-muted)", letterSpacing: "0.12em" }}>Peak</p>
+            <p className="text-[14px] font-bold tabular-nums" style={{ color: "var(--lc-text-secondary)" }}>{fmtAxis(Math.round(peak))}</p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(200,212,228,0.38)", letterSpacing: "0.12em" }}>Avg/Day</p>
-            <p className="text-[14px] font-bold tabular-nums" style={{ color: "rgba(255,255,255,0.80)" }}>{fmtAxis(Math.round(avg))}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: "var(--lc-text-muted)", letterSpacing: "0.12em" }}>Avg/Day</p>
+            <p className="text-[14px] font-bold tabular-nums" style={{ color: "var(--lc-text-secondary)" }}>{fmtAxis(Math.round(avg))}</p>
           </div>
         </div>
       </div>
@@ -84,18 +84,18 @@ export function RevenueTrendChart({ data }: { data: Array<{ date: string; revenu
               <stop offset="100%" stopColor="#c9a87c" stopOpacity={0}    />
             </linearGradient>
           </defs>
-          <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.04)" />
+          <CartesianGrid vertical={false} stroke="var(--lc-bg-card)" />
           <XAxis
             dataKey="date"
             tickLine={false}
             axisLine={false}
-            tick={{ fontSize: 11, fill: "rgba(200,212,228,0.35)" }}
+            tick={{ fontSize: 11, fill: "var(--lc-text-muted)" }}
             tickMargin={10}
           />
           <YAxis
             tickLine={false}
             axisLine={false}
-            tick={{ fontSize: 11, fill: "rgba(200,212,228,0.35)" }}
+            tick={{ fontSize: 11, fill: "var(--lc-text-muted)" }}
             tickFormatter={fmtAxis}
             width={48}
           />
@@ -110,7 +110,7 @@ export function RevenueTrendChart({ data }: { data: Array<{ date: string; revenu
             strokeWidth={2}
             fill="url(#goldAreaGrad)"
             dot={false}
-            activeDot={{ r: 4, fill: "#c9a87c", strokeWidth: 2.5, stroke: "#0d1526" }}
+            activeDot={{ r: 4, fill: "#c9a87c", strokeWidth: 2.5, stroke: "var(--lc-bg-surface)" }}
             animationDuration={900}
             animationEasing="ease-out"
           />

@@ -165,7 +165,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
       case "time":
         return (
           <td key={key} className="px-3 py-3 whitespace-nowrap">
-            <span className="text-[13px] font-bold tabular-nums tracking-[-0.01em]" style={{ color: "rgba(255,255,255,0.90)" }}>
+            <span className="text-[13px] font-bold tabular-nums tracking-[-0.01em]" style={{ color: "var(--lc-text-primary)" }}>
               {formatTime(trip.pickupTime)}
             </span>
           </td>
@@ -185,7 +185,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
         return (
           <td key={key} className="px-3 py-3 whitespace-nowrap">
             {companyDisplay ? (
-              <span className="text-[12px] font-medium truncate max-w-[130px] block" style={{ color: "rgba(200,212,228,0.70)" }}>{companyDisplay}</span>
+              <span className="text-[12px] font-medium truncate max-w-[130px] block" style={{ color: "var(--lc-text-secondary)" }}>{companyDisplay}</span>
             ) : (
               <span className="text-[12px] text-white/20">—</span>
             )}
@@ -196,7 +196,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
       case "passenger":
         return (
           <td key={key} className="px-3 py-3">
-            <span className="text-[13px] font-semibold truncate max-w-[150px] block" style={{ color: "rgba(255,255,255,0.90)" }}>{passengerDisplay}</span>
+            <span className="text-[13px] font-semibold truncate max-w-[150px] block" style={{ color: "var(--lc-text-primary)" }}>{passengerDisplay}</span>
           </td>
         )
 
@@ -233,7 +233,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
           <td key={key} className="px-3 py-3">
             <div className="flex items-start gap-1.5 max-w-[180px]">
               <span className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0 mt-[3px] shadow-[0_0_0_3px_rgba(16,185,129,0.15)]" />
-              <span className="text-[12px] font-medium leading-snug line-clamp-2" style={{ color: "rgba(200,212,228,0.70)" }}>{trip.pickupAddress}</span>
+              <span className="text-[12px] font-medium leading-snug line-clamp-2" style={{ color: "var(--lc-text-secondary)" }}>{trip.pickupAddress}</span>
             </div>
           </td>
         )
@@ -243,7 +243,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
           <td key={key} className="px-3 py-3">
             <div className="flex items-start gap-1.5 max-w-[180px]">
               <span className="w-2 h-2 rounded-[3px] bg-rose-500 flex-shrink-0 mt-[3px] shadow-[0_0_0_3px_rgba(244,63,94,0.15)]" />
-              <span className="text-[12px] font-medium leading-snug line-clamp-2" style={{ color: "rgba(200,212,228,0.70)" }}>{trip.dropoffAddress}</span>
+              <span className="text-[12px] font-medium leading-snug line-clamp-2" style={{ color: "var(--lc-text-secondary)" }}>{trip.dropoffAddress}</span>
             </div>
           </td>
         )
@@ -264,7 +264,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
                     <span className="text-[9px] font-bold text-white tracking-wide">{getInitials(trip.driver.name)}</span>
                   )}
                 </div>
-                <span className="text-[12px] font-medium truncate max-w-[90px]" style={{ color: "rgba(255,255,255,0.85)" }}>{trip.driver.name}</span>
+                <span className="text-[12px] font-medium truncate max-w-[90px]" style={{ color: "var(--lc-text-primary)" }}>{trip.driver.name}</span>
               </div>
             ) : (
               <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-500/15 px-2.5 py-1 rounded-full">
@@ -279,7 +279,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
         return (
           <td key={key} className="px-3 py-3 whitespace-nowrap">
             {trip.vehicleType ? (
-              <span className="text-[11px] font-medium bg-white/[0.07] px-2.5 py-1 rounded-full capitalize" style={{ color: "rgba(200,212,228,0.60)" }}>
+              <span className="text-[11px] font-medium bg-white/[0.07] px-2.5 py-1 rounded-full capitalize" style={{ color: "var(--lc-text-dim)" }}>
                 {trip.vehicleType.replace(/_/g, " ").toLowerCase()}
               </span>
             ) : (
@@ -292,7 +292,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
         return (
           <td key={key} className="px-3 py-3 whitespace-nowrap">
             {trip.vehicle ? (
-              <span className="text-[12px] font-medium truncate max-w-[110px] block" style={{ color: "rgba(200,212,228,0.75)" }}>{trip.vehicle.name}</span>
+              <span className="text-[12px] font-medium truncate max-w-[110px] block" style={{ color: "var(--lc-text-secondary)" }}>{trip.vehicle.name}</span>
             ) : (
               <span className="text-[12px] text-white/20">—</span>
             )}
@@ -317,7 +317,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
       case "pax":
         return (
           <td key={key} className="px-3 py-3 whitespace-nowrap text-center">
-            <span className="text-[13px] font-semibold tabular-nums" style={{ color: "rgba(255,255,255,0.80)" }}>{trip.passengerCount}</span>
+            <span className="text-[13px] font-semibold tabular-nums" style={{ color: "var(--lc-text-secondary)" }}>{trip.passengerCount}</span>
           </td>
         )
 
@@ -369,8 +369,8 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
     <div
       className="rounded-2xl overflow-hidden flex-1"
       style={{
-        background: "#0d1526",
-        border: "1px solid rgba(255,255,255,0.07)",
+        background: "var(--lc-bg-surface)",
+        border: "1px solid var(--lc-bg-glass-mid)",
         boxShadow: "0 4px 24px rgba(0,0,0,0.35)",
       }}
     >
@@ -379,7 +379,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
 
           {/* ── Table Header ── */}
           <thead className="sticky top-0 z-10">
-            <tr style={{ background: "rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+            <tr style={{ background: "var(--lc-bg-card)", borderBottom: "1px solid var(--lc-bg-glass-hover)" }}>
               {orderedColumns.map(col => {
                 const isDragging = col.key === dragKey
                 const isOver = col.key === overKey && !isDragging
@@ -398,17 +398,17 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
                       isOver && dropSide === "left"  && "border-l-2 border-l-[#c9a87c] bg-[#c9a87c]/5",
                       isOver && dropSide === "right" && "border-r-2 border-r-[#c9a87c] bg-[#c9a87c]/5",
                     )}
-                    style={{ color: "rgba(200,212,228,0.40)", cursor: isDragging ? "grabbing" : "grab" }}
+                    style={{ color: "var(--lc-text-muted)", cursor: isDragging ? "grabbing" : "grab" }}
                   >
                     <div className="flex items-center gap-1 group">
-                      <GripVertical className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 -ml-0.5" style={{ color: "rgba(255,255,255,0.20)" }} />
+                      <GripVertical className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 -ml-0.5" style={{ color: "var(--lc-border-medium)" }} />
                       {col.label}
                     </div>
                   </th>
                 )
               })}
               {showDate && (
-                <th className="text-left text-[10px] font-bold uppercase tracking-[0.06em] px-3 py-2.5 whitespace-nowrap w-28" style={{ color: "rgba(200,212,228,0.40)" }}>
+                <th className="text-left text-[10px] font-bold uppercase tracking-[0.06em] px-3 py-2.5 whitespace-nowrap w-28" style={{ color: "var(--lc-text-muted)" }}>
                   Date
                 </th>
               )}
@@ -431,7 +431,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
                     !isSelected && "hover:bg-white/[0.03]",
                   )}
                   style={{
-                    borderBottom: "1px solid rgba(255,255,255,0.05)",
+                    borderBottom: "1px solid var(--lc-bg-glass)",
                     background: isSelected ? "rgba(201,168,124,0.08)" : undefined,
                   }}
                 >
@@ -442,7 +442,7 @@ export function TripGrid({ trips, selectedTripId, onSelect, onDoubleClick, showD
                   {orderedColumns.map(col => renderCell(col.key, trip))}
                   {showDate && (
                     <td className="px-3 py-3 whitespace-nowrap">
-                      <span className="text-[11px] font-semibold" style={{ color: "rgba(200,212,228,0.50)" }}>
+                      <span className="text-[11px] font-semibold" style={{ color: "var(--lc-text-label)" }}>
                         {format(parseISO(trip.pickupDate), "MMM d, yyyy")}
                       </span>
                     </td>

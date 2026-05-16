@@ -25,9 +25,9 @@ const inputBase: React.CSSProperties = {
   borderRadius: "10px",
   fontSize: "14px",
   outline: "none",
-  background: "rgba(255,255,255,0.05)",
-  border: "1px solid rgba(255,255,255,0.12)",
-  color: "rgba(255,255,255,0.88)",
+  background: "var(--lc-bg-glass)",
+  border: "1px solid var(--lc-border)",
+  color: "var(--lc-text-primary)",
   transition: "border-color 150ms",
 }
 const inputError: React.CSSProperties = { ...inputBase, border: "1px solid rgba(248,113,113,0.60)" }
@@ -36,13 +36,13 @@ function DarkInput({ style, ...props }: React.InputHTMLAttributes<HTMLInputEleme
   const { hasError, ...rest } = props as React.InputHTMLAttributes<HTMLInputElement> & { hasError?: boolean }
   return (
     <>
-      <style>{`.dk-input::placeholder{color:rgba(200,212,228,0.38)}`}</style>
+      <style>{`.dk-input::placeholder{color:var(--lc-text-muted)}`}</style>
       <input
         {...rest}
         className="dk-input"
         style={hasError ? inputError : inputBase}
         onFocus={e => { e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)" }}
-        onBlur={e => { e.currentTarget.style.borderColor = hasError ? "rgba(248,113,113,0.60)" : "rgba(255,255,255,0.12)" }}
+        onBlur={e => { e.currentTarget.style.borderColor = hasError ? "rgba(248,113,113,0.60)" : "var(--lc-border)" }}
       />
     </>
   )
@@ -72,15 +72,15 @@ export function CreateAccountDialog({ onClose, onCreated }: { onClose: () => voi
       <div
         className="w-full max-w-sm mx-4 rounded-2xl overflow-hidden"
         style={{
-          background: "#080c16",
-          border: "1px solid rgba(255,255,255,0.09)",
+          background: "var(--lc-bg-page)",
+          border: "1px solid var(--lc-bg-glass-hover)",
           boxShadow: "0 24px 80px rgba(0,0,0,0.75), 0 0 0 1px rgba(201,168,124,0.06)",
         }}
       >
         {/* Header */}
         <div
           className="relative flex items-center gap-3 px-5 py-4 pr-12"
-          style={{ background: "#0d1526", borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+          style={{ background: "var(--lc-bg-surface)", borderBottom: "1px solid var(--lc-bg-glass-mid)" }}
         >
           <div
             className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -89,8 +89,8 @@ export function CreateAccountDialog({ onClose, onCreated }: { onClose: () => voi
             <UserPlus className="w-4 h-4" style={{ color: "#c9a87c" }} />
           </div>
           <div>
-            <h2 className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.92)" }}>New Account</h2>
-            <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.45)" }}>Add a client to your account book</p>
+            <h2 className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>New Account</h2>
+            <p className="text-[11px]" style={{ color: "var(--lc-text-label)" }}>Add a client to your account book</p>
           </div>
 
           {/* Close — absolute top-right, always anchored to corner */}
@@ -98,14 +98,14 @@ export function CreateAccountDialog({ onClose, onCreated }: { onClose: () => voi
             type="button"
             onClick={onClose}
             className="absolute top-3.5 right-4 w-7 h-7 flex items-center justify-center rounded-lg transition-colors"
-            style={{ color: "rgba(255,255,255,0.75)" }}
+            style={{ color: "var(--lc-text-secondary)" }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.09)"
+              (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)"
               ;(e.currentTarget as HTMLElement).style.color = "#ffffff"
             }}
             onMouseLeave={e => {
               (e.currentTarget as HTMLElement).style.background = "transparent"
-              ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)"
+              ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-secondary)"
             }}
             aria-label="Close dialog"
           >
@@ -119,7 +119,7 @@ export function CreateAccountDialog({ onClose, onCreated }: { onClose: () => voi
           {/* Name row */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)" }}>
+              <label className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "var(--lc-text-primary)" }}>
                 First Name <span style={{ color: "rgba(248,113,113,0.80)" }}>*</span>
               </label>
               <DarkInput
@@ -135,7 +135,7 @@ export function CreateAccountDialog({ onClose, onCreated }: { onClose: () => voi
               )}
             </div>
             <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)" }}>
+              <label className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "var(--lc-text-primary)" }}>
                 Last Name
               </label>
               <DarkInput {...register("lastName")} placeholder="Smith" />
@@ -145,13 +145,13 @@ export function CreateAccountDialog({ onClose, onCreated }: { onClose: () => voi
           {/* Contact row */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)" }}>
+              <label className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "var(--lc-text-primary)" }}>
                 Phone
               </label>
               <DarkInput {...register("phone")} type="tel" placeholder="(305) 555-1234" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)" }}>
+              <label className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "var(--lc-text-primary)" }}>
                 Email
               </label>
               <DarkInput
@@ -170,7 +170,7 @@ export function CreateAccountDialog({ onClose, onCreated }: { onClose: () => voi
 
           {/* Company */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)" }}>
+            <label className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "var(--lc-text-primary)" }}>
               Company Name
             </label>
             <DarkInput {...register("company")} placeholder="Acme Corp" />
@@ -193,14 +193,14 @@ export function CreateAccountDialog({ onClose, onCreated }: { onClose: () => voi
               type="button"
               onClick={onClose}
               className="flex-1 h-10 text-sm font-semibold rounded-xl transition-all"
-              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.70)" }}
+              style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-secondary)" }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"
-                ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.90)"
+                (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)"
+                ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-primary)"
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"
-                ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.70)"
+                (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"
+                ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-secondary)"
               }}
             >
               Cancel
@@ -209,7 +209,7 @@ export function CreateAccountDialog({ onClose, onCreated }: { onClose: () => voi
               type="submit"
               disabled={createCustomer.isPending}
               className="flex-1 h-10 text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
-              style={{ background: "#c9a87c", color: "#0d1526" }}
+              style={{ background: "#c9a87c", color: "var(--lc-bg-surface)" }}
               onMouseEnter={e => { if (!createCustomer.isPending) (e.currentTarget as HTMLElement).style.background = "#d4b88e" }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "#c9a87c" }}
             >

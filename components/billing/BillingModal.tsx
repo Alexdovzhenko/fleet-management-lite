@@ -124,12 +124,12 @@ export function BillingModal({
         <DialogContent
           className="w-[98vw] h-[96vh] max-w-[98vw] max-h-[96vh] p-0 flex flex-col overflow-hidden rounded-2xl"
           showCloseButton={false}
-          style={{ background: "#080c16", border: "1px solid rgba(255,255,255,0.09)", boxShadow: "0 24px 80px rgba(0,0,0,0.70)" }}
+          style={{ background: "var(--lc-bg-page)", border: "1px solid var(--lc-bg-glass-hover)", boxShadow: "0 24px 80px rgba(0,0,0,0.70)" }}
         >
           {/* Header */}
           <DialogHeader
             className="px-7 py-5 flex-shrink-0 border-b"
-            style={{ borderColor: "rgba(255,255,255,0.07)", background: "#0d1526" }}
+            style={{ borderColor: "var(--lc-bg-glass-mid)", background: "var(--lc-bg-surface)" }}
           >
             <div className="flex items-center gap-4">
               <div
@@ -139,10 +139,10 @@ export function BillingModal({
                 <DollarSign className="w-4.5 h-4.5" style={{ color: "#c9a87c" }} />
               </div>
               <div className="flex-1 min-w-0">
-                <DialogTitle className="text-base font-bold" style={{ color: "rgba(255,255,255,0.92)" }}>
+                <DialogTitle className="text-base font-bold" style={{ color: "var(--lc-text-primary)" }}>
                   Billing Details
                 </DialogTitle>
-                <p className="text-xs mt-0.5" style={{ color: "rgba(200,212,228,0.50)" }}>
+                <p className="text-xs mt-0.5" style={{ color: "var(--lc-text-label)" }}>
                   Trip #{trip?.tripNumber || "N/A"}
                 </p>
               </div>
@@ -150,14 +150,14 @@ export function BillingModal({
                 onClick={handleClose}
                 aria-label="Close billing details"
                 className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors flex-shrink-0"
-                style={{ color: "rgba(200,212,228,0.45)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
+                style={{ color: "var(--lc-text-label)", background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-mid)" }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.80)"
-                  ;(e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"
+                  (e.currentTarget as HTMLElement).style.color = "var(--lc-text-secondary)"
+                  ;(e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)"
                 }}
                 onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.45)"
-                  ;(e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)"
+                  (e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)"
+                  ;(e.currentTarget as HTMLElement).style.background = "var(--lc-bg-card)"
                 }}
               >
                 <X className="w-4 h-4" strokeWidth={2} />
@@ -168,16 +168,16 @@ export function BillingModal({
           {/* Two-column body */}
           <div
             className="flex-1 flex flex-col md:flex-row overflow-hidden"
-            style={{ background: "#080c16" }}
+            style={{ background: "var(--lc-bg-page)" }}
           >
             {/* Left panel — form */}
             <div
               className="w-full md:w-[42%] flex-shrink-0 overflow-y-auto px-6 py-5"
-              style={{ borderRight: "1px solid rgba(255,255,255,0.06)" }}
+              style={{ borderRight: "1px solid var(--lc-bg-glass)" }}
             >
               {isLoading ? (
                 <div className="flex items-center justify-center h-32">
-                  <p className="text-sm" style={{ color: "rgba(200,212,228,0.45)" }}>Loading…</p>
+                  <p className="text-sm" style={{ color: "var(--lc-text-label)" }}>Loading…</p>
                 </div>
               ) : (
                 <BillingFormBlocks data={billingData} onChange={handleFieldChange} />
@@ -198,7 +198,7 @@ export function BillingModal({
           {/* Footer */}
           <DialogFooter
             className="px-7 py-4 flex-shrink-0 border-t"
-            style={{ borderColor: "rgba(255,255,255,0.07)", background: "#0d1526" }}
+            style={{ borderColor: "var(--lc-bg-glass-mid)", background: "var(--lc-bg-surface)" }}
           >
             <div className="flex items-center justify-between w-full gap-4">
               {/* Status indicator */}
@@ -224,9 +224,9 @@ export function BillingModal({
                   onClick={() => setShowSendModal(true)}
                   disabled={!tripInvoice?.invoiceNumber || isLoading}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.80)", border: "1px solid rgba(255,255,255,0.10)" }}
-                  onMouseEnter={e => { if (!e.currentTarget.disabled) { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.10)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.16)" } }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.10)" }}
+                  style={{ background: "var(--lc-bg-glass)", color: "var(--lc-text-secondary)", border: "1px solid var(--lc-border)" }}
+                  onMouseEnter={e => { if (!e.currentTarget.disabled) { (e.currentTarget as HTMLElement).style.background = "var(--lc-border)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.16)" } }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"; (e.currentTarget as HTMLElement).style.borderColor = "var(--lc-border)" }}
                 >
                   <Send className="w-3.5 h-3.5" />
                   Send Invoice
@@ -237,9 +237,9 @@ export function BillingModal({
                   onClick={handleClose}
                   disabled={isSaving}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all disabled:opacity-40"
-                  style={{ background: "transparent", color: "rgba(200,212,228,0.65)", border: "1px solid rgba(255,255,255,0.08)" }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.80)" }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.65)" }}
+                  style={{ background: "transparent", color: "var(--lc-text-dim)", border: "1px solid var(--lc-bg-glass-hover)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-card)"; (e.currentTarget as HTMLElement).style.color = "var(--lc-text-secondary)" }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "var(--lc-text-dim)" }}
                 >
                   Cancel
                 </button>
@@ -249,7 +249,7 @@ export function BillingModal({
                   onClick={handleSave}
                   disabled={!isDirty || isSaving}
                   className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{ background: isDirty ? "#c9a87c" : "rgba(201,168,124,0.25)", color: isDirty ? "#0d1526" : "rgba(201,168,124,0.50)", boxShadow: isDirty ? "0 2px 12px rgba(201,168,124,0.30)" : "none" }}
+                  style={{ background: isDirty ? "#c9a87c" : "rgba(201,168,124,0.25)", color: isDirty ? "var(--lc-bg-surface)" : "rgba(201,168,124,0.50)", boxShadow: isDirty ? "0 2px 12px rgba(201,168,124,0.30)" : "none" }}
                   onMouseEnter={e => { if (isDirty && !isSaving) (e.currentTarget as HTMLElement).style.background = "#d4b688" }}
                   onMouseLeave={e => { if (isDirty) (e.currentTarget as HTMLElement).style.background = "#c9a87c" }}
                 >
@@ -267,18 +267,18 @@ export function BillingModal({
         <DialogContent
           className="max-w-sm rounded-2xl p-0 overflow-hidden"
           showCloseButton={false}
-          style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.09)", boxShadow: "0 16px 48px rgba(0,0,0,0.60)" }}
+          style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-hover)", boxShadow: "0 16px 48px rgba(0,0,0,0.60)" }}
         >
-          <div className="px-6 py-5 border-b" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
+          <div className="px-6 py-5 border-b" style={{ borderColor: "var(--lc-bg-glass-mid)" }}>
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "rgba(251,191,36,0.12)", border: "1px solid rgba(251,191,36,0.20)" }}>
                 <AlertTriangle className="w-4 h-4" style={{ color: "rgba(251,191,36,0.85)" }} />
               </div>
-              <h3 className="text-sm font-bold" style={{ color: "rgba(255,255,255,0.90)" }}>Discard changes?</h3>
+              <h3 className="text-sm font-bold" style={{ color: "var(--lc-text-primary)" }}>Discard changes?</h3>
             </div>
           </div>
           <div className="px-6 py-4">
-            <p className="text-sm" style={{ color: "rgba(200,212,228,0.65)" }}>
+            <p className="text-sm" style={{ color: "var(--lc-text-dim)" }}>
               You have unsaved changes. Are you sure you want to close without saving?
             </p>
           </div>
@@ -286,9 +286,9 @@ export function BillingModal({
             <button
               onClick={handleCancelClose}
               className="px-4 py-2 rounded-xl text-sm font-semibold transition-all"
-              style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.80)", border: "1px solid rgba(255,255,255,0.10)" }}
-              onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.10)")}
-              onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.06)")}
+              style={{ background: "var(--lc-bg-glass)", color: "var(--lc-text-secondary)", border: "1px solid var(--lc-border)" }}
+              onMouseEnter={e => (e.currentTarget.style.background = "var(--lc-border)")}
+              onMouseLeave={e => (e.currentTarget.style.background = "var(--lc-bg-glass)")}
             >
               Keep editing
             </button>

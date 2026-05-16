@@ -86,8 +86,8 @@ export function CalendarWeekView({ currentDate, events, today, onSelectEvent }: 
       <div
         className="flex flex-shrink-0 sticky top-0 z-10"
         style={{
-          background: "#080c16",
-          borderBottom: "1px solid rgba(255,255,255,0.07)",
+          background: "var(--lc-bg-page)",
+          borderBottom: "1px solid var(--lc-bg-glass-mid)",
           paddingLeft: `${LABEL_W}px`,
         }}
       >
@@ -95,14 +95,14 @@ export function CalendarWeekView({ currentDate, events, today, onSelectEvent }: 
           const tod = today ? isSameDay(day, today) : false
           return (
             <div key={day.toISOString()} className="flex-1 text-center py-2.5">
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "rgba(200,212,228,0.40)" }}>
+              <div className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: "var(--lc-text-muted)" }}>
                 {format(day, "EEE")}
               </div>
               <div
                 className="w-8 h-8 flex items-center justify-center rounded-full mx-auto text-sm font-bold"
                 style={tod
-                  ? { background: "#c9a87c", color: "#0d1526" }
-                  : { color: "rgba(255,255,255,0.85)" }
+                  ? { background: "#c9a87c", color: "var(--lc-bg-surface)" }
+                  : { color: "var(--lc-text-primary)" }
                 }
               >
                 {format(day, "d")}
@@ -124,7 +124,7 @@ export function CalendarWeekView({ currentDate, events, today, onSelectEvent }: 
                 className="absolute right-0 pr-2 flex items-center justify-end"
                 style={{ top: `${(h - HOUR_START) * HOUR_H - 9}px`, height: "18px" }}
               >
-                <span className="text-[10px] tabular-nums" style={{ color: "rgba(200,212,228,0.30)" }}>
+                <span className="text-[10px] tabular-nums" style={{ color: "var(--lc-text-muted)" }}>
                   {h === 0 ? "12am" : h < 12 ? `${h}am` : h === 12 ? "12pm" : `${h - 12}pm`}
                 </span>
               </div>
@@ -138,7 +138,7 @@ export function CalendarWeekView({ currentDate, events, today, onSelectEvent }: 
               <div
                 key={h}
                 className="absolute inset-x-0"
-                style={{ top: `${(h - HOUR_START) * HOUR_H}px`, height: "1px", background: "rgba(255,255,255,0.05)" }}
+                style={{ top: `${(h - HOUR_START) * HOUR_H}px`, height: "1px", background: "var(--lc-bg-glass)" }}
               />
             ))}
 
@@ -161,7 +161,7 @@ export function CalendarWeekView({ currentDate, events, today, onSelectEvent }: 
                   key={key}
                   className="flex-1 relative"
                   style={{
-                    borderLeft: "1px solid rgba(255,255,255,0.05)",
+                    borderLeft: "1px solid var(--lc-bg-glass)",
                     background: isT ? "rgba(201,168,124,0.025)" : "transparent",
                   }}
                 >

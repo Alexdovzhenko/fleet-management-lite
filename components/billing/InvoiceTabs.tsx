@@ -34,7 +34,7 @@ export function InvoiceTabs({ activeTab, onTabChange, openCount, settledCount }:
           ref={(el) => { tabRefs.current[i] = el }}
           onClick={() => onTabChange(tab.id)}
           className="flex items-center gap-2 px-4 py-3 text-sm font-semibold transition-colors duration-150 select-none cursor-pointer whitespace-nowrap"
-          style={activeTab === tab.id ? { color: "rgba(255,255,255,0.92)" } : { color: "rgba(200,212,228,0.50)" }}
+          style={activeTab === tab.id ? { color: "var(--lc-text-primary)" } : { color: "var(--lc-text-label)" }}
         >
           {tab.label}
           {counts[tab.id] > 0 && (
@@ -44,7 +44,7 @@ export function InvoiceTabs({ activeTab, onTabChange, openCount, settledCount }:
                 ? tab.id === "OPEN"
                   ? { background: "rgba(251,191,36,0.15)", color: "rgba(251,191,36,0.90)" }
                   : { background: "rgba(52,211,153,0.12)", color: "rgba(52,211,153,0.90)" }
-                : { background: "rgba(255,255,255,0.08)", color: "rgba(200,212,228,0.50)" }
+                : { background: "var(--lc-bg-glass-hover)", color: "var(--lc-text-label)" }
               }
             >
               {counts[tab.id]}

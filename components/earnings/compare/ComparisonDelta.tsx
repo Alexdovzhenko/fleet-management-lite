@@ -22,16 +22,16 @@ export function ComparisonDelta({ label, period1Value, period2Value, isExpense =
   return (
     <div
       className="rounded-2xl p-5"
-      style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+      style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
     >
-      <p className="text-[11px] font-semibold uppercase tracking-widest mb-4" style={{ color: "rgba(200,212,228,0.38)", letterSpacing: "0.12em" }}>
+      <p className="text-[11px] font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--lc-text-muted)", letterSpacing: "0.12em" }}>
         {label}
       </p>
 
       <div className="space-y-3">
         <div>
           <div className="flex items-baseline gap-2 mb-1">
-            <span className="text-[28px] font-bold tabular-nums tracking-tight leading-none" style={{ color: "rgba(255,255,255,0.92)" }}>
+            <span className="text-[28px] font-bold tabular-nums tracking-tight leading-none" style={{ color: "var(--lc-text-primary)" }}>
               ${(period2Value / 1000).toFixed(1)}k
             </span>
             {diff !== 0 && (
@@ -43,17 +43,17 @@ export function ComparisonDelta({ label, period1Value, period2Value, isExpense =
               </span>
             )}
           </div>
-          <p className="text-[12px]" style={{ color: "rgba(200,212,228,0.40)" }}>
+          <p className="text-[12px]" style={{ color: "var(--lc-text-muted)" }}>
             vs{" "}
-            <span style={{ color: "rgba(200,212,228,0.65)", fontWeight: 600 }}>
+            <span style={{ color: "var(--lc-text-dim)", fontWeight: 600 }}>
               ${(period1Value / 1000).toFixed(1)}k
             </span>
           </p>
         </div>
 
         {diff !== 0 && (
-          <div className="pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-            <p className="text-[11px] uppercase tracking-widest mb-1" style={{ color: "rgba(200,212,228,0.35)", letterSpacing: "0.12em" }}>
+          <div className="pt-3" style={{ borderTop: "1px solid var(--lc-bg-glass)" }}>
+            <p className="text-[11px] uppercase tracking-widest mb-1" style={{ color: "var(--lc-text-muted)", letterSpacing: "0.12em" }}>
               Absolute Change
             </p>
             <p className="text-[16px] font-bold tabular-nums" style={{ color: isGood ? "rgba(52,211,153,0.90)" : "rgba(248,113,113,0.90)" }}>

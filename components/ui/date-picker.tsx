@@ -28,20 +28,20 @@ function MiniCalendar({ selected, onSelect }: { selected: Date | undefined; onSe
           type="button"
           onMouseDown={(e) => { e.preventDefault(); setViewMonth(subMonths(viewMonth, 1)) }}
           className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors flex-shrink-0"
-          style={{ color: "rgba(200,212,228,0.55)" }}
+          style={{ color: "var(--lc-text-dim)" }}
           onMouseEnter={e => {
-            (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"
-            ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.88)"
+            (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-mid)"
+            ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-primary)"
           }}
           onMouseLeave={e => {
             (e.currentTarget as HTMLElement).style.background = "transparent"
-            ;(e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.55)"
+            ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-dim)"
           }}
         >
           <ChevronLeft className="w-3.5 h-3.5" />
         </button>
 
-        <span className="text-sm font-semibold" style={{ color: "rgba(255,255,255,0.90)" }}>
+        <span className="text-sm font-semibold" style={{ color: "var(--lc-text-primary)" }}>
           {format(viewMonth, "MMMM yyyy")}
         </span>
 
@@ -49,14 +49,14 @@ function MiniCalendar({ selected, onSelect }: { selected: Date | undefined; onSe
           type="button"
           onMouseDown={(e) => { e.preventDefault(); setViewMonth(addMonths(viewMonth, 1)) }}
           className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors flex-shrink-0"
-          style={{ color: "rgba(200,212,228,0.55)" }}
+          style={{ color: "var(--lc-text-dim)" }}
           onMouseEnter={e => {
-            (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"
-            ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.88)"
+            (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-mid)"
+            ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-primary)"
           }}
           onMouseLeave={e => {
             (e.currentTarget as HTMLElement).style.background = "transparent"
-            ;(e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.55)"
+            ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-dim)"
           }}
         >
           <ChevronRight className="w-3.5 h-3.5" />
@@ -69,7 +69,7 @@ function MiniCalendar({ selected, onSelect }: { selected: Date | undefined; onSe
           <div
             key={d}
             className="h-7 flex items-center justify-center text-[11px] font-semibold uppercase tracking-wider"
-            style={{ color: "rgba(200,212,228,0.40)" }}
+            style={{ color: "var(--lc-text-muted)" }}
           >
             {d}
           </div>
@@ -88,13 +88,13 @@ function MiniCalendar({ selected, onSelect }: { selected: Date | undefined; onSe
 
           if (isSelected) {
             bgStyle = { background: "#c9a87c", borderRadius: "8px" }
-            colorStyle = { color: "#0d1526", fontWeight: 700 }
+            colorStyle = { color: "var(--lc-bg-surface)", fontWeight: 700 }
           } else if (isToday_) {
             colorStyle = { color: "#c9a87c", fontWeight: 600 }
           } else if (!inMonth) {
-            colorStyle = { color: "rgba(200,212,228,0.22)" }
+            colorStyle = { color: "var(--lc-text-muted)" }
           } else {
-            colorStyle = { color: "rgba(255,255,255,0.82)" }
+            colorStyle = { color: "var(--lc-text-secondary)" }
           }
 
           return (
@@ -106,7 +106,7 @@ function MiniCalendar({ selected, onSelect }: { selected: Date | undefined; onSe
               style={{ ...bgStyle, ...colorStyle }}
               onMouseEnter={e => {
                 if (!isSelected) {
-                  ;(e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"
+                  ;(e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-mid)"
                 }
               }}
               onMouseLeave={e => {
@@ -207,29 +207,29 @@ export function DatePickerInput({ value, onChange, placeholder = "MM/DD/YYYY", c
           openCalendar()
         }}
         onBlur={(e) => {
-          e.currentTarget.style.borderColor = hasError ? "rgba(248,113,113,0.60)" : "rgba(255,255,255,0.12)"
+          e.currentTarget.style.borderColor = hasError ? "rgba(248,113,113,0.60)" : "var(--lc-border)"
         }}
         placeholder={placeholder}
         autoComplete="off"
         className={cn("w-full h-9 text-sm pl-3 pr-9 rounded-xl outline-none transition-colors dp-input", className)}
         style={{
-          background: "rgba(255,255,255,0.05)",
-          border: hasError ? "1px solid rgba(248,113,113,0.60)" : "1px solid rgba(255,255,255,0.12)",
-          color: "rgba(255,255,255,0.88)",
+          background: "var(--lc-bg-glass)",
+          border: hasError ? "1px solid rgba(248,113,113,0.60)" : "1px solid var(--lc-border)",
+          color: "var(--lc-text-primary)",
         }}
       />
 
       {/* Placeholder color */}
-      <style>{`.dp-input::placeholder { color: rgba(200,212,228,0.40); }`}</style>
+      <style>{`.dp-input::placeholder { color: var(--lc-text-muted); }`}</style>
 
       {/* Calendar icon button */}
       <button
         type="button"
         onMouseDown={(e) => { e.preventDefault(); open ? setOpen(false) : openCalendar() }}
         className="absolute right-0 top-0 h-9 w-9 flex items-center justify-center rounded-r-xl transition-colors"
-        style={{ color: "rgba(200,212,228,0.40)" }}
+        style={{ color: "var(--lc-text-muted)" }}
         onMouseEnter={e => (e.currentTarget.style.color = "#c9a87c")}
-        onMouseLeave={e => (e.currentTarget.style.color = "rgba(200,212,228,0.40)")}
+        onMouseLeave={e => (e.currentTarget.style.color = "var(--lc-text-muted)")}
       >
         <CalendarIcon className="w-3.5 h-3.5" />
       </button>
@@ -239,8 +239,8 @@ export function DatePickerInput({ value, onChange, placeholder = "MM/DD/YYYY", c
         <div
           style={{
             ...popupStyle,
-            background: "#0d1526",
-            border: "1px solid rgba(255,255,255,0.10)",
+            background: "var(--lc-bg-surface)",
+            border: "1px solid var(--lc-border)",
             boxShadow: "0 8px 40px rgba(0,0,0,0.70)",
             borderRadius: "14px",
             overflow: "hidden",

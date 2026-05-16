@@ -18,7 +18,7 @@ const S = {
   input: {
     width: "100%",
     height: "44px",
-    background: "rgba(255,255,255,0.05)",
+    background: "var(--lc-bg-glass)",
     border: "1px solid rgba(255,255,255,0.1)",
     borderRadius: "10px",
     padding: "0 44px 0 14px",
@@ -42,7 +42,7 @@ const S = {
     transition: "opacity 0.15s, transform 0.1s",
     fontFamily: "inherit",
     background: "linear-gradient(135deg,#2563eb 0%,#4f46e5 100%)",
-    boxShadow: "0 4px 16px rgba(37,99,235,0.3),inset 0 1px 0 rgba(255,255,255,0.12)",
+    boxShadow: "0 4px 16px rgba(37,99,235,0.3),inset 0 1px 0 var(--lc-border)",
   } as React.CSSProperties,
   error: {
     padding: "10px 14px",
@@ -317,9 +317,9 @@ export default function ResetPasswordPage() {
           ].map(r => (
             <span key={r.label} style={{
               fontSize: "11px", fontWeight: 600, padding: "3px 8px", borderRadius: "99px",
-              background: r.met ? "rgba(16,185,129,0.1)" : "rgba(255,255,255,0.05)",
+              background: r.met ? "rgba(16,185,129,0.1)" : "var(--lc-bg-glass)",
               color: r.met ? "#10b981" : "#64748b",
-              border: `1px solid ${r.met ? "rgba(16,185,129,0.25)" : "rgba(255,255,255,0.08)"}`,
+              border: `1px solid ${r.met ? "rgba(16,185,129,0.25)" : "var(--lc-bg-glass-hover)"}`,
               transition: "all 0.15s",
             }}>
               {r.met ? "✓ " : ""}{r.label}

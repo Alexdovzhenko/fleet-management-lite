@@ -128,9 +128,9 @@ export function QuickActionPopup({ trip, position, onClose }: QuickActionPopupPr
         <button
           onClick={onClose}
           className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center transition-colors"
-          style={{ background: "rgba(255,255,255,0.08)" }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.15)")}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}
+          style={{ background: "var(--lc-bg-glass-hover)" }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "var(--lc-border-medium)")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "var(--lc-bg-glass-hover)")}
         >
           <X className="w-3 h-3 text-white/60" />
         </button>

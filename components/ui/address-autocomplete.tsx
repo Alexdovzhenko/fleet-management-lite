@@ -105,7 +105,7 @@ export function AddressAutocomplete({
           if (value.trim()) setOpen(true)
         }}
         onBlur={(e) => {
-          e.currentTarget.style.borderColor = error ? "rgba(248,113,113,0.60)" : "rgba(255,255,255,0.12)"
+          e.currentTarget.style.borderColor = error ? "rgba(248,113,113,0.60)" : "var(--lc-border)"
         }}
         placeholder={placeholder}
         autoFocus={autoFocus}
@@ -114,26 +114,26 @@ export function AddressAutocomplete({
         className={cn("flex w-full rounded-xl px-3 py-1 text-sm outline-none transition-colors aa-input", inputClassName)}
         style={{
           height: inputClassName?.includes("h-10") ? "40px" : "36px",
-          background: "rgba(255,255,255,0.05)",
-          border: error ? "1px solid rgba(248,113,113,0.60)" : "1px solid rgba(255,255,255,0.12)",
-          color: "rgba(255,255,255,0.88)",
+          background: "var(--lc-bg-glass)",
+          border: error ? "1px solid rgba(248,113,113,0.60)" : "1px solid var(--lc-border)",
+          color: "var(--lc-text-primary)",
         }}
       />
-      <style>{`.aa-input::placeholder { color: rgba(200,212,228,0.38); }`}</style>
+      <style>{`.aa-input::placeholder { color: var(--lc-text-muted); }`}</style>
 
       {showDropdown && (
         <div
           className="absolute left-0 right-0 top-full mt-1.5 z-[200] rounded-2xl overflow-hidden"
           style={{
-            background: "#0d1526",
-            border: "1px solid rgba(255,255,255,0.10)",
+            background: "var(--lc-bg-surface)",
+            border: "1px solid var(--lc-border)",
             boxShadow: "0 8px 40px rgba(0,0,0,0.65), 0 0 0 1px rgba(201,168,124,0.08)",
           }}
         >
           {/* Header */}
           <div
             className="flex items-center gap-1.5 px-3.5 pt-2.5 pb-1.5"
-            style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+            style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}
           >
             <Clock className="w-3 h-3 flex-shrink-0" style={{ color: "#c9a87c" }} />
             <span
@@ -175,7 +175,7 @@ export function AddressAutocomplete({
                       {addr.name && (
                         <div
                           className="text-[11px] font-semibold truncate mb-0.5"
-                          style={{ color: "rgba(255,255,255,0.90)" }}
+                          style={{ color: "var(--lc-text-primary)" }}
                         >
                           {addr.name}
                         </div>
@@ -183,17 +183,17 @@ export function AddressAutocomplete({
                       <div
                         className="truncate"
                         style={addr.name
-                          ? { fontSize: "11px", color: "rgba(200,212,228,0.60)" }
-                          : { fontSize: "12.5px", fontWeight: 500, color: "rgba(255,255,255,0.82)" }
+                          ? { fontSize: "11px", color: "var(--lc-text-dim)" }
+                          : { fontSize: "12.5px", fontWeight: 500, color: "var(--lc-text-secondary)" }
                         }
                       >
                         {addr.address1}
                         {addr.address2 && (
-                          <span style={{ color: "rgba(200,212,228,0.45)" }}>, {addr.address2}</span>
+                          <span style={{ color: "var(--lc-text-label)" }}>, {addr.address2}</span>
                         )}
                       </div>
                       {formatSecondLine(addr) && (
-                        <div className="text-[11px] truncate" style={{ color: "rgba(200,212,228,0.45)" }}>
+                        <div className="text-[11px] truncate" style={{ color: "var(--lc-text-label)" }}>
                           {formatSecondLine(addr)}
                         </div>
                       )}
@@ -204,9 +204,9 @@ export function AddressAutocomplete({
                       <span
                         className="text-[10px] font-semibold px-1.5 py-0.5 rounded flex-shrink-0 mt-0.5 tabular-nums"
                         style={{
-                          background: "rgba(255,255,255,0.06)",
-                          border: "1px solid rgba(255,255,255,0.08)",
-                          color: "rgba(200,212,228,0.50)",
+                          background: "var(--lc-bg-glass)",
+                          border: "1px solid var(--lc-bg-glass-hover)",
+                          color: "var(--lc-text-label)",
                         }}
                       >
                         {addr.useCount}×

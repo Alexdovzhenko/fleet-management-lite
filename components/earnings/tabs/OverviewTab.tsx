@@ -10,12 +10,12 @@ export function OverviewTab({ data, isLoading }: { data?: EarningsBreakdown; isL
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="h-80 rounded-2xl animate-pulse" style={{ background: "#0d1526" }} />
+        <div className="h-80 rounded-2xl animate-pulse" style={{ background: "var(--lc-bg-surface)" }} />
         <div className="grid grid-cols-2 gap-4">
-          <div className="h-64 rounded-2xl animate-pulse" style={{ background: "#0d1526" }} />
-          <div className="h-64 rounded-2xl animate-pulse" style={{ background: "#0d1526" }} />
+          <div className="h-64 rounded-2xl animate-pulse" style={{ background: "var(--lc-bg-surface)" }} />
+          <div className="h-64 rounded-2xl animate-pulse" style={{ background: "var(--lc-bg-surface)" }} />
         </div>
-        <div className="h-48 rounded-2xl animate-pulse" style={{ background: "#0d1526" }} />
+        <div className="h-48 rounded-2xl animate-pulse" style={{ background: "var(--lc-bg-surface)" }} />
       </div>
     )
   }

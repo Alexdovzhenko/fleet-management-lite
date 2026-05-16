@@ -34,9 +34,9 @@ interface RoundTripModalProps {
 const SERVICE_TYPES: TripType[] = ["ONE_WAY", "ROUND_TRIP", "HOURLY", "AIRPORT_PICKUP", "AIRPORT_DROPOFF", "MULTI_STOP", "SHUTTLE"]
 
 const inputStyle: React.CSSProperties = {
-  background: "rgba(255,255,255,0.05)",
-  border: "1px solid rgba(255,255,255,0.12)",
-  color: "rgba(255,255,255,0.88)",
+  background: "var(--lc-bg-glass)",
+  border: "1px solid var(--lc-border)",
+  color: "var(--lc-text-primary)",
   borderRadius: "10px",
   height: "40px",
   padding: "0 12px",
@@ -46,9 +46,9 @@ const inputStyle: React.CSSProperties = {
 }
 
 const selectStyle: React.CSSProperties = {
-  background: "rgba(255,255,255,0.05)",
-  border: "1px solid rgba(255,255,255,0.12)",
-  color: "rgba(255,255,255,0.88)",
+  background: "var(--lc-bg-glass)",
+  border: "1px solid var(--lc-border)",
+  color: "var(--lc-text-primary)",
   borderRadius: "10px",
   height: "40px",
   padding: "0 36px 0 12px",
@@ -197,17 +197,17 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
         className="w-full max-w-2xl p-0 overflow-hidden"
         showCloseButton={false}
         style={{
-          background: "#0d1526",
-          border: "1px solid rgba(255,255,255,0.09)",
+          background: "var(--lc-bg-surface)",
+          border: "1px solid var(--lc-bg-glass-hover)",
           borderRadius: "20px",
           boxShadow: "0 32px 80px rgba(0,0,0,0.70)",
         }}
       >
         {/* HEADER */}
-        <div className="flex items-start justify-between px-8 py-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+        <div className="flex items-start justify-between px-8 py-6" style={{ borderBottom: "1px solid var(--lc-bg-glass-hover)" }}>
           <div>
-            <h2 className="text-2xl font-semibold" style={{ color: "rgba(255,255,255,0.92)" }}>Round Trip</h2>
-            <p className="text-sm mt-1" style={{ color: "rgba(200,212,228,0.55)" }}>
+            <h2 className="text-2xl font-semibold" style={{ color: "var(--lc-text-primary)" }}>Round Trip</h2>
+            <p className="text-sm mt-1" style={{ color: "var(--lc-text-dim)" }}>
               Confirmation{" "}
               <span className="font-mono font-semibold" style={{ color: "#c9a87c" }}>{trip.tripNumber}</span>
             </p>
@@ -216,14 +216,14 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
             onClick={onClose}
             type="button"
             className="p-2 rounded-lg transition-colors flex-shrink-0"
-            style={{ color: "rgba(200,212,228,0.45)" }}
+            style={{ color: "var(--lc-text-label)" }}
             onMouseEnter={e => {
-              ;(e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"
-              ;(e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.70)"
+              ;(e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"
+              ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-secondary)"
             }}
             onMouseLeave={e => {
               ;(e.currentTarget as HTMLElement).style.background = "transparent"
-              ;(e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.45)"
+              ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)"
             }}
             aria-label="Close modal"
           >
@@ -241,16 +241,16 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
               <Check className="w-10 h-10" style={{ color: "#34d399" }} strokeWidth={2} />
             </div>
             <div className="text-center max-w-sm">
-              <h3 className="text-2xl font-semibold" style={{ color: "rgba(255,255,255,0.92)" }}>Return Trip Created</h3>
-              <p className="text-sm mt-2 leading-relaxed" style={{ color: "rgba(200,212,228,0.55)" }}>
+              <h3 className="text-2xl font-semibold" style={{ color: "var(--lc-text-primary)" }}>Return Trip Created</h3>
+              <p className="text-sm mt-2 leading-relaxed" style={{ color: "var(--lc-text-dim)" }}>
                 Your return reservation has been successfully created with the reversed routing.
               </p>
             </div>
             <div
               className="rounded-xl px-6 py-4 w-full max-w-xs text-center"
-              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)" }}
+              style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)" }}
             >
-              <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "rgba(200,212,228,0.45)" }}>
+              <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "var(--lc-text-label)" }}>
                 New Confirmation Number
               </p>
               <p className="text-xl font-mono font-bold tracking-wide" style={{ color: "#c9a87c" }}>{success.tripNumber}</p>
@@ -259,7 +259,7 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
               type="button"
               onClick={onClose}
               className="mt-2 w-full max-w-xs py-2.5 rounded-xl text-sm font-semibold transition-opacity"
-              style={{ background: "#c9a87c", color: "#0d1526" }}
+              style={{ background: "#c9a87c", color: "var(--lc-bg-surface)" }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = "0.85" }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = "1" }}
             >
@@ -272,12 +272,12 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
 
               {/* REVERSED ROUTE */}
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "rgba(200,212,228,0.45)" }}>
+                <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: "var(--lc-text-label)" }}>
                   Reversed Route
                 </p>
                 <div
                   className="rounded-xl p-5 space-y-4"
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}
+                  style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-hover)" }}
                 >
                   {/* New Pickup (was dropoff) */}
                   <div>
@@ -300,7 +300,7 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                       style={inputStyle}
                     />
                     {pickupNotes && (
-                      <p className="text-xs italic mt-1.5" style={{ color: "rgba(200,212,228,0.45)" }}>Notes: {pickupNotes}</p>
+                      <p className="text-xs italic mt-1.5" style={{ color: "var(--lc-text-label)" }}>Notes: {pickupNotes}</p>
                     )}
                   </div>
 
@@ -308,10 +308,10 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                   <div className="flex justify-center py-1">
                     <div
                       className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full"
-                      style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)" }}
+                      style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)" }}
                     >
                       <ArrowLeftRight className="w-3 h-3" style={{ color: "#c9a87c" }} strokeWidth={2} />
-                      <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "rgba(200,212,228,0.55)" }}>
+                      <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "var(--lc-text-dim)" }}>
                         Reversed
                       </span>
                     </div>
@@ -338,7 +338,7 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                       style={inputStyle}
                     />
                     {dropoffNotes && (
-                      <p className="text-xs italic mt-1.5" style={{ color: "rgba(200,212,228,0.45)" }}>Notes: {dropoffNotes}</p>
+                      <p className="text-xs italic mt-1.5" style={{ color: "var(--lc-text-label)" }}>Notes: {dropoffNotes}</p>
                     )}
                   </div>
                 </div>
@@ -348,7 +348,7 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
               <div className="grid grid-cols-2 gap-6">
                 {/* Service Type */}
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.45)" }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--lc-text-label)" }}>
                     Service Type
                   </p>
                   <div className="relative">
@@ -358,18 +358,18 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                       style={selectStyle}
                     >
                       {SERVICE_TYPES.map(type => (
-                        <option key={type} value={type} style={{ background: "#0d1526", color: "rgba(255,255,255,0.88)" }}>
+                        <option key={type} value={type} style={{ background: "var(--lc-bg-surface)", color: "var(--lc-text-primary)" }}>
                           {type.replace(/_/g, " ")}
                         </option>
                       ))}
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "rgba(200,212,228,0.35)" }} />
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "var(--lc-text-muted)" }} />
                   </div>
                 </div>
 
                 {/* Vehicle */}
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.45)" }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--lc-text-label)" }}>
                     Vehicle <span style={{ color: "rgba(248,113,113,0.85)" }}>*</span>
                   </p>
                   <div className="relative">
@@ -381,58 +381,58 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                       }}
                       style={{
                         ...selectStyle,
-                        borderColor: timeError === "Please select a vehicle" ? "rgba(248,113,113,0.50)" : "rgba(255,255,255,0.12)",
+                        borderColor: timeError === "Please select a vehicle" ? "rgba(248,113,113,0.50)" : "var(--lc-border)",
                       }}
                     >
-                      <option value="" style={{ background: "#0d1526", color: "rgba(200,212,228,0.50)" }}>Select a vehicle</option>
+                      <option value="" style={{ background: "var(--lc-bg-surface)", color: "var(--lc-text-label)" }}>Select a vehicle</option>
                       {vehicles.map(vehicle => (
-                        <option key={vehicle.id} value={vehicle.id} style={{ background: "#0d1526", color: "rgba(255,255,255,0.88)" }}>
+                        <option key={vehicle.id} value={vehicle.id} style={{ background: "var(--lc-bg-surface)", color: "var(--lc-text-primary)" }}>
                           {vehicle.name} ({vehicle.type})
                         </option>
                       ))}
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "rgba(200,212,228,0.35)" }} />
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "var(--lc-text-muted)" }} />
                   </div>
                 </div>
 
                 {/* Billing Contact */}
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.45)" }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--lc-text-label)" }}>
                     Billing Contact
                   </p>
                   <div>
-                    <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{customerName}</p>
+                    <p className="text-sm font-medium" style={{ color: "var(--lc-text-primary)" }}>{customerName}</p>
                     {customerPhone !== "-" && (
-                      <p className="text-xs mt-1" style={{ color: "rgba(200,212,228,0.55)" }}>{formatPhone(customerPhone)}</p>
+                      <p className="text-xs mt-1" style={{ color: "var(--lc-text-dim)" }}>{formatPhone(customerPhone)}</p>
                     )}
                   </div>
                 </div>
 
                 {/* Passenger */}
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.45)" }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--lc-text-label)" }}>
                     Passenger
                   </p>
-                  <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>{passengerLabel}</p>
+                  <p className="text-sm font-medium" style={{ color: "var(--lc-text-primary)" }}>{passengerLabel}</p>
                 </div>
               </div>
 
               {/* RETURN TRIP DETAILS */}
               <div className="space-y-5">
-                <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(200,212,228,0.45)" }}>
+                <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--lc-text-label)" }}>
                   Return Trip Details
                 </p>
 
                 {/* Date + Time */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium mb-2.5" style={{ color: "rgba(200,212,228,0.60)" }}>
+                    <label className="block text-xs font-medium mb-2.5" style={{ color: "var(--lc-text-dim)" }}>
                       Return Date <span style={{ color: "rgba(248,113,113,0.85)" }}>*</span>
                     </label>
                     <DatePickerInput value={pickupDate} onChange={setPickupDate} className="w-full" />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium mb-2.5" style={{ color: "rgba(200,212,228,0.60)" }}>
+                    <label className="block text-xs font-medium mb-2.5" style={{ color: "var(--lc-text-dim)" }}>
                       Return Time
                     </label>
                     <input
@@ -446,7 +446,7 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                       placeholder="HH:MM AM/PM"
                       style={{
                         ...inputStyle,
-                        borderColor: timeError ? "rgba(248,113,113,0.50)" : "rgba(255,255,255,0.12)",
+                        borderColor: timeError ? "rgba(248,113,113,0.50)" : "var(--lc-border)",
                       }}
                     />
                     {timeError && (
@@ -461,7 +461,7 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                 {/* Notes */}
                 <div
                   className="rounded-xl p-4 cursor-pointer transition-colors"
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}
+                  style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-hover)" }}
                   onClick={() => setCopyNotes(!copyNotes)}
                 >
                   <div className="flex items-start gap-3">
@@ -471,8 +471,8 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                       className="mt-1.5"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.88)" }}>Include notes</p>
-                      <p className="text-xs mt-1.5 leading-relaxed" style={{ color: "rgba(200,212,228,0.50)" }}>
+                      <p className="text-sm font-medium" style={{ color: "var(--lc-text-primary)" }}>Include notes</p>
+                      <p className="text-xs mt-1.5 leading-relaxed" style={{ color: "var(--lc-text-label)" }}>
                         {notes
                           ? `"${notes.substring(0, 100)}${notes.length > 100 ? "…" : ""}"`
                           : "No notes on original reservation"}
@@ -484,9 +484,9 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                 {/* Attached Files */}
                 <div
                   className="rounded-xl p-4"
-                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}
+                  style={{ background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-hover)" }}
                 >
-                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(200,212,228,0.45)" }}>
+                  <p className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "var(--lc-text-label)" }}>
                     Attached Files
                   </p>
                   {trip?.attachments && trip.attachments.length > 0 ? (
@@ -499,8 +499,8 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                             key={attachment.id}
                             className="flex items-center gap-3 px-3.5 py-2.5 rounded-lg cursor-pointer transition-colors"
                             style={{
-                              background: isSelected ? "rgba(201,168,124,0.08)" : "rgba(255,255,255,0.03)",
-                              border: `1px solid ${isSelected ? "rgba(201,168,124,0.20)" : "rgba(255,255,255,0.07)"}`,
+                              background: isSelected ? "rgba(201,168,124,0.08)" : "var(--lc-bg-card)",
+                              border: `1px solid ${isSelected ? "rgba(201,168,124,0.20)" : "var(--lc-bg-glass-mid)"}`,
                             }}
                           >
                             <Checkbox
@@ -516,22 +516,22 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                             />
                             <div
                               className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0"
-                              style={{ background: "rgba(255,255,255,0.07)" }}
+                              style={{ background: "var(--lc-bg-glass-mid)" }}
                             >
-                              <Icon className="w-3.5 h-3.5" style={{ color: isSelected ? "#c9a87c" : "rgba(200,212,228,0.50)" }} />
+                              <Icon className="w-3.5 h-3.5" style={{ color: isSelected ? "#c9a87c" : "var(--lc-text-label)" }} />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs font-medium truncate" style={{ color: isSelected ? "rgba(255,255,255,0.88)" : "rgba(255,255,255,0.65)" }}>
+                              <p className="text-xs font-medium truncate" style={{ color: isSelected ? "var(--lc-text-primary)" : "var(--lc-text-dim)" }}>
                                 {attachment.name}
                               </p>
-                              <p className="text-[11px]" style={{ color: "rgba(200,212,228,0.40)" }}>{formatFileSize(attachment.size)}</p>
+                              <p className="text-[11px]" style={{ color: "var(--lc-text-muted)" }}>{formatFileSize(attachment.size)}</p>
                             </div>
                           </label>
                         )
                       })}
                     </div>
                   ) : (
-                    <p className="text-xs italic" style={{ color: "rgba(200,212,228,0.40)" }}>No attachments on original reservation</p>
+                    <p className="text-xs italic" style={{ color: "var(--lc-text-muted)" }}>No attachments on original reservation</p>
                   )}
                 </div>
               </div>
@@ -541,7 +541,7 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
             <div
               className="flex items-center gap-3 px-8 py-5 sticky bottom-0"
               style={{
-                borderTop: "1px solid rgba(255,255,255,0.08)",
+                borderTop: "1px solid var(--lc-bg-glass-hover)",
                 background: "rgba(13,21,38,0.97)",
                 backdropFilter: "blur(8px)",
               }}
@@ -551,9 +551,9 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                 onClick={onClose}
                 disabled={createTrip.isPending}
                 className="flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors"
-                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(200,212,228,0.70)" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.09)" }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)" }}
+                style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-border)", color: "var(--lc-text-secondary)" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)" }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
               >
                 Cancel
               </button>
@@ -561,7 +561,7 @@ export function RoundTripModal({ trip, open, onClose }: RoundTripModalProps) {
                 type="submit"
                 disabled={createTrip.isPending}
                 className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-opacity disabled:opacity-60 flex items-center justify-center gap-2"
-                style={{ background: "#c9a87c", color: "#0d1526" }}
+                style={{ background: "#c9a87c", color: "var(--lc-bg-surface)" }}
                 onMouseEnter={e => { if (!createTrip.isPending) (e.currentTarget as HTMLElement).style.opacity = "0.85" }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = "1" }}
               >

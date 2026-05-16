@@ -12,13 +12,13 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<
   return (
     <div
       className="px-3.5 py-2.5 rounded-xl"
-      style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.12)", boxShadow: "0 12px 32px rgba(0,0,0,0.60)" }}
+      style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-border)", boxShadow: "0 12px 32px rgba(0,0,0,0.60)" }}
     >
       <div className="flex items-center gap-2 mb-1">
         <div className="w-2 h-2 rounded-full shrink-0" style={{ background: item.payload.fill }} />
-        <p className="text-[11px] font-medium" style={{ color: "rgba(200,212,228,0.55)" }}>{item.name}</p>
+        <p className="text-[11px] font-medium" style={{ color: "var(--lc-text-dim)" }}>{item.name}</p>
       </div>
-      <p className="text-[15px] font-bold tabular-nums" style={{ color: "rgba(255,255,255,0.90)" }}>{fmtAmt(item.value)}</p>
+      <p className="text-[15px] font-bold tabular-nums" style={{ color: "var(--lc-text-primary)" }}>{fmtAmt(item.value)}</p>
     </div>
   )
 }
@@ -30,9 +30,9 @@ export function CollectionPieChart({ data }: { data: { collected: number; uncoll
     return (
       <div
         className="rounded-2xl p-5 flex flex-col items-center justify-center h-[240px]"
-        style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)" }}
+        style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
       >
-        <p className="text-[13px]" style={{ color: "rgba(200,212,228,0.40)" }}>No invoice data for this period</p>
+        <p className="text-[13px]" style={{ color: "var(--lc-text-muted)" }}>No invoice data for this period</p>
       </div>
     )
   }
@@ -46,9 +46,9 @@ export function CollectionPieChart({ data }: { data: { collected: number; uncoll
   return (
     <div
       className="rounded-2xl p-5"
-      style={{ background: "#0d1526", border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 4px 24px rgba(0,0,0,0.25)" }}
+      style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)", boxShadow: "0 4px 24px rgba(0,0,0,0.25)" }}
     >
-      <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: "rgba(200,212,228,0.38)", letterSpacing: "0.14em" }}>
+      <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--lc-text-muted)", letterSpacing: "0.14em" }}>
         Collection Status
       </p>
 
@@ -78,13 +78,13 @@ export function CollectionPieChart({ data }: { data: { collected: number; uncoll
             <p className="text-[30px] font-bold tabular-nums tracking-tight leading-none" style={{ color: "#c9a87c" }}>
               {collectedPct}%
             </p>
-            <p className="text-[11px] font-medium mt-1" style={{ color: "rgba(200,212,228,0.45)" }}>collected</p>
+            <p className="text-[11px] font-medium mt-1" style={{ color: "var(--lc-text-label)" }}>collected</p>
           </div>
         </div>
       </div>
 
       {/* Legend */}
-      <div className="grid grid-cols-2 gap-3 mt-3 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="grid grid-cols-2 gap-3 mt-3 pt-4" style={{ borderTop: "1px solid var(--lc-bg-glass)" }}>
         {[
           { label: "Collected", value: data.collected,   dot: "#c9a87c" },
           { label: "Pending",   value: data.uncollected, dot: "#fbbf24" },
@@ -92,8 +92,8 @@ export function CollectionPieChart({ data }: { data: { collected: number; uncoll
           <div key={label} className="flex items-center gap-2.5">
             <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: dot }} />
             <div>
-              <p className="text-[10px] leading-none mb-1.5" style={{ color: "rgba(200,212,228,0.38)" }}>{label}</p>
-              <p className="text-[15px] font-bold tabular-nums leading-none" style={{ color: "rgba(255,255,255,0.85)" }}>
+              <p className="text-[10px] leading-none mb-1.5" style={{ color: "var(--lc-text-muted)" }}>{label}</p>
+              <p className="text-[15px] font-bold tabular-nums leading-none" style={{ color: "var(--lc-text-primary)" }}>
                 {fmtAmt(value)}
               </p>
             </div>

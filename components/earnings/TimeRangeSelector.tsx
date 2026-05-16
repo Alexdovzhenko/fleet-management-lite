@@ -43,7 +43,7 @@ export function TimeRangeSelector({ onRangeChange, defaultPreset = "last-7-days"
       />
 
       {/* Divider */}
-      <div className="h-4 w-px" style={{ background: "rgba(255,255,255,0.10)" }} />
+      <div className="h-4 w-px" style={{ background: "var(--lc-border)" }} />
 
       {/* Preset chips */}
       <div className="flex items-center gap-1 flex-wrap">
@@ -54,13 +54,13 @@ export function TimeRangeSelector({ onRangeChange, defaultPreset = "last-7-days"
             className="px-2.5 py-1 text-[12px] font-semibold rounded-full transition-all duration-150 cursor-pointer whitespace-nowrap"
             style={selectedPreset === preset.id
               ? { background: "rgba(201,168,124,0.15)", color: "#c9a87c", border: "1px solid rgba(201,168,124,0.28)" }
-              : { color: "rgba(200,212,228,0.50)", border: "1px solid transparent" }
+              : { color: "var(--lc-text-label)", border: "1px solid transparent" }
             }
             onMouseEnter={e => {
-              if (selectedPreset !== preset.id) (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.75)"
+              if (selectedPreset !== preset.id) (e.currentTarget as HTMLElement).style.color = "var(--lc-text-secondary)"
             }}
             onMouseLeave={e => {
-              if (selectedPreset !== preset.id) (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.50)"
+              if (selectedPreset !== preset.id) (e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)"
             }}
           >
             {preset.label}
