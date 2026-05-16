@@ -40,19 +40,38 @@ const ALL_STATUS_OPTIONS: { label: string; value: string }[] = [
 const VALID_STATUS_VALUES = new Set(ALL_STATUS_OPTIONS.map(o => o.value))
 const DEFAULT_VISIBLE_STATUSES = ["CONFIRMED", "IN_PROGRESS", "COMPLETED", "FARMED_OUT"]
 
-function DispatchPageInner({
-  selectedDate,
-  setSelectedDate,
-}: {
-  selectedDate: Date
-  setSelectedDate: React.Dispatch<React.SetStateAction<Date>>
-}) {
+const DATE_KEY = "dispatch-selected-date"
+
+function readPersistedDate(): Date {
+  try {
+    const s = sessionStorage.getItem(DATE_KEY)
+    if (s) {
+      const [y, m, d] = s.split("-").map(Number)
+      if (y && m && d) return new Date(y, m - 1, d)
+    }
+  } catch { /* ignore */ }
+  return new Date()
+}
+
+function persistDate(date: Date) {
+  try {
+    const iso = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
+    sessionStorage.setItem(DATE_KEY, iso)
+  } catch { /* ignore */ }
+}
+
+function DispatchPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { isDark } = useTheme()
   const openTripId = searchParams.get("open")
   const billingFromUrl = searchParams.get("billing") === "1"
   const { data: openTrip } = useTrip(openTripId ?? "")
+  // Initialize from sessionStorage so the date survives Suspense-triggered remounts
+  const [selectedDate, setSelectedDate] = useState<Date>(() => {
+    if (typeof window === "undefined") return new Date()
+    return readPersistedDate()
+  })
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null)
   const [quickTrip, setQuickTrip] = useState<Trip | null>(null)
   const [quickPos, setQuickPos] = useState({ x: 0, y: 0 })
@@ -135,9 +154,11 @@ function DispatchPageInner({
   // Parse as local date (not UTC) — new Date("YYYY-MM-DD") is UTC midnight,
   // which shifts one day back in western timezones.
   useEffect(() => {
-    if (!openTrip) return
+    if (!openTrip?.pickupDate) return
     const [y, m, d] = openTrip.pickupDate.split("-").map(Number)
-    setSelectedDate(new Date(y, m - 1, d))
+    const date = new Date(y, m - 1, d)
+    setSelectedDate(date)
+    persistDate(date)
   }, [openTrip])
 
   // The trip to show in the modal: URL-loaded trip takes priority over manual selection
@@ -303,7 +324,7 @@ function DispatchPageInner({
                   style={{ background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)" }}
                 >
                   <button
-                    onClick={() => setSelectedDate(d => subDays(d, 1))}
+                    onClick={() => setSelectedDate(d => { const n = subDays(d, 1); persistDate(n); return n })}
                     className="w-7 h-7 rounded-[9px] flex items-center justify-center transition-all duration-150 active:scale-90 cursor-pointer"
                     style={{ color: "var(--lc-text-dim)" }}
                     onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--lc-bg-glass-hover)" }}
@@ -336,9 +357,9 @@ function DispatchPageInner({
                         {!showSpecificDate ? (
                           <div className="py-1.5 w-48">
                             {[
-                              { label: "Today",     action: () => { setSelectedDate(new Date()); setShowCalendar(false) } },
-                              { label: "Tomorrow",  action: () => { setSelectedDate(addDays(new Date(), 1)); setShowCalendar(false) } },
-                              { label: "Yesterday", action: () => { setSelectedDate(subDays(new Date(), 1)); setShowCalendar(false) } },
+                              { label: "Today",     action: () => { const d = new Date(); persistDate(d); setSelectedDate(d); setShowCalendar(false) } },
+                              { label: "Tomorrow",  action: () => { const d = addDays(new Date(), 1); persistDate(d); setSelectedDate(d); setShowCalendar(false) } },
+                              { label: "Yesterday", action: () => { const d = subDays(new Date(), 1); persistDate(d); setSelectedDate(d); setShowCalendar(false) } },
                             ].map(({ label, action }) => (
                               <button
                                 key={label}
@@ -409,7 +430,7 @@ function DispatchPageInner({
                               {eachDayOfInterval({ start: startOfMonth(calendarMonth), end: endOfMonth(calendarMonth) }).map(day => (
                                 <button
                                   key={day.toISOString()}
-                                  onClick={() => { setSelectedDate(day); setShowCalendar(false); setShowSpecificDate(false) }}
+                                  onClick={() => { persistDate(day); setSelectedDate(day); setShowCalendar(false); setShowSpecificDate(false) }}
                                   className="text-center text-[13px] py-1.5 rounded-full transition-all duration-150 font-medium cursor-pointer"
                                   style={
                                     isSameDay(day, selectedDate)
@@ -438,7 +459,7 @@ function DispatchPageInner({
                   </div>
 
                   <button
-                    onClick={() => setSelectedDate(d => addDays(d, 1))}
+                    onClick={() => setSelectedDate(d => { const n = addDays(d, 1); persistDate(n); return n })}
                     className="w-7 h-7 rounded-[9px] flex items-center justify-center transition-all duration-150 active:scale-90 cursor-pointer"
                     style={{ color: "var(--lc-text-dim)" }}
                     onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "var(--lc-bg-glass-hover)" }}
@@ -684,13 +705,10 @@ function DispatchPageInner({
   )
 }
 
-// selectedDate lives here — outside the Suspense boundary — so it survives
-// the remount that useSearchParams triggers during router.replace navigations.
 export default function DispatchPage() {
-  const [selectedDate, setSelectedDate] = useState(new Date())
   return (
     <Suspense>
-      <DispatchPageInner selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+      <DispatchPageInner />
     </Suspense>
   )
 }
