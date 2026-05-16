@@ -388,9 +388,16 @@ body {
     box-shadow     300ms ease !important;
 }
 
-/* Page background driven by token */
-[data-theme] body {
-  background-color: var(--lc-bg-page);
+/* Explicit theme backgrounds — set on html AND body for complete coverage */
+html[data-theme="dark"],
+html[data-theme="dark"] body {
+  background-color: #080c16 !important;
+  color-scheme: dark;
+}
+html[data-theme="light"],
+html[data-theme="light"] body {
+  background-color: #F2F2F7 !important;
+  color-scheme: light;
 }
 
 /* Themed scrollbars */
@@ -411,6 +418,15 @@ body {
 [data-theme="light"] .border-gray-200 { border-color: rgba(0,0,0,0.09) !important; }
 [data-theme="light"] .bg-gray-50 { background-color: #F9F9FB !important; }
 [data-theme="light"] .bg-gray-100 { background-color: #F2F2F7 !important; }
+
+/* Light-mode overrides for dark-only Tailwind patterns in TripGrid and table rows */
+html[data-theme="light"] .text-white\/20 { color: var(--lc-text-muted) !important; }
+html[data-theme="light"] .text-white\/55 { color: var(--lc-text-secondary) !important; }
+html[data-theme="light"] .bg-white\/\[0\.08\]  { background-color: var(--lc-bg-glass) !important; }
+html[data-theme="light"] .bg-white\/\[0\.07\]  { background-color: var(--lc-bg-glass) !important; }
+html[data-theme="light"] .bg-white\/\[0\.03\]  { background-color: transparent !important; }
+html[data-theme="light"] .hover\:bg-white\/\[0\.03\]:hover { background-color: var(--lc-bg-glass-hover) !important; }
+/* Indigo badges look fine in light mode already — skip overriding them */
 
 /* Light-mode: active dock icon uses gold instead of blue */
 [data-theme="light"] .lc-dock-icon-active {

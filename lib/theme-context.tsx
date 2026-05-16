@@ -54,11 +54,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     })
   }, [])
 
-  // Prevent SSR flash — render children only after mount
-  if (!mounted) return null
-
+  // Always render children — anti-flicker script already set data-theme on <html>
+  // before React hydrates, so CSS variables are correct from the first paint.
+  // We still gate toggleTheme behind mount to avoid calling it before localStorage is ready.
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, isDark: theme === "dark" }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme: mounted ? toggleTheme : () => {}, isDark: theme === "dark" }}>
       {children}
     </ThemeContext.Provider>
   )
