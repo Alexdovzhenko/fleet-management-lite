@@ -131,13 +131,13 @@ function DispatchPageInner({
     return () => document.removeEventListener("keydown", handleKey)
   }, [])
 
-  // When URL has ?open=tripId, scroll the board to that trip's date.
-  // Do NOT call router.replace here — the URL is already correct, and calling
-  // router.replace inside an effect causes a soft-nav that resets React state
-  // before the setSelectedTrip update can commit.
+  // When URL has ?open=tripId, sync the board to that trip's date.
+  // Parse as local date (not UTC) — new Date("YYYY-MM-DD") is UTC midnight,
+  // which shifts one day back in western timezones.
   useEffect(() => {
     if (!openTrip) return
-    setSelectedDate(new Date(openTrip.pickupDate))
+    const [y, m, d] = openTrip.pickupDate.split("-").map(Number)
+    setSelectedDate(new Date(y, m - 1, d))
   }, [openTrip])
 
   // The trip to show in the modal: URL-loaded trip takes priority over manual selection
