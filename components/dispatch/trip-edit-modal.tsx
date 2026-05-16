@@ -209,10 +209,10 @@ const STOP_ROLES: { value: StopRole; label: string }[] = [
   { value: "wait",   label: "Wait" },
 ]
 const STOP_ROLE_STYLE: Record<StopRole, { dot: string; pill: string }> = {
-  pickup: { dot: "bg-emerald-500", pill: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-  drop:   { dot: "bg-red-500",     pill: "bg-red-50 text-red-700 border-red-200" },
-  stop:   { dot: "bg-blue-500",    pill: "bg-blue-50 text-blue-700 border-blue-200" },
-  wait:   { dot: "bg-amber-500",   pill: "bg-amber-50 text-amber-700 border-amber-200" },
+  pickup: { dot: "bg-emerald-500 ring-emerald-900", pill: "bg-emerald-900/30 text-emerald-400 border-emerald-700/50" },
+  drop:   { dot: "bg-red-500 ring-red-900",         pill: "bg-red-900/30 text-red-400 border-red-700/50" },
+  stop:   { dot: "bg-blue-500 ring-blue-900",       pill: "bg-blue-900/30 text-blue-400 border-blue-700/50" },
+  wait:   { dot: "bg-amber-500 ring-amber-900",     pill: "bg-amber-900/30 text-amber-400 border-amber-700/50" },
 }
 const ROLE_PREFIX: Record<StopRole, string> = { pickup: "PU", drop: "DO", stop: "ST", wait: "WT" }
 const ROLE_ROW_BG: Record<StopRole, { bg: string; border: string; prefix: string }> = {
