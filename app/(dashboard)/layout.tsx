@@ -18,7 +18,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   }, [isLoading, company, router])
 
   return (
-    <div className="min-h-dvh" style={{ background: "#080c16" }}>
+    <div className="min-h-dvh" style={{ background: "var(--lc-bg-page)" }}>
       <AppHeader />
       <main
         className="px-4 md:px-6 pt-4 md:pt-6"

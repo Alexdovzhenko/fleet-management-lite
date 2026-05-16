@@ -264,3 +264,145 @@ body {
     @apply font-sans;
   }
 }
+
+/* ── Livery Connect Design Token System ──────────────────────────────────── */
+
+/* Dark theme (default — mirrors exact current hardcoded values) */
+[data-theme="dark"] {
+  --lc-bg-page:        #080c16;
+  --lc-bg-surface:     #0d1526;
+  --lc-bg-glass:       rgba(255,255,255,0.05);
+  --lc-bg-glass-hover: rgba(255,255,255,0.08);
+  --lc-bg-card:        rgba(255,255,255,0.04);
+  --lc-border:         rgba(255,255,255,0.10);
+  --lc-border-subtle:  rgba(255,255,255,0.07);
+  --lc-text-primary:   rgba(255,255,255,0.92);
+  --lc-text-secondary: rgba(255,255,255,0.70);
+  --lc-text-dim:       rgba(200,212,228,0.55);
+  --lc-text-muted:     rgba(200,212,228,0.40);
+  --lc-text-label:     rgba(200,212,228,0.45);
+  --lc-accent:         #c9a87c;
+  --lc-accent-hover:   #d4b688;
+  --lc-accent-muted:   rgba(201,168,124,0.12);
+  --lc-accent-border:  rgba(201,168,124,0.25);
+  --lc-dock-bg:        rgba(18,28,48,0.82);
+  --lc-dock-border:    rgba(255,255,255,0.14);
+  --lc-dock-shadow:    0 16px 48px rgba(0,0,0,0.40), 0 2px 8px rgba(0,0,0,0.20), inset 0 0.5px 0 rgba(255,255,255,0.12);
+  --lc-header-bg:      #080c16;
+  --lc-header-scrolled: rgba(8,12,22,0.97);
+  --lc-header-border:  rgba(255,255,255,0.07);
+  --lc-icon-base-bg:   rgba(255,255,255,0.08);
+  --lc-icon-base-border: rgba(255,255,255,0.12);
+  --lc-shadow-modal:   0 32px 80px rgba(0,0,0,0.70);
+  --lc-shadow-card:    0 8px 40px rgba(0,0,0,0.55);
+  --lc-scrollbar-thumb: rgba(255,255,255,0.15);
+  --lc-scrollbar-hover: rgba(255,255,255,0.25);
+}
+
+/* Light theme — Apple iOS-inspired, clean & premium */
+[data-theme="light"] {
+  --lc-bg-page:        #F2F2F7;
+  --lc-bg-surface:     #FFFFFF;
+  --lc-bg-glass:       rgba(0,0,0,0.03);
+  --lc-bg-glass-hover: rgba(0,0,0,0.05);
+  --lc-bg-card:        rgba(0,0,0,0.02);
+  --lc-border:         rgba(0,0,0,0.09);
+  --lc-border-subtle:  rgba(0,0,0,0.06);
+  --lc-text-primary:   #1C1C1E;
+  --lc-text-secondary: #3C3C43;
+  --lc-text-dim:       #6C6C70;
+  --lc-text-muted:     #8E8E93;
+  --lc-text-label:     #8E8E93;
+  --lc-accent:         #c9a87c;
+  --lc-accent-hover:   #b8966a;
+  --lc-accent-muted:   rgba(201,168,124,0.12);
+  --lc-accent-border:  rgba(201,168,124,0.30);
+  --lc-dock-bg:        rgba(255,255,255,0.88);
+  --lc-dock-border:    rgba(0,0,0,0.10);
+  --lc-dock-shadow:    0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06), inset 0 0.5px 0 rgba(255,255,255,0.90);
+  --lc-header-bg:      #FFFFFF;
+  --lc-header-scrolled: rgba(255,255,255,0.94);
+  --lc-header-border:  rgba(0,0,0,0.08);
+  --lc-icon-base-bg:   rgba(0,0,0,0.05);
+  --lc-icon-base-border: rgba(0,0,0,0.08);
+  --lc-shadow-modal:   0 32px 80px rgba(0,0,0,0.22);
+  --lc-shadow-card:    0 4px 24px rgba(0,0,0,0.10);
+  --lc-scrollbar-thumb: rgba(0,0,0,0.18);
+  --lc-scrollbar-hover: rgba(0,0,0,0.30);
+}
+
+/* Fallback: if no data-theme set, default to dark */
+:root:not([data-theme]) {
+  --lc-bg-page:        #080c16;
+  --lc-bg-surface:     #0d1526;
+  --lc-bg-glass:       rgba(255,255,255,0.05);
+  --lc-bg-glass-hover: rgba(255,255,255,0.08);
+  --lc-bg-card:        rgba(255,255,255,0.04);
+  --lc-border:         rgba(255,255,255,0.10);
+  --lc-border-subtle:  rgba(255,255,255,0.07);
+  --lc-text-primary:   rgba(255,255,255,0.92);
+  --lc-text-secondary: rgba(255,255,255,0.70);
+  --lc-text-dim:       rgba(200,212,228,0.55);
+  --lc-text-muted:     rgba(200,212,228,0.40);
+  --lc-text-label:     rgba(200,212,228,0.45);
+  --lc-accent:         #c9a87c;
+  --lc-accent-hover:   #d4b688;
+  --lc-accent-muted:   rgba(201,168,124,0.12);
+  --lc-accent-border:  rgba(201,168,124,0.25);
+  --lc-dock-bg:        rgba(18,28,48,0.82);
+  --lc-dock-border:    rgba(255,255,255,0.14);
+  --lc-dock-shadow:    0 16px 48px rgba(0,0,0,0.40), 0 2px 8px rgba(0,0,0,0.20), inset 0 0.5px 0 rgba(255,255,255,0.12);
+  --lc-header-bg:      #080c16;
+  --lc-header-scrolled: rgba(8,12,22,0.97);
+  --lc-header-border:  rgba(255,255,255,0.07);
+  --lc-icon-base-bg:   rgba(255,255,255,0.08);
+  --lc-icon-base-border: rgba(255,255,255,0.12);
+  --lc-shadow-modal:   0 32px 80px rgba(0,0,0,0.70);
+  --lc-shadow-card:    0 8px 40px rgba(0,0,0,0.55);
+  --lc-scrollbar-thumb: rgba(255,255,255,0.15);
+  --lc-scrollbar-hover: rgba(255,255,255,0.25);
+}
+
+/* Theme-switching smooth transition — applied only during the toggle animation */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition:
+    background-color 300ms ease,
+    background     300ms ease,
+    color          300ms ease,
+    border-color   300ms ease,
+    box-shadow     300ms ease !important;
+}
+
+/* Page background driven by token */
+[data-theme] body {
+  background-color: var(--lc-bg-page);
+}
+
+/* Themed scrollbars */
+[data-theme] ::-webkit-scrollbar-thumb {
+  background: var(--lc-scrollbar-thumb);
+}
+[data-theme] ::-webkit-scrollbar-thumb:hover {
+  background: var(--lc-scrollbar-hover);
+}
+
+/* Light-mode overrides for Shadcn/Tailwind utility classes used in content pages */
+[data-theme="light"] .bg-white { background-color: #FFFFFF !important; }
+[data-theme="light"] .text-gray-900 { color: #1C1C1E !important; }
+[data-theme="light"] .text-gray-700 { color: #3C3C43 !important; }
+[data-theme="light"] .text-gray-500 { color: #6C6C70 !important; }
+[data-theme="light"] .text-gray-400 { color: #8E8E93 !important; }
+[data-theme="light"] .border-gray-100 { border-color: rgba(0,0,0,0.06) !important; }
+[data-theme="light"] .border-gray-200 { border-color: rgba(0,0,0,0.09) !important; }
+[data-theme="light"] .bg-gray-50 { background-color: #F9F9FB !important; }
+[data-theme="light"] .bg-gray-100 { background-color: #F2F2F7 !important; }
+
+/* Light-mode: active dock icon uses gold instead of blue */
+[data-theme="light"] .lc-dock-icon-active {
+  background: rgba(201,168,124,0.15) !important;
+  border-color: rgba(201,168,124,0.35) !important;
+  box-shadow: 0 2px 10px rgba(201,168,124,0.20) !important;
+}

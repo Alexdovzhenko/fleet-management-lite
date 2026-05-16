@@ -8,21 +8,8 @@ import { Bell, Settings, LogOut, ChevronDown } from "lucide-react"
 import { useAuth } from "@/components/providers/auth-provider"
 import { createClient } from "@/lib/supabase/client"
 import { useUnreadCount } from "@/lib/hooks/use-notifications"
-
-// ─── Design tokens (matching login page exactly) ──────────────────────────────
-const T = {
-  bg:         "#080c16",
-  gold:       "#c9a87c",
-  goldHover:  "#d4b98c",
-  goldDim:    "rgba(201,168,124,0.55)",
-  goldGlow:   "rgba(201,168,124,0.18)",
-  text:       "rgba(255,255,255,0.88)",
-  textDim:    "rgba(200,212,228,0.45)",
-  textMuted:  "rgba(200,212,228,0.28)",
-  border:     "rgba(255,255,255,0.07)",
-  hoverBg:    "rgba(255,255,255,0.05)",
-  hoverBgGold:"rgba(201,168,124,0.08)",
-}
+import { useTheme } from "@/lib/theme-context"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 // ─── Page title map ───────────────────────────────────────────────────────────
 const PAGE_TITLES: [string, string][] = [
@@ -47,27 +34,23 @@ function getPageTitle(pathname: string): string {
 }
 
 function getInitials(name: string): string {
-  return name.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0]).join("").toUpperCase()
+  return name.split(" ").filter(Boolean).slice(0, 2).map(n => n[0]).join("").toUpperCase()
 }
 
-function getRoleMeta(role: string): { label: string; color: string; bg: string } {
+function getRoleMeta(role: string, isDark: boolean): { label: string; color: string; bg: string } {
   const r = role.toUpperCase()
-  if (r === "ADMIN")   return { label: "Admin",   color: T.gold,    bg: T.goldGlow }
-  if (r === "DRIVER")  return { label: "Driver",  color: "#6ee7b7", bg: "rgba(16,185,129,0.1)" }
-  if (r === "MANAGER") return { label: "Manager", color: "#c4b5fd", bg: "rgba(139,92,246,0.1)" }
-  return                      { label: role,       color: T.textDim, bg: "rgba(255,255,255,0.06)" }
+  if (r === "ADMIN")   return { label: "Admin",   color: "#c9a87c",  bg: isDark ? "rgba(201,168,124,0.18)" : "rgba(201,168,124,0.15)" }
+  if (r === "DRIVER")  return { label: "Driver",  color: isDark ? "#6ee7b7" : "#059669", bg: isDark ? "rgba(16,185,129,0.1)" : "rgba(16,185,129,0.08)" }
+  if (r === "MANAGER") return { label: "Manager", color: isDark ? "#c4b5fd" : "#7c3aed", bg: isDark ? "rgba(139,92,246,0.1)" : "rgba(139,92,246,0.08)" }
+  return { label: role, color: "var(--lc-text-dim)", bg: "var(--lc-bg-glass)" }
 }
 
-// ─── Logo mark (matches login page exactly) ───────────────────────────────────
+// ─── Logo mark ────────────────────────────────────────────────────────────────
 function LogoMark({ size = 22 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 22 22" fill="none" aria-hidden="true">
-      <rect
-        x="5" y="5" width="12" height="12"
-        stroke="rgba(201,168,124,0.75)" strokeWidth="1.2"
-        transform="rotate(45 11 11)" fill="none"
-      />
-      <circle cx="11" cy="11" r="2.2" fill={T.gold} />
+      <rect x="5" y="5" width="12" height="12" stroke="rgba(201,168,124,0.75)" strokeWidth="1.2" transform="rotate(45 11 11)" fill="none" />
+      <circle cx="11" cy="11" r="2.2" fill="#c9a87c" />
     </svg>
   )
 }
@@ -80,10 +63,10 @@ function Avatar({ initials, size = 28 }: { initials: string; size?: number }) {
       style={{
         width: size, height: size, borderRadius: "50%",
         background: "rgba(201,168,124,0.12)",
-        border: `1px solid rgba(201,168,124,0.30)`,
+        border: "1px solid rgba(201,168,124,0.30)",
         display: "flex", alignItems: "center", justifyContent: "center",
         fontSize: Math.round(size * 0.38), fontWeight: 700,
-        color: T.gold, letterSpacing: "-0.01em",
+        color: "#c9a87c", letterSpacing: "-0.01em",
         flexShrink: 0, userSelect: "none",
       }}
     >
@@ -93,25 +76,18 @@ function Avatar({ initials, size = 28 }: { initials: string; size?: number }) {
 }
 
 // ─── Icon button ──────────────────────────────────────────────────────────────
-function IconBtn({
-  href, onClick, label, children, badgeCount = 0,
-}: {
-  href?: string
-  onClick?: () => void
-  label: string
-  children: React.ReactNode
-  badgeCount?: number
+function IconBtn({ href, onClick, label, children, badgeCount = 0 }: {
+  href?: string; onClick?: () => void; label: string; children: React.ReactNode; badgeCount?: number
 }) {
   const [hovered, setHovered] = useState(false)
   const style: React.CSSProperties = {
-    position: "relative",
-    width: 34, height: 34,
+    position: "relative", width: 34, height: 34,
     display: "flex", alignItems: "center", justifyContent: "center",
     borderRadius: 8, border: "none", background: "none",
-    color: hovered ? T.gold : T.textDim,
+    color: hovered ? "#c9a87c" : "var(--lc-text-dim)",
     cursor: "pointer",
     transition: "background 0.15s ease, color 0.15s ease",
-    backgroundColor: hovered ? T.hoverBgGold : "transparent",
+    backgroundColor: hovered ? "rgba(201,168,124,0.08)" : "transparent",
     flexShrink: 0,
   }
 
@@ -130,7 +106,7 @@ function IconBtn({
           background: "#ef4444", fontSize: 9, fontWeight: 700,
           color: "white", display: "flex", alignItems: "center",
           justifyContent: "center", padding: "0 3px",
-          boxShadow: `0 0 0 1.5px ${T.bg}`, lineHeight: 1,
+          boxShadow: "0 0 0 1.5px var(--lc-header-bg)", lineHeight: 1,
         }}
       >
         {badgeCount > 9 ? "9+" : badgeCount}
@@ -140,42 +116,23 @@ function IconBtn({
 
   if (href) {
     return (
-      <Link
-        href={href}
-        aria-label={label}
-        style={style as React.CSSProperties}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        {children}
-        {badge}
+      <Link href={href} aria-label={label} style={style as React.CSSProperties}
+        onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+        {children}{badge}
       </Link>
     )
   }
   return (
-    <button
-      onClick={onClick}
-      aria-label={label}
-      style={style}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {children}
-      {badge}
+    <button onClick={onClick} aria-label={label} style={style}
+      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+      {children}{badge}
     </button>
   )
 }
 
 // ─── Dropdown menu item ───────────────────────────────────────────────────────
-function DropdownItem({
-  icon: Icon, label, href, onClick, danger = false, disabled = false,
-}: {
-  icon: React.ElementType
-  label: string
-  href?: string
-  onClick?: () => void
-  danger?: boolean
-  disabled?: boolean
+function DropdownItem({ icon: Icon, label, href, onClick, danger = false, disabled = false }: {
+  icon: React.ElementType; label: string; href?: string; onClick?: () => void; danger?: boolean; disabled?: boolean
 }) {
   const [hovered, setHovered] = useState(false)
   const style: React.CSSProperties = {
@@ -183,9 +140,9 @@ function DropdownItem({
     width: "100%", padding: "8px 14px",
     fontSize: 12.5, fontWeight: 500,
     fontFamily: "var(--font-outfit, system-ui)",
-    color: danger ? "#e57373" : "rgba(200,212,228,0.75)",
+    color: danger ? "#e57373" : "var(--lc-text-dim)",
     background: hovered
-      ? danger ? "rgba(220,38,38,0.08)" : "rgba(255,255,255,0.05)"
+      ? danger ? "rgba(220,38,38,0.08)" : "var(--lc-bg-glass)"
       : "transparent",
     border: "none", cursor: disabled ? "not-allowed" : "pointer",
     opacity: disabled ? 0.45 : 1,
@@ -198,7 +155,7 @@ function DropdownItem({
     return (
       <Link href={href} style={style} onClick={onClick} role="menuitem"
         onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
-        <Icon style={{ width: 13, height: 13, color: danger ? "#e57373" : T.textDim, flexShrink: 0 }} />
+        <Icon style={{ width: 13, height: 13, color: danger ? "#e57373" : "var(--lc-text-muted)", flexShrink: 0 }} />
         {label}
       </Link>
     )
@@ -206,7 +163,7 @@ function DropdownItem({
   return (
     <button style={style} onClick={onClick} disabled={disabled} role="menuitem"
       onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
-      <Icon style={{ width: 13, height: 13, color: danger ? "#e57373" : T.textDim, flexShrink: 0 }} />
+      <Icon style={{ width: 13, height: 13, color: danger ? "#e57373" : "var(--lc-text-muted)", flexShrink: 0 }} />
       {label}
     </button>
   )
@@ -214,29 +171,28 @@ function DropdownItem({
 
 // ─── App Header ───────────────────────────────────────────────────────────────
 export function AppHeader() {
-  const pathname  = usePathname()
-  const router    = useRouter()
-  const { user }  = useAuth()
+  const pathname = usePathname()
+  const router = useRouter()
+  const { user } = useAuth()
   const { data: unreadData } = useUnreadCount()
   const unreadCount = unreadData?.count ?? 0
+  const { isDark } = useTheme()
 
-  const [scrolled,     setScrolled]     = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const [loggingOut,   setLoggingOut]   = useState(false)
+  const [loggingOut, setLoggingOut] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const pageTitle = getPageTitle(pathname)
-  const initials  = user ? getInitials(user.name || user.email) : "?"
-  const roleMeta  = user ? getRoleMeta(user.role) : null
+  const initials = user ? getInitials(user.name || user.email) : "?"
+  const roleMeta = user ? getRoleMeta(user.role, isDark) : null
 
-  // Scroll shadow
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 2)
     window.addEventListener("scroll", onScroll, { passive: true })
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-  // Close on outside click
   useEffect(() => {
     if (!dropdownOpen) return
     const h = (e: MouseEvent) => {
@@ -247,7 +203,6 @@ export function AppHeader() {
     return () => document.removeEventListener("mousedown", h)
   }, [dropdownOpen])
 
-  // Close on Escape
   useEffect(() => {
     if (!dropdownOpen) return
     const h = (e: KeyboardEvent) => { if (e.key === "Escape") setDropdownOpen(false) }
@@ -276,19 +231,21 @@ export function AppHeader() {
         display: "flex", alignItems: "center",
         paddingLeft:  "clamp(16px, 4vw, 28px)",
         paddingRight: "clamp(16px, 4vw, 28px)",
-        background: scrolled ? "rgba(8,12,22,0.97)" : T.bg,
+        background: scrolled ? "var(--lc-header-scrolled)" : "var(--lc-header-bg)",
         backdropFilter: scrolled ? "blur(16px) saturate(180%)" : "none",
         WebkitBackdropFilter: scrolled ? "blur(16px) saturate(180%)" : "none",
-        borderBottom: `1px solid ${T.border}`,
-        boxShadow: scrolled ? "0 4px 32px rgba(0,0,0,0.5), 0 1px 0 rgba(201,168,124,0.06)" : "none",
+        borderBottom: "1px solid var(--lc-header-border)",
+        boxShadow: scrolled
+          ? isDark
+            ? "0 4px 32px rgba(0,0,0,0.5), 0 1px 0 rgba(201,168,124,0.06)"
+            : "0 2px 16px rgba(0,0,0,0.08)"
+          : "none",
         transition: "box-shadow 0.25s ease, background 0.25s ease",
         fontFamily: "var(--font-outfit, system-ui)",
       }}
     >
       {/* ── Left: logo + separator + page title ── */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 0 }}>
-
-        {/* Logo */}
         <Link
           href="/dispatch"
           aria-label="LiveryConnect — Dispatch"
@@ -300,7 +257,7 @@ export function AppHeader() {
             style={{
               fontFamily: "var(--font-outfit, system-ui)",
               fontSize: "0.6rem", fontWeight: 500,
-              color: "rgba(255,255,255,0.82)",
+              color: "var(--lc-text-secondary)",
               letterSpacing: "0.28em",
               textTransform: "uppercase",
               userSelect: "none",
@@ -310,21 +267,14 @@ export function AppHeader() {
           </span>
         </Link>
 
-        {/* Separator */}
-        <div
-          aria-hidden="true"
-          style={{ width: 1, height: 14, background: "rgba(255,255,255,0.1)", flexShrink: 0 }}
-        />
+        <div aria-hidden="true" style={{ width: 1, height: 14, background: "var(--lc-border)", flexShrink: 0 }} />
 
-        {/* Page title */}
         <span
           aria-current="page"
           style={{
-            fontSize: "0.6rem",
-            fontWeight: 500,
-            letterSpacing: "0.16em",
-            textTransform: "uppercase",
-            color: T.gold,
+            fontSize: "0.6rem", fontWeight: 500,
+            letterSpacing: "0.16em", textTransform: "uppercase",
+            color: "#c9a87c",
             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
             userSelect: "none",
           }}
@@ -333,11 +283,16 @@ export function AppHeader() {
         </span>
       </div>
 
-      {/* ── Center: future global search slot ── */}
+      {/* ── Center: future search slot ── */}
       <div style={{ flex: 1 }} className="hidden lg:flex" aria-hidden="true" />
 
-      {/* ── Right: actions ── */}
-      <div style={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
+      {/* ── Right: theme toggle + actions ── */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+
+        {/* Theme toggle */}
+        <ThemeToggle />
+
+        <div aria-hidden="true" style={{ width: 1, height: 16, background: "var(--lc-border)", margin: "0 2px" }} />
 
         {/* Notification bell */}
         <IconBtn
@@ -348,11 +303,7 @@ export function AppHeader() {
           <Bell style={{ width: 15, height: 15 }} />
         </IconBtn>
 
-        {/* Thin divider */}
-        <div
-          aria-hidden="true"
-          style={{ width: 1, height: 16, background: "rgba(255,255,255,0.08)", margin: "0 6px" }}
-        />
+        <div aria-hidden="true" style={{ width: 1, height: 16, background: "var(--lc-border)", margin: "0 2px" }} />
 
         {/* User menu */}
         <div ref={dropdownRef} style={{ position: "relative" }}>
@@ -360,7 +311,7 @@ export function AppHeader() {
             initials={initials}
             userName={user?.name?.split(" ")[0] ?? "Account"}
             open={dropdownOpen}
-            onClick={() => setDropdownOpen((v) => !v)}
+            onClick={() => setDropdownOpen(v => !v)}
           />
 
           <AnimatePresence>
@@ -377,23 +328,22 @@ export function AppHeader() {
                   top: "calc(100% + 8px)",
                   width: 220,
                   borderRadius: 12,
-                  background: "#0d1526",
-                  border: "1px solid rgba(255,255,255,0.09)",
-                  boxShadow: "0 8px 40px rgba(0,0,0,0.55), 0 1px 0 rgba(201,168,124,0.08)",
+                  background: "var(--lc-bg-surface)",
+                  border: "1px solid var(--lc-border)",
+                  boxShadow: "var(--lc-shadow-card)",
                   overflow: "hidden",
                   transformOrigin: "top right",
                   zIndex: 50,
                 }}
               >
-                {/* User info */}
-                <div style={{ padding: "12px 14px 10px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+                <div style={{ padding: "12px 14px 10px", borderBottom: "1px solid var(--lc-border-subtle)" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <Avatar initials={initials} size={32} />
                     <div style={{ minWidth: 0 }}>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: T.text, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: "var(--lc-text-primary)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {user?.name ?? "User"}
                       </p>
-                      <p style={{ fontSize: 11, color: T.textMuted, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <p style={{ fontSize: 11, color: "var(--lc-text-muted)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {user?.email}
                       </p>
                     </div>
@@ -414,25 +364,14 @@ export function AppHeader() {
                   )}
                 </div>
 
-                {/* Settings */}
                 <div style={{ padding: "4px 0" }}>
-                  <DropdownItem
-                    icon={Settings} label="Settings" href="/settings"
-                    onClick={() => setDropdownOpen(false)}
-                  />
+                  <DropdownItem icon={Settings} label="Settings" href="/settings" onClick={() => setDropdownOpen(false)} />
                 </div>
 
-                {/* Divider */}
-                <div style={{ height: 1, margin: "0 10px", background: "rgba(255,255,255,0.06)" }} />
+                <div style={{ height: 1, margin: "0 10px", background: "var(--lc-border-subtle)" }} />
 
-                {/* Sign out */}
                 <div style={{ padding: "4px 0" }}>
-                  <DropdownItem
-                    icon={LogOut}
-                    label={loggingOut ? "Signing out…" : "Sign out"}
-                    danger disabled={loggingOut}
-                    onClick={handleLogout}
-                  />
+                  <DropdownItem icon={LogOut} label={loggingOut ? "Signing out…" : "Sign out"} danger disabled={loggingOut} onClick={handleLogout} />
                 </div>
               </motion.div>
             )}
@@ -444,13 +383,8 @@ export function AppHeader() {
 }
 
 // ─── User menu trigger ────────────────────────────────────────────────────────
-function UserMenuTrigger({
-  initials, userName, open, onClick,
-}: {
-  initials: string
-  userName: string
-  open: boolean
-  onClick: () => void
+function UserMenuTrigger({ initials, userName, open, onClick }: {
+  initials: string; userName: string; open: boolean; onClick: () => void
 }) {
   const [hovered, setHovered] = useState(false)
   return (
@@ -465,7 +399,7 @@ function UserMenuTrigger({
         display: "flex", alignItems: "center", gap: 7,
         padding: "4px 8px 4px 4px",
         borderRadius: 10, border: "none",
-        background: hovered ? T.hoverBgGold : "transparent",
+        background: hovered ? "rgba(201,168,124,0.08)" : "transparent",
         cursor: "pointer",
         transition: "background 0.15s ease",
         outline: "none",
@@ -477,7 +411,7 @@ function UserMenuTrigger({
         style={{
           fontSize: "0.72rem", fontWeight: 500,
           letterSpacing: "0.03em",
-          color: hovered ? T.goldHover : "rgba(200,212,228,0.62)",
+          color: hovered ? "#d4b688" : "var(--lc-text-dim)",
           maxWidth: 88, overflow: "hidden",
           textOverflow: "ellipsis", whiteSpace: "nowrap",
           transition: "color 0.15s ease",
@@ -491,7 +425,7 @@ function UserMenuTrigger({
         className="hidden md:block"
         style={{
           width: 12, height: 12,
-          color: hovered ? T.goldDim : T.textMuted,
+          color: hovered ? "rgba(201,168,124,0.55)" : "var(--lc-text-muted)",
           flexShrink: 0,
           transition: "transform 0.2s cubic-bezier(0.16,1,0.3,1), color 0.15s ease",
           transform: open ? "rotate(180deg)" : "rotate(0deg)",
