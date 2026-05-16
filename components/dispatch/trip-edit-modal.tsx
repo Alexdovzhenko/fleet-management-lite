@@ -2287,7 +2287,18 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                   {/* Client Reference — Metadata field under Dispatch */}
                   <div className="rounded-xl px-3.5 py-3" style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)" }}>
                     <Label className="text-[10px] font-semibold uppercase tracking-wider mb-2.5 block" style={{ color:"#c9a87c" }}>Client Reference</Label>
-                    <Input {...register("clientRef")} className="h-8 text-xs font-mono" placeholder="e.g. 14547002*1" />
+                    <input
+                      {...register("clientRef")}
+                      placeholder="e.g. 14547002*1"
+                      className="w-full h-8 text-xs font-mono rounded-lg px-2.5 outline-none transition-colors"
+                      style={{
+                        background: "rgba(255,255,255,0.05)",
+                        border: "1px solid rgba(255,255,255,0.10)",
+                        color: "rgba(255,255,255,0.88)",
+                      }}
+                      onFocus={e => { e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)" }}
+                      onBlur={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.10)" }}
+                    />
                     <p className="text-xs mt-1.5" style={{ color:"rgba(200,212,228,0.45)" }}>Affiliate or external system reference</p>
                   </div>
                 </section>
@@ -2336,15 +2347,17 @@ export function TripEditModal({ trip, open, onClose, defaultBillingOpen = false,
                         </Button>
                       </>
                     ) : (
-                      <Button
+                      <button
                         type="button"
-                        variant="outline"
-                        className="w-full text-sm h-9 gap-2 rounded-xl transition-all" style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.12)", color:"rgba(200,212,228,0.80)" }}
+                        className="w-full h-9 flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-colors"
+                        style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(200,212,228,0.75)" }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.16)"; (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.88)" }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.10)"; (e.currentTarget as HTMLElement).style.color = "rgba(200,212,228,0.75)" }}
                         onClick={() => setFarmOutOpen(true)}
                       >
                         <ArrowRightLeft className="w-4 h-4" />
                         Farm Out to Affiliate
-                      </Button>
+                      </button>
                     )}
                   </div>
                 )}
