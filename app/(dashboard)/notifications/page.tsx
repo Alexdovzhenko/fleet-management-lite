@@ -19,6 +19,7 @@ import {
   type NotificationTab,
 } from "@/lib/hooks/use-notifications"
 import { cn } from "@/lib/utils"
+import { useTheme } from "@/lib/theme-context"
 
 // ── Type metadata ─────────────────────────────────────────────────────────────
 
@@ -26,9 +27,11 @@ type TypeMeta = {
   icon: React.ElementType
   gradient: string
   accent: string
-  accentBg: string       // dark tint for unread card background
-  chipDarkBg: string     // rgba for dark chip bg
-  chipDarkColor: string  // rgba for dark chip text
+  accentBg: string
+  chipDarkBg: string
+  chipDarkColor: string
+  chipLightBg: string
+  chipLightColor: string
   label: string
 }
 
@@ -39,6 +42,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#a78bfa",
     accentBg: "rgba(124,58,237,0.09)",
     chipDarkBg: "rgba(167,139,250,0.12)", chipDarkColor: "rgba(167,139,250,0.90)",
+    chipLightBg: "rgba(124,58,237,0.08)", chipLightColor: "#6d28d9",
     label: "Affiliates",
   },
   AFFILIATE_INVITE_ACCEPTED: {
@@ -47,6 +51,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#34d399",
     accentBg: "rgba(5,150,105,0.09)",
     chipDarkBg: "rgba(52,211,153,0.12)", chipDarkColor: "rgba(52,211,153,0.90)",
+    chipLightBg: "rgba(5,150,105,0.09)", chipLightColor: "#065f46",
     label: "Affiliates",
   },
   AFFILIATE_INVITE_DECLINED: {
@@ -55,6 +60,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#f87171",
     accentBg: "rgba(225,29,72,0.09)",
     chipDarkBg: "rgba(248,113,113,0.12)", chipDarkColor: "rgba(248,113,113,0.90)",
+    chipLightBg: "rgba(220,38,38,0.08)", chipLightColor: "#991b1b",
     label: "Affiliates",
   },
   FARM_OUT_RECEIVED: {
@@ -63,6 +69,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#fbbf24",
     accentBg: "rgba(217,119,6,0.09)",
     chipDarkBg: "rgba(251,191,36,0.12)", chipDarkColor: "rgba(251,191,36,0.90)",
+    chipLightBg: "rgba(217,119,6,0.10)", chipLightColor: "#92400e",
     label: "Farm-in",
   },
   FARM_OUT_CANCELLED: {
@@ -71,6 +78,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#fb923c",
     accentBg: "rgba(234,88,12,0.09)",
     chipDarkBg: "rgba(253,186,116,0.12)", chipDarkColor: "rgba(253,186,116,0.85)",
+    chipLightBg: "rgba(234,88,12,0.09)", chipLightColor: "#7c2d12",
     label: "Farm-in",
   },
   FARM_OUT_ACCEPTED: {
@@ -79,6 +87,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#4ade80",
     accentBg: "rgba(22,163,74,0.09)",
     chipDarkBg: "rgba(74,222,128,0.12)", chipDarkColor: "rgba(74,222,128,0.90)",
+    chipLightBg: "rgba(22,163,74,0.09)", chipLightColor: "#14532d",
     label: "Farm-out",
   },
   FARM_OUT_DECLINED: {
@@ -87,6 +96,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#f87171",
     accentBg: "rgba(220,38,38,0.09)",
     chipDarkBg: "rgba(248,113,113,0.12)", chipDarkColor: "rgba(248,113,113,0.90)",
+    chipLightBg: "rgba(220,38,38,0.08)", chipLightColor: "#991b1b",
     label: "Farm-out",
   },
   TRIP_PICKUP_TIME_CHANGED: {
@@ -95,6 +105,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#60a5fa",
     accentBg: "rgba(37,99,235,0.09)",
     chipDarkBg: "rgba(96,165,250,0.12)", chipDarkColor: "rgba(96,165,250,0.90)",
+    chipLightBg: "rgba(37,99,235,0.08)", chipLightColor: "#1e40af",
     label: "Reservations",
   },
   TRIP_PICKUP_ADDRESS_CHANGED: {
@@ -103,6 +114,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#818cf8",
     accentBg: "rgba(67,56,202,0.09)",
     chipDarkBg: "rgba(129,140,248,0.12)", chipDarkColor: "rgba(129,140,248,0.90)",
+    chipLightBg: "rgba(67,56,202,0.08)", chipLightColor: "#3730a3",
     label: "Reservations",
   },
   TRIP_DROPOFF_ADDRESS_CHANGED: {
@@ -111,6 +123,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#a78bfa",
     accentBg: "rgba(109,40,217,0.09)",
     chipDarkBg: "rgba(167,139,250,0.12)", chipDarkColor: "rgba(167,139,250,0.90)",
+    chipLightBg: "rgba(109,40,217,0.08)", chipLightColor: "#4c1d95",
     label: "Reservations",
   },
   TRIP_NOTES_CHANGED: {
@@ -119,6 +132,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#94a3b8",
     accentBg: "rgba(71,85,105,0.09)",
     chipDarkBg: "rgba(148,163,184,0.10)", chipDarkColor: "rgba(148,163,184,0.75)",
+    chipLightBg: "rgba(71,85,105,0.08)", chipLightColor: "#334155",
     label: "Reservations",
   },
   TRIP_STATUS_CHANGED: {
@@ -127,6 +141,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#a78bfa",
     accentBg: "rgba(124,58,237,0.09)",
     chipDarkBg: "rgba(167,139,250,0.12)", chipDarkColor: "rgba(167,139,250,0.90)",
+    chipLightBg: "rgba(124,58,237,0.08)", chipLightColor: "#4c1d95",
     label: "Reservations",
   },
   TRIP_DRIVER_CHANGED: {
@@ -135,6 +150,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#38bdf8",
     accentBg: "rgba(2,132,199,0.09)",
     chipDarkBg: "rgba(56,189,248,0.12)", chipDarkColor: "rgba(56,189,248,0.90)",
+    chipLightBg: "rgba(2,132,199,0.08)", chipLightColor: "#0c4a6e",
     label: "Reservations",
   },
   TRIP_CANCELLED: {
@@ -143,6 +159,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#f87171",
     accentBg: "rgba(225,29,72,0.09)",
     chipDarkBg: "rgba(248,113,113,0.12)", chipDarkColor: "rgba(248,113,113,0.90)",
+    chipLightBg: "rgba(220,38,38,0.08)", chipLightColor: "#991b1b",
     label: "Reservations",
   },
   QUOTE_REQUEST_RECEIVED: {
@@ -151,6 +168,7 @@ const TYPE_META: Record<string, TypeMeta> = {
     accent: "#60a5fa",
     accentBg: "rgba(37,99,235,0.09)",
     chipDarkBg: "rgba(96,165,250,0.12)", chipDarkColor: "rgba(96,165,250,0.90)",
+    chipLightBg: "rgba(37,99,235,0.08)", chipLightColor: "#1e40af",
     label: "Quote Requests",
   },
 }
@@ -219,12 +237,13 @@ function TabBar({ active, onChange, unreadCount }: {
 
 // ── Notification card ─────────────────────────────────────────────────────────
 
-function NotificationCard({ notif, onRead, selectMode, selected, onToggleSelect }: {
+function NotificationCard({ notif, onRead, selectMode, selected, onToggleSelect, isDark }: {
   notif: AppNotification
   onRead: (id: string) => void
   selectMode: boolean
   selected: boolean
   onToggleSelect: (id: string) => void
+  isDark: boolean
 }) {
   const router   = useRouter()
   const meta     = TYPE_META[notif.type] ?? TYPE_META.TRIP_NOTES_CHANGED
@@ -245,15 +264,16 @@ function NotificationCard({ notif, onRead, selectMode, selected, onToggleSelect 
     onToggleSelect(notif.id)
   }
 
+  const hoverBg = isDark ? "#111e35" : "var(--lc-bg-glass-mid)"
   const cardBg =
     selected  ? "rgba(201,168,124,0.09)" :
     isUnread  ? meta.accentBg :
-    hovered   ? "#111e35" :
-    "var(--lc-bg-card)"
+    hovered   ? hoverBg :
+    "var(--lc-bg-surface)"
 
   const cardBorderColor =
     selected  ? "rgba(201,168,124,0.28)" :
-    isUnread  ? "var(--lc-bg-glass-hover)" :
+    isUnread  ? "var(--lc-border)" :
     hovered   ? "var(--lc-border)" :
     "var(--lc-bg-glass-mid)"
 
@@ -269,7 +289,7 @@ function NotificationCard({ notif, onRead, selectMode, selected, onToggleSelect 
         borderLeftWidth:  isUnread && !selected ? "3px" : "1px",
         borderLeftColor:  isUnread && !selected ? meta.accent : cardBorderColor,
         transform: !selectMode && hovered ? "translateY(-1px)" : "none",
-        boxShadow: !selectMode && hovered ? "0 8px 24px rgba(0,0,0,0.30)" : "none",
+        boxShadow: !selectMode && hovered ? (isDark ? "0 8px 24px rgba(0,0,0,0.30)" : "0 4px 16px rgba(0,0,0,0.08)") : "none",
       }}
     >
       {/* Checkbox */}
@@ -335,7 +355,10 @@ function NotificationCard({ notif, onRead, selectMode, selected, onToggleSelect 
         <div className="flex items-center gap-2">
           <span
             className="text-[11px] font-semibold px-2 py-0.5 rounded-md"
-            style={{ background: meta.chipDarkBg, color: meta.chipDarkColor }}
+            style={{
+              background: isDark ? meta.chipDarkBg : meta.chipLightBg,
+              color:      isDark ? meta.chipDarkColor : meta.chipLightColor,
+            }}
           >
             {meta.label}
           </span>
@@ -507,6 +530,7 @@ function SkeletonCard({ delay }: { delay: number }) {
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function NotificationsPage() {
+  const { isDark } = useTheme()
   const [tab, setTab]                         = useState<NotificationTab>("all")
   const [selectMode, setSelectMode]           = useState(false)
   const [selectedIds, setSelectedIds]         = useState<Set<string>>(new Set())
@@ -656,20 +680,24 @@ export default function NotificationsPage() {
 
               {/* Stat pills */}
               <div className="hidden sm:flex items-center gap-1.5 shrink-0">
-                {([
-                  { label: "All",    value: allNotifications.length, bg: "rgba(201,168,124,0.10)", color: "rgba(201,168,124,0.90)", dot: "#c9a87c",  tabId: "all"    as NotificationTab },
-                  { label: "Unread", value: unreadCount,             bg: "rgba(248,113,113,0.10)", color: "rgba(248,113,113,0.90)", dot: "#f87171",  tabId: "unread" as NotificationTab },
-                  { label: "Today",  value: todayCount,              bg: "rgba(52,211,153,0.10)",  color: "rgba(52,211,153,0.90)",  dot: "#34d399",  tabId: "all"    as NotificationTab },
-                ] as const).map((stat) => (
+                {(isDark ? [
+                  { label: "All",    value: allNotifications.length, bg: "rgba(201,168,124,0.10)", color: "rgba(201,168,124,0.90)", dot: "#c9a87c", tabId: "all"    as NotificationTab },
+                  { label: "Unread", value: unreadCount,             bg: "rgba(248,113,113,0.10)", color: "rgba(248,113,113,0.90)", dot: "#f87171", tabId: "unread" as NotificationTab },
+                  { label: "Today",  value: todayCount,              bg: "rgba(52,211,153,0.10)",  color: "rgba(52,211,153,0.90)",  dot: "#34d399", tabId: "all"    as NotificationTab },
+                ] : [
+                  { label: "All",    value: allNotifications.length, bg: "var(--lc-bg-glass-mid)", color: "var(--lc-text-primary)", dot: "#c9a87c", tabId: "all"    as NotificationTab },
+                  { label: "Unread", value: unreadCount,             bg: "var(--lc-bg-glass-mid)", color: "var(--lc-text-primary)", dot: "#f87171", tabId: "unread" as NotificationTab },
+                  { label: "Today",  value: todayCount,              bg: "var(--lc-bg-glass-mid)", color: "var(--lc-text-primary)", dot: "#34d399", tabId: "all"    as NotificationTab },
+                ]).map((stat) => (
                   <button
                     key={stat.label}
                     onClick={() => setTab(stat.tabId)}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all duration-150 cursor-pointer"
-                    style={{ background: stat.bg, color: stat.color }}
+                    style={{ background: stat.bg, color: stat.color, border: "1px solid var(--lc-border)" }}
                   >
                     <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: stat.dot }} />
                     <span className="tabular-nums">{stat.value}</span>
-                    <span className="font-medium" style={{ opacity: 0.7 }}>{stat.label}</span>
+                    <span className="font-medium" style={{ opacity: isDark ? 0.7 : 1 }}>{stat.label}</span>
                   </button>
                 ))}
               </div>
@@ -832,6 +860,7 @@ export default function NotificationsPage() {
                           selectMode={selectMode}
                           selected={selectedIds.has(notif.id)}
                           onToggleSelect={toggleSelect}
+                          isDark={isDark}
                         />
                       ))}
                     </div>
