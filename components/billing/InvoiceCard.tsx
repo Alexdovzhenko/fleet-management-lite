@@ -56,7 +56,7 @@ export function InvoiceCard({ invoice, onMarkSettled, onViewDetails, isSettledTa
       <div className="flex items-center gap-3 shrink-0">
         <span
           className="text-[15px] font-bold tabular-nums"
-          style={{ color: isOpen ? "var(--lc-text-primary)" : "var(--lc-text-muted)" }}
+          style={{ color: "var(--lc-text-primary)" }}
         >
           ${amount}
         </span>
