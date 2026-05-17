@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { ChevronDown, Check } from "lucide-react"
+import { useTheme } from "@/lib/theme-context"
 
 interface Account {
   id: string
@@ -17,6 +18,7 @@ interface AccountFilterDropdownProps {
 }
 
 export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: AccountFilterDropdownProps) {
+  const { isDark } = useTheme()
   const [isOpen, setIsOpen] = useState(false)
 
   const customers  = accounts.filter((a) => a.type === "CUSTOMER")
@@ -50,7 +52,7 @@ export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: 
             style={{
               background: "var(--lc-bg-surface)",
               border: "1px solid var(--lc-border)",
-              boxShadow: "0 16px 48px rgba(0,0,0,0.60)",
+              boxShadow: isDark ? "0 16px 48px rgba(0,0,0,0.60)" : "0 8px 24px rgba(0,0,0,0.10)",
             }}
           >
             {/* All Accounts */}
@@ -79,7 +81,7 @@ export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: 
                     key={a.id}
                     onClick={() => { onChange(a.id); setIsOpen(false) }}
                     className="w-full text-left px-4 py-2.5 text-[13px] flex items-center justify-between transition-colors duration-100 cursor-pointer"
-                    style={{ color: value === a.id ? "#c9a87c" : "rgba(255,255,255,0.72)" }}
+                    style={{ color: value === a.id ? "#c9a87c" : "var(--lc-text-secondary)" }}
                     onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"}
                     onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
                   >
@@ -104,7 +106,7 @@ export function AccountFilterDropdown({ accounts, value, onChange, isLoading }: 
                     key={a.id}
                     onClick={() => { onChange(a.id); setIsOpen(false) }}
                     className="w-full text-left px-4 py-2.5 text-[13px] flex items-center justify-between transition-colors duration-100 cursor-pointer"
-                    style={{ color: value === a.id ? "#c9a87c" : "rgba(255,255,255,0.72)" }}
+                    style={{ color: value === a.id ? "#c9a87c" : "var(--lc-text-secondary)" }}
                     onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"}
                     onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
                   >
