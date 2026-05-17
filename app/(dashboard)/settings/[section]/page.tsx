@@ -1059,6 +1059,7 @@ function ProfileSection() {
               rows={5}
               maxLength={1000}
               className="w-full text-sm text-white/90 placeholder:text-[var(--lc-text-muted)] border border-[var(--lc-border)] rounded-xl px-4 py-3 resize-none outline-none focus:border-[#c9a87c] focus:ring-2 focus:ring-blue-500/10 transition-all leading-relaxed"
+              style={{ background: "var(--lc-bg-card)", color: "var(--lc-text-primary)" }}
             />
             <div className="flex items-center justify-between mt-2">
               <p className="text-xs text-[var(--lc-text-dim)]">
