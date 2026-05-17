@@ -103,13 +103,15 @@ function IconBtn({ href, onClick, label, children, badgeCount = 0 }: {
 }) {
   const [hovered, setHovered] = useState(false)
   const style: React.CSSProperties = {
-    position: "relative", width: 34, height: 34,
+    position: "relative", width: 36, height: 36,
     display: "flex", alignItems: "center", justifyContent: "center",
-    borderRadius: 8, border: "none", background: "none",
-    color: hovered ? "#c9a87c" : "var(--lc-text-dim)",
+    borderRadius: 10, border: "1px solid",
+    borderColor: hovered ? "rgba(201,168,124,0.30)" : "var(--lc-border)",
+    background: "none",
+    color: hovered ? "#c9a87c" : "var(--lc-text-secondary)",
     cursor: "pointer",
-    transition: "background 0.15s ease, color 0.15s ease",
-    backgroundColor: hovered ? "rgba(201,168,124,0.08)" : "transparent",
+    transition: "background 0.15s ease, color 0.15s ease, border-color 0.15s ease",
+    backgroundColor: hovered ? "rgba(201,168,124,0.08)" : "var(--lc-bg-card)",
     flexShrink: 0,
   }
 
@@ -123,12 +125,12 @@ function IconBtn({ href, onClick, label, children, badgeCount = 0 }: {
         transition={{ type: "spring", stiffness: 600, damping: 24 }}
         aria-hidden="true"
         style={{
-          position: "absolute", top: 5, right: 5,
-          minWidth: 14, height: 14, borderRadius: 99,
+          position: "absolute", top: 4, right: 4,
+          minWidth: 15, height: 15, borderRadius: 99,
           background: "#ef4444", fontSize: 9, fontWeight: 700,
           color: "white", display: "flex", alignItems: "center",
           justifyContent: "center", padding: "0 3px",
-          boxShadow: "0 0 0 1.5px var(--lc-header-bg)", lineHeight: 1,
+          boxShadow: "0 0 0 2px var(--lc-header-bg)", lineHeight: 1,
         }}
       >
         {badgeCount > 9 ? "9+" : badgeCount}
@@ -149,6 +151,21 @@ function IconBtn({ href, onClick, label, children, badgeCount = 0 }: {
       onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
       {children}{badge}
     </button>
+  )
+}
+
+// ─── Notification bell with ring animation ────────────────────────────────────
+function NotificationBell({ hasUnread }: { hasUnread: boolean }) {
+  return (
+    <motion.div
+      animate={hasUnread ? { rotate: [0, -14, 12, -10, 8, -5, 0] } : { rotate: 0 }}
+      transition={hasUnread
+        ? { duration: 0.7, ease: "easeInOut", repeat: Infinity, repeatDelay: 4 }
+        : {}}
+      style={{ display: "flex", alignItems: "center", justifyContent: "center", transformOrigin: "top center" }}
+    >
+      <Bell style={{ width: 19, height: 19 }} />
+    </motion.div>
   )
 }
 
@@ -325,7 +342,7 @@ export function AppHeader() {
           label={unreadCount > 0 ? `Notifications — ${unreadCount} unread` : "Notifications"}
           badgeCount={unreadCount}
         >
-          <Bell style={{ width: 15, height: 15 }} />
+          <NotificationBell hasUnread={unreadCount > 0} />
         </IconBtn>
 
         <div aria-hidden="true" style={{ width: 1, height: 16, background: "var(--lc-border)", margin: "0 2px" }} />
