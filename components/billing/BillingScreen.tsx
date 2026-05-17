@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useCallback } from "react"
+import { useTheme } from "@/lib/theme-context"
 import { useDebounce } from "@/lib/hooks/use-debounce"
 import { useBillingFilters } from "@/lib/hooks/use-billing-filters"
 import { useBillingInvoices, useSettleInvoiceMutation, useBillingAccounts } from "@/lib/hooks/use-billing-invoices"
@@ -16,6 +17,7 @@ import { InvoiceDetailModal } from "./InvoiceDetailModal"
 import { FileText, X } from "lucide-react"
 
 export function BillingScreen() {
+  const { isDark }   = useTheme()
   const [activeTab, setActiveTab] = useState<"OPEN" | "SETTLED">("OPEN")
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
@@ -114,18 +116,21 @@ export function BillingScreen() {
 
               {/* Stat pills */}
               <div className="hidden sm:flex items-center gap-1.5 shrink-0">
-                {[
+                {(isDark ? [
                   { label: "Open",    value: openCount,    bg: "rgba(251,191,36,0.10)", color: "rgba(251,191,36,0.90)", dot: "#fbbf24" },
                   { label: "Settled", value: settledCount, bg: "rgba(52,211,153,0.10)",  color: "rgba(52,211,153,0.90)",  dot: "#34d399" },
-                ].map(s => (
+                ] : [
+                  { label: "Open",    value: openCount,    bg: "var(--lc-bg-glass-mid)", color: "var(--lc-text-primary)", dot: "#fbbf24" },
+                  { label: "Settled", value: settledCount, bg: "var(--lc-bg-glass-mid)", color: "var(--lc-text-primary)", dot: "#64B896" },
+                ]).map(s => (
                   <div
                     key={s.label}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold"
-                    style={{ background: s.bg, color: s.color }}
+                    style={{ background: s.bg, color: s.color, border: "1px solid var(--lc-border)" }}
                   >
                     <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: s.dot }} />
                     <span className="tabular-nums">{s.value}</span>
-                    <span className="font-medium" style={{ opacity: 0.7 }}>{s.label}</span>
+                    <span className="font-medium" style={{ opacity: isDark ? 0.7 : 1 }}>{s.label}</span>
                   </div>
                 ))}
               </div>

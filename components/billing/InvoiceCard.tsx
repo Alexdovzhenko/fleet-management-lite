@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { format } from "date-fns"
 import { ChevronRight } from "lucide-react"
+import { useTheme } from "@/lib/theme-context"
 
 interface InvoiceCardProps {
   invoice: any
@@ -12,6 +13,7 @@ interface InvoiceCardProps {
 }
 
 export function InvoiceCard({ invoice, onMarkSettled, onViewDetails, isSettledTab }: InvoiceCardProps) {
+  const { isDark }      = useTheme()
   const [hovered, setHovered] = useState(false)
 
   const customerName    = invoice.customer?.name || "Unknown"
@@ -28,8 +30,9 @@ export function InvoiceCard({ invoice, onMarkSettled, onViewDetails, isSettledTa
       onMouseLeave={() => setHovered(false)}
       className="flex items-center gap-4 px-4 py-3.5 rounded-xl cursor-pointer transition-all duration-150"
       style={{
-        background: hovered ? "#111e35" : "var(--lc-bg-surface)",
+        background: hovered ? (isDark ? "#111e35" : "var(--lc-bg-card)") : "var(--lc-bg-surface)",
         border: `1px solid ${hovered ? "var(--lc-border)" : "var(--lc-bg-glass-mid)"}`,
+        boxShadow: hovered && !isDark ? "0 2px 8px rgba(0,0,0,0.06)" : undefined,
       }}
     >
       {/* Left: customer + meta */}
@@ -53,7 +56,7 @@ export function InvoiceCard({ invoice, onMarkSettled, onViewDetails, isSettledTa
       <div className="flex items-center gap-3 shrink-0">
         <span
           className="text-[15px] font-bold tabular-nums"
-          style={{ color: isOpen ? "var(--lc-text-primary)" : "rgba(255,255,255,0.55)" }}
+          style={{ color: isOpen ? "var(--lc-text-primary)" : "var(--lc-text-muted)" }}
         >
           ${amount}
         </span>
