@@ -16,6 +16,7 @@ import { useDrivers, useCreateDriver, useUpdateDriver, useDeleteDriver } from "@
 import { useVehicles } from "@/lib/hooks/use-vehicles"
 import { useDebounce } from "@/lib/hooks/use-debounce"
 import { getInitials, formatPhone } from "@/lib/utils"
+import { useTheme } from "@/lib/theme-context"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -1133,6 +1134,7 @@ function DriverSkeleton() {
 // ── Main page ──────────────────────────────────────────────────────────────────
 
 export default function DriversPage() {
+  const { isDark } = useTheme()
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("")
   const [modalOpen, setModalOpen] = useState(false)
@@ -1191,15 +1193,19 @@ export default function DriversPage() {
               </div>
 
               <div className="hidden sm:flex items-center gap-1.5 shrink-0">
-                {[
-                  { label: "Total",    value: totalCount,   bg: "rgba(201,168,124,0.10)", color: "rgba(201,168,124,0.90)", dot: "#c9a87c" },
-                  { label: "Active",   value: activeCount,  bg: "rgba(52,211,153,0.10)",  color: "rgba(52,211,153,0.90)",  dot: "#34d399" },
-                  { label: "On Leave", value: onLeaveCount, bg: "rgba(251,191,36,0.10)",  color: "rgba(251,191,36,0.90)",  dot: "#fbbf24" },
-                ].map(s => (
+                {(isDark ? [
+                  { label: "Total",    value: totalCount,   bg: "rgba(201,168,124,0.10)", border: "rgba(201,168,124,0.22)", color: "rgba(201,168,124,0.90)", dot: "#c9a87c" },
+                  { label: "Active",   value: activeCount,  bg: "rgba(52,211,153,0.10)",  border: "rgba(52,211,153,0.22)",  color: "rgba(52,211,153,0.90)",  dot: "#34d399" },
+                  { label: "On Leave", value: onLeaveCount, bg: "rgba(251,191,36,0.10)",  border: "rgba(251,191,36,0.22)",  color: "rgba(251,191,36,0.90)",  dot: "#fbbf24" },
+                ] : [
+                  { label: "Total",    value: totalCount,   bg: "var(--lc-bg-glass-mid)", border: "var(--lc-border)", color: "var(--lc-text-primary)", dot: "#c9a87c" },
+                  { label: "Active",   value: activeCount,  bg: "var(--lc-bg-glass-mid)", border: "var(--lc-border)", color: "var(--lc-text-primary)", dot: "#64B896" },
+                  { label: "On Leave", value: onLeaveCount, bg: "var(--lc-bg-glass-mid)", border: "var(--lc-border)", color: "var(--lc-text-primary)", dot: "#D4A843" },
+                ]).map(s => (
                   <div
                     key={s.label}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold"
-                    style={{ background: s.bg, color: s.color }}
+                    style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}` }}
                   >
                     <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: s.dot }} />
                     <span className="tabular-nums">{s.value}</span>
