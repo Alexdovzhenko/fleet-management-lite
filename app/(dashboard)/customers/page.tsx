@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Search, Plus, Phone, Mail, Users, X, Building2 } from "lucide-react"
+import { useTheme } from "@/lib/theme-context"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useCustomers, useCreateCustomer } from "@/lib/hooks/use-customers"
@@ -21,6 +22,7 @@ const FILTER_TABS = [
 type FilterId = typeof FILTER_TABS[number]["id"]
 
 export default function CustomersPage() {
+  const { isDark } = useTheme()
   const [search, setSearch] = useState("")
   const [filter, setFilter] = useState<FilterId>("")
   const [showForm, setShowForm] = useState(false)
@@ -108,20 +110,24 @@ export default function CustomersPage() {
               </div>
 
               {/* Stat pills */}
-              <div className="hidden sm:flex items-center gap-1.5 shrink-0">
-                {[
-                  { label: "Total",     value: totalCount,     bg: "rgba(201,168,124,0.10)", color: "rgba(201,168,124,0.90)", dot: "#c9a87c" },
-                  { label: "Corporate", value: corporateCount, bg: "rgba(139,92,246,0.10)",  color: "rgba(167,139,250,0.90)", dot: "#a78bfa" },
-                  { label: "Repeat",    value: repeatCount,    bg: "rgba(52,211,153,0.10)",  color: "rgba(52,211,153,0.90)",  dot: "#34d399" },
-                ].map(s => (
+              <div className="hidden sm:flex items-center gap-2 shrink-0">
+                {(isDark ? [
+                  { label: "Total",     value: totalCount,     bg: "rgba(201,168,124,0.14)", border: "rgba(201,168,124,0.25)", color: "#e8c898", dot: "#c9a87c" },
+                  { label: "Corporate", value: corporateCount, bg: "rgba(139,92,246,0.14)",  border: "rgba(139,92,246,0.28)",  color: "#c4b5fd", dot: "#a78bfa" },
+                  { label: "Repeat",    value: repeatCount,    bg: "rgba(52,211,153,0.14)",  border: "rgba(52,211,153,0.28)",  color: "#6ee7b7", dot: "#34d399" },
+                ] : [
+                  { label: "Total",     value: totalCount,     bg: "#FEF3C7", border: "#FCD34D", color: "#92400E", dot: "#D97706" },
+                  { label: "Corporate", value: corporateCount, bg: "#EDE9FE", border: "#C4B5FD", color: "#4C1D95", dot: "#7C3AED" },
+                  { label: "Repeat",    value: repeatCount,    bg: "#D1FAE5", border: "#6EE7B7", color: "#065F46", dot: "#059669" },
+                ]).map(s => (
                   <div
                     key={s.label}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold"
-                    style={{ background: s.bg, color: s.color }}
+                    style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}` }}
                   >
                     <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: s.dot }} />
-                    <span className="tabular-nums">{s.value}</span>
-                    <span className="font-medium" style={{ opacity: 0.7 }}>{s.label}</span>
+                    <span className="tabular-nums font-bold">{s.value}</span>
+                    <span className="font-medium opacity-75">{s.label}</span>
                   </div>
                 ))}
               </div>
