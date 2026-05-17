@@ -4,7 +4,6 @@ import { useRef, useState, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { Building2, BookMarked, Settings2, Zap, LayoutGrid, Mail, ExternalLink, User, Users, LogOut, Receipt } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
-import { useTheme } from "@/lib/theme-context"
 
 type Section = "profile" | "address-book" | "service-types" | "status-actions" | "grid-columns" | "personal" | "team" | "sender-emails" | "pdf-branding" | "billing"
 
@@ -42,7 +41,6 @@ const NAV_GROUPS: { label: string; items: { key: Section; label: string; icon: R
 ]
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
-  const { isDark } = useTheme()
   const router = useRouter()
   const pathname = usePathname()
   const currentSection = pathname.split("/").pop() as Section || "profile"
@@ -119,16 +117,10 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
       {/* ── Desktop Sidebar ── */}
       <aside
         className="hidden md:flex md:w-[212px] md:shrink-0 md:flex-col"
-        style={{
-          borderRight: `1px solid ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)"}`,
-          background: isDark ? "#0a1120" : "#FFFFFF",
-        }}
+        style={{ borderRight: "1px solid var(--lc-bg-glass)", background: "#0a1120" }}
       >
         {/* Header */}
-        <div
-          className="px-5 py-5"
-          style={{ borderBottom: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)"}` }}
-        >
+        <div className="px-5 py-5" style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}>
           <p className="text-[13px] font-bold tracking-tight" style={{ color: "var(--lc-text-primary)" }}>Settings</p>
           <p className="text-[11px] mt-0.5" style={{ color: "var(--lc-text-muted)" }}>Manage your workspace</p>
         </div>
@@ -138,38 +130,27 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
           {NAV_GROUPS.map((group) => (
             <div key={group.label}>
               <p
-                className="text-[10px] font-semibold uppercase px-2.5 mb-1.5"
-                style={{ color: "var(--lc-text-muted)", letterSpacing: "0.10em" }}
+                className="text-[10px] font-semibold uppercase tracking-widest px-2.5 mb-2"
+                style={{ color: "var(--lc-text-muted)", letterSpacing: "0.12em" }}
               >
                 {group.label}
               </p>
               <div className="space-y-0.5">
                 {group.items.map((item) => {
                   const active = currentSection === item.key
-
-                  // Dark: gold tint pill. Light: left-bar accent + dark readable text.
-                  const activeStyle = isDark
-                    ? { background: "rgba(201,168,124,0.12)", color: "#c9a87c", borderLeft: "2px solid #c9a87c" }
-                    : { background: "rgba(201,168,124,0.10)", color: "#1C1C1E", borderLeft: "2px solid #c9a87c" }
-
-                  const inactiveStyle = isDark
-                    ? { color: "var(--lc-text-dim)" }
-                    : { color: "var(--lc-text-dim)" }
-
-                  const hoverBg = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)"
-
                   return (
                     <button
                       key={item.key}
                       onClick={() => handleSectionChange(item.key)}
-                      className="w-full flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[13px] text-left transition-colors relative"
+                      className="w-full flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[13px] text-left transition-all relative group"
                       style={{
-                        ...(active ? activeStyle : inactiveStyle),
+                        background: active ? "rgba(201,168,124,0.10)" : "transparent",
+                        color: active ? "#c9a87c" : "var(--lc-text-dim)",
                         fontWeight: active ? 600 : 400,
-                        borderLeft: active ? (isDark ? "2px solid #c9a87c" : "2px solid #c9a87c") : "2px solid transparent",
+                        borderLeft: active ? "2px solid #c9a87c" : "2px solid transparent",
                       }}
                       onMouseEnter={e => {
-                        if (!active) (e.currentTarget as HTMLElement).style.background = hoverBg
+                        if (!active) (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-card)"
                       }}
                       onMouseLeave={e => {
                         if (!active) (e.currentTarget as HTMLElement).style.background = "transparent"
@@ -189,13 +170,10 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
         </nav>
 
         {/* Sign Out */}
-        <div
-          className="px-3 py-4"
-          style={{ borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)"}` }}
-        >
+        <div className="px-3 py-4" style={{ borderTop: "1px solid var(--lc-bg-glass)" }}>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[13px] text-left transition-colors"
+            className="w-full flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[13px] text-left transition-all"
             style={{ color: "var(--lc-text-label)" }}
             onMouseEnter={e => {
               ;(e.currentTarget as HTMLElement).style.background = "rgba(248,113,113,0.08)"
