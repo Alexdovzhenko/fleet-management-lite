@@ -9,6 +9,8 @@ const updateDriverSchema = z.object({
   phone: z.string().min(1).optional(),
   licenseNumber: z.string().optional(),
   licenseExpiry: z.string().optional(),
+  birthday: z.string().optional().nullable(),
+  homeAddress: z.string().optional().nullable(),
   notes: z.string().optional(),
   status: z.enum(["ACTIVE", "INACTIVE", "ON_LEAVE"]).optional(),
   defaultVehicleId: z.string().optional().nullable(),
@@ -73,7 +75,13 @@ export async function PUT(
     const data = updateDriverSchema.parse(body)
     const driver = await prisma.driver.update({
       where: { id: driverId },
-      data: { ...data, email: data.email || null, licenseExpiry: data.licenseExpiry ? new Date(data.licenseExpiry) : undefined },
+      data: {
+        ...data,
+        email: data.email || null,
+        licenseExpiry: data.licenseExpiry ? new Date(data.licenseExpiry) : undefined,
+        birthday: data.birthday ? new Date(data.birthday) : data.birthday === null ? null : undefined,
+        homeAddress: data.homeAddress ?? undefined,
+      },
     })
     return NextResponse.json(driver)
   } catch (error) {

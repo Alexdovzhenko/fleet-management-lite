@@ -76,6 +76,8 @@ export interface Driver {
   document2Name?: string
   status: DriverStatus
   notes?: string
+  birthday?: string
+  homeAddress?: string
   companyId: string
   defaultVehicleId?: string
   defaultVehicle?: Vehicle

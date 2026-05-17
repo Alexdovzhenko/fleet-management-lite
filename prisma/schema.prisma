@@ -138,6 +138,8 @@ model Driver {
   document2Name       String?
   status              DriverStatus @default(ACTIVE)
   notes               String?
+  birthday            DateTime?
+  homeAddress         String?
   companyId       String
   company         Company      @relation(fields: [companyId], references: [id])
   createdAt       DateTime     @default(now())

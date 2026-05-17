@@ -31,6 +31,8 @@ const driverSchema = z.object({
   email: z.string().email("Invalid email").optional().or(z.literal("")),
   licenseNumber: z.string().optional(),
   licenseExpiry: z.string().optional(),
+  birthday: z.string().optional(),
+  homeAddress: z.string().optional(),
   notes: z.string().optional(),
   defaultVehicleId: z.string().optional(),
   status: z.enum(["ACTIVE", "INACTIVE", "ON_LEAVE"]).optional(),
@@ -605,6 +607,8 @@ function DriverModal({
         email: editing.email || "",
         licenseNumber: editing.licenseNumber || "",
         licenseExpiry: editing.licenseExpiry ? editing.licenseExpiry.split("T")[0] : "",
+        birthday: editing.birthday ? editing.birthday.split("T")[0] : "",
+        homeAddress: editing.homeAddress || "",
         notes: editing.notes || "",
         defaultVehicleId: editing.defaultVehicleId || "",
         status: editing.status || "ACTIVE",
@@ -615,7 +619,7 @@ function DriverModal({
       setDoc1(editing.document1Url ? { url: editing.document1Url, name: editing.document1Name || "document-1", isImage: false } : null)
       setDoc2(editing.document2Url ? { url: editing.document2Url, name: editing.document2Name || "document-2", isImage: false } : null)
     } else {
-      reset({ name: "", phone: "", email: "", licenseNumber: "", licenseExpiry: "", notes: "", defaultVehicleId: "", status: "ACTIVE" })
+      reset({ name: "", phone: "", email: "", licenseNumber: "", licenseExpiry: "", birthday: "", homeAddress: "", notes: "", defaultVehicleId: "", status: "ACTIVE" })
       setAvatar(null); setLicenseFront(null); setLicenseBack(null); setDoc1(null); setDoc2(null)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -848,6 +852,21 @@ function DriverModal({
                                   </Select>
                                 )
                               }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1.5">
+                            <Label className="text-xs font-semibold text-gray-600">Birthday</Label>
+                            <Input {...register("birthday")} type="date" className="h-10 text-sm" />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-xs font-semibold text-gray-600">Home Address</Label>
+                            <Input
+                              {...register("homeAddress")}
+                              placeholder="123 Main St, City, State"
+                              className="h-10 text-sm"
                             />
                           </div>
                         </div>
