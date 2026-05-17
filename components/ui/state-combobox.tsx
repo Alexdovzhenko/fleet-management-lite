@@ -80,9 +80,10 @@ interface StateComboboxProps {
   value?: string
   onChange: (value: string) => void
   id?: string
+  className?: string
 }
 
-export function StateCombobox({ value = "", onChange, id }: StateComboboxProps) {
+export function StateCombobox({ value = "", onChange, id, className }: StateComboboxProps) {
   const [query, setQuery] = useState(value)
   const [open, setOpen] = useState(false)
 
@@ -118,6 +119,7 @@ export function StateCombobox({ value = "", onChange, id }: StateComboboxProps) 
         placeholder="FL"
         autoComplete="off"
         maxLength={50}
+        className={className}
       />
       {open && filtered.length > 0 && (
         <div className="absolute z-50 mt-1 w-full min-w-[180px] rounded-md border bg-white shadow-md overflow-hidden">

@@ -19,6 +19,7 @@ import { getInitials, formatPhone } from "@/lib/utils"
 import { useTheme } from "@/lib/theme-context"
 import { DatePickerInput } from "@/components/ui/date-picker"
 import { StateCombobox } from "@/components/ui/state-combobox"
+import { CityAutocomplete } from "@/components/ui/city-autocomplete"
 import { format as fnsFormat, parse as fnsParse, isValid } from "date-fns"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -892,15 +893,17 @@ function DriverModal({
                             className="h-10 text-sm"
                           />
                           <div className="grid grid-cols-2 gap-2">
-                            <Input
-                              {...register("homeCity")}
+                            <CityAutocomplete
+                              value={watch("homeCity") ?? ""}
+                              onChange={(v) => setValue("homeCity", v)}
+                              onStateChange={(s) => setValue("homeState", s)}
                               placeholder="City"
-                              className="h-10 text-sm"
                             />
                             <div className="grid grid-cols-2 gap-2">
                               <StateCombobox
                                 value={watch("homeState") ?? ""}
                                 onChange={(v) => setValue("homeState", v)}
+                                className="h-10 text-sm"
                               />
                               <Input
                                 {...register("homeZip")}
