@@ -116,9 +116,9 @@ export default function CustomersPage() {
                   { label: "Corporate", value: corporateCount, bg: "rgba(139,92,246,0.14)",  border: "rgba(139,92,246,0.30)",  color: "#c4b5fd", dot: "#a78bfa" },
                   { label: "Repeat",    value: repeatCount,    bg: "rgba(52,211,153,0.14)",  border: "rgba(52,211,153,0.30)",  color: "#6ee7b7", dot: "#34d399" },
                 ] : [
-                  { label: "Total",     value: totalCount,     bg: "#FDE68A", border: "#F59E0B", color: "#111827", dot: "#D97706" },
-                  { label: "Corporate", value: corporateCount, bg: "#DDD6FE", border: "#8B5CF6", color: "#111827", dot: "#7C3AED" },
-                  { label: "Repeat",    value: repeatCount,    bg: "#A7F3D0", border: "#10B981", color: "#111827", dot: "#059669" },
+                  { label: "Total",     value: totalCount,     bg: "var(--lc-bg-glass-mid)", border: "var(--lc-border)", color: "var(--lc-text-primary)", dot: "#c9a87c" },
+                  { label: "Corporate", value: corporateCount, bg: "var(--lc-bg-glass-mid)", border: "var(--lc-border)", color: "var(--lc-text-primary)", dot: "#94A3B8" },
+                  { label: "Repeat",    value: repeatCount,    bg: "var(--lc-bg-glass-mid)", border: "var(--lc-border)", color: "var(--lc-text-primary)", dot: "#64B896" },
                 ]).map(s => (
                   <div
                     key={s.label}
