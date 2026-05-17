@@ -155,7 +155,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                       className="w-full flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[13px] text-left transition-all relative group"
                       style={{
                         background: active ? "rgba(201,168,124,0.10)" : "transparent",
-                        color: active ? "#c9a87c" : "var(--lc-text-dim)",
+                        color: active ? "#c9a87c" : "rgba(255,255,255,0.70)",
                         fontWeight: active ? 600 : 400,
                         borderLeft: active ? "2px solid #c9a87c" : "2px solid transparent",
                       }}
@@ -168,7 +168,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                     >
                       <item.icon
                         className="w-[15px] h-[15px] flex-shrink-0"
-                        style={{ color: active ? "#c9a87c" : "var(--lc-text-muted)" }}
+                        style={{ color: active ? "#c9a87c" : "rgba(255,255,255,0.55)" }}
                       />
                       {item.label}
                     </button>
