@@ -58,15 +58,17 @@ function LogoMark({ size = 22 }: { size?: number }) {
 
 // ─── Avatar ───────────────────────────────────────────────────────────────────
 function Avatar({ initials, logo, size = 28 }: { initials: string; logo?: string | null; size?: number }) {
+  const radius = Math.round(size * 0.28) // ~rounded-lg squircle, scales with size
   if (logo) {
     return (
       <div
         aria-hidden="true"
         style={{
-          width: size, height: size, borderRadius: "50%",
-          border: "1px solid rgba(201,168,124,0.25)",
+          width: size, height: size, borderRadius: radius,
+          border: "1px solid rgba(201,168,124,0.30)",
           overflow: "hidden", flexShrink: 0,
           background: "rgba(201,168,124,0.08)",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.18)",
         }}
       >
         <img
@@ -81,7 +83,7 @@ function Avatar({ initials, logo, size = 28 }: { initials: string; logo?: string
     <div
       aria-hidden="true"
       style={{
-        width: size, height: size, borderRadius: "50%",
+        width: size, height: size, borderRadius: radius,
         background: "rgba(201,168,124,0.12)",
         border: "1px solid rgba(201,168,124,0.30)",
         display: "flex", alignItems: "center", justifyContent: "center",
@@ -362,7 +364,7 @@ export function AppHeader() {
               >
                 <div style={{ padding: "12px 14px 10px", borderBottom: "1px solid var(--lc-border-subtle)" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <Avatar initials={initials} logo={companyLogo} size={32} />
+                    <Avatar initials={initials} logo={companyLogo} size={40} />
                     <div style={{ minWidth: 0 }}>
                       <p style={{ fontSize: 13, fontWeight: 600, color: "var(--lc-text-primary)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {user?.name ?? "User"}
@@ -429,14 +431,14 @@ function UserMenuTrigger({ initials, logo, userName, open, onClick }: {
         outline: "none",
       }}
     >
-      <Avatar initials={initials} logo={logo} size={27} />
+      <Avatar initials={initials} logo={logo} size={34} />
       <span
         className="hidden md:block"
         style={{
-          fontSize: "0.72rem", fontWeight: 500,
-          letterSpacing: "0.03em",
-          color: hovered ? "#d4b688" : "var(--lc-text-dim)",
-          maxWidth: 88, overflow: "hidden",
+          fontSize: "0.82rem", fontWeight: 600,
+          letterSpacing: "0.01em",
+          color: hovered ? "#d4b688" : "var(--lc-text-primary)",
+          maxWidth: 96, overflow: "hidden",
           textOverflow: "ellipsis", whiteSpace: "nowrap",
           transition: "color 0.15s ease",
           userSelect: "none",
