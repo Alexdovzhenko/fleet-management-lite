@@ -201,7 +201,13 @@ export function DatePickerInput({ value, onChange, placeholder = "MM/DD/YYYY", c
       <input
         type="text"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          const digits = e.target.value.replace(/\D/g, "").slice(0, 8)
+          let formatted = digits
+          if (digits.length > 4) formatted = `${digits.slice(0,2)}/${digits.slice(2,4)}/${digits.slice(4)}`
+          else if (digits.length > 2) formatted = `${digits.slice(0,2)}/${digits.slice(2)}`
+          onChange(formatted)
+        }}
         onFocus={(e) => {
           e.currentTarget.style.borderColor = "rgba(201,168,124,0.50)"
           openCalendar()
