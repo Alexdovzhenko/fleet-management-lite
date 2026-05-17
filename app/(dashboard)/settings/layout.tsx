@@ -124,7 +124,6 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
         style={{
           borderRight: "1px solid var(--lc-bg-glass)",
           background: "#0a1120",
-          paddingBottom: "max(121px, calc(121px + env(safe-area-inset-bottom)))",
         }}
       >
         {/* Header */}
@@ -177,8 +176,8 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
           ))}
         </nav>
 
-        {/* Sign Out */}
-        <div className="px-3 pt-3 pb-2">
+        {/* Sign Out — pinned to the visual bottom of the sidebar */}
+        <div className="px-3 pt-3 mt-auto" style={{ paddingBottom: "max(121px, calc(121px + env(safe-area-inset-bottom)))" }}>
           {/* Separator with fade */}
           <div
             className="mb-3 h-px"
