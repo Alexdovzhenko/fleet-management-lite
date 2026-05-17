@@ -21,32 +21,33 @@ const TRANSITION_CLASS = "theme-transitioning"
 const TRANSITION_DURATION = 600
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Initialize synchronously from localStorage on client (SSR falls back to "dark")
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "dark"
-    return (localStorage.getItem(STORAGE_KEY) as Theme) || "dark"
-  })
+  // Always start with "dark" so server HTML and first client render match exactly.
+  // The anti-flicker script in <head> already applied the correct data-theme attribute
+  // before React hydrates, so CSS variables are visually correct from the first paint.
+  const [theme, setTheme] = useState<Theme>("dark")
 
-  // Ensure the HTML attribute stays in sync on first mount
+  // After hydration, sync React state to the actual saved preference.
+  // This runs after paint so there is no layout shift; CSS vars already correct.
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const saved = (localStorage.getItem(STORAGE_KEY) as Theme) || "dark"
+    if (saved !== "dark") {
+      setTheme(saved)
+    }
+    // Ensure attribute is in sync (defensive — anti-flicker script should have set it)
+    document.documentElement.setAttribute("data-theme", saved)
   }, [])
 
   const toggleTheme = useCallback(() => {
     setTheme(prev => {
       const next: Theme = prev === "dark" ? "light" : "dark"
 
-      // 1. Add transition class so all elements animate smoothly
       document.documentElement.classList.add(TRANSITION_CLASS)
 
-      // 2. Flip the attribute after a short delay so the animation fires first
       requestAnimationFrame(() => {
         document.documentElement.setAttribute("data-theme", next)
         localStorage.setItem(STORAGE_KEY, next)
       })
 
-      // 3. Remove transition class after animation completes
       setTimeout(() => {
         document.documentElement.classList.remove(TRANSITION_CLASS)
       }, TRANSITION_DURATION)
@@ -55,10 +56,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     })
   }, [])
 
-  // The anti-flicker script in <head> already set data-theme on <html> before
-  // React hydrates, so CSS variables are correct from the very first paint.
-  // Render children immediately (with default dark context) so the header and
-  // layout never disappear — the useEffect above syncs the React state shortly after.
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, isDark: theme === "dark" }}>
       {children}
