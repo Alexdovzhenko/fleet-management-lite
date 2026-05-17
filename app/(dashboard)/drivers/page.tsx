@@ -1114,23 +1114,26 @@ function DriverModal({
                       >
                         Cancel
                       </Button>
-                      <Button
+                      <button
                         type="button"
                         onClick={handleSubmit(onSubmit)}
                         disabled={isPending}
-                        className="h-10 px-7 text-sm font-semibold text-white rounded-xl min-w-[130px]"
+                        className="h-10 px-7 text-sm font-semibold rounded-xl min-w-[130px] transition-all duration-150 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
                         style={{
-                          background: "linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)",
-                          boxShadow: "0 2px 12px rgba(37,99,235,0.30)",
+                          background: "#c9a87c",
+                          color: "var(--lc-bg-page)",
+                          boxShadow: "0 2px 12px rgba(201,168,124,0.28)",
                         }}
+                        onMouseEnter={e => { if (!isPending) (e.currentTarget as HTMLButtonElement).style.background = "#d4b98c" }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#c9a87c" }}
                       >
                         {isPending ? (
                           <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                            <div className="w-4 h-4 border-2 border-black/20 border-t-black/60 rounded-full animate-spin" />
                             Saving...
                           </div>
                         ) : (editing ? "Save Changes" : "Add Driver")}
-                      </Button>
+                      </button>
                     </div>
                   </motion.div>
                 )}
