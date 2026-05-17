@@ -178,21 +178,43 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
         </nav>
 
         {/* Sign Out */}
-        <div className="px-3 py-4" style={{ borderTop: "1px solid var(--lc-bg-glass)" }}>
+        <div className="px-3 pt-3 pb-2">
+          {/* Separator with fade */}
+          <div
+            className="mb-3 h-px"
+            style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.08) 30%, rgba(255,255,255,0.08) 70%, transparent)" }}
+          />
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2.5 px-2.5 py-[7px] rounded-lg text-[13px] text-left transition-all"
-            style={{ color: "var(--lc-text-label)" }}
+            className="w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-[13px] font-medium text-left"
+            style={{
+              color: "rgba(255,255,255,0.35)",
+              border: "1px solid transparent",
+              transition: "background 180ms ease-out, color 180ms ease-out, border-color 180ms ease-out, transform 120ms ease-out",
+            }}
             onMouseEnter={e => {
-              ;(e.currentTarget as HTMLElement).style.background = "rgba(248,113,113,0.08)"
-              ;(e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.80)"
+              const el = e.currentTarget as HTMLElement
+              el.style.background = "rgba(248,113,113,0.08)"
+              el.style.color = "rgba(248,113,113,0.90)"
+              el.style.borderColor = "rgba(248,113,113,0.18)"
             }}
             onMouseLeave={e => {
-              ;(e.currentTarget as HTMLElement).style.background = "transparent"
-              ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-label)"
+              const el = e.currentTarget as HTMLElement
+              el.style.background = "transparent"
+              el.style.color = "rgba(255,255,255,0.35)"
+              el.style.borderColor = "transparent"
+              el.style.transform = "scale(1)"
             }}
+            onMouseDown={e => { (e.currentTarget as HTMLElement).style.transform = "scale(0.97)" }}
+            onMouseUp={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1)" }}
           >
-            <LogOut className="w-[15px] h-[15px] flex-shrink-0" />
+            {/* Icon container */}
+            <div
+              className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+              style={{ background: "rgba(255,255,255,0.05)" }}
+            >
+              <LogOut className="w-3.5 h-3.5" />
+            </div>
             Sign Out
           </button>
         </div>
