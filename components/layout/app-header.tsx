@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useUnreadCount } from "@/lib/hooks/use-notifications"
 import { useTheme } from "@/lib/theme-context"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { useCompany } from "@/lib/hooks/use-company"
 
 // ─── Page title map ───────────────────────────────────────────────────────────
 const PAGE_TITLES: [string, string][] = [
@@ -56,7 +57,26 @@ function LogoMark({ size = 22 }: { size?: number }) {
 }
 
 // ─── Avatar ───────────────────────────────────────────────────────────────────
-function Avatar({ initials, size = 28 }: { initials: string; size?: number }) {
+function Avatar({ initials, logo, size = 28 }: { initials: string; logo?: string | null; size?: number }) {
+  if (logo) {
+    return (
+      <div
+        aria-hidden="true"
+        style={{
+          width: size, height: size, borderRadius: "50%",
+          border: "1px solid rgba(201,168,124,0.25)",
+          overflow: "hidden", flexShrink: 0,
+          background: "rgba(201,168,124,0.08)",
+        }}
+      >
+        <img
+          src={logo}
+          alt="Company logo"
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      </div>
+    )
+  }
   return (
     <div
       aria-hidden="true"
@@ -177,6 +197,9 @@ export function AppHeader() {
   const { data: unreadData } = useUnreadCount()
   const unreadCount = unreadData?.count ?? 0
   const { isDark } = useTheme()
+
+  const { data: company } = useCompany()
+  const companyLogo = company?.logo ?? null
 
   const [scrolled, setScrolled] = useState(false)
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -309,6 +332,7 @@ export function AppHeader() {
         <div ref={dropdownRef} style={{ position: "relative" }}>
           <UserMenuTrigger
             initials={initials}
+            logo={companyLogo}
             userName={user?.name?.split(" ")[0] ?? "Account"}
             open={dropdownOpen}
             onClick={() => setDropdownOpen(v => !v)}
@@ -338,7 +362,7 @@ export function AppHeader() {
               >
                 <div style={{ padding: "12px 14px 10px", borderBottom: "1px solid var(--lc-border-subtle)" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <Avatar initials={initials} size={32} />
+                    <Avatar initials={initials} logo={companyLogo} size={32} />
                     <div style={{ minWidth: 0 }}>
                       <p style={{ fontSize: 13, fontWeight: 600, color: "var(--lc-text-primary)", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {user?.name ?? "User"}
@@ -383,8 +407,8 @@ export function AppHeader() {
 }
 
 // ─── User menu trigger ────────────────────────────────────────────────────────
-function UserMenuTrigger({ initials, userName, open, onClick }: {
-  initials: string; userName: string; open: boolean; onClick: () => void
+function UserMenuTrigger({ initials, logo, userName, open, onClick }: {
+  initials: string; logo?: string | null; userName: string; open: boolean; onClick: () => void
 }) {
   const [hovered, setHovered] = useState(false)
   return (
@@ -405,7 +429,7 @@ function UserMenuTrigger({ initials, userName, open, onClick }: {
         outline: "none",
       }}
     >
-      <Avatar initials={initials} size={27} />
+      <Avatar initials={initials} logo={logo} size={27} />
       <span
         className="hidden md:block"
         style={{
