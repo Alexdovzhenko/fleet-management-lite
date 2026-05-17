@@ -66,7 +66,11 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
   return (
     <div
       className="-mx-4 -mt-4 md:-mx-6 md:-mt-6 flex flex-col md:flex-row"
-      style={{ background: "var(--lc-bg-page)", minHeight: "calc(100dvh - 56px)" }}
+      style={{
+        background: "var(--lc-bg-page)",
+        minHeight: "calc(100dvh - 56px)",
+        marginBottom: "max(-121px, calc(-121px - env(safe-area-inset-bottom)))",
+      }}
     >
       {/* ── Mobile Tab Bar ── */}
       <div
@@ -117,7 +121,11 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
       {/* ── Desktop Sidebar ── */}
       <aside
         className="hidden md:flex md:w-[212px] md:shrink-0 md:flex-col"
-        style={{ borderRight: "1px solid var(--lc-bg-glass)", background: "#0a1120" }}
+        style={{
+          borderRight: "1px solid var(--lc-bg-glass)",
+          background: "#0a1120",
+          paddingBottom: "max(121px, calc(121px + env(safe-area-inset-bottom)))",
+        }}
       >
         {/* Header */}
         <div className="px-5 py-5" style={{ borderBottom: "1px solid var(--lc-bg-glass)" }}>
