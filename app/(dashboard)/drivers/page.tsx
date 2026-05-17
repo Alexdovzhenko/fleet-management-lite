@@ -1222,7 +1222,7 @@ export default function DriversPage() {
                   >
                     <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: s.dot }} />
                     <span className="tabular-nums">{s.value}</span>
-                    <span className="font-medium" style={{ opacity: 0.7 }}>{s.label}</span>
+                    <span className="font-medium" style={{ opacity: isDark ? 0.7 : 1 }}>{s.label}</span>
                   </div>
                 ))}
               </div>
