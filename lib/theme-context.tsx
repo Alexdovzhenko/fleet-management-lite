@@ -21,15 +21,16 @@ const TRANSITION_CLASS = "theme-transitioning"
 const TRANSITION_DURATION = 600
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark")
-  const [mounted, setMounted] = useState(false)
+  // Initialize synchronously from localStorage on client (SSR falls back to "dark")
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === "undefined") return "dark"
+    return (localStorage.getItem(STORAGE_KEY) as Theme) || "dark"
+  })
 
-  // On mount: read persisted preference (anti-flicker script already set the attribute)
+  // Ensure the HTML attribute stays in sync on first mount
   useEffect(() => {
-    const saved = (localStorage.getItem(STORAGE_KEY) as Theme) || "dark"
-    setTheme(saved)
-    document.documentElement.setAttribute("data-theme", saved)
-    setMounted(true)
+    document.documentElement.setAttribute("data-theme", theme)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const toggleTheme = useCallback(() => {
@@ -54,12 +55,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     })
   }, [])
 
-  // Return null before mount — keeps the whole tree client-only so server-rendered
-  // components that access browser APIs don't throw during SSR.
   // The anti-flicker script in <head> already set data-theme on <html> before
-  // React hydrates, so the CSS variables are correct from the very first paint.
-  if (!mounted) return null
-
+  // React hydrates, so CSS variables are correct from the very first paint.
+  // Render children immediately (with default dark context) so the header and
+  // layout never disappear — the useEffect above syncs the React state shortly after.
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, isDark: theme === "dark" }}>
       {children}
