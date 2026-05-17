@@ -370,31 +370,39 @@ function FileUploadZone({
 // ── Driver Card ────────────────────────────────────────────────────────────────
 
 function DriverCard({ driver, onEdit, index }: { driver: Driver; onEdit: (d: Driver) => void; index: number }) {
+  const { isDark } = useTheme()
   const cfg = STATUS_CFG[driver.status] || STATUS_CFG.ACTIVE
   const tripCount = driver._count?.trips ?? 0
 
+  const lightChip: Record<string, string> = {
+    ACTIVE:   "bg-emerald-100 text-emerald-800",
+    INACTIVE: "bg-gray-100 text-gray-500",
+    ON_LEAVE: "bg-amber-100 text-amber-800",
+  }
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -2, transition: { duration: 0.15, ease: "easeOut" } }}
-      transition={{ duration: 0.22, ease: "easeOut", delay: index * 0.04 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2, ease: "easeOut", delay: index * 0.04 }}
       onClick={() => onEdit(driver)}
-      className="group relative rounded-2xl cursor-pointer overflow-hidden transition-all duration-200"
+      className="group relative rounded-2xl cursor-pointer overflow-hidden"
       style={{
         background: "var(--lc-bg-surface)",
         borderTop: "1px solid var(--lc-bg-glass-mid)",
         borderRight: "1px solid var(--lc-bg-glass-mid)",
         borderBottom: "1px solid var(--lc-bg-glass-mid)",
         borderLeft: `3px solid ${cfg.accent}`,
-        boxShadow: "0 2px 12px rgba(0,0,0,0.25)",
+        boxShadow: isDark ? "0 2px 12px rgba(0,0,0,0.25)" : "var(--lc-shadow-card)",
+        transition: "background 150ms ease, border-color 150ms ease, box-shadow 150ms ease",
       }}
       onMouseEnter={e => {
         const el = e.currentTarget as HTMLDivElement
         el.style.borderTopColor = "var(--lc-border)"
         el.style.borderRightColor = "var(--lc-border)"
         el.style.borderBottomColor = "var(--lc-border)"
-        el.style.background = "#111e35"
+        el.style.background = isDark ? "#111e35" : "var(--lc-bg-card)"
+        el.style.boxShadow = isDark ? "0 4px 20px rgba(0,0,0,0.35)" : "0 4px 16px rgba(0,0,0,0.08)"
       }}
       onMouseLeave={e => {
         const el = e.currentTarget as HTMLDivElement
@@ -402,6 +410,7 @@ function DriverCard({ driver, onEdit, index }: { driver: Driver; onEdit: (d: Dri
         el.style.borderRightColor = "var(--lc-bg-glass-mid)"
         el.style.borderBottomColor = "var(--lc-bg-glass-mid)"
         el.style.background = "var(--lc-bg-surface)"
+        el.style.boxShadow = isDark ? "0 2px 12px rgba(0,0,0,0.25)" : "var(--lc-shadow-card)"
       }}
     >
       <div className="p-4 pb-3">
@@ -428,7 +437,7 @@ function DriverCard({ driver, onEdit, index }: { driver: Driver; onEdit: (d: Dri
           <div className="flex-1 min-w-0 pt-0.5">
             <div className="flex items-start justify-between gap-2">
               <h3 className="font-bold text-sm leading-tight truncate" style={{ color: "var(--lc-text-primary)" }}>{driver.name}</h3>
-              <span className={cn("text-[10.5px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0", cfg.chip)}>
+              <span className={cn("text-[10.5px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0", isDark ? cfg.chip : lightChip[driver.status] ?? lightChip.INACTIVE)}>
                 {cfg.label}
               </span>
             </div>
@@ -467,8 +476,12 @@ function DriverCard({ driver, onEdit, index }: { driver: Driver; onEdit: (d: Dri
                 <span
                   className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
                   style={{
-                    background: tripCount > 0 ? "rgba(59,130,246,0.12)" : "var(--lc-bg-glass-mid)",
-                    color: tripCount > 0 ? "rgba(147,197,253,0.90)" : "var(--lc-text-label)",
+                    background: tripCount > 0
+                      ? isDark ? "rgba(59,130,246,0.12)" : "rgba(59,130,246,0.10)"
+                      : "var(--lc-bg-glass-mid)",
+                    color: tripCount > 0
+                      ? isDark ? "rgba(147,197,253,0.90)" : "#1D4ED8"
+                      : "var(--lc-text-label)",
                   }}
                 >
                   {tripCount} trip{tripCount !== 1 ? "s" : ""}
@@ -477,13 +490,13 @@ function DriverCard({ driver, onEdit, index }: { driver: Driver; onEdit: (d: Dri
             </div>
             <div className="flex items-center gap-1.5">
               {driver.licensePhotoFront && (
-                <div className="flex items-center gap-1 text-[10.5px] text-emerald-400 bg-emerald-500/15 px-1.5 py-0.5 rounded-md">
+                <div className={cn("flex items-center gap-1 text-[10.5px] px-1.5 py-0.5 rounded-md", isDark ? "text-emerald-400 bg-emerald-500/15" : "text-emerald-800 bg-emerald-100")}>
                   <CheckCircle2 className="w-3 h-3" />
                   <span className="font-medium">License</span>
                 </div>
               )}
               {(driver.document1Url || driver.document2Url) && (
-                <div className="flex items-center gap-1 text-[10.5px] text-blue-400 bg-blue-500/15 px-1.5 py-0.5 rounded-md">
+                <div className={cn("flex items-center gap-1 text-[10.5px] px-1.5 py-0.5 rounded-md", isDark ? "text-blue-400 bg-blue-500/15" : "text-blue-800 bg-blue-100")}>
                   <FileText className="w-3 h-3" />
                   <span className="font-medium">Docs</span>
                 </div>
