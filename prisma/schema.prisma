@@ -140,6 +140,9 @@ model Driver {
   notes               String?
   birthday            DateTime?
   homeAddress         String?
+  homeCity            String?
+  homeState           String?
+  homeZip             String?
   companyId       String
   company         Company      @relation(fields: [companyId], references: [id])
   createdAt       DateTime     @default(now())

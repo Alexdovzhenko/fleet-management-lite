@@ -78,6 +78,9 @@ export interface Driver {
   notes?: string
   birthday?: string
   homeAddress?: string
+  homeCity?: string
+  homeState?: string
+  homeZip?: string
   companyId: string
   defaultVehicleId?: string
   defaultVehicle?: Vehicle

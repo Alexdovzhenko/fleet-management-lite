@@ -17,6 +17,9 @@ import { useVehicles } from "@/lib/hooks/use-vehicles"
 import { useDebounce } from "@/lib/hooks/use-debounce"
 import { getInitials, formatPhone } from "@/lib/utils"
 import { useTheme } from "@/lib/theme-context"
+import { DatePickerInput } from "@/components/ui/date-picker"
+import { StateCombobox } from "@/components/ui/state-combobox"
+import { format as fnsFormat, parse as fnsParse, isValid } from "date-fns"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -33,6 +36,9 @@ const driverSchema = z.object({
   licenseExpiry: z.string().optional(),
   birthday: z.string().optional(),
   homeAddress: z.string().optional(),
+  homeCity: z.string().optional(),
+  homeState: z.string().optional(),
+  homeZip: z.string().optional(),
   notes: z.string().optional(),
   defaultVehicleId: z.string().optional(),
   status: z.enum(["ACTIVE", "INACTIVE", "ON_LEAVE"]).optional(),
@@ -566,7 +572,7 @@ function DriverModal({
   const [doc1, setDoc1] = useState<UploadedFile | null>(null)
   const [doc2, setDoc2] = useState<UploadedFile | null>(null)
 
-  const { register, handleSubmit, reset, control, watch, formState: { errors } } = useForm<DriverFormData>({
+  const { register, handleSubmit, reset, control, watch, setValue, formState: { errors } } = useForm<DriverFormData>({
     resolver: zodResolver(driverSchema) as never,
   })
 
@@ -607,8 +613,11 @@ function DriverModal({
         email: editing.email || "",
         licenseNumber: editing.licenseNumber || "",
         licenseExpiry: editing.licenseExpiry ? editing.licenseExpiry.split("T")[0] : "",
-        birthday: editing.birthday ? editing.birthday.split("T")[0] : "",
+        birthday: editing.birthday ? fnsFormat(new Date(editing.birthday), "MM/dd/yyyy") : "",
         homeAddress: editing.homeAddress || "",
+        homeCity: editing.homeCity || "",
+        homeState: editing.homeState || "",
+        homeZip: editing.homeZip || "",
         notes: editing.notes || "",
         defaultVehicleId: editing.defaultVehicleId || "",
         status: editing.status || "ACTIVE",
@@ -619,7 +628,7 @@ function DriverModal({
       setDoc1(editing.document1Url ? { url: editing.document1Url, name: editing.document1Name || "document-1", isImage: false } : null)
       setDoc2(editing.document2Url ? { url: editing.document2Url, name: editing.document2Name || "document-2", isImage: false } : null)
     } else {
-      reset({ name: "", phone: "", email: "", licenseNumber: "", licenseExpiry: "", birthday: "", homeAddress: "", notes: "", defaultVehicleId: "", status: "ACTIVE" })
+      reset({ name: "", phone: "", email: "", licenseNumber: "", licenseExpiry: "", birthday: "", homeAddress: "", homeCity: "", homeState: "", homeZip: "", notes: "", defaultVehicleId: "", status: "ACTIVE" })
       setAvatar(null); setLicenseFront(null); setLicenseBack(null); setDoc1(null); setDoc2(null)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -646,9 +655,13 @@ function DriverModal({
   }
 
   function onSubmit(data: DriverFormData) {
+    const birthdayParsed = data.birthday
+      ? fnsParse(data.birthday, "MM/dd/yyyy", new Date())
+      : null
     const payload = {
       ...data,
       email: data.email || undefined,
+      birthday: birthdayParsed && isValid(birthdayParsed) ? birthdayParsed.toISOString().split("T")[0] : undefined,
       defaultVehicleId: data.defaultVehicleId || undefined,
       avatarUrl: avatar?.url || null,
       licensePhotoFront: licenseFront?.url || null,
@@ -856,18 +869,46 @@ function DriverModal({
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="space-y-1.5">
-                            <Label className="text-xs font-semibold text-gray-600">Birthday</Label>
-                            <Input {...register("birthday")} type="date" className="h-10 text-sm" />
-                          </div>
-                          <div className="space-y-1.5">
-                            <Label className="text-xs font-semibold text-gray-600">Home Address</Label>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs font-semibold text-gray-600">Birthday</Label>
+                          <Controller
+                            name="birthday"
+                            control={control}
+                            render={({ field }) => (
+                              <DatePickerInput
+                                value={field.value ?? ""}
+                                onChange={field.onChange}
+                                placeholder="MM/DD/YYYY"
+                              />
+                            )}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label className="text-xs font-semibold text-gray-600">Home Address</Label>
+                          <Input
+                            {...register("homeAddress")}
+                            placeholder="Street address"
+                            className="h-10 text-sm"
+                          />
+                          <div className="grid grid-cols-2 gap-2">
                             <Input
-                              {...register("homeAddress")}
-                              placeholder="123 Main St, City, State"
+                              {...register("homeCity")}
+                              placeholder="City"
                               className="h-10 text-sm"
                             />
+                            <div className="grid grid-cols-2 gap-2">
+                              <StateCombobox
+                                value={watch("homeState") ?? ""}
+                                onChange={(v) => setValue("homeState", v)}
+                              />
+                              <Input
+                                {...register("homeZip")}
+                                placeholder="ZIP"
+                                className="h-10 text-sm"
+                                maxLength={10}
+                              />
+                            </div>
                           </div>
                         </div>
 
