@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useCallback, useEffect } from "react"
+import { useState, useRef, useCallback, useEffect, useId } from "react"
 import { Plus, Car, Users, X, Upload, ChevronLeft, ChevronRight, Truck, Bus, CarFront, CircleDot, GripVertical, ImagePlus, Tag, Gauge, Palette, Info, ChevronDown, Pencil, Maximize2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -231,6 +231,113 @@ function PhotoLightbox({
 }
 
 // ── Vehicle Card ──────────────────────────────────────────────────────────────
+function TypeFilterDropdown({
+  value,
+  onChange,
+  options,
+}: {
+  value: string
+  onChange: (v: string) => void
+  options: { value: string; label: string }[]
+}) {
+  const [open, setOpen] = useState(false)
+  const [style, setStyle] = useState<React.CSSProperties>({})
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const panelRef   = useRef<HTMLDivElement>(null)
+  const isActive   = value !== "ALL"
+  const label      = options.find(o => o.value === value)?.label ?? "All types"
+
+  useEffect(() => {
+    if (!open) return
+    function handler(e: MouseEvent) {
+      if (
+        triggerRef.current?.contains(e.target as Node) ||
+        panelRef.current?.contains(e.target as Node)
+      ) return
+      setOpen(false)
+    }
+    function onKey(e: KeyboardEvent) { if (e.key === "Escape") setOpen(false) }
+    document.addEventListener("mousedown", handler)
+    document.addEventListener("keydown", onKey)
+    return () => {
+      document.removeEventListener("mousedown", handler)
+      document.removeEventListener("keydown", onKey)
+    }
+  }, [open])
+
+  function toggle() {
+    if (!triggerRef.current) return
+    if (open) { setOpen(false); return }
+    const rect = triggerRef.current.getBoundingClientRect()
+    const panelW = 172
+    setStyle({
+      position: "fixed",
+      top: rect.bottom + 6,
+      left: Math.min(rect.left, window.innerWidth - panelW - 8),
+      width: panelW,
+      zIndex: 9999,
+    })
+    setOpen(true)
+  }
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={toggle}
+        className="inline-flex items-center gap-1.5 h-9 pl-3 pr-2.5 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer"
+        style={isActive
+          ? { background: "rgba(201,168,124,0.18)", border: "1px solid rgba(201,168,124,0.35)", color: "#c9a87c" }
+          : { background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)", color: "var(--lc-text-secondary)" }
+        }
+      >
+        {label}
+        <ChevronDown
+          className="w-3 h-3 transition-transform duration-150"
+          style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)", color: isActive ? "#c9a87c" : "var(--lc-text-label)" }}
+        />
+      </button>
+
+      {open && (
+        <div
+          ref={panelRef}
+          style={{
+            ...style,
+            background: "var(--lc-bg-surface)",
+            border: "1px solid var(--lc-border)",
+            borderRadius: 14,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.08)",
+            overflow: "hidden",
+            animation: "ddFadeIn 0.15s cubic-bezier(0.23,1,0.32,1)",
+          }}
+        >
+          <style>{`@keyframes ddFadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}`}</style>
+          <div className="py-1.5">
+            {[{ value: "ALL", label: "All types" }, ...options].map(opt => {
+              const selected = opt.value === value
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => { onChange(opt.value); setOpen(false) }}
+                  className="w-full flex items-center justify-between gap-2 px-3.5 py-2.5 text-[13px] text-left transition-colors duration-100 cursor-pointer"
+                  style={{ color: selected ? "#c9a87c" : "var(--lc-text-primary)", fontWeight: selected ? 600 : 400 }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)" }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent" }}
+                >
+                  {opt.label}
+                  {selected && <span style={{ color: "#c9a87c", fontSize: 14 }}>✓</span>}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
 function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void }) {
   const { isDark } = useTheme()
   const photos = vehicle.photos?.length ? vehicle.photos : vehicle.photoUrl ? [vehicle.photoUrl] : []
@@ -1005,29 +1112,14 @@ export default function VehiclesPage() {
 
               {/* Type filter */}
               {typesInFleet.length > 1 && (
-                <div className="relative">
-                  <select
-                    value={typeFilter}
-                    onChange={e => setTypeFilter(e.target.value as typeof typeFilter)}
-                    className="appearance-none h-9 pl-3 pr-7 rounded-xl text-xs font-semibold cursor-pointer transition-all outline-none"
-                    style={
-                      typeFilter !== "ALL"
-                        ? { background: "rgba(201,168,124,0.18)", border: "1px solid rgba(201,168,124,0.35)", color: "#c9a87c" }
-                        : { background: "var(--lc-bg-glass)", border: "1px solid var(--lc-bg-glass-hover)", color: "var(--lc-text-secondary)" }
-                    }
-                  >
-                    <option value="ALL">All types</option>
-                    {typesInFleet.map(type => (
-                      <option key={type} value={type}>
-                        {vehicleTypes.find(t => t.value === type)?.label ?? type}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none"
-                    style={{ color: typeFilter !== "ALL" ? "#c9a87c" : "var(--lc-text-label)" }}
-                  />
-                </div>
+                <TypeFilterDropdown
+                  value={typeFilter}
+                  onChange={v => setTypeFilter(v as typeof typeFilter)}
+                  options={typesInFleet.map(type => ({
+                    value: type,
+                    label: vehicleTypes.find(t => t.value === type)?.label ?? type,
+                  }))}
+                />
               )}
 
               <div className="flex-1" />
