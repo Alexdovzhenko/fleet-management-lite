@@ -9,6 +9,7 @@ import {
   MapPin, X, Check, Handshake, Star, Car, Copy, Users, ChevronDown,
 } from "lucide-react"
 import { useDebounce } from "@/lib/hooks/use-debounce"
+import { useTheme } from "@/lib/theme-context"
 import {
   useAffiliates,
   useAffiliateConnections,
@@ -683,21 +684,26 @@ function ConnectionButton({ affiliate, size = "default" }: { affiliate: Affiliat
 // ─── Affiliate card ───────────────────────────────────────────────────────────
 
 function AffiliateCard({ affiliate, showFavorite = false }: { affiliate: AffiliateProfile; showFavorite?: boolean }) {
+  const { isDark }       = useTheme()
   const { favoriteIds }  = useAffiliateFavorites()
   const toggleFavorite   = useToggleAffiliateFavorite()
   const isFavorite       = favoriteIds.has(affiliate.id)
   const [copied, setCopied]   = useState(false)
   const [hovered, setHovered] = useState(false)
 
+  const hoverBg     = isDark ? "#111e35" : "var(--lc-bg-card)"
+  const hoverShadow = isDark ? "0 8px 28px rgba(0,0,0,0.45)" : "0 8px 20px rgba(0,0,0,0.10)"
+  const baseShadow  = isDark ? "0 2px 12px rgba(0,0,0,0.28)" : "0 2px 8px rgba(0,0,0,0.06)"
+
   return (
     <Link
       href={`/affiliates/${affiliate.id}`}
       className="block rounded-2xl overflow-hidden transition-all duration-200"
       style={{
-        background:   hovered ? "#111e35" : "var(--lc-bg-surface)",
-        border:       hovered ? "1px solid var(--lc-border)" : "1px solid var(--lc-bg-glass-mid)",
-        boxShadow:    hovered ? "0 8px 28px rgba(0,0,0,0.45)" : "0 2px 12px rgba(0,0,0,0.28)",
-        transform:    hovered ? "translateY(-2px)" : "translateY(0)",
+        background: hovered ? hoverBg : "var(--lc-bg-surface)",
+        border:     hovered ? "1px solid var(--lc-border)" : "1px solid var(--lc-bg-glass-mid)",
+        boxShadow:  hovered ? hoverShadow : baseShadow,
+        transform:  hovered ? "translateY(-2px)" : "translateY(0)",
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -713,7 +719,7 @@ function AffiliateCard({ affiliate, showFavorite = false }: { affiliate: Affilia
       >
         {/* Logo overlapping banner */}
         <div className="absolute -bottom-5 left-4">
-          <div className="border-2 rounded-xl" style={{ borderColor: hovered ? "#111e35" : "var(--lc-bg-surface)" }}>
+          <div className="border-2 rounded-xl" style={{ borderColor: hovered ? hoverBg : "var(--lc-bg-surface)" }}>
             <AvatarOrInitials logo={affiliate.logo} name={affiliate.name} size="md" />
           </div>
         </div>
@@ -945,6 +951,7 @@ function TabBar({ active, onChange, pendingCount, connectedCount }: {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 function AffiliatesContent() {
+  const { isDark }   = useTheme()
   const router       = useRouter()
   const searchParams = useSearchParams()
 
@@ -1060,24 +1067,28 @@ function AffiliatesContent() {
 
               {/* Stat pills — clickable to switch tabs */}
               <div className="hidden sm:flex items-center gap-1.5 shrink-0">
-                {([
-                  { label: "Network",   value: browseData.length, bg: "rgba(201,168,124,0.10)", color: "rgba(201,168,124,0.90)", dot: "#c9a87c",  tab: "browse"    as Tab },
-                  { label: "Connected", value: connectedCount,    bg: "rgba(52,211,153,0.10)",  color: "rgba(52,211,153,0.90)",  dot: "#34d399",  tab: "connected" as Tab },
-                  { label: "Pending",   value: pendingCount,      bg: "rgba(251,191,36,0.10)",  color: "rgba(251,191,36,0.90)",  dot: "#fbbf24",  tab: "requests"  as Tab },
-                ] as const).map(s => (
+                {(isDark ? [
+                  { label: "Network",   value: browseData.length, bg: "rgba(201,168,124,0.10)", color: "rgba(201,168,124,0.90)", dot: "#c9a87c", tab: "browse"    as Tab },
+                  { label: "Connected", value: connectedCount,    bg: "rgba(52,211,153,0.10)",  color: "rgba(52,211,153,0.90)",  dot: "#34d399", tab: "connected" as Tab },
+                  { label: "Pending",   value: pendingCount,      bg: "rgba(251,191,36,0.10)",  color: "rgba(251,191,36,0.90)",  dot: "#fbbf24", tab: "requests"  as Tab },
+                ] : [
+                  { label: "Network",   value: browseData.length, bg: "var(--lc-bg-glass-mid)", color: "var(--lc-text-primary)", dot: "#c9a87c", tab: "browse"    as Tab },
+                  { label: "Connected", value: connectedCount,    bg: "var(--lc-bg-glass-mid)", color: "var(--lc-text-primary)", dot: "#64B896", tab: "connected" as Tab },
+                  { label: "Pending",   value: pendingCount,      bg: "var(--lc-bg-glass-mid)", color: "var(--lc-text-primary)", dot: "#fbbf24", tab: "requests"  as Tab },
+                ]).map(s => (
                   <button
                     key={s.label}
                     onClick={() => setActiveTab(s.tab)}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all duration-150 cursor-pointer"
                     style={{
-                      background: activeTab === s.tab ? s.bg.replace("0.10", "0.18") : s.bg,
+                      background: s.bg,
+                      border: activeTab === s.tab ? `1px solid ${s.dot}40` : "1px solid var(--lc-border)",
                       color: s.color,
-                      outline: activeTab === s.tab ? `1px solid ${s.dot}30` : "none",
                     }}
                   >
                     <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: s.dot }} />
                     <span className="tabular-nums">{s.value}</span>
-                    <span className="font-medium" style={{ opacity: 0.7 }}>{s.label}</span>
+                    <span className="font-medium" style={{ opacity: isDark ? 0.7 : 1 }}>{s.label}</span>
                   </button>
                 ))}
               </div>
