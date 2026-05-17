@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { createPortal } from "react-dom"
 import { Calendar, X, ChevronLeft, ChevronRight as ChevronRightIcon, ChevronRight as Arrow } from "lucide-react"
 import {
   format, startOfMonth, endOfMonth, eachDayOfInterval,
@@ -15,6 +16,7 @@ interface BillingDatePickerProps {
 
 export function BillingDatePicker({ startDate, endDate, onChange }: BillingDatePickerProps) {
   const [isOpen, setIsOpen]               = useState(false)
+  const [popupStyle, setPopupStyle]       = useState<React.CSSProperties>({})
   const [currentMonth, setCurrentMonth]   = useState(new Date())
   const [selectedStart, setSelectedStart] = useState<Date | null>(startDate ? new Date(startDate) : null)
   const [selectedEnd, setSelectedEnd]     = useState<Date | null>(endDate   ? new Date(endDate)   : null)
@@ -22,16 +24,41 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
   const [dateMode, setDateMode]           = useState<"single" | "range">(
     endDate && startDate !== endDate ? "range" : "single"
   )
-  const containerRef = useRef<HTMLDivElement>(null)
+  const btnRef = useRef<HTMLButtonElement>(null)
 
+  function openCalendar() {
+    if (!btnRef.current) return
+    const rect = btnRef.current.getBoundingClientRect()
+    const popupWidth  = 300
+    const spaceRight  = window.innerWidth - rect.left
+    const left = spaceRight >= popupWidth ? rect.left : Math.max(8, rect.right - popupWidth)
+    setPopupStyle({
+      position: "fixed",
+      top: rect.bottom + 6,
+      left,
+      width: popupWidth,
+      zIndex: 9999,
+    })
+    setIsOpen(true)
+  }
+
+  // Close on outside mousedown
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setIsOpen(false)
+    if (!isOpen) return
+    function handle(e: MouseEvent) {
+      if (btnRef.current && btnRef.current.contains(e.target as Node)) return
+      setIsOpen(false)
     }
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside)
-      return () => document.removeEventListener("mousedown", handleClickOutside)
-    }
+    document.addEventListener("mousedown", handle)
+    return () => document.removeEventListener("mousedown", handle)
+  }, [isOpen])
+
+  // Close on scroll
+  useEffect(() => {
+    if (!isOpen) return
+    function handle() { setIsOpen(false) }
+    window.addEventListener("scroll", handle, { passive: true, capture: true })
+    return () => window.removeEventListener("scroll", handle, { capture: true })
   }, [isOpen])
 
   const handleDayClick = (day: Date) => {
@@ -66,27 +93,27 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
       ? `${format(selectedStart, "MMM d")} – ${format(selectedEnd, "MMM d, yyyy")}`
       : selectedStart ? format(selectedStart, "MMM d, yyyy") : "Filter by date"
 
-  const monthDays     = eachDayOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) })
-  const paddingDays   = Array(startOfMonth(currentMonth).getDay()).fill(null)
-  const hasDate       = !!selectedStart
-  const isActive      = hasDate
+  const monthDays   = eachDayOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) })
+  const paddingDays = Array(startOfMonth(currentMonth).getDay()).fill(null)
+  const isActive    = !!selectedStart
 
   const getDayStyle = (day: Date): React.CSSProperties => {
-    const isStart      = selectedStart && isSameDay(day, selectedStart)
-    const isEnd        = selectedEnd   && isSameDay(day, selectedEnd)
-    const inRange      = selectedStart && selectedEnd && isWithinInterval(day, { start: selectedStart, end: selectedEnd })
-    const beforeStart  = selectedStart && selectionMode === "end" && isBefore(day, selectedStart)
+    const isStart     = selectedStart && isSameDay(day, selectedStart)
+    const isEnd       = selectedEnd   && isSameDay(day, selectedEnd)
+    const inRange     = selectedStart && selectedEnd && isWithinInterval(day, { start: selectedStart, end: selectedEnd })
+    const beforeStart = selectedStart && selectionMode === "end" && isBefore(day, selectedStart)
 
-    if (beforeStart) return { color: "rgba(200,212,228,0.20)", cursor: "not-allowed" }
+    if (beforeStart) return { color: "var(--lc-text-muted)", cursor: "not-allowed", opacity: 0.35 }
     if (isStart || isEnd) return { background: "#c9a87c", color: "var(--lc-bg-page)", fontWeight: 600, cursor: "pointer", borderRadius: "8px" }
     if (inRange) return { background: "rgba(201,168,124,0.12)", color: "var(--lc-text-secondary)", cursor: "pointer", borderRadius: "8px" }
     return { color: "var(--lc-text-secondary)", cursor: "pointer", borderRadius: "8px" }
   }
 
   return (
-    <div className="relative" ref={containerRef}>
+    <div className="relative">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        ref={btnRef}
+        onClick={() => isOpen ? setIsOpen(false) : openCalendar()}
         className="flex items-center gap-2 h-9 px-3 rounded-xl text-[13px] font-medium transition-all duration-150 cursor-pointer whitespace-nowrap"
         style={isActive
           ? { background: "rgba(201,168,124,0.15)", border: "1px solid rgba(201,168,124,0.30)", color: "#c9a87c" }
@@ -95,11 +122,11 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
       >
         <Calendar className="w-3.5 h-3.5 shrink-0" />
         <span>{displayValue}</span>
-        {hasDate && (
+        {isActive && (
           <span
             onClick={handleClear}
             className="cursor-pointer"
-            style={{ color: isActive ? "rgba(201,168,124,0.60)" : "var(--lc-text-muted)" }}
+            style={{ color: "rgba(201,168,124,0.60)" }}
             onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = "1"}
             onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = "0.6"}
           >
@@ -108,13 +135,15 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
         )}
       </button>
 
-      {isOpen && (
+      {isOpen && createPortal(
         <div
-          className="absolute top-full mt-1.5 left-0 z-50 rounded-2xl p-4 w-[300px]"
           style={{
+            ...popupStyle,
             background: "var(--lc-bg-surface)",
             border: "1px solid var(--lc-border)",
-            boxShadow: "0 20px 60px rgba(0,0,0,0.70)",
+            borderRadius: "16px",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+            padding: "16px",
           }}
         >
           {/* Mode toggle */}
@@ -122,6 +151,7 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
             {(["single", "range"] as const).map((mode) => (
               <button
                 key={mode}
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={() => { setDateMode(mode); setSelectionMode("start"); if (mode === "single") setSelectedEnd(null) }}
                 className="flex-1 py-1.5 rounded-[9px] text-[12px] font-semibold transition-all duration-150 cursor-pointer capitalize"
                 style={dateMode === mode
@@ -181,7 +211,8 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
           {/* Clear button */}
           {selectedStart && (
             <button
-              onClick={(e) => { e.stopPropagation(); setSelectedStart(null); setSelectedEnd(null); setSelectionMode("start"); onChange(null, null) }}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => { setSelectedStart(null); setSelectedEnd(null); setSelectionMode("start"); onChange(null, null) }}
               className="w-full mb-4 py-2 rounded-xl text-[12px] font-semibold transition-all duration-150 cursor-pointer"
               style={{ color: "var(--lc-text-dim)", background: "var(--lc-bg-card)", border: "1px solid var(--lc-bg-glass-hover)" }}
               onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "#f87171"}
@@ -194,10 +225,11 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
           {/* Calendar nav */}
           <div className="flex items-center justify-between mb-3">
             <button
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
               className="w-7 h-7 flex items-center justify-center rounded-lg transition-all duration-100 cursor-pointer"
               style={{ color: "var(--lc-text-dim)" }}
-              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)"}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-mid)"}
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
             >
               <ChevronLeft className="w-4 h-4" />
@@ -206,10 +238,11 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
               {format(currentMonth, "MMMM yyyy")}
             </span>
             <button
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
               className="w-7 h-7 flex items-center justify-center rounded-lg transition-all duration-100 cursor-pointer"
               style={{ color: "var(--lc-text-dim)" }}
-              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-hover)"}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-mid)"}
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}
             >
               <ChevronRightIcon className="w-4 h-4" />
@@ -219,7 +252,7 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
           {/* Day headers */}
           <div className="grid grid-cols-7 gap-0.5 mb-1">
             {["Su","Mo","Tu","We","Th","Fr","Sa"].map((d) => (
-              <div key={d} className="h-8 flex items-center justify-center text-[11px] font-semibold" style={{ color: "var(--lc-text-dim)" }}>
+              <div key={d} className="h-8 flex items-center justify-center text-[11px] font-semibold" style={{ color: "var(--lc-text-muted)" }}>
                 {d}
               </div>
             ))}
@@ -231,12 +264,13 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
             {monthDays.map((day) => (
               <button
                 key={day.toISOString()}
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={() => handleDayClick(day)}
                 className="h-8 flex items-center justify-center text-[12px] transition-all duration-100"
                 style={getDayStyle(day)}
                 onMouseEnter={e => {
                   const s = getDayStyle(day)
-                  if (!s.background) (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"
+                  if (!s.background) (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-mid)"
                 }}
                 onMouseLeave={e => {
                   const s = getDayStyle(day)
@@ -249,19 +283,20 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
           </div>
 
           {/* Quick ranges */}
-          <div style={{ borderTop: "1px solid var(--lc-bg-glass-mid)", paddingTop: "12px" }} className="space-y-0.5">
+          <div style={{ borderTop: "1px solid var(--lc-border)", paddingTop: "12px" }} className="space-y-0.5">
             {[
-              { label: "Today",       action: () => { const t = new Date(); setSelectedStart(t); setSelectedEnd(t); onChange(format(t,"yyyy-MM-dd"), format(t,"yyyy-MM-dd")); setIsOpen(false) } },
-              { label: "Last 7 days", action: () => { const t = new Date(); const s = new Date(t); s.setDate(t.getDate()-7); setSelectedStart(s); setSelectedEnd(t); onChange(format(s,"yyyy-MM-dd"), format(t,"yyyy-MM-dd")); setIsOpen(false) } },
-              { label: "Last 30 days",action: () => { const t = new Date(); const s = new Date(t); s.setDate(t.getDate()-30); setSelectedStart(s); setSelectedEnd(t); onChange(format(s,"yyyy-MM-dd"), format(t,"yyyy-MM-dd")); setIsOpen(false) } },
+              { label: "Today",        action: () => { const t = new Date(); setSelectedStart(t); setSelectedEnd(t); onChange(format(t,"yyyy-MM-dd"), format(t,"yyyy-MM-dd")); setIsOpen(false) } },
+              { label: "Last 7 days",  action: () => { const t = new Date(); const s = new Date(t); s.setDate(t.getDate()-7);  setSelectedStart(s); setSelectedEnd(t); onChange(format(s,"yyyy-MM-dd"), format(t,"yyyy-MM-dd")); setIsOpen(false) } },
+              { label: "Last 30 days", action: () => { const t = new Date(); const s = new Date(t); s.setDate(t.getDate()-30); setSelectedStart(s); setSelectedEnd(t); onChange(format(s,"yyyy-MM-dd"), format(t,"yyyy-MM-dd")); setIsOpen(false) } },
             ].map(({ label, action }) => (
               <button
                 key={label}
+                onMouseDown={(e) => e.preventDefault()}
                 onClick={action}
                 className="w-full text-left px-3 py-2 rounded-lg text-[12px] font-medium transition-colors duration-100 cursor-pointer"
                 style={{ color: "var(--lc-text-dim)" }}
                 onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass)"
+                  (e.currentTarget as HTMLElement).style.background = "var(--lc-bg-glass-mid)"
                   ;(e.currentTarget as HTMLElement).style.color = "var(--lc-text-primary)"
                 }}
                 onMouseLeave={e => {
@@ -273,7 +308,8 @@ export function BillingDatePicker({ startDate, endDate, onChange }: BillingDateP
               </button>
             ))}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
