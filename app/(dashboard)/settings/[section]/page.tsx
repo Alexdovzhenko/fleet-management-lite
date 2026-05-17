@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+import { useTheme } from "@/lib/theme-context"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import Cropper from "react-easy-crop"
 import type { Area, Point } from "react-easy-crop"
@@ -682,6 +683,7 @@ function ClientFleetVehicleCard({
 // ─── Section: Profile ─────────────────────────────────────────────────────────
 
 function ProfileSection() {
+  const { isDark } = useTheme()
   const { data: company, isLoading } = useCompany()
   const updateCompany = useUpdateCompany()
   const { data: vehicles = [], isLoading: vehiclesLoading } = useVehicles()
@@ -878,27 +880,32 @@ function ProfileSection() {
           </div>
 
           {/* Profile type toggle */}
-          <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.05] w-fit">
+          <div
+            className="flex items-center gap-1 p-1 rounded-xl w-fit"
+            style={{
+              background: isDark ? 'rgba(255,255,255,0.05)' : 'var(--lc-bg-glass-mid)',
+            }}
+          >
             <button
               onClick={() => setProfileType('affiliate')}
-              className="flex items-center gap-2 px-4 h-8 rounded-lg text-sm font-semibold transition-all"
-              style={!isClient
-                ? { background: 'rgba(201,168,124,0.12)', color: '#c9a87c' }
-                : { color: 'var(--lc-text-label)' }
-              }
+              className="flex items-center gap-2 px-4 h-9 rounded-lg text-sm font-semibold transition-all duration-200"
+              style={!isClient ? (isDark
+                ? { background: 'rgba(201,168,124,0.18)', color: '#c9a87c', boxShadow: '0 1px 4px rgba(0,0,0,0.30)' }
+                : { background: '#FFFFFF', color: '#1C1C1E', boxShadow: '0 1px 4px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)' }
+              ) : { color: isDark ? 'var(--lc-text-label)' : 'var(--lc-text-dim)' }}
             >
-              <Users className="w-3.5 h-3.5" />
+              <Users className="w-3.5 h-3.5 flex-shrink-0" style={{ color: !isClient ? (isDark ? '#c9a87c' : '#c9a87c') : undefined }} />
               Affiliate Profile
             </button>
             <button
               onClick={() => setProfileType('client')}
-              className="flex items-center gap-2 px-4 h-8 rounded-lg text-sm font-semibold transition-all"
-              style={isClient
-                ? { background: 'rgba(251,191,36,0.10)', color: '#fbbf24' }
-                : { color: 'var(--lc-text-label)' }
-              }
+              className="flex items-center gap-2 px-4 h-9 rounded-lg text-sm font-semibold transition-all duration-200"
+              style={isClient ? (isDark
+                ? { background: 'rgba(251,191,36,0.12)', color: '#fbbf24', boxShadow: '0 1px 4px rgba(0,0,0,0.30)' }
+                : { background: '#FFFFFF', color: '#1C1C1E', boxShadow: '0 1px 4px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.06)' }
+              ) : { color: isDark ? 'var(--lc-text-label)' : 'var(--lc-text-dim)' }}
             >
-              <User className="w-3.5 h-3.5" />
+              <User className="w-3.5 h-3.5 flex-shrink-0" style={{ color: isClient ? (isDark ? '#fbbf24' : '#c9a87c') : undefined }} />
               Private Client
             </button>
           </div>
