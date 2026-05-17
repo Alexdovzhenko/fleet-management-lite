@@ -546,6 +546,7 @@ function DriverModal({
   onClose: () => void
   editing: Driver | null
 }) {
+  const { isDark } = useTheme()
   const createDriver = useCreateDriver()
   const updateDriver = useUpdateDriver()
   const deleteDriver = useDeleteDriver()
@@ -992,7 +993,11 @@ function DriverModal({
                 {/* Status chip */}
                 <span className={cn(
                   "inline-flex items-center gap-1.5 mt-2.5 text-[11px] font-semibold px-3 py-[5px] rounded-full",
-                  statusCfg.chip
+                  isDark ? statusCfg.chip : {
+                    ACTIVE:   "bg-emerald-100 text-emerald-800",
+                    INACTIVE: "bg-gray-100 text-gray-600",
+                    ON_LEAVE: "bg-amber-100 text-amber-800",
+                  }[watchedStatus] ?? "bg-gray-100 text-gray-600"
                 )}>
                   <span className={cn("w-1.5 h-1.5 rounded-full flex-shrink-0", statusCfg.dot)} />
                   {statusCfg.label}
