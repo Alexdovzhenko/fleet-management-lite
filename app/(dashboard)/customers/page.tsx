@@ -231,12 +231,16 @@ export default function CustomersPage() {
                     className="w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-150 text-left cursor-pointer"
                     style={{ background: "var(--lc-bg-surface)", border: "1px solid var(--lc-bg-glass-mid)" }}
                     onMouseEnter={e => {
-                      (e.currentTarget as HTMLButtonElement).style.background = "#111e35"
-                      ;(e.currentTarget as HTMLButtonElement).style.borderColor = "var(--lc-border)"
+                      const el = e.currentTarget as HTMLButtonElement
+                      el.style.background = isDark ? "#111e35" : "var(--lc-bg-glass-hover)"
+                      el.style.borderColor = isDark ? "var(--lc-border)" : "var(--lc-border-medium)"
+                      el.style.boxShadow = isDark ? "" : "0 2px 8px rgba(0,0,0,0.06)"
                     }}
                     onMouseLeave={e => {
-                      (e.currentTarget as HTMLButtonElement).style.background = "var(--lc-bg-surface)"
-                      ;(e.currentTarget as HTMLButtonElement).style.borderColor = "var(--lc-bg-glass-mid)"
+                      const el = e.currentTarget as HTMLButtonElement
+                      el.style.background = "var(--lc-bg-surface)"
+                      el.style.borderColor = "var(--lc-bg-glass-mid)"
+                      el.style.boxShadow = ""
                     }}
                   >
                     {/* Avatar */}
@@ -290,10 +294,14 @@ export default function CustomersPage() {
                       </span>
                       <span
                         className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
-                        style={{
-                          background: tripCount >= 2 ? "rgba(52,211,153,0.10)" : "var(--lc-bg-glass-mid)",
-                          color: tripCount >= 2 ? "rgba(52,211,153,0.90)" : "var(--lc-text-dim)",
-                        }}
+                        style={tripCount >= 2
+                          ? isDark
+                            ? { background: "rgba(52,211,153,0.14)", color: "#6ee7b7", border: "1px solid rgba(52,211,153,0.28)" }
+                            : { background: "#A7F3D0", color: "#065F46", border: "1px solid #10B981" }
+                          : isDark
+                            ? { background: "var(--lc-bg-glass-mid)", color: "var(--lc-text-dim)" }
+                            : { background: "#F2F2F7", color: "#3C3C43", border: "1px solid rgba(0,0,0,0.08)" }
+                        }
                       >
                         {tripCount} {tripCount === 1 ? "trip" : "trips"}
                       </span>
