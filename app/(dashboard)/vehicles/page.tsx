@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import type { Vehicle } from "@/types"
+import { useTheme } from "@/lib/theme-context"
 
 const MAX_PHOTOS = 3
 
@@ -60,6 +61,12 @@ const STATUS_CONFIG = {
   ACTIVE:         { label: "Active",      dot: "#34d399", textColor: "rgba(52,211,153,0.90)",  bg: "rgba(52,211,153,0.12)"  },
   MAINTENANCE:    { label: "Maintenance", dot: "#fbbf24", textColor: "rgba(251,191,36,0.90)",  bg: "rgba(251,191,36,0.12)"  },
   OUT_OF_SERVICE: { label: "Offline",     dot: "#f87171", textColor: "rgba(248,113,113,0.90)", bg: "rgba(248,113,113,0.12)" },
+} as const
+
+const STATUS_CONFIG_LIGHT = {
+  ACTIVE:         { label: "Active",      dot: "#059669", textColor: "#065F46", bg: "#ECFDF5", border: "#A7F3D0" },
+  MAINTENANCE:    { label: "Maintenance", dot: "#D97706", textColor: "#92400E", bg: "#FFFBEB", border: "#FDE68A" },
+  OUT_OF_SERVICE: { label: "Offline",     dot: "#DC2626", textColor: "#991B1B", bg: "#FEF2F2", border: "#FECACA" },
 } as const
 
 type StatusKey = keyof typeof STATUS_CONFIG
@@ -225,13 +232,16 @@ function PhotoLightbox({
 
 // ── Vehicle Card ──────────────────────────────────────────────────────────────
 function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void }) {
+  const { isDark } = useTheme()
   const photos = vehicle.photos?.length ? vehicle.photos : vehicle.photoUrl ? [vehicle.photoUrl] : []
   const [idx, setIdx] = useState(0)
   const [lightbox, setLightbox] = useState(false)
   const [hovered, setHovered] = useState(false)
   const thumb = photos[idx] ?? null
   const status = vehicle.status as StatusKey
-  const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.ACTIVE
+  const cfg = isDark
+    ? (STATUS_CONFIG[status] ?? STATUS_CONFIG.ACTIVE)
+    : (STATUS_CONFIG_LIGHT[status] ?? STATUS_CONFIG_LIGHT.ACTIVE)
   const subtitle = [vehicle.year, vehicle.make, vehicle.model || getVehicleTypeLabel(vehicle.type)]
     .filter(Boolean).join(" ")
 
@@ -249,9 +259,13 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
       <div
         className="rounded-2xl overflow-hidden transition-all duration-300 ease-out"
         style={{
-          background: hovered ? "#111e35" : "var(--lc-bg-surface)",
+          background: hovered
+            ? isDark ? "#111e35" : "var(--lc-bg-card)"
+            : "var(--lc-bg-surface)",
           border: hovered ? "1px solid var(--lc-border)" : "1px solid var(--lc-bg-glass-mid)",
-          boxShadow: hovered ? "0 8px 32px rgba(0,0,0,0.45)" : "0 4px 16px rgba(0,0,0,0.30)",
+          boxShadow: hovered
+            ? isDark ? "0 8px 32px rgba(0,0,0,0.45)" : "0 8px 24px rgba(0,0,0,0.10)"
+            : isDark ? "0 4px 16px rgba(0,0,0,0.30)" : "var(--lc-shadow-card)",
           transform: hovered ? "translateY(-2px)" : "translateY(0)",
         }}
         onMouseEnter={() => setHovered(true)}
@@ -303,7 +317,11 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
           <div className="absolute top-3.5 right-3.5" onClick={e => e.stopPropagation()}>
             <span
               className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-full"
-              style={{ background: cfg.bg, color: cfg.textColor }}
+              style={{
+                background: cfg.bg,
+                color: cfg.textColor,
+                border: isDark ? "none" : `1px solid ${"border" in cfg ? cfg.border : "transparent"}`,
+              }}
             >
               <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: cfg.dot }} />
               {cfg.label}
@@ -386,7 +404,10 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle; onEdit: () => void
               {/* Capacity */}
               <span
                 className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-xl"
-                style={{ background: "rgba(201,168,124,0.10)", color: "rgba(201,168,124,0.80)", border: "1px solid rgba(201,168,124,0.15)" }}
+                style={isDark
+                  ? { background: "rgba(201,168,124,0.10)", color: "rgba(201,168,124,0.80)", border: "1px solid rgba(201,168,124,0.15)" }
+                  : { background: "rgba(201,168,124,0.12)", color: "#7A5520", border: "1px solid rgba(201,168,124,0.28)" }
+                }
               >
                 <Users className="w-3 h-3" />
                 {vehicle.capacity} pax
@@ -842,6 +863,7 @@ function VehicleForm({
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function VehiclesPage() {
+  const { isDark } = useTheme()
   const [showAdd, setShowAdd]         = useState(false)
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null)
   const [filter, setFilter]           = useState<"ALL" | "ACTIVE" | "MAINTENANCE" | "OUT_OF_SERVICE">("ALL")
@@ -923,20 +945,25 @@ export default function VehiclesPage() {
 
               {/* Stat pills */}
               <div className="hidden sm:flex items-center gap-1.5 shrink-0">
-                {[
-                  { label: "Total",       value: totalCount,       bg: "rgba(201,168,124,0.10)", color: "rgba(201,168,124,0.90)", dot: "#c9a87c" },
-                  { label: "Active",      value: activeCount,      bg: "rgba(52,211,153,0.10)",  color: "rgba(52,211,153,0.90)",  dot: "#34d399" },
-                  { label: "Maintenance", value: maintenanceCount, bg: "rgba(251,191,36,0.10)",  color: "rgba(251,191,36,0.90)",  dot: "#fbbf24" },
-                  { label: "Offline",     value: offlineCount,     bg: "rgba(248,113,113,0.10)", color: "rgba(248,113,113,0.90)", dot: "#f87171" },
-                ].map(s => (
+                {(isDark ? [
+                  { label: "Total",       value: totalCount,       bg: "rgba(201,168,124,0.10)", border: "rgba(201,168,124,0.22)", color: "rgba(201,168,124,0.90)", dot: "#c9a87c" },
+                  { label: "Active",      value: activeCount,      bg: "rgba(52,211,153,0.10)",  border: "rgba(52,211,153,0.22)",  color: "rgba(52,211,153,0.90)",  dot: "#34d399" },
+                  { label: "Maintenance", value: maintenanceCount, bg: "rgba(251,191,36,0.10)",  border: "rgba(251,191,36,0.22)",  color: "rgba(251,191,36,0.90)",  dot: "#fbbf24" },
+                  { label: "Offline",     value: offlineCount,     bg: "rgba(248,113,113,0.10)", border: "rgba(248,113,113,0.22)", color: "rgba(248,113,113,0.90)", dot: "#f87171" },
+                ] : [
+                  { label: "Total",       value: totalCount,       bg: "var(--lc-bg-glass-mid)", border: "var(--lc-border)", color: "var(--lc-text-primary)", dot: "#c9a87c" },
+                  { label: "Active",      value: activeCount,      bg: "var(--lc-bg-glass-mid)", border: "var(--lc-border)", color: "var(--lc-text-primary)", dot: "#64B896" },
+                  { label: "Maintenance", value: maintenanceCount, bg: "var(--lc-bg-glass-mid)", border: "var(--lc-border)", color: "var(--lc-text-primary)", dot: "#D4A843" },
+                  { label: "Offline",     value: offlineCount,     bg: "var(--lc-bg-glass-mid)", border: "var(--lc-border)", color: "var(--lc-text-primary)", dot: "#E87070" },
+                ]).map(s => (
                   <div
                     key={s.label}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold"
-                    style={{ background: s.bg, color: s.color }}
+                    style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}` }}
                   >
                     <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: s.dot }} />
                     <span className="tabular-nums">{s.value}</span>
-                    <span className="font-medium" style={{ opacity: 0.7 }}>{s.label}</span>
+                    <span className="font-medium" style={{ opacity: isDark ? 0.7 : 1 }}>{s.label}</span>
                   </div>
                 ))}
               </div>
